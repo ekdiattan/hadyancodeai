@@ -150,7 +150,7 @@ export function useAppUpdate() {
 			toast({
 				title: `Update ready: v${status.version}`,
 				description:
-					"The new version has been downloaded. Restart now, or later from the update button next to the Cline logo.",
+					"The new version has been downloaded. Restart now, or later from the update button next to the HadyanCode logo.",
 				duration: Number.POSITIVE_INFINITY,
 				action: (
 					<ToastAction

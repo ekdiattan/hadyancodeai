@@ -4,9 +4,9 @@ import type { AgentMode } from "../session/runtime-config";
 /**
  * Trigger kinds supported by the automation subsystem.
  *
- * - `one_off`: a single run materialized from a `.cline/cron/*.md` spec.
- * - `schedule`: recurring runs materialized from a `.cline/cron/*.cron.md` spec.
- * - `event`: reactive runs materialized from a `.cline/cron/events/*.event.md`
+ * - `one_off`: a single run materialized from a `.hadyancode/cron/*.md` spec.
+ * - `schedule`: recurring runs materialized from a `.hadyancode/cron/*.cron.md` spec.
+ * - `event`: reactive runs materialized from a `.hadyancode/cron/events/*.event.md`
  *   spec. Event-driven specs are defined here for contract completeness but
  *   runtime matching lives in a later feature.
  */
@@ -134,7 +134,7 @@ export interface AutomationEventEnvelope {
  */
 export interface AutomationSpecSource {
 	/**
-	 * POSIX-normalized path of the source file relative to `.cline/cron/`.
+	 * POSIX-normalized path of the source file relative to `.hadyancode/cron/`.
 	 * Used as the identity fallback and persisted in `cron_specs.source_path`.
 	 */
 	normalizedRelativePath: string;

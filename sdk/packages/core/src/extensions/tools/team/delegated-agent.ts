@@ -8,7 +8,7 @@ import type {
 	ITelemetryService,
 	ToolApprovalRequest,
 	ToolApprovalResult,
-} from "@cline/shared";
+} from "@hadyancode/shared";
 import { SessionRuntime } from "../../../runtime/orchestration/session-runtime-orchestrator";
 import {
 	buildSubAgentSystemPrompt,
@@ -38,8 +38,8 @@ export interface DelegatedAgentRuntimeConfig
 	extends DelegatedAgentConnectionConfig {
 	cwd?: string;
 	providerId: string;
-	clinePlatform?: string;
-	clineIdeName?: string;
+	hadyancodePlatform?: string;
+	hadyancodeIdeName?: string;
 	maxIterations?: number;
 	hooks?: AgentHooks;
 	extensions?: AgentExtension[];

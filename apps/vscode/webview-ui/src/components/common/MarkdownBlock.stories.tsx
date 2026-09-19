@@ -125,7 +125,7 @@ export const WithLinks: Story = {
 	args: {
 		markdown: `Check out these resources:
 
-- Official documentation: https://github.com/cline/cline
+- Official documentation: https://github.com/cline/hadyancode
 - API reference: https://api.cline.bot/docs
 - Support forum: https://community.cline.bot
 

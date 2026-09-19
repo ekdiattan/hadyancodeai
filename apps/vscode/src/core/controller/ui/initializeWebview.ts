@@ -1,4 +1,4 @@
-import { Empty, EmptyRequest } from "@shared/proto/cline/common"
+import { Empty, EmptyRequest } from "@shared/proto/hadyancode/common"
 import { refreshWorkflowToggles } from "@/core/context/instructions/user-instructions/workflows"
 import { telemetryService } from "@/services/telemetry"
 import { Logger } from "@/shared/services/Logger"

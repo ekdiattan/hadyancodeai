@@ -44,9 +44,9 @@ export function startProtobusService(controller: Controller): Promise<string> {
 }
 
 function getProtobusServiceNames(packageDefinition: { [x: string]: any }): string[] {
-	// Filter service names to only include cline services
+	// Filter service names to only include hadyancode services
 	const protobusServiceNames = Object.keys(packageDefinition).filter(
-		(name) => name.startsWith("cline.") || name.startsWith("grpc.health"),
+		(name) => name.startsWith("hadyancode.") || name.startsWith("grpc.health"),
 	)
 	return protobusServiceNames
 }

@@ -3,10 +3,10 @@ import type {
 	BasicLogger,
 	ChatRunTurnRequest,
 	ChatStartSessionRequest,
-} from "@cline/shared";
-import { buildClineSystemPrompt } from "@cline/shared";
-import { nowIso } from "@cline/shared/db";
-import type { ResolveCronSpecsDirOptions } from "@cline/shared/storage";
+} from "@hadyancode/shared";
+import { buildHadyanCodeSystemPrompt } from "@hadyancode/shared";
+import { nowIso } from "@hadyancode/shared/db";
+import type { ResolveCronSpecsDirOptions } from "@hadyancode/shared/storage";
 import { DefaultToolNames } from "../../extensions/tools/constants";
 import { mergeRulesForSystemPrompt } from "../../runtime/safety/rules";
 import { buildWorkspaceMetadata } from "../../services/workspace/workspace-manifest";
@@ -159,7 +159,7 @@ export interface CronRunnerOptions {
 	) => void;
 	/** Default runtime workspace for the hub/daemon process. */
 	workspaceRoot: string;
-	/** Cron spec source/report location. Defaults to global `~/.cline/cron`. */
+	/** Cron spec source/report location. Defaults to global `~/.hadyancode/cron`. */
 	specs?: ResolveCronSpecsDirOptions;
 	logger?: BasicLogger;
 	pollIntervalMs?: number;
@@ -530,8 +530,8 @@ export class CronRunner {
 		const notes = buildNotesSystemPromptSection(spec.notesDirectory);
 		const additional = mergeRulesForSystemPrompt(undefined, notes);
 		const metadata = await buildWorkspaceMetadata(workspaceRoot);
-		const base = buildClineSystemPrompt({
-			ide: "Cline Cron",
+		const base = buildHadyanCodeSystemPrompt({
+			ide: "HadyanCode Cron",
 			workspaceRoot,
 			workspaceName: basename(workspaceRoot),
 			metadata,

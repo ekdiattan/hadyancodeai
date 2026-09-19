@@ -1,5 +1,5 @@
-import { StringRequest } from "@shared/proto/cline/common"
-import { ApiFormat, ModelOverrides, ProviderConfigResponse } from "@shared/proto/cline/models"
+import { StringRequest } from "@shared/proto/hadyancode/common"
+import { ApiFormat, ModelOverrides, ProviderConfigResponse } from "@shared/proto/hadyancode/models"
 import { act, renderHook, waitFor } from "@testing-library/react"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { ModelsServiceClient } from "@/services/grpc-client"

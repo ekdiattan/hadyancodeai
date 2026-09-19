@@ -12,12 +12,12 @@ import {
 } from "node:fs";
 import { dirname, join } from "node:path";
 import { setTimeout as delay } from "node:timers/promises";
-import type { BasicLogger } from "@cline/shared";
+import type { BasicLogger } from "@hadyancode/shared";
 import {
 	isMcpTimeoutConfigured,
 	resolveMcpTimeoutSeconds,
-} from "@cline/shared";
-import { resolveMcpSettingsPath } from "@cline/shared/storage";
+} from "@hadyancode/shared";
+import { resolveMcpSettingsPath } from "@hadyancode/shared/storage";
 import { z } from "zod";
 import { resolveNativeMcpTransport } from "./remote-proxy";
 import type {

@@ -1,6 +1,6 @@
 # Desktop App Example
 
-Tauri desktop shell + Bun sidecar backend + Next.js UI for running and inspecting Cline chat sessions.
+Tauri desktop shell + Bun sidecar backend + Next.js UI for running and inspecting HadyanCode chat sessions.
 
 ## Dev Commands
 
@@ -60,14 +60,14 @@ shell — read from the account database via `getpwuid`, falling back to
 agent-spawned child (run_commands, MCP servers) inherits. Only `PATH` is
 imported, deliberately; other login-environment variables (`SSH_AUTH_SOCK`,
 API keys, `JAVA_HOME`-style tool roots) are not pulled in. Set
-`CLINE_SIDECAR_SKIP_SHELL_PATH=1` to disable. Implementation and details:
+`HADYANCODE_SIDECAR_SKIP_SHELL_PATH=1` to disable. Implementation and details:
 [`sidecar/shell-path.ts`](./sidecar/shell-path.ts).
 
 ## Web Visual System
 
 The framework-neutral color, typography, radius, and navigation contract lives
-in the internal [`@cline/ui`](../../../sdk/packages/ui/README.md) workspace
-package. Other Cline web surfaces can take only its tokens or opt into the
+in the internal [`@hadyancode/ui`](../../../sdk/packages/ui/README.md) workspace
+package. Other HadyanCode web surfaces can take only its tokens or opt into the
 Tailwind adapter and shared base styles without depending on the desktop
 runtime. See [`webview/styles/README.md`](./webview/styles/README.md) for the
 desktop integration notes.
@@ -79,7 +79,7 @@ GitHub workflow as a single universal macOS DMG — one download that runs
 natively on both Apple Silicon and Intel (macOS picks the matching slice at
 launch, so users never choose an architecture). The step-by-step flow (version
 bumps, changelog, tag, repo secrets) lives in the `publish-desktop` skill
-(`.cline/skills/publish-desktop/SKILL.md`).
+(`.hadyancode/skills/publish-desktop/SKILL.md`).
 
 Installed apps auto-update via the Tauri updater: they poll the rolling
 `desktop-latest` release's `latest.json` on launch and every 2 hours, install
@@ -88,7 +88,7 @@ lost: the `desktop-latest` release/tag (its feed URL is baked into shipped
 apps) and the updater private key (`TAURI_SIGNING_PRIVATE_KEY` — without it,
 shipped apps can't verify new updates).
 
-There is also a beta channel ("Cline Beta", a separate app that installs
+There is also a beta channel ("HadyanCode Beta", a separate app that installs
 side by side with stable) cut from the `desktop-experimental` branch and
 served by the rolling `desktop-beta` release — the same never-delete rule
 applies to it. The experimental-branch process and beta release flow live in
@@ -142,7 +142,7 @@ Startup flow:
 
 1. Tauri starts a persistent local desktop backend and keeps only native window/file-picker/open-path responsibilities.
 2. The desktop backend starts the Bun sidecar, which discovers or starts the
-   canonical shared Cline Hub and exposes one websocket transport (`/transport`)
+   canonical shared HadyanCode Hub and exposes one websocket transport (`/transport`)
    for desktop commands, queries, and pushed events.
 3. The React app uses `lib/desktop-client.ts` and no longer imports `@tauri-apps/api/core` directly in feature code.
 4. Tool approval updates are pushed from the backend instead of polled from the UI.
@@ -159,7 +159,7 @@ Desktop transport envelope:
 - The Settings sidebar includes a `Routine` view for hub-backed automations.
 - `Routine` lists all RPC schedules and shows status (`enabled`, `nextRunAt`, active execution).
 - From the UI you can open a create form and add, pause/resume, trigger-now, and delete schedules.
-- The view is wired to the same scheduler APIs used by `cline schedule` through Tauri commands and `scripts/routine-schedules.ts`.
+- The view is wired to the same scheduler APIs used by `hadyancode schedule` through Tauri commands and `scripts/routine-schedules.ts`.
 
 ## Key Files
 
@@ -173,7 +173,7 @@ Desktop transport envelope:
 
 ## Data + Storage
 
-- Session artifacts are written under `~/.cline/data/sessions/<sessionId>/` (or `CLINE_SESSION_DATA_DIR`).
+- Session artifacts are written under `~/.hadyancode/data/sessions/<sessionId>/` (or `HADYANCODE_SESSION_DATA_DIR`).
 - Canonical replay/export artifact: `<sessionId>.messages.json`.
 - `<sessionId>.messages.json` is expected to contain ordered messages plus assistant `modelInfo` and `metrics` (including cache token fields when provided by the model runtime).
 - `<sessionId>.hooks.jsonl` is observability/debug telemetry and should not be required for normal history replay/export flows.
@@ -183,22 +183,22 @@ Desktop transport envelope:
 
 The desktop sidecar sends SDK telemetry through the same configured OpenTelemetry
 pipeline used by the CLI and writes structured runtime logs to
-`~/.cline/data/logs/code.log` by default. Telemetry continues to honor the global
+`~/.hadyancode/data/logs/code.log` by default. Telemetry continues to honor the global
 opt-out setting exposed in the desktop settings UI. The sidecar truncates stale
 logs and rotates the active file before it exceeds 50 MiB.
 
 Logging can be configured with the same environment variables as the CLI:
 
-- `CLINE_LOG_ENABLED=0` disables file logging.
-- `CLINE_LOG_LEVEL` sets the Pino level (for example, `debug` or `warn`).
-- `CLINE_LOG_PATH` overrides the log destination.
-- `CLINE_LOG_NAME` overrides the logger name.
+- `HADYANCODE_LOG_ENABLED=0` disables file logging.
+- `HADYANCODE_LOG_LEVEL` sets the Pino level (for example, `debug` or `warn`).
+- `HADYANCODE_LOG_PATH` overrides the log destination.
+- `HADYANCODE_LOG_NAME` overrides the logger name.
 
 In a development webview, sidecar voice-input diagnostics are also streamed to
 the webview console as `[desktop:voice-input]` entries. Production builds can
-enable the same console stream with `NEXT_PUBLIC_CLINE_DEBUG_LOGS=1` at build
+enable the same console stream with `NEXT_PUBLIC_HADYANCODE_DEBUG_LOGS=1` at build
 time, or at runtime from DevTools with
-`localStorage.setItem("cline.debugLogs", "1")` followed by a reload. Diagnostic
+`localStorage.setItem("hadyancode.debugLogs", "1")` followed by a reload. Diagnostic
 events include the selected provider/model and sanitized endpoint, but never
 credentials, request headers, recorded audio, or transcript contents.
 
@@ -217,7 +217,7 @@ credentials, request headers, recorded audio, or transcript contents.
   its Scribe v2 model. Choose the voice input provider and model explicitly under
   **Settings → Models → Voice input**. That selection is stored separately from
   the chat model as `modes.voiceInput` in
-  `~/.cline/data/settings/providers.json`; provider credentials remain in their
+  `~/.hadyancode/data/settings/providers.json`; provider credentials remain in their
   existing provider entry and never enter the webview. ElevenLabs uses its native
   `/v1/speech-to-text` API. Text-to-speech models with `output: ["audio"]` are
   not used for microphone transcription.

@@ -12,7 +12,7 @@ import {
 	TASK_PROVIDER_STREAM_FAILED_EVENT,
 	TASK_PROVIDER_STREAM_STARTED_EVENT,
 	type TelemetryProperties,
-} from "@cline/shared";
+} from "@hadyancode/shared";
 import type {
 	CoreCompactionBudgetPolicyIntent,
 	CoreCompactionLiveTailHandling,
@@ -417,7 +417,7 @@ export function captureTaskRestarted(
  * Distinguishes the trigger that produced a `task.completed` telemetry event.
  *
  * - `submit_and_exit`: the assistant explicitly declared completion by
- *   invoking the canonical completion tool. Parity with original Cline's
+ *   invoking the canonical completion tool. Parity with original HadyanCode's
  *   `attempt_completion`-anchored emission.
  * - `shutdown`: the session lifecycle completed (typically a non-interactive
  *   single-run that finished without an explicit completion tool). Acts as a

@@ -1,10 +1,10 @@
 import { Controller } from "@core/controller"
 import { sendChatButtonClickedEvent } from "@core/controller/ui/subscribeToChatButtonClicked"
 import { Logger } from "@/shared/services/Logger"
-import { ClineAPI } from "./cline"
+import { HadyanCodeAPI } from "./hadyancode"
 
-export function createClineAPI(sidebarController: Controller): ClineAPI {
-	const api: ClineAPI = {
+export function createHadyanCodeAPI(sidebarController: Controller): HadyanCodeAPI {
+	const api: HadyanCodeAPI = {
 		startNewTask: async (task?: string, images?: string[]) => {
 			await sidebarController.clearTask()
 			await sidebarController.postStateToWebview()

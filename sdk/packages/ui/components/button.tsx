@@ -13,10 +13,10 @@ import {
 } from "react";
 
 const BASE =
-	"inline-flex items-center justify-center whitespace-nowrap rounded-cline-ui-md font-cline-ui-medium cursor-pointer " +
+	"inline-flex items-center justify-center whitespace-nowrap rounded-hadyancode-ui-md font-hadyancode-ui-medium cursor-pointer " +
 	"disabled:pointer-events-none disabled:opacity-50 data-[disabled]:pointer-events-none data-[disabled]:opacity-50 " +
 	"[&_svg]:pointer-events-none [&_svg]:shrink-0 shrink-0 " +
-	"outline-none focus-visible:ring-2 focus-visible:ring-cline-ui-ring/60 transition-colors";
+	"outline-none focus-visible:ring-2 focus-visible:ring-hadyancode-ui-ring/60 transition-colors";
 
 // ─── Button ───────────────────────────────────────────────────────────────────
 
@@ -33,10 +33,10 @@ export const buttonVariants = cva(BASE, {
 			destructive: "",
 		},
 		size: {
-			xs: "h-7 px-2.5 gap-1.5 text-cline-ui-xs [&_svg:not([class*='size-'])]:size-3",
-			sm: "h-8 px-3 gap-1.5 text-cline-ui-sm [&_svg:not([class*='size-'])]:size-3.5",
-			md: "h-9 px-3.5 gap-2 text-cline-ui-sm [&_svg:not([class*='size-'])]:size-4",
-			lg: "h-10 px-4 gap-2 text-cline-ui-base [&_svg:not([class*='size-'])]:size-4",
+			xs: "h-7 px-2.5 gap-1.5 text-hadyancode-ui-xs [&_svg:not([class*='size-'])]:size-3",
+			sm: "h-8 px-3 gap-1.5 text-hadyancode-ui-sm [&_svg:not([class*='size-'])]:size-3.5",
+			md: "h-9 px-3.5 gap-2 text-hadyancode-ui-sm [&_svg:not([class*='size-'])]:size-4",
+			lg: "h-10 px-4 gap-2 text-hadyancode-ui-base [&_svg:not([class*='size-'])]:size-4",
 		},
 	},
 	compoundVariants: [
@@ -45,55 +45,55 @@ export const buttonVariants = cva(BASE, {
 			variant: "fill",
 			tone: "accent",
 			className:
-				"bg-cline-ui-primary text-cline-ui-primary-foreground hover:bg-cline-ui-primary-emphasis",
+				"bg-hadyancode-ui-primary text-hadyancode-ui-primary-foreground hover:bg-hadyancode-ui-primary-emphasis",
 		},
 		{
 			variant: "fill",
 			tone: "neutral",
 			className:
-				"bg-cline-ui-secondary text-cline-ui-secondary-foreground hover:bg-cline-ui-border",
+				"bg-hadyancode-ui-secondary text-hadyancode-ui-secondary-foreground hover:bg-hadyancode-ui-border",
 		},
 		{
 			variant: "fill",
 			tone: "destructive",
 			className:
-				"bg-cline-ui-destructive text-cline-ui-destructive-foreground hover:bg-cline-ui-destructive/90",
+				"bg-hadyancode-ui-destructive text-hadyancode-ui-destructive-foreground hover:bg-hadyancode-ui-destructive/90",
 		},
 		// surface
 		{
 			variant: "surface",
 			tone: "accent",
 			className:
-				"bg-cline-ui-accent text-cline-ui-accent-foreground hover:bg-cline-ui-primary/15",
+				"bg-hadyancode-ui-accent text-hadyancode-ui-accent-foreground hover:bg-hadyancode-ui-primary/15",
 		},
 		{
 			variant: "surface",
 			tone: "neutral",
 			className:
-				"bg-cline-ui-surface-hover-lighter text-cline-ui-foreground hover:bg-cline-ui-surface-hover",
+				"bg-hadyancode-ui-surface-hover-lighter text-hadyancode-ui-foreground hover:bg-hadyancode-ui-surface-hover",
 		},
 		{
 			variant: "surface",
 			tone: "destructive",
 			className:
-				"bg-cline-ui-destructive/10 text-cline-ui-destructive hover:bg-cline-ui-destructive/15",
+				"bg-hadyancode-ui-destructive/10 text-hadyancode-ui-destructive hover:bg-hadyancode-ui-destructive/15",
 		},
 		// ghost
 		{
 			variant: "ghost",
 			tone: "accent",
-			className: "text-cline-ui-primary hover:bg-cline-ui-primary/10",
+			className: "text-hadyancode-ui-primary hover:bg-hadyancode-ui-primary/10",
 		},
 		{
 			variant: "ghost",
 			tone: "neutral",
 			className:
-				"text-cline-ui-muted-foreground hover:bg-cline-ui-surface-hover hover:text-cline-ui-foreground",
+				"text-hadyancode-ui-muted-foreground hover:bg-hadyancode-ui-surface-hover hover:text-hadyancode-ui-foreground",
 		},
 		{
 			variant: "ghost",
 			tone: "destructive",
-			className: "text-cline-ui-destructive hover:bg-cline-ui-destructive/10",
+			className: "text-hadyancode-ui-destructive hover:bg-hadyancode-ui-destructive/10",
 		},
 	],
 	defaultVariants: {
@@ -214,55 +214,55 @@ export const iconButtonVariants = cva(BASE, {
 			variant: "fill",
 			tone: "accent",
 			className:
-				"bg-cline-ui-primary text-cline-ui-primary-foreground hover:bg-cline-ui-primary-emphasis",
+				"bg-hadyancode-ui-primary text-hadyancode-ui-primary-foreground hover:bg-hadyancode-ui-primary-emphasis",
 		},
 		{
 			variant: "fill",
 			tone: "neutral",
 			className:
-				"bg-cline-ui-secondary text-cline-ui-secondary-foreground hover:bg-cline-ui-border",
+				"bg-hadyancode-ui-secondary text-hadyancode-ui-secondary-foreground hover:bg-hadyancode-ui-border",
 		},
 		{
 			variant: "fill",
 			tone: "destructive",
 			className:
-				"bg-cline-ui-destructive text-cline-ui-destructive-foreground hover:bg-cline-ui-destructive/90",
+				"bg-hadyancode-ui-destructive text-hadyancode-ui-destructive-foreground hover:bg-hadyancode-ui-destructive/90",
 		},
 		// surface
 		{
 			variant: "surface",
 			tone: "accent",
 			className:
-				"bg-cline-ui-accent text-cline-ui-accent-foreground hover:bg-cline-ui-primary/15",
+				"bg-hadyancode-ui-accent text-hadyancode-ui-accent-foreground hover:bg-hadyancode-ui-primary/15",
 		},
 		{
 			variant: "surface",
 			tone: "neutral",
 			className:
-				"bg-cline-ui-surface-hover-lighter text-cline-ui-foreground hover:bg-cline-ui-surface-hover",
+				"bg-hadyancode-ui-surface-hover-lighter text-hadyancode-ui-foreground hover:bg-hadyancode-ui-surface-hover",
 		},
 		{
 			variant: "surface",
 			tone: "destructive",
 			className:
-				"bg-cline-ui-destructive/10 text-cline-ui-destructive hover:bg-cline-ui-destructive/15",
+				"bg-hadyancode-ui-destructive/10 text-hadyancode-ui-destructive hover:bg-hadyancode-ui-destructive/15",
 		},
 		// ghost
 		{
 			variant: "ghost",
 			tone: "accent",
-			className: "text-cline-ui-primary hover:bg-cline-ui-primary/10",
+			className: "text-hadyancode-ui-primary hover:bg-hadyancode-ui-primary/10",
 		},
 		{
 			variant: "ghost",
 			tone: "neutral",
 			className:
-				"text-cline-ui-muted-foreground hover:bg-cline-ui-surface-hover hover:text-cline-ui-foreground",
+				"text-hadyancode-ui-muted-foreground hover:bg-hadyancode-ui-surface-hover hover:text-hadyancode-ui-foreground",
 		},
 		{
 			variant: "ghost",
 			tone: "destructive",
-			className: "text-cline-ui-destructive hover:bg-cline-ui-destructive/10",
+			className: "text-hadyancode-ui-destructive hover:bg-hadyancode-ui-destructive/10",
 		},
 	],
 	defaultVariants: {

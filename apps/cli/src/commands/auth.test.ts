@@ -1,6 +1,6 @@
 import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
-import type { ProviderSettingsManager } from "@cline/core";
+import type { ProviderSettingsManager } from "@hadyancode/core";
 import { describe, expect, it, vi } from "vitest";
 import {
 	getPersistedProviderApiKey,
@@ -43,9 +43,9 @@ describe("saveOAuthProviderSettings", () => {
 
 		const merged = saveOAuthProviderSettings(
 			manager,
-			"cline",
+			"hadyancode",
 			{
-				provider: "cline",
+				provider: "hadyancode",
 				apiKey: "manual-key",
 				auth: {
 					accessToken: "workos:old-access",
@@ -62,7 +62,7 @@ describe("saveOAuthProviderSettings", () => {
 		);
 
 		expect(merged).toMatchObject({
-			provider: "cline",
+			provider: "hadyancode",
 			apiKey: "manual-key",
 			auth: {
 				accessToken: "workos:new-access",
@@ -73,7 +73,7 @@ describe("saveOAuthProviderSettings", () => {
 		});
 		expect(save).toHaveBeenCalledWith(
 			expect.objectContaining({
-				provider: "cline",
+				provider: "hadyancode",
 				apiKey: "manual-key",
 				auth: expect.objectContaining({
 					accessToken: "workos:new-access",
@@ -85,10 +85,10 @@ describe("saveOAuthProviderSettings", () => {
 });
 
 describe("getPersistedProviderApiKey", () => {
-	it("does not double-prefix persisted Cline OAuth tokens", () => {
+	it("does not double-prefix persisted HadyanCode OAuth tokens", () => {
 		expect(
-			getPersistedProviderApiKey("cline", {
-				provider: "cline",
+			getPersistedProviderApiKey("hadyancode", {
+				provider: "hadyancode",
 				auth: {
 					accessToken: "workos:oauth-access",
 				},
@@ -107,7 +107,7 @@ describe("loadAuthTuiRuntime", () => {
 	it("loads OpenTUI React after provider catalog initialization", async () => {
 		const cliRoot = fileURLToPath(new URL("../..", import.meta.url));
 		const script = `
-import { ProviderSettingsManager, ensureCustomProvidersLoaded, listLocalProviders } from "@cline/core";
+import { ProviderSettingsManager, ensureCustomProvidersLoaded, listLocalProviders } from "@hadyancode/core";
 import { loadAuthTuiRuntime } from "./src/commands/auth.ts";
 const manager = new ProviderSettingsManager();
 await ensureCustomProvidersLoaded(manager);

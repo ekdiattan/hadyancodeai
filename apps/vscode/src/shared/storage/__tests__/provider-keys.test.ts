@@ -1,5 +1,5 @@
 import { describe, it } from "bun:test"
-import { getProviderCollectionSync } from "@cline/llms"
+import { getProviderCollectionSync } from "@hadyancode/llms"
 import { expect } from "chai"
 import { getProviderDefaultModelId, getProviderModelIdKey } from "../provider-keys"
 
@@ -15,8 +15,16 @@ describe("Provider key mapping", () => {
 		// Dynamic providers that route through openrouter share its default.
 		const openrouterDefault = getProviderDefaultModelId("openrouter")
 		expect(openrouterDefault).to.be.a("string")
-		expect(getProviderDefaultModelId("cline")).to.equal(openrouterDefault)
 		expect(getProviderDefaultModelId("together")).to.equal(openrouterDefault)
+		expect(getProviderDefaultModelId("aihubmix")).to.equal(openrouterDefault)
+	})
+
+	it("returns the SDK-declared default for the first-party gateway providers", () => {
+		// hadyancode is a registered SDK provider, so it must not be pinned to
+		// another provider's placeholder any more.
+		const expectedDefault = getProviderCollectionSync("hadyancode")?.provider.defaultModelId ?? ""
+		expect(expectedDefault).to.be.a("string")
+		expect(getProviderDefaultModelId("hadyancode")).to.equal(expectedDefault)
 	})
 
 	it("returns an empty string for local-only providers", () => {
@@ -35,14 +43,14 @@ describe("Provider key mapping", () => {
 		expect(getProviderModelIdKey("openrouter", "plan")).to.equal("planModeOpenRouterModelId")
 	})
 
-	it("uses provider-specific model key behavior for Cline", () => {
-		expect(getProviderModelIdKey("cline", "act")).to.equal("actModeClineModelId")
-		expect(getProviderModelIdKey("cline", "plan")).to.equal("planModeClineModelId")
+	it("uses provider-specific model key behavior for HadyanCode", () => {
+		expect(getProviderModelIdKey("hadyancode", "act")).to.equal("actModeHadyanCodeModelId")
+		expect(getProviderModelIdKey("hadyancode", "plan")).to.equal("planModeHadyanCodeModelId")
 	})
 
-	it("uses separate model keys for ClinePass", () => {
-		expect(getProviderModelIdKey("cline-pass", "act")).to.equal("actModeClinePassModelId")
-		expect(getProviderModelIdKey("cline-pass", "plan")).to.equal("planModeClinePassModelId")
+	it("uses separate model keys for HadyanCodePass", () => {
+		expect(getProviderModelIdKey("hadyancode-pass", "act")).to.equal("actModeHadyanCodePassModelId")
+		expect(getProviderModelIdKey("hadyancode-pass", "plan")).to.equal("planModeHadyanCodePassModelId")
 	})
 
 	it("uses the SDK-declared default for Nous Research through SDK-boundary casing", () => {

@@ -1,6 +1,6 @@
 /** biome-ignore-all lint/style/noNonNullAssertion: static */
 
-import * as Llms from "@cline/llms";
+import * as Llms from "@hadyancode/llms";
 import {
 	fetchModelIdsFromSource,
 	resolveModelsSourceUrl,
@@ -185,15 +185,25 @@ async function mergeKnownModels(
 			...userKnownModels,
 		});
 	}
-	if (providerId === "cline-pass" && Object.keys(liveModels).length > 0) {
+	if (providerId === "hadyancode-pass" && Object.keys(liveModels).length > 0) {
 		// Keep the catalog's intentional order (pass models first, free models
 		// after) instead of re-sorting by release date: the first live model is
 		// the fallback default when the bundled default id rotates out of the
 		// live list, and it must stay a subscription model, not a free one.
-		return {
+		// First-party policy: only Claude + DeepSeek may surface, whatever the
+		// live feed happens to list.
+		const allowedLiveModels = Llms.filterHadyanCodeGatewayModels({
 			...liveModels,
 			...userKnownModels,
-		};
+		});
+		if (Object.keys(allowedLiveModels).length > 0) {
+			return allowedLiveModels;
+		}
+		// The policy filtered the whole live catalog out (the subscription feed
+		// currently serves models from other labs). Fall back to the declared
+		// default instead of rendering an empty picker — returning the unfiltered
+		// merge here would leak the disallowed labs back in.
+		return { ...defaultKnownModels, ...userKnownModels };
 	}
 	const knownModelsWithoutUserOverrides = Llms.sortModelsByReleaseDate({
 		...generated,
@@ -203,19 +213,22 @@ async function mergeKnownModels(
 		...publicModels,
 	});
 
-	if (providerId === "cline") {
-		// Cline recommendations can use Vercel-style ids while the broader
+	if (providerId === "hadyancode") {
+		// HadyanCode recommendations can use Vercel-style ids while the broader
 		// catalog includes OpenRouter aliases for the same models. Image-output
-		// models are temporarily unavailable through Cline's inference backend,
-		// so filter them only at the Cline catalog boundary.
+		// models are temporarily unavailable through HadyanCode's inference backend,
+		// so filter them only at the HadyanCode catalog boundary.
+		// First-party policy: only Claude + DeepSeek may surface.
 		return Llms.sortModelsByReleaseDate(
-			Llms.filterImageOutputModels({
-				...Llms.preferCanonicalModelIds(
-					knownModelsWithoutUserOverrides,
-					Llms.VERCEL_OPENROUTER_MODEL_ID_ALIAS_RULES,
-				),
-				...userKnownModels,
-			}),
+			Llms.filterHadyanCodeGatewayModels(
+				Llms.filterImageOutputModels({
+					...Llms.preferCanonicalModelIds(
+						knownModelsWithoutUserOverrides,
+						Llms.VERCEL_OPENROUTER_MODEL_ID_ALIAS_RULES,
+					),
+					...userKnownModels,
+				}),
+			),
 		);
 	}
 
@@ -230,7 +243,7 @@ function resolveCatalogModels(
 	modelsByProviderId: Record<string, Record<string, ModelInfo>>,
 ): Record<string, ModelInfo> {
 	// Runtime provider ids do not always match catalog keys. For example,
-	// Cline uses OpenRouter-backed catalog models, so live catalog lookups must
+	// HadyanCode uses OpenRouter-backed catalog models, so live catalog lookups must
 	// apply the same key mapping as generated catalog lookups.
 	const catalogKeys = Llms.resolveProviderModelCatalogKeys(providerId);
 	return Object.assign(

@@ -8,14 +8,14 @@ Multi-agent teams let you break complex work across multiple agents that coordin
 
 ## Enabling Teams
 
-Teams are a ClineCore feature. Enable them in the session config:
+Teams are a HadyanCodeCore feature. Enable them in the session config:
 
 ```typescript
-import { ClineCore } from "@cline/sdk"
+import { HadyanCodeCore } from "@hadyancode/sdk"
 
-const cline = await ClineCore.create({ clientName: "team-app" })
+const hadyancode = await HadyanCodeCore.create({ clientName: "team-app" })
 
-const session = await cline.start({
+const session = await hadyancode.start({
   prompt: "Plan and implement a user authentication module with tests",
   config: {
     providerId: "anthropic",
@@ -50,7 +50,7 @@ The coordinator decides how to split work, which agents to create, and how to co
 Team state persists across sessions:
 
 ```
-~/.cline/data/teams/[team-name]/
+~/.hadyancode/data/teams/[team-name]/
   task-board.json      # Current tasks and their status
   mailbox.json         # Inter-agent messages
   mission-log.json     # Team activity history
@@ -59,20 +59,20 @@ Team state persists across sessions:
 Resume a team's work in a new session:
 
 ```bash
-cline --team-name auth-sprint "Continue -- pick up incomplete tasks"
+hadyancode --team-name auth-sprint "Continue -- pick up incomplete tasks"
 ```
 
 ## Via CLI
 
 ```bash
 # Start a new team
-cline --team-name auth-sprint "Plan and implement user auth with tests"
+hadyancode --team-name auth-sprint "Plan and implement user auth with tests"
 
 # Resume work
-cline --team-name auth-sprint "What's the status? Continue with unfinished tasks."
+hadyancode --team-name auth-sprint "What's the status? Continue with unfinished tasks."
 
 # Different team for a different workstream
-cline --team-name perf-sprint "Profile the API endpoints and optimize the slowest 3"
+hadyancode --team-name perf-sprint "Profile the API endpoints and optimize the slowest 3"
 ```
 
 ## Sub-Agents vs Teams
@@ -91,7 +91,7 @@ Sub-agents are lighter weight. The parent agent spawns a child, waits for its re
 
 ```typescript
 // Sub-agents: simple delegation within a single session
-const session = await cline.start({
+const session = await hadyancode.start({
   config: {
     enableSpawnAgent: true,  // Agent can spawn sub-agents
     // ...

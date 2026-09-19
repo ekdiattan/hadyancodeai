@@ -1,5 +1,5 @@
-import { createHandlerAsync } from "@cline/llms";
-import type { BasicLogger } from "@cline/shared";
+import { createHandlerAsync } from "@hadyancode/llms";
+import type { BasicLogger } from "@hadyancode/shared";
 import { countUserRunMessages } from "../../session/user-run-messages";
 import type {
 	CoreCompactionContext,

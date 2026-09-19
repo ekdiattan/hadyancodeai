@@ -25,7 +25,7 @@ export interface HarborTrialResult {
 
 export interface HarborTrialFiles {
 	agent: {
-		"cline.txt": string // Full conversation log
+		"hadyancode.txt": string // Full conversation log
 		"setup/stdout.txt": string
 		"setup/stderr.txt": string
 		"setup/return-code.txt": string
@@ -95,7 +95,7 @@ export interface ParsedHarborTrial {
 	cost: number
 	tokensIn?: number
 	tokensOut?: number
-	logs: string // Full cline.txt content
+	logs: string // Full hadyancode.txt content
 	testOutput: string // Test verification output
 	errors: string[] // Setup or command errors
 }

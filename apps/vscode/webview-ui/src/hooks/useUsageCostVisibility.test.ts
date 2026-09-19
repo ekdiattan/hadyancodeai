@@ -25,11 +25,11 @@ function renderPredicate() {
 describe("useUsageCostVisibility", () => {
 	it("hides cost for rows whose provider is subscription-billed or marked hide", () => {
 		withListings([
-			{ id: "cline-pass", usageCostDisplay: "subscription" },
+			{ id: "hadyancode-pass", usageCostDisplay: "subscription" },
 			{ id: "some-provider", usageCostDisplay: "hide" },
 		])
 		const isCostVisible = renderPredicate()
-		expect(isCostVisible("cline-pass")).toBe(false)
+		expect(isCostVisible("hadyancode-pass")).toBe(false)
 		expect(isCostVisible("some-provider")).toBe(false)
 	})
 
@@ -41,7 +41,7 @@ describe("useUsageCostVisibility", () => {
 	})
 
 	it("shows cost for rows that recorded no provider", () => {
-		withListings([{ id: "cline-pass", usageCostDisplay: "subscription" }])
+		withListings([{ id: "hadyancode-pass", usageCostDisplay: "subscription" }])
 		const isCostVisible = renderPredicate()
 		expect(isCostVisible(undefined)).toBe(true)
 		expect(isCostVisible("")).toBe(true)
@@ -50,7 +50,7 @@ describe("useUsageCostVisibility", () => {
 	it("hides cost while listings have not arrived", () => {
 		withListings([])
 		const isCostVisible = renderPredicate()
-		expect(isCostVisible("cline-pass")).toBe(false)
+		expect(isCostVisible("hadyancode-pass")).toBe(false)
 		expect(isCostVisible("anthropic")).toBe(false)
 	})
 })

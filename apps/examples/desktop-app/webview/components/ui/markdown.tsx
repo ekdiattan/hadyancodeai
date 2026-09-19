@@ -1,7 +1,7 @@
 import {
 	agentMarkdownControls,
 	markdownCodeHighlighter,
-} from "@cline/ui/components/markdown";
+} from "@hadyancode/ui/components/markdown";
 import { cjk } from "@streamdown/cjk";
 import type { ComponentProps, MouseEvent, ReactNode } from "react";
 import { isValidElement, memo, useState } from "react";
@@ -43,7 +43,7 @@ export function MarkdownLinkSafetyModal({
 				<AlertDialogHeader>
 					<AlertDialogTitle>Open external link?</AlertDialogTitle>
 					<AlertDialogDescription>
-						You are about to leave Cline and visit this address.
+						You are about to leave HadyanCode and visit this address.
 					</AlertDialogDescription>
 				</AlertDialogHeader>
 				<div className="max-h-32 overflow-y-auto wrap-break-word rounded-md bg-muted p-3 font-mono text-sm">
@@ -304,7 +304,7 @@ export const MemoizedMarkdown = memo(
 		classNames?: string;
 	}) => (
 		<Streamdown
-			className={cn("cline-markdown", classNames)}
+			className={cn("hadyancode-markdown", classNames)}
 			components={markdownComponents}
 			controls={agentMarkdownControls}
 			dir="auto"

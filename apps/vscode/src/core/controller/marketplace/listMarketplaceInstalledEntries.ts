@@ -1,4 +1,4 @@
-import type { MarketplaceEntriesRequest, MarketplaceInstalledEntries } from "@shared/proto/cline/marketplace"
+import type { MarketplaceEntriesRequest, MarketplaceInstalledEntries } from "@shared/proto/hadyancode/marketplace"
 import type { Controller } from "../index"
 import { listInstalledMarketplaceEntries } from "./marketplace-helpers"
 

@@ -8,7 +8,7 @@ import type {
 	AgentToolDefinition,
 	GatewayProviderContext,
 	GatewayStreamRequest,
-} from "@cline/shared";
+} from "@hadyancode/shared";
 import { describe, expect, it, vi } from "vitest";
 import {
 	createAnthropicProvider,
@@ -23,13 +23,13 @@ import {
  * (`withEmptyResponseRetry`), not just Ollama.
  *
  * Production telemetry (2026-08-02→03) showed `Model returned empty response`
- * hard failures on openrouter, cline, and generic OpenAI-compatible
+ * hard failures on openrouter, hadyancode, and generic OpenAI-compatible
  * endpoints — 46 tasks / 120 events in 24h on the SDK extension. These tests
  * drive the real adapter + real `ai` package with fake wire responses (SSE
  * for the OpenAI-compatible and Anthropic wire formats) so the vendor's
  * actual stream-part shapes are exercised, guarding against a vendor whose
  * parts differ in shape being retried incorrectly (e.g. a tool-call-only
- * turn, which must never be retried because Cline runs its own tool loop).
+ * turn, which must never be retried because HadyanCode runs its own tool loop).
  */
 
 const READ_FILES_TOOL: AgentToolDefinition = {
@@ -110,7 +110,7 @@ function finishEvents(events: AgentModelEvent[]) {
 	return events.filter((event) => event.type === "finish");
 }
 
-describe("openai-compatible wire format (openrouter / cline / custom endpoints)", () => {
+describe("openai-compatible wire format (openrouter / hadyancode / custom endpoints)", () => {
 	const chunk = (delta: unknown, finish: string | null = null) =>
 		`data: ${JSON.stringify({
 			id: "cmpl-1",

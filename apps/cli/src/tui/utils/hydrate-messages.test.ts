@@ -1,6 +1,6 @@
 import { readFileSync, rmSync } from "node:fs";
 import { dirname } from "node:path";
-import type { Message, MessageWithMetadata } from "@cline/shared";
+import type { Message, MessageWithMetadata } from "@hadyancode/shared";
 import { describe, expect, it } from "vitest";
 import { ACT_MODE_CONTINUATION_PROMPT } from "../../runtime/interactive/mode";
 import { hydrateSessionMessages } from "./hydrate-messages";
@@ -138,7 +138,7 @@ describe("hydrateSessionMessages", () => {
 		]);
 	});
 
-	// Regression test for https://github.com/cline/cline/issues/13036:
+	// Regression test for https://github.com/cline/hadyancode/issues/13036:
 	// persisted sessions with malformed tool inputs must stay resumable.
 	it("hydrates tool calls with malformed inputs without throwing", () => {
 		const messages = [

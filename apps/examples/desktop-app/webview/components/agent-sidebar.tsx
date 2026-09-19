@@ -33,7 +33,7 @@ import {
 	useState,
 } from "react";
 import { AppUpdateIndicator } from "@/components/app-update-indicator";
-import { ClineLogo } from "@/components/cline-logo";
+import { HadyanCodeLogo } from "@/components/hadyancode-logo";
 import {
 	AlertDialog,
 	AlertDialogAction,
@@ -282,7 +282,7 @@ export function AgentSidebar({
 	const { user, activeOrganization } = useAccount();
 	const { displayName, email } = user || {};
 	const username = displayName?.split(" ")?.[0] || email?.split("@")?.[0];
-	const accountName = username?.trim() || "Cline Desktop";
+	const accountName = username?.trim() || "HadyanCode Desktop";
 	const accountScope = user
 		? (activeOrganization?.name ?? "Personal")
 		: undefined;
@@ -370,7 +370,7 @@ export function AgentSidebar({
 				error:
 					error instanceof Error
 						? error.message
-						: "Unable to read Cline Hub status.",
+						: "Unable to read HadyanCode Hub status.",
 				url: null,
 			});
 		}
@@ -823,7 +823,7 @@ export function AgentSidebar({
 						>
 							<HoverCardTrigger asChild>
 								<button
-									aria-label="Cline home"
+									aria-label="HadyanCode home"
 									className={cn(
 										"flex size-8 shrink-0 items-center justify-center rounded-md text-sidebar-foreground hover:bg-surface-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring",
 										isCollapsed && "size-9",
@@ -832,7 +832,7 @@ export function AgentSidebar({
 									title="Home"
 									type="button"
 								>
-									<ClineLogo className="size-5" />
+									<HadyanCodeLogo className="size-5" />
 								</button>
 							</HoverCardTrigger>
 							<HoverCardContent
@@ -864,12 +864,12 @@ export function AgentSidebar({
 											)}
 										/>
 										<span className="font-medium">
-											Cline Hub @{hubPort(hubStatus?.url ?? null) ?? "unknown"}
+											HadyanCode Hub @{hubPort(hubStatus?.url ?? null) ?? "unknown"}
 										</span>
 									</div>
 									{hubStatus && !hubStatus.connected && (
 										<p className="mt-1 text-[11px] text-destructive">
-											{hubStatus.error ?? "Cline Hub is not connected."}
+											{hubStatus.error ?? "HadyanCode Hub is not connected."}
 										</p>
 									)}
 								</div>
@@ -943,7 +943,7 @@ export function AgentSidebar({
 									"bg-surface-hover-lighter text-sidebar-foreground",
 							)}
 							onClick={() => openSettingsSection("Customize")}
-							title="Customize Cline with plugins, rules, and more"
+							title="Customize HadyanCode with plugins, rules, and more"
 							type="button"
 							variant="sidebarItem"
 						>

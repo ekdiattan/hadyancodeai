@@ -1,6 +1,6 @@
 import { createAmazonBedrock } from "@ai-sdk/amazon-bedrock";
 import { fromNodeProviderChain } from "@aws-sdk/credential-providers";
-import type { GatewayResolvedProviderConfig } from "@cline/shared";
+import type { GatewayResolvedProviderConfig } from "@hadyancode/shared";
 import { getGeneratedModelsForProvider } from "../../catalog/catalog.generated-access";
 import type { ProviderFactoryResult } from "./types";
 

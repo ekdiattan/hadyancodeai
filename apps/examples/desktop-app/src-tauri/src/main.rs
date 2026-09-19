@@ -24,7 +24,7 @@ use tauri_plugin_updater::UpdaterExt;
 const UPDATE_INITIAL_DELAY: Duration = Duration::from_secs(10);
 const UPDATE_CHECK_INTERVAL: Duration = Duration::from_secs(2 * 60 * 60);
 const MAIN_WINDOW_LABEL: &str = "main";
-const TRAY_ICON_ID: &str = "cline-code";
+const TRAY_ICON_ID: &str = "hadyancode-code";
 const TRAY_OPEN_MENU_ID: &str = "tray-open";
 const TRAY_NEW_SESSION_MENU_ID: &str = "tray-new-session";
 const TRAY_SETTINGS_MENU_ID: &str = "tray-settings";
@@ -168,7 +168,7 @@ fn running_sessions_text(running_sessions: u32) -> String {
 }
 
 // app_name is package_info().name (the configured productName), so beta
-// builds ("Cline Beta") identify themselves in the tooltip too.
+// builds ("HadyanCode Beta") identify themselves in the tooltip too.
 fn tray_tooltip_text(app_name: &str, running_sessions: u32) -> String {
     if running_sessions == 0 {
         app_name.to_string()
@@ -424,7 +424,7 @@ fn resolve_desktop_backend_binary_path(context: &AppContext) -> Option<PathBuf> 
     if cfg!(debug_assertions) {
         return None;
     }
-    let explicit = std::env::var("CLINE_CODE_SIDECAR_BIN")
+    let explicit = std::env::var("HADYANCODE_CODE_SIDECAR_BIN")
         .ok()
         .map(|value| value.trim().to_string())
         .filter(|value| !value.is_empty())
@@ -604,7 +604,7 @@ fn ensure_desktop_backend_started_with(
 }
 
 fn resolve_mcp_settings_path() -> Result<PathBuf, String> {
-    if let Ok(value) = std::env::var("CLINE_MCP_SETTINGS_PATH") {
+    if let Ok(value) = std::env::var("HADYANCODE_MCP_SETTINGS_PATH") {
         let trimmed = value.trim();
         if !trimmed.is_empty() {
             return Ok(PathBuf::from(trimmed));
@@ -616,10 +616,10 @@ fn resolve_mcp_settings_path() -> Result<PathBuf, String> {
         .or_else(|_| std::env::var("USERPROFILE"))
         .map_err(|_| "neither HOME nor USERPROFILE is set".to_string())?;
     Ok(PathBuf::from(home)
-        .join(".cline")
+        .join(".hadyancode")
         .join("data")
         .join("settings")
-        .join("cline_mcp_settings.json"))
+        .join("hadyancode_mcp_settings.json"))
 }
 
 fn open_path_with_default_app(path: &Path) -> Result<(), String> {
@@ -756,7 +756,7 @@ fn restart_to_apply_update(
 }
 
 /// Relaunch the current version of the app. Used after the sidecar replaces
-/// the shared Cline Hub under the running app (the "Cline Hub update
+/// the shared HadyanCode Hub under the running app (the "HadyanCode Hub update
 /// required" flow): a fresh launch attaches everything to the new Hub instead
 /// of trying to migrate live connections. restart() never returns, so the
 /// run-loop Exit handler cannot stop the sidecar; do it explicitly first.
@@ -766,7 +766,7 @@ fn relaunch_app(app: tauri::AppHandle, backend_state: State<'_, Arc<DesktopBacke
     app.restart();
 }
 
-/// Quit the app. Used by the "Cline Hub update required" flow when the user
+/// Quit the app. Used by the "HadyanCode Hub update required" flow when the user
 /// chooses to keep the older running Hub (and its live sessions) and update
 /// later. The run-loop Exit handler stops the sidecar.
 #[tauri::command]
@@ -776,7 +776,7 @@ fn quit_app(app: tauri::AppHandle) {
 
 /// Run one updater check/download/stage cycle immediately instead of waiting
 /// for the next background interval, and report the resulting status. Used by
-/// flows that need an update staged right now (e.g. the "Cline Hub was
+/// flows that need an update staged right now (e.g. the "HadyanCode Hub was
 /// updated" prompt), where restarting without a staged update would just
 /// relaunch the same version.
 #[tauri::command]
@@ -1067,7 +1067,7 @@ fn setup_tray_icon(app: &tauri::App) -> tauri::Result<()> {
         .text(
             TRAY_OPEN_MENU_ID,
             // package_info().name is the configured productName, so beta
-            // builds ("Cline Beta") identify themselves in the tray too.
+            // builds ("HadyanCode Beta") identify themselves in the tray too.
             format!(
                 "{} v{}",
                 app.package_info().name,
@@ -1084,11 +1084,11 @@ fn setup_tray_icon(app: &tauri::App) -> tauri::Result<()> {
         .text(TRAY_QUIT_MENU_ID, "Quit")
         .build()?;
 
-    // This is the same glyph used by webview/components/cline-logo.tsx,
+    // This is the same glyph used by webview/components/hadyancode-logo.tsx,
     // rasterized without a background. Template mode lets macOS tint it for
     // the current menu-bar appearance.
     #[cfg(target_os = "macos")]
-    let icon = tauri::image::Image::from_bytes(include_bytes!("../icons/tray/cline-template.png"))?;
+    let icon = tauri::image::Image::from_bytes(include_bytes!("../icons/tray/hadyancode-template.png"))?;
     #[cfg(not(target_os = "macos"))]
     let icon = app
         .default_window_icon()
@@ -1369,11 +1369,11 @@ mod tests {
         assert_eq!(running_sessions_text(0), "0 sessions running");
         assert_eq!(running_sessions_text(1), "1 session running");
         assert_eq!(running_sessions_text(3), "3 sessions running");
-        assert_eq!(tray_tooltip_text("Cline", 0), "Cline");
-        assert_eq!(tray_tooltip_text("Cline", 3), "Cline — 3 sessions running");
+        assert_eq!(tray_tooltip_text("HadyanCode", 0), "HadyanCode");
+        assert_eq!(tray_tooltip_text("HadyanCode", 3), "HadyanCode — 3 sessions running");
         assert_eq!(
-            tray_tooltip_text("Cline Beta", 2),
-            "Cline Beta — 2 sessions running"
+            tray_tooltip_text("HadyanCode Beta", 2),
+            "HadyanCode Beta — 2 sessions running"
         );
         assert_eq!(tray_badge_text(0), None);
         assert_eq!(tray_badge_text(3), Some("3".to_string()));

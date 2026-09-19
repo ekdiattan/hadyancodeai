@@ -2,8 +2,8 @@ import { describe, it } from "bun:test"
 import { expect } from "chai"
 import {
 	AwsBedrockSettingsSchema,
-	ClineSettingsSchema,
 	EnterpriseTelemetrySchema,
+	HadyanCodeSettingsSchema,
 	OpenAiCompatibleSchema,
 	PromptUploadingSchema,
 	type RemoteConfig,
@@ -310,17 +310,17 @@ describe("Remote Config Schema", () => {
 		})
 	})
 
-	describe("ClineSettingsSchema", () => {
-		it("should accept valid Cline provider settings", () => {
+	describe("HadyanCodeSettingsSchema", () => {
+		it("should accept valid HadyanCode provider settings", () => {
 			const validSettings = {
 				models: [{ id: "claude-3-5-sonnet-20241022" }, { id: "claude-3-5-haiku-20241022" }],
 			}
-			const result = ClineSettingsSchema.parse(validSettings)
+			const result = HadyanCodeSettingsSchema.parse(validSettings)
 			expect(result).to.deep.equal(validSettings)
 		})
 
 		it("should accept empty settings object", () => {
-			const result = ClineSettingsSchema.parse({})
+			const result = HadyanCodeSettingsSchema.parse({})
 			expect(result.models).to.be.undefined
 		})
 
@@ -328,12 +328,12 @@ describe("Remote Config Schema", () => {
 			const settings = {
 				models: [{ id: "claude-3-5-sonnet-20241022" }],
 			}
-			expect(() => ClineSettingsSchema.parse(settings)).to.not.throw()
+			expect(() => HadyanCodeSettingsSchema.parse(settings)).to.not.throw()
 		})
 
 		it("should reject models with missing id field", () => {
 			expect(() =>
-				ClineSettingsSchema.parse({
+				HadyanCodeSettingsSchema.parse({
 					models: [{}],
 				}),
 			).to.throw()
@@ -737,7 +737,7 @@ describe("Remote Config Schema", () => {
 						awsBedrockUsePromptCache: true,
 						awsBedrockEndpoint: "https://custom-bedrock.endpoint",
 					},
-					Cline: {
+					HadyanCode: {
 						models: [{ id: "claude-3-5-sonnet-20241022" }, { id: "claude-3-5-haiku-20241022" }],
 					},
 					Vertex: {
@@ -794,10 +794,10 @@ describe("Remote Config Schema", () => {
 			expect(result.providerSettings?.AwsBedrock?.awsBedrockUsePromptCache).to.equal(true)
 			expect(result.providerSettings?.AwsBedrock?.awsBedrockEndpoint).to.equal("https://custom-bedrock.endpoint")
 
-			// Verify Cline settings
-			expect(result.providerSettings?.Cline?.models).to.have.lengthOf(2)
-			expect(result.providerSettings?.Cline?.models?.[0].id).to.equal("claude-3-5-sonnet-20241022")
-			expect(result.providerSettings?.Cline?.models?.[1].id).to.equal("claude-3-5-haiku-20241022")
+			// Verify HadyanCode settings
+			expect(result.providerSettings?.HadyanCode?.models).to.have.lengthOf(2)
+			expect(result.providerSettings?.HadyanCode?.models?.[0].id).to.equal("claude-3-5-sonnet-20241022")
+			expect(result.providerSettings?.HadyanCode?.models?.[1].id).to.equal("claude-3-5-haiku-20241022")
 
 			// Verify Vertex settings
 			expect(result.providerSettings?.Vertex?.models).to.have.lengthOf(2)

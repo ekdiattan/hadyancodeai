@@ -1,8 +1,8 @@
 import { release } from "node:os";
 import {
-	createClineTelemetryServiceConfig,
+	createHadyanCodeTelemetryServiceConfig,
 	type ITelemetryService,
-} from "@cline/shared";
+} from "@hadyancode/shared";
 import type { AuthSettings } from "../../services/llms/provider-settings";
 import { ProviderSettingsManager } from "../../services/storage/provider-settings-manager";
 import { identifyAccount } from "../../services/telemetry/core-events";
@@ -27,18 +27,18 @@ export interface HubDaemonTelemetry {
  * reporting nothing to OTel.
  *
  * The daemon is long-lived and frequently starts before the user logs in (or
- * outlives an account switch), so the cached Cline account id is re-resolved
+ * outlives an account switch), so the cached HadyanCode account id is re-resolved
  * periodically rather than only once at startup.
  */
 export function createHubDaemonTelemetry(): HubDaemonTelemetry {
-	const config = createClineTelemetryServiceConfig({
+	const config = createHadyanCodeTelemetryServiceConfig({
 		metadata: {
 			extension_version: CORE_BUILD_VERSION,
 			// "hub", not "cli": daemon-hosted sessions can be triggered by the
 			// CLI, desktop app, or connectors, so daemon-emitted events must be
 			// distinguishable from the CLI process's own events.
-			cline_type: "hub",
-			platform: "cline-hub-daemon",
+			hadyancode_type: "hub",
+			platform: "hadyancode-hub-daemon",
 			platform_version: process.version,
 			os_type: process.platform,
 			os_version: release(),
@@ -50,10 +50,10 @@ export function createHubDaemonTelemetry(): HubDaemonTelemetry {
 	// migration and provider registration side effects, while
 	// getProviderSettings re-reads the file on every call anyway.
 	let settingsManager: ProviderSettingsManager | undefined;
-	const resolveCachedClineAuth = (): AuthSettings | undefined => {
+	const resolveCachedHadyanCodeAuth = (): AuthSettings | undefined => {
 		try {
 			settingsManager ??= new ProviderSettingsManager();
-			return settingsManager.getProviderSettings("cline")?.auth;
+			return settingsManager.getProviderSettings("hadyancode")?.auth;
 		} catch {
 			// Telemetry identity must never interfere with daemon operation.
 			return undefined;
@@ -62,7 +62,7 @@ export function createHubDaemonTelemetry(): HubDaemonTelemetry {
 
 	let identifiedKey: string | undefined;
 	const refreshIdentity = (): void => {
-		const auth = resolveCachedClineAuth();
+		const auth = resolveCachedHadyanCodeAuth();
 		const accountId = auth?.accountId?.trim();
 		if (!auth || !accountId) {
 			return;
@@ -76,7 +76,7 @@ export function createHubDaemonTelemetry(): HubDaemonTelemetry {
 		identifiedKey = key;
 		identifyAccount(handle.telemetry, {
 			id: accountId,
-			provider: "cline",
+			provider: "hadyancode",
 			organizationId: auth.organizationId,
 			organizationName: auth.organizationName,
 			memberId: auth.memberId,

@@ -1,8 +1,8 @@
 import { existsSync, readFileSync, unlinkSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { disposeAll, initVcr } from "@cline/shared";
-import { resolveProviderSettingsPath } from "@cline/shared/storage";
+import { disposeAll, initVcr } from "@hadyancode/shared";
+import { resolveProviderSettingsPath } from "@hadyancode/shared/storage";
 import { afterEach, describe, expect, it } from "vitest";
 import { createHandlerAsync, type ProviderConfig } from "../providers";
 
@@ -40,15 +40,15 @@ interface StoredProviderSettingsLike {
 
 const targets: ProviderVcrTarget[] = [
 	{
-		label: "Cline provider",
-		providerId: "cline",
+		label: "HadyanCode provider",
+		providerId: "hadyancode",
 		modelId: "anthropic/claude-sonnet-4.6",
 		playbackConfig: {
-			providerId: "cline",
+			providerId: "hadyancode",
 			modelId: "anthropic/claude-sonnet-4.6",
 			apiKey: "workos:test-token",
 		},
-		cassetteName: "cline-anthropic-sonnet.json",
+		cassetteName: "hadyancode-anthropic-sonnet.json",
 	},
 	{
 		label: "ChatGPT OAuth provider",
@@ -155,15 +155,15 @@ function readEnvironmentApiKey(providerId: string): string | undefined {
 	switch (providerId) {
 		case "anthropic":
 			return readString(process.env.ANTHROPIC_API_KEY);
-		case "cline":
-			return readString(process.env.CLINE_API_KEY);
+		case "hadyancode":
+			return readString(process.env.HADYANCODE_API_KEY);
 		default:
 			return undefined;
 	}
 }
 
 function formatApiKey(providerId: string, apiKey: string): string {
-	if (providerId === "cline" && !apiKey.startsWith("workos:")) {
+	if (providerId === "hadyancode" && !apiKey.startsWith("workos:")) {
 		return `workos:${apiKey}`;
 	}
 	return apiKey;
@@ -241,11 +241,11 @@ function configureVcr(cassettePath: string): void {
 			: undefined;
 	activeCassetteSucceeded = false;
 	assertPlaybackCassetteHasRequestContracts(cassettePath);
-	process.env.CLINE_VCR = RECORD_MODE ? "record" : "playback";
-	process.env.CLINE_VCR_CASSETTE = cassettePath;
-	process.env.CLINE_VCR_INCLUDE_REQUEST_BODY = "1";
-	process.env.CLINE_VCR_FILTER = "";
-	initVcr(process.env.CLINE_VCR);
+	process.env.HADYANCODE_VCR = RECORD_MODE ? "record" : "playback";
+	process.env.HADYANCODE_VCR_CASSETTE = cassettePath;
+	process.env.HADYANCODE_VCR_INCLUDE_REQUEST_BODY = "1";
+	process.env.HADYANCODE_VCR_FILTER = "";
+	initVcr(process.env.HADYANCODE_VCR);
 }
 
 function keepRecordedCassette(): void {

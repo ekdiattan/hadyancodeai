@@ -27,7 +27,7 @@ function createContext(workspaceRoot: string): SidecarContext {
 
 describe("desktop MCP settings", () => {
 	it("keeps valid and malformed entries visible independently", () => {
-		const response = buildMcpServersResponse("/tmp/cline_mcp_settings.json", {
+		const response = buildMcpServersResponse("/tmp/hadyancode_mcp_settings.json", {
 			mcpServers: {
 				linear: {
 					command: "npx",
@@ -84,9 +84,9 @@ describe("desktop MCP settings", () => {
 
 	it("keeps an unchanged enabled remote server enabled when saving metadata", async () => {
 		const tempRoot = await mkdtemp(join(tmpdir(), "desktop-mcp-settings-"));
-		const settingsPath = join(tempRoot, "cline_mcp_settings.json");
-		const previousSettingsPath = process.env.CLINE_MCP_SETTINGS_PATH;
-		process.env.CLINE_MCP_SETTINGS_PATH = settingsPath;
+		const settingsPath = join(tempRoot, "hadyancode_mcp_settings.json");
+		const previousSettingsPath = process.env.HADYANCODE_MCP_SETTINGS_PATH;
+		process.env.HADYANCODE_MCP_SETTINGS_PATH = settingsPath;
 		try {
 			await writeFile(
 				settingsPath,
@@ -131,9 +131,9 @@ describe("desktop MCP settings", () => {
 			expect(written.mcpServers.linear.disabled).toBe(false);
 		} finally {
 			if (previousSettingsPath === undefined) {
-				delete process.env.CLINE_MCP_SETTINGS_PATH;
+				delete process.env.HADYANCODE_MCP_SETTINGS_PATH;
 			} else {
-				process.env.CLINE_MCP_SETTINGS_PATH = previousSettingsPath;
+				process.env.HADYANCODE_MCP_SETTINGS_PATH = previousSettingsPath;
 			}
 			await rm(tempRoot, { recursive: true, force: true });
 		}

@@ -11,19 +11,19 @@
 				"email": "REDACTED",
 				"displayName": "REDACTED",
 				"termsAcceptedAt": "2025-12-01T22:41:32.619173Z",
-				"clineBenchConsent": true,
+				"hadyancodeBenchConsent": true,
 				"organizations": [
 					{
 						"memberId": "REDACTED",
 						"organizationId": "REDACTED",
-						"name": "Cline Bot Inc",
+						"name": "HadyanCode Bot Inc",
 						"roles": ["admin"],
 						"active": true
 					},
 					{
 						"memberId": "REDACTED",
 						"organizationId": "REDACTED",
-						"name": "Cline Internal Testing Org",
+						"name": "HadyanCode Internal Testing Org",
 						"roles": ["member"],
 						"active": false
 					}

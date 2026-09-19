@@ -1,26 +1,26 @@
 import {
-	type ClineSubscriptionPlan,
-	extractClineFreeModelLimitResetTime,
-} from "@cline/core";
+	type HadyanCodeSubscriptionPlan,
+	extractHadyanCodeFreeModelLimitResetTime,
+} from "@hadyancode/core";
 import { useTerminalDimensions } from "@opentui/react";
 import type React from "react";
 import { useEffect, useState } from "react";
 import "opentui-spinner/react";
 import {
-	getClineOrgIndividualInferenceSubscriptionMessage,
-	getClinePassLimitDetailMessage,
+	getHadyanCodeOrgIndividualInferenceSubscriptionMessage,
+	getHadyanCodePassLimitDetailMessage,
 	getCliSubscriptionUrl,
 	getIndividualPlanFeatures,
-	isClineFreeModelLimitErrorMessage,
-	isClineFreePromotionEndedErrorMessage,
-	isClineOrgIndividualInferenceSubscriptionErrorMessage,
-	isClinePassLimitErrorMessage,
-	isClinePassSubscriptionError,
-} from "../../utils/cline-pass-errors";
+	isHadyanCodeFreeModelLimitErrorMessage,
+	isHadyanCodeFreePromotionEndedErrorMessage,
+	isHadyanCodeOrgIndividualInferenceSubscriptionErrorMessage,
+	isHadyanCodePassLimitErrorMessage,
+	isHadyanCodePassSubscriptionError,
+} from "../../utils/hadyancode-pass-errors";
 import {
-	CLINE_CREDITS_DASHBOARD_URL,
-	isClineAccountCreditsErrorMessage,
-} from "../cline-account";
+	HADYANCODE_CREDITS_DASHBOARD_URL,
+	isHadyanCodeAccountCreditsErrorMessage,
+} from "../hadyancode-account";
 import { getUserMessageBackground } from "../palette";
 import type { ResolvedTheme } from "../themes";
 import type { ChatEntry } from "../types";
@@ -274,7 +274,7 @@ function ToolCallView(props: {
 	);
 }
 
-function ClineCreditsClinePassErrorView(props: {
+function HadyanCodeCreditsHadyanCodePassErrorView(props: {
 	defaultFg?: string;
 	theme: ResolvedTheme;
 }) {
@@ -290,32 +290,32 @@ function ClineCreditsClinePassErrorView(props: {
 				borderColor="red"
 				paddingX={1}
 			>
-				<text fg="red">Cline Credits depleted</text>
+				<text fg="red">HadyanCode Credits depleted</text>
 				<text
 					fg={props.defaultFg}
 					selectable
 					content={
-						"You have run out of Cline credits. Add credits in the dashboard or purchase and switch to ClinePass to continue."
+						"You have run out of HadyanCode credits. Add credits in the dashboard or purchase and switch to HadyanCodePass to continue."
 					}
 				/>
 				<box flexDirection="row">
 					<text fg="gray">Purchase Credits: </text>
 					<text fg={linkColor} selectable>
-						<a href={CLINE_CREDITS_DASHBOARD_URL}>
-							{CLINE_CREDITS_DASHBOARD_URL}
+						<a href={HADYANCODE_CREDITS_DASHBOARD_URL}>
+							{HADYANCODE_CREDITS_DASHBOARD_URL}
 						</a>
 					</text>
 				</box>
 				<box flexDirection="row">
-					<text fg="gray">Purchase ClinePass: </text>
+					<text fg="gray">Purchase HadyanCodePass: </text>
 					<text fg={linkColor} selectable>
 						<a href={subscriptionUrl}>{subscriptionUrl}</a>
 					</text>
 				</box>
 				<box flexDirection="row">
-					<text fg="gray">Switch to ClinePass: </text>
+					<text fg="gray">Switch to HadyanCodePass: </text>
 					<text fg="gray">
-						type /settings in CLI and switch provider to ClinePass
+						type /settings in CLI and switch provider to HadyanCodePass
 					</text>
 				</box>
 			</box>
@@ -323,21 +323,21 @@ function ClineCreditsClinePassErrorView(props: {
 	);
 }
 
-function ClineCreditsErrorView(props: {
+function HadyanCodeCreditsErrorView(props: {
 	defaultFg?: string;
 	theme: ResolvedTheme;
 }) {
 	return (
-		<ClineCreditsClinePassErrorView
+		<HadyanCodeCreditsHadyanCodePassErrorView
 			defaultFg={props.defaultFg}
 			theme={props.theme}
 		/>
 	);
 }
 
-function ClinePassSubscriptionErrorView(props: {
+function HadyanCodePassSubscriptionErrorView(props: {
 	defaultFg?: string;
-	loadIndividualSubscriptionPlans?: () => Promise<ClineSubscriptionPlan[]>;
+	loadIndividualSubscriptionPlans?: () => Promise<HadyanCodeSubscriptionPlan[]>;
 	theme: ResolvedTheme;
 }) {
 	const subscriptionUrl = getCliSubscriptionUrl();
@@ -375,15 +375,15 @@ function ClinePassSubscriptionErrorView(props: {
 				borderColor={planAccent}
 				paddingX={1}
 			>
-				<text fg={planAccent}>ClinePass subscription required</text>
+				<text fg={planAccent}>HadyanCodePass subscription required</text>
 				<text
 					fg={props.defaultFg}
 					selectable
-					content="No access to ClinePass subscription models yet. Subscribe to ClinePass, the low cost open weights model coding plan."
+					content="No access to HadyanCodePass subscription models yet. Subscribe to HadyanCodePass, the low cost open weights model coding plan."
 				/>
 				{planFeatures.length > 0 && (
 					<box flexDirection="column" marginTop={1}>
-						<text fg={props.defaultFg}>ClinePass includes:</text>
+						<text fg={props.defaultFg}>HadyanCodePass includes:</text>
 						{planFeatures.map((feature) => (
 							<text key={feature} fg={props.defaultFg} selectable>
 								<span fg="green">✓ </span>
@@ -409,7 +409,7 @@ function ClinePassSubscriptionErrorView(props: {
 	);
 }
 
-function ClineOrgIndividualInferenceSubscriptionErrorView(props: {
+function HadyanCodeOrgIndividualInferenceSubscriptionErrorView(props: {
 	defaultFg?: string;
 	theme: ResolvedTheme;
 }) {
@@ -425,11 +425,11 @@ function ClineOrgIndividualInferenceSubscriptionErrorView(props: {
 				borderColor={planAccent}
 				paddingX={1}
 			>
-				<text fg={planAccent}>Personal ClinePass required</text>
+				<text fg={planAccent}>Personal HadyanCodePass required</text>
 				<text
 					fg={props.defaultFg}
 					selectable
-					content={getClineOrgIndividualInferenceSubscriptionMessage()}
+					content={getHadyanCodeOrgIndividualInferenceSubscriptionMessage()}
 				/>
 			</box>
 		</box>
@@ -468,12 +468,12 @@ function CompactionDividerRow(props: {
 	);
 }
 
-function ClinePassLimitErrorView(props: {
+function HadyanCodePassLimitErrorView(props: {
 	message: string;
 	defaultFg?: string;
 	theme: ResolvedTheme;
 }) {
-	const detail = getClinePassLimitDetailMessage(props.message) ?? props.message;
+	const detail = getHadyanCodePassLimitDetailMessage(props.message) ?? props.message;
 	const accent = props.theme.accents.act;
 
 	return (
@@ -486,18 +486,18 @@ function ClinePassLimitErrorView(props: {
 				borderColor={accent}
 				paddingX={1}
 			>
-				<text fg={props.theme.accents.error}>ClinePass limit reached</text>
+				<text fg={props.theme.accents.error}>HadyanCodePass limit reached</text>
 				<text fg={props.defaultFg} selectable content={detail} />
 				<text
 					fg={props.defaultFg}
 					selectable
-					content="Switch to Cline usage-based billing and retry with the Cline provider."
+					content="Switch to HadyanCode usage-based billing and retry with the HadyanCode provider."
 				/>
 				<box flexDirection="row">
 					<text fg="gray">Headless CLI: </text>
 					<text fg={props.defaultFg} selectable content="rerun with " />
 					<code
-						content="--provider cline"
+						content="--provider hadyancode"
 						filetype="bash"
 						syntaxStyle={getSyntaxStyle(props.theme)}
 						selectable
@@ -509,12 +509,12 @@ function ClinePassLimitErrorView(props: {
 	);
 }
 
-function ClineFreeModelLimitErrorView(props: {
+function HadyanCodeFreeModelLimitErrorView(props: {
 	message: string;
 	defaultFg?: string;
 	theme: ResolvedTheme;
 }) {
-	const resetTime = extractClineFreeModelLimitResetTime(props.message);
+	const resetTime = extractHadyanCodeFreeModelLimitResetTime(props.message);
 	const accent = props.theme.accents.act;
 
 	return (
@@ -550,7 +550,7 @@ function ClineFreeModelLimitErrorView(props: {
 	);
 }
 
-function ClineFreePromotionEndedErrorView(props: {
+function HadyanCodeFreePromotionEndedErrorView(props: {
 	defaultFg?: string;
 	theme: ResolvedTheme;
 }) {
@@ -587,7 +587,7 @@ export function ChatEntryView(props: {
 	accent?: string;
 	/** Mode the entry was produced in (resolved with the current-mode fallback). */
 	mode?: SyntaxAccentMode;
-	loadIndividualSubscriptionPlans?: () => Promise<ClineSubscriptionPlan[]>;
+	loadIndividualSubscriptionPlans?: () => Promise<HadyanCodeSubscriptionPlan[]>;
 	theme: ResolvedTheme;
 }) {
 	const { entry, mode = "act", theme } = props;
@@ -709,20 +709,20 @@ export function ChatEntryView(props: {
 			);
 
 		case "error":
-			if (isClineAccountCreditsErrorMessage(entry.text)) {
-				return <ClineCreditsErrorView defaultFg={defaultFg} theme={theme} />;
+			if (isHadyanCodeAccountCreditsErrorMessage(entry.text)) {
+				return <HadyanCodeCreditsErrorView defaultFg={defaultFg} theme={theme} />;
 			}
-			if (isClineOrgIndividualInferenceSubscriptionErrorMessage(entry.text)) {
+			if (isHadyanCodeOrgIndividualInferenceSubscriptionErrorMessage(entry.text)) {
 				return (
-					<ClineOrgIndividualInferenceSubscriptionErrorView
+					<HadyanCodeOrgIndividualInferenceSubscriptionErrorView
 						defaultFg={defaultFg}
 						theme={theme}
 					/>
 				);
 			}
-			if (isClinePassSubscriptionError(entry.text)) {
+			if (isHadyanCodePassSubscriptionError(entry.text)) {
 				return (
-					<ClinePassSubscriptionErrorView
+					<HadyanCodePassSubscriptionErrorView
 						defaultFg={defaultFg}
 						loadIndividualSubscriptionPlans={
 							props.loadIndividualSubscriptionPlans
@@ -731,27 +731,27 @@ export function ChatEntryView(props: {
 					/>
 				);
 			}
-			if (isClinePassLimitErrorMessage(entry.text)) {
+			if (isHadyanCodePassLimitErrorMessage(entry.text)) {
 				return (
-					<ClinePassLimitErrorView
+					<HadyanCodePassLimitErrorView
 						message={entry.text}
 						defaultFg={defaultFg}
 						theme={theme}
 					/>
 				);
 			}
-			if (isClineFreeModelLimitErrorMessage(entry.text)) {
+			if (isHadyanCodeFreeModelLimitErrorMessage(entry.text)) {
 				return (
-					<ClineFreeModelLimitErrorView
+					<HadyanCodeFreeModelLimitErrorView
 						defaultFg={defaultFg}
 						message={entry.text}
 						theme={theme}
 					/>
 				);
 			}
-			if (isClineFreePromotionEndedErrorMessage(entry.text)) {
+			if (isHadyanCodeFreePromotionEndedErrorMessage(entry.text)) {
 				return (
-					<ClineFreePromotionEndedErrorView
+					<HadyanCodeFreePromotionEndedErrorView
 						defaultFg={defaultFg}
 						theme={theme}
 					/>

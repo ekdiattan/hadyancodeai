@@ -1,6 +1,6 @@
 "use client";
 
-import { isChatCompatibleModel } from "@cline/shared/browser";
+import { isChatCompatibleModel } from "@hadyancode/shared/browser";
 import { desktopClient } from "@/lib/desktop-client";
 import type {
 	Provider,
@@ -140,7 +140,7 @@ export function buildProviderModelCatalog(
 // boot issues a single round-trip instead of one per consumer.
 const PROVIDER_CATALOG_CACHE_TTL_MS = 5_000;
 export const VOICE_INPUT_SETTINGS_CHANGED_EVENT =
-	"cline:voice-input-settings-changed";
+	"hadyancode:voice-input-settings-changed";
 
 let providerCatalogCache: {
 	fetchedAt: number;

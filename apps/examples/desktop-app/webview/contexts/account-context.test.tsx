@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 
-import type { ClineAccountUser } from "@cline/core";
+import type { HadyanCodeAccountUser } from "@hadyancode/core";
 import { act } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
@@ -15,7 +15,7 @@ import {
 const { invoke } = vi.hoisted(() => ({ invoke: vi.fn() }));
 vi.mock("@/lib/desktop-client", () => ({ desktopClient: { invoke } }));
 
-function makeUser(overrides: Partial<ClineAccountUser> = {}): ClineAccountUser {
+function makeUser(overrides: Partial<HadyanCodeAccountUser> = {}): HadyanCodeAccountUser {
 	return {
 		id: "user-1",
 		email: "beatrix@cline.bot",
@@ -74,12 +74,12 @@ describe("account context", () => {
 
 	it("classifies signed-out errors separately from transient failures", () => {
 		expect(
-			isSignedOutAccountError(new Error("No Cline account auth token found")),
+			isSignedOutAccountError(new Error("No HadyanCode account auth token found")),
 		).toBe(true);
 		expect(
 			isSignedOutAccountError(
 				new Error(
-					'OAuth credentials for provider "cline" are no longer valid. Re-run authentication for this provider.',
+					'OAuth credentials for provider "hadyancode" are no longer valid. Re-run authentication for this provider.',
 				),
 			),
 		).toBe(true);
@@ -93,7 +93,7 @@ describe("account context", () => {
 					{
 						active: true,
 						memberId: "member-1",
-						name: "Cline Bot Inc",
+						name: "HadyanCode Bot Inc",
 						organizationId: "org-1",
 						roles: ["admin"],
 					},
@@ -111,10 +111,10 @@ describe("account context", () => {
 
 		await vi.waitFor(() => {
 			expect(probeText("account-name")).toBe("Beatrix");
-			expect(probeText("account-org")).toBe("Cline Bot Inc");
+			expect(probeText("account-org")).toBe("HadyanCode Bot Inc");
 		});
-		expect(invoke).toHaveBeenCalledWith("cline_account", {
-			action: "clineAccount",
+		expect(invoke).toHaveBeenCalledWith("hadyancode_account", {
+			action: "hadyancodeAccount",
 			operation: "fetchMe",
 		});
 		expect(
@@ -155,7 +155,7 @@ describe("account context", () => {
 			ACCOUNT_IDENTITY_STORAGE_KEY,
 			JSON.stringify({ user: makeUser() }),
 		);
-		invoke.mockRejectedValue(new Error("No Cline account auth token found"));
+		invoke.mockRejectedValue(new Error("No HadyanCode account auth token found"));
 
 		await act(async () => {
 			root.render(

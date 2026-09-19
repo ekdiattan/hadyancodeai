@@ -1,6 +1,6 @@
-export { augmentMcpTimeoutError } from "@cline/core"
+export { augmentMcpTimeoutError } from "@hadyancode/core"
 
-import { resolveMcpTimeoutSeconds } from "@cline/shared"
+import { resolveMcpTimeoutSeconds } from "@hadyancode/shared"
 import { secondsToMs } from "@utils/time"
 
 /**

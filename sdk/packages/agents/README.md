@@ -1,6 +1,6 @@
-# [experimental] @cline/agents
+# [experimental] @hadyancode/agents
 
-`@cline/agents` is the runtime-agnostic agent loop package in the Cline SDK.
+`@hadyancode/agents` is the runtime-agnostic agent loop package in the HadyanCode SDK.
 It gives you the core primitives for building tool-using LLM agents without
 bringing in session storage, hub transport, or host-specific default tools.
 
@@ -17,12 +17,12 @@ bringing in session storage, hub transport, or host-specific default tools.
 
 ## What This Package Does Not Include
 
-`@cline/agents` does not ship a full application runtime by itself.
+`@hadyancode/agents` does not ship a full application runtime by itself.
 
-- Default host tools like filesystem access, shell execution, or web fetching live in `@cline/core`
-- Session persistence and stateful orchestration live in `@cline/core`
-- Shared hub runtime/session transport lives in `@cline/core` (see `@cline/core/hub`)
-- Sub-agent and team coordination primitives live in `@cline/core`
+- Default host tools like filesystem access, shell execution, or web fetching live in `@hadyancode/core`
+- Session persistence and stateful orchestration live in `@hadyancode/core`
+- Shared hub runtime/session transport lives in `@hadyancode/core` (see `@hadyancode/core/hub`)
+- Sub-agent and team coordination primitives live in `@hadyancode/core`
 
 That split keeps this package usable in Node, browser, and custom host
 environments where you want to supply your own tools and runtime policy.
@@ -30,14 +30,14 @@ environments where you want to supply your own tools and runtime policy.
 ## Installation
 
 ```bash
-npm install @cline/agents @cline/shared @cline/llms
+npm install @hadyancode/agents @hadyancode/shared @hadyancode/llms
 ```
 
 ## Quick Start
 
 ```ts
-import { Agent } from "@cline/agents";
-import type { AgentTool } from "@cline/shared";
+import { Agent } from "@hadyancode/agents";
+import type { AgentTool } from "@hadyancode/shared";
 
 const getWeather: AgentTool<{ city: string }, { forecast: string }> = {
 	name: "get_weather",
@@ -69,7 +69,7 @@ console.log(result.outputText);
 `Agent` / `AgentRuntime` accepts two config shapes:
 
 **Provider form** — friendly entrypoint. The runtime builds an `AgentModel` for
-you via `@cline/llms`:
+you via `@hadyancode/llms`:
 
 ```ts
 new Agent({
@@ -82,11 +82,11 @@ new Agent({
 ```
 
 **Model form** — advanced. Supply a pre-built `AgentModel` directly. Useful
-when the host already owns gateway construction (this is what `@cline/core`
+when the host already owns gateway construction (this is what `@hadyancode/core`
 uses internally):
 
 ```ts
-import { createGateway } from "@cline/llms";
+import { createGateway } from "@hadyancode/llms";
 
 const gateway = createGateway({ providerConfigs: [/* ... */] });
 const model = gateway.createAgentModel({ providerId, modelId });
@@ -102,11 +102,11 @@ new Agent({
 ### Tools
 
 Tools conform to the `AgentTool<TInput, TOutput>` interface from
-`@cline/shared`. Each tool has a JSON Schema `inputSchema` and an
+`@hadyancode/shared`. Each tool has a JSON Schema `inputSchema` and an
 `execute(input, context)` function that returns the tool output directly:
 
 ```ts
-import type { AgentTool } from "@cline/shared";
+import type { AgentTool } from "@hadyancode/shared";
 
 const summarize: AgentTool<{ text: string }, { summary: string }> = {
 	name: "summarize_text",
@@ -155,7 +155,7 @@ new Agent({
 
 `AgentRuntimeEvent` covers run/turn boundaries, assistant text and reasoning
 deltas, tool lifecycle, usage updates, and run completion/failure. See
-`AgentRuntimeEvent` in `@cline/shared` for the full union.
+`AgentRuntimeEvent` in `@hadyancode/shared` for the full union.
 
 ### Conversation Control
 
@@ -204,7 +204,7 @@ new Agent({
 ```
 
 For richer, host-side hook orchestration (15-stage `HookEngine`,
-subprocess-backed hooks, MCP extensions), use `@cline/core`.
+subprocess-backed hooks, MCP extensions), use `@hadyancode/core`.
 
 ### Preparing Requests with `prepareTurn`
 
@@ -243,7 +243,7 @@ before a message enters the transcript.
 Plugins can contribute tools and hooks at setup time:
 
 ```ts
-import type { AgentRuntimePlugin } from "@cline/shared";
+import type { AgentRuntimePlugin } from "@hadyancode/shared";
 
 const loggingPlugin: AgentRuntimePlugin = {
 	name: "logging",
@@ -269,7 +269,7 @@ new Agent({
 
 ### Teams and Spawn
 
-For multi-agent workflows, use `@cline/core`:
+For multi-agent workflows, use `@hadyancode/core`:
 
 ```ts
 import {
@@ -277,7 +277,7 @@ import {
 	AgentTeamsRuntime,
 	createAgentTeamsTools,
 	bootstrapAgentTeams,
-} from "@cline/core";
+} from "@hadyancode/core";
 ```
 
 These helpers provide coordination primitives for delegated runs,
@@ -285,17 +285,17 @@ mailboxes, task management, and outcome convergence.
 
 ## Entry Point
 
-- `@cline/agents` — the single package entrypoint. The `package.json`
+- `@hadyancode/agents` — the single package entrypoint. The `package.json`
   `exports` map automatically serves a browser-safe bundle when bundlers
   resolve the `browser` condition.
 
 ## Related Packages
 
-- `@cline/shared`: shared types (`AgentTool`, `AgentMessage`,
+- `@hadyancode/shared`: shared types (`AgentTool`, `AgentMessage`,
   `AgentRuntimeEvent`, `AgentRuntimeHooks`, etc.)
-- `@cline/llms`: provider settings, model catalogs, and gateway/handler
+- `@hadyancode/llms`: provider settings, model catalogs, and gateway/handler
   creation
-- `@cline/core`: stateful runtime assembly, storage, default tools,
+- `@hadyancode/core`: stateful runtime assembly, storage, default tools,
   subprocess hooks, hub transport, and MCP integration
 
 ## More Examples

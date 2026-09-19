@@ -76,7 +76,7 @@ describe("MCP install service", () => {
 	});
 
 	it("installs remote MCP servers with headers into the settings file", () => {
-		const settingsPath = join(root, "cline_mcp_settings.json");
+		const settingsPath = join(root, "hadyancode_mcp_settings.json");
 		const result = installMcpServer({
 			name: "docs",
 			transport: "http",
@@ -129,7 +129,7 @@ describe("MCP install service", () => {
 
 	it("treats -- in marketplace args as the end of option parsing", () => {
 		// Marketplace catalog entries mark the start of the stdio command with
-		// "--" (matching the CLI form `cline mcp install name -- npx ...`).
+		// "--" (matching the CLI form `hadyancode mcp install name -- npx ...`).
 		// The separator must not become the command itself.
 		const parsed = parseMcpInstallArgs([
 			"aikido",
@@ -160,7 +160,7 @@ describe("MCP install service", () => {
 	});
 
 	it("preserves existing MCP settings while adding a server", () => {
-		const settingsPath = join(root, "cline_mcp_settings.json");
+		const settingsPath = join(root, "hadyancode_mcp_settings.json");
 		writeFileSync(
 			settingsPath,
 			JSON.stringify(
@@ -254,7 +254,7 @@ describe("MCP uninstall service", () => {
 	});
 
 	function writeSettings(settings: unknown): string {
-		const settingsPath = join(root, "cline_mcp_settings.json");
+		const settingsPath = join(root, "hadyancode_mcp_settings.json");
 		writeFileSync(settingsPath, JSON.stringify(settings, null, 2), "utf8");
 		return settingsPath;
 	}
@@ -358,7 +358,7 @@ describe("MCP uninstall service", () => {
 	});
 
 	it("round-trips an install followed by an uninstall", () => {
-		const settingsPath = join(root, "cline_mcp_settings.json");
+		const settingsPath = join(root, "hadyancode_mcp_settings.json");
 		installMcpServer({
 			name: "fs",
 			targetArgs: ["node", "server.js"],

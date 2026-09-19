@@ -47,7 +47,7 @@ export type CustomizationSection =
 	| "Tools";
 
 const sectionDescriptions: Record<CustomizationSection, string> = {
-	Rules: "Review project and global rule files that shape Cline behavior.",
+	Rules: "Review project and global rule files that shape HadyanCode behavior.",
 	Hooks: "Inspect hook configuration and recent execution status.",
 	MCP: "Manage installed MCP servers and add new servers from the marketplace.",
 	Skills: "Manage installed skills and add new skills from the marketplace.",
@@ -57,13 +57,13 @@ const sectionDescriptions: Record<CustomizationSection, string> = {
 };
 
 const sectionCommands: Record<CustomizationSection, string> = {
-	Rules: "cline config rules",
-	Hooks: "cline config hooks",
-	MCP: "cline mcp install",
-	Skills: "cline skill",
-	Agents: "cline config agents",
-	Plugins: "cline plugin",
-	Tools: "cline config tools",
+	Rules: "hadyancode config rules",
+	Hooks: "hadyancode config hooks",
+	MCP: "hadyancode mcp install",
+	Skills: "hadyancode skill",
+	Agents: "hadyancode config agents",
+	Plugins: "hadyancode plugin",
+	Tools: "hadyancode config tools",
 };
 
 type RuleItem = {
@@ -801,7 +801,7 @@ export function CustomizationSectionView({
 			if (
 				normalizedRoot &&
 				normalized.startsWith(`${normalizedRoot}/`) &&
-				normalized.includes("/.clinerules/")
+				normalized.includes("/.hadyancoderules/")
 			) {
 				project.push(rule);
 			} else {
@@ -820,7 +820,7 @@ export function CustomizationSectionView({
 			if (
 				normalizedRoot &&
 				normalized.startsWith(`${normalizedRoot}/`) &&
-				normalized.includes("/.clinerules/hooks")
+				normalized.includes("/.hadyancoderules/hooks")
 			) {
 				project.push(hook);
 			} else {
@@ -840,7 +840,7 @@ export function CustomizationSectionView({
 				plugin.source === "workspace-plugin" ||
 				(normalizedRoot &&
 					normalized.startsWith(`${normalizedRoot}/`) &&
-					(normalized.includes("/.cline/plugins") ||
+					(normalized.includes("/.hadyancode/plugins") ||
 						normalized.includes("/.agents/plugins")))
 			) {
 				project.push(plugin);
@@ -886,7 +886,7 @@ export function CustomizationSectionView({
 		],
 		[globalPlugins, projectPlugins],
 	);
-	const clinePlugins = useMemo(
+	const hadyancodePlugins = useMemo(
 		() => scopedPlugins.filter(({ plugin }) => plugin.agentPlugin !== true),
 		[scopedPlugins],
 	);
@@ -1087,7 +1087,7 @@ export function CustomizationSectionView({
 					</h3>
 					<ScopeBadge scope={scope} />
 					<Badge variant="outline" className="shrink-0 text-muted-foreground">
-						{plugin.agentPlugin === true ? "Agent Plugin" : "Cline Plugin"}
+						{plugin.agentPlugin === true ? "Agent Plugin" : "HadyanCode Plugin"}
 					</Badge>
 					{context?.matchedEntries?.length ? (
 						<Badge variant="outline" className="shrink-0 text-muted-foreground">
@@ -1567,19 +1567,19 @@ export function CustomizationSectionView({
 			{activeTab === "Plugins" && !catalogPrimitive && (
 				<div>
 					<p className="mb-6 text-sm leading-relaxed text-muted-foreground">
-						Cline and portable Agent Plugins discovered by the shared Hub.
+						HadyanCode and portable Agent Plugins discovered by the shared Hub.
 						Changes apply when a session is rebuilt or started.
 					</p>
 
 					<div className="mb-6">
 						<h3 className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-							Cline Plugins ({clinePlugins.length})
+							HadyanCode Plugins ({hadyancodePlugins.length})
 						</h3>
 						<div className="flex flex-col gap-3">
-							{clinePlugins.map((plugin) => renderPluginCard(plugin))}
-							{clinePlugins.length === 0 && (
+							{hadyancodePlugins.map((plugin) => renderPluginCard(plugin))}
+							{hadyancodePlugins.length === 0 && (
 								<p className="rounded-lg border border-dashed border-border px-4 py-3 text-sm text-muted-foreground">
-									No Cline Plugins found.
+									No HadyanCode Plugins found.
 								</p>
 							)}
 						</div>

@@ -2,7 +2,7 @@ import {
 	classifyProviderError,
 	createGateway,
 	type GatewayProviderSettings,
-} from "@cline/llms";
+} from "@hadyancode/llms";
 import type {
 	AgentAfterToolResult,
 	AgentBeforeModelResult,
@@ -30,7 +30,7 @@ import type {
 	TelemetryProperties,
 	ToolApprovalResult,
 	ToolPolicy,
-} from "@cline/shared";
+} from "@hadyancode/shared";
 import {
 	captureAgentUnexpectedReasoningTokens,
 	captureSdkError,
@@ -46,7 +46,7 @@ import {
 	TASK_PROVIDER_STREAM_STARTED_EVENT,
 	TOOL_REJECTION_SUFFIX,
 	trimNonEmpty,
-} from "@cline/shared";
+} from "@hadyancode/shared";
 import { nanoid } from "nanoid";
 
 const MAX_TOKENS_INCOMPLETE_TURN_MESSAGE =
@@ -86,11 +86,11 @@ class ContextWindowOverflowError extends Error {
 	}
 }
 
-// Local `createUID` helper. The clinee source imports this from
-// `@cline/shared` (see `packages/shared/dist/identifier.ts`), but
+// Local `createUID` helper. The hadyancodee source imports this from
+// `@hadyancode/shared` (see `packages/shared/dist/identifier.ts`), but
 // sdk-re's shared package does not expose it yet. Inlining here keeps
 // PLAN.md Step 1 scoped to `packages/agents/src/` and matches the
-// exact clinee implementation (`${prefix}_${nanoid(length)}`).
+// exact hadyancodee implementation (`${prefix}_${nanoid(length)}`).
 function createUID(prefix: string, length = 8): string {
 	return `${prefix}_${nanoid(length)}`;
 }
@@ -100,7 +100,7 @@ export type AgentEventListener = (event: AgentRuntimeEvent) => void;
 
 /**
  * Advanced form: caller supplies a pre-built `AgentModel`. Used by
- * `@cline/core`, which constructs models itself to share gateway/telemetry
+ * `@hadyancode/core`, which constructs models itself to share gateway/telemetry
  * wiring with the rest of the session runtime.
  */
 export interface AgentRuntimeConfigWithModel extends BaseAgentRuntimeConfig {
@@ -109,7 +109,7 @@ export interface AgentRuntimeConfigWithModel extends BaseAgentRuntimeConfig {
 
 /**
  * Friendly form: caller supplies provider/model IDs and credentials, and the
- * runtime builds an `AgentModel` internally via `@cline/llms`. This is the
+ * runtime builds an `AgentModel` internally via `@hadyancode/llms`. This is the
  * entry point most standalone users want.
  */
 export interface AgentRuntimeConfigWithProvider
@@ -132,7 +132,7 @@ export interface AgentRuntimeConfigWithProvider
  * Config accepted by `new AgentRuntime(...)` / `createAgentRuntime(...)` /
  * `new Agent(...)` / `createAgent(...)`. Either supply a pre-built `model`
  * (advanced) or `providerId` + `modelId` (+ credentials) and the runtime will
- * construct the model itself via `@cline/llms`.
+ * construct the model itself via `@hadyancode/llms`.
  */
 export type AgentRuntimeConfig =
 	| AgentRuntimeConfigWithModel
@@ -1029,7 +1029,7 @@ export class AgentRuntime {
 			distinctId: trimNonEmpty(this.config.distinctId),
 			clientName: trimNonEmpty(this.config.clientName),
 			clientVersion: trimNonEmpty(this.config.clientVersion),
-			clineCoreVersion: trimNonEmpty(this.config.clineCoreVersion),
+			hadyancodeCoreVersion: trimNonEmpty(this.config.hadyancodeCoreVersion),
 			sessionId: trimNonEmpty(this.config.sessionId),
 			agentId: this.state.agentId,
 			conversationId: trimNonEmpty(this.config.conversationId),
@@ -1964,10 +1964,10 @@ export class AgentRuntime {
 		const metadata = buildEventMetadata(event);
 		switch (event.type) {
 			case "run-started":
-				// Verbatim clinee calls `logger?.info?.(...)`. sdk-re's
+				// Verbatim hadyancodee calls `logger?.info?.(...)`. sdk-re's
 				// `BasicLogger` does not declare `info` (it uses `log`), so
 				// we narrow to an optional-info shape at the call site to
-				// preserve the clinee runtime contract without mutating
+				// preserve the hadyancodee runtime contract without mutating
 				// shared's `BasicLogger` interface.
 				(
 					this.config.logger as
@@ -2177,7 +2177,7 @@ export function createAgentRuntime(config: AgentRuntimeConfig): AgentRuntime {
  *     const agent = new Agent({ providerId, modelId, apiKey });
  *     await agent.run("hello");
  *
- * while `@cline/core` (which owns model construction) continues to use
+ * while `@hadyancode/core` (which owns model construction) continues to use
  * the `AgentRuntime` name with `{ model, ... }` configs.
  */
 export const Agent = AgentRuntime;

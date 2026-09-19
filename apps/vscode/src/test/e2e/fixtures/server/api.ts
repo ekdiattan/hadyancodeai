@@ -2,8 +2,8 @@ export const E2E_REGISTERED_MOCK_ENDPOINTS = {
 	"/api/v1": {
 		GET: [
 			"/generation",
-			"/ai/cline/models",
-			"/ai/cline/recommended-models",
+			"/ai/hadyancode/models",
+			"/ai/hadyancode/recommended-models",
 			"/organizations/{orgId}/balance",
 			"/organizations/{orgId}/members/{memberId}/usages",
 			"/organizations/{orgId}/api-keys",
@@ -46,7 +46,7 @@ export const E2E_MOCK_EDITOR_TOOL_CALL = {
 	arguments: {
 		path: "test.ts",
 		old_text: 'export const name = "john"',
-		new_text: 'export const name = "cline"',
+		new_text: 'export const name = "hadyancode"',
 	},
 }
 
@@ -61,25 +61,25 @@ export const E2E_MOCK_POWERSHELL_TOOL_CALL = {
 	},
 }
 
-const edit_request_complete = `I successfully replaced "john" with "cline" in the test.ts file. The change has been completed and the file now contains:
+const edit_request_complete = `I successfully replaced "john" with "hadyancode" in the test.ts file. The change has been completed and the file now contains:
 
 \`\`\`typescript
-export const name = "cline"
+export const name = "hadyancode"
 \`\`\`
 
 The change has been applied and saved to the file.`
 
 export const E2E_MOCK_API_RESPONSES = {
-	DEFAULT: "Hello! I'm a mock Cline API response.",
+	DEFAULT: "Hello! I'm a mock HadyanCode API response.",
 	/** Assistant text streamed before the structured editor tool call. */
-	EDIT_REQUEST_LEAD_IN: `I'll replace "john" with "cline" in the test.ts file.`,
+	EDIT_REQUEST_LEAD_IN: `I'll replace "john" with "hadyancode" in the test.ts file.`,
 	/** Turn-ending text streamed after the SDK reports the editor tool result. */
 	EDIT_REQUEST_COMPLETE: edit_request_complete,
 	POWERSHELL_REQUEST_LEAD_IN: "I'll inspect the PowerShell process used for background execution.",
 	POWERSHELL_REQUEST_COMPLETE: "PowerShell background execution diagnostic completed.",
 }
 
-export const E2E_MOCK_CLINE_RECOMMENDED_MODELS = {
+export const E2E_MOCK_HADYANCODE_RECOMMENDED_MODELS = {
 	free: [
 		{
 			id: "z-ai/glm-5",
@@ -98,7 +98,7 @@ export const E2E_MOCK_CLINE_RECOMMENDED_MODELS = {
 	],
 }
 
-export const E2E_MOCK_CLINE_MODELS = [
+export const E2E_MOCK_HADYANCODE_MODELS = [
 	{
 		id: "z-ai/glm-5",
 		name: "z-ai/glm-5",

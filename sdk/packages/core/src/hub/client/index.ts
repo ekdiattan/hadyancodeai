@@ -6,9 +6,9 @@ import {
 	type HubReplyEnvelope,
 	type HubTransportFrame,
 	isHubProtocolCompatible,
-	resolveClineBuildEnv,
+	resolveHadyanCodeBuildEnv,
 	resolveHubCommandTimeoutMs,
-} from "@cline/shared";
+} from "@hadyancode/shared";
 import {
 	SESSION_NOT_FOUND_ERROR_CODE,
 	SessionNotFoundError,
@@ -39,7 +39,7 @@ type SubscriptionEntry = {
 };
 
 function resolveDefaultHubOwnerContext(): HubOwnerContext {
-	return resolveClineBuildEnv() === "production"
+	return resolveHadyanCodeBuildEnv() === "production"
 		? resolveProductionHubOwnerContext()
 		: resolveSharedHubOwnerContext();
 }
@@ -184,7 +184,7 @@ export interface LocalHubResolutionOptions {
 
 const GLOBAL_SUBSCRIPTION_KEY = "*";
 const HUB_CONNECT_TIMEOUT_MS = 8_000;
-const HUB_AUTH_PROTOCOL_PREFIX = "cline-hub-auth.";
+const HUB_AUTH_PROTOCOL_PREFIX = "hadyancode-hub-auth.";
 const LOCAL_HUB_AUTH_TOKENS = new Map<string, string>();
 const RECOVERABLE_LOCAL_HUB_URLS = new Set<string>();
 const HUB_RECOVERY_SESSION_LIST_TIMEOUT_MS = 3_000;
@@ -544,7 +544,7 @@ export class NodeHubClient {
 								new HubCommandError(
 									command,
 									"hub_command_timeout",
-									`Hub command ${command} timed out after ${effectiveTimeoutMs}ms (hub=${this.currentUrl}, requestId=${requestId}, clientId=${this.clientId}). Check hub-daemon.log for matching command.start/command.slow entries, or run 'cline doctor fix' to restart the hub.`,
+									`Hub command ${command} timed out after ${effectiveTimeoutMs}ms (hub=${this.currentUrl}, requestId=${requestId}, clientId=${this.clientId}). Check hub-daemon.log for matching command.start/command.slow entries, or run 'hadyancode doctor fix' to restart the hub.`,
 								),
 							);
 						}, effectiveTimeoutMs);

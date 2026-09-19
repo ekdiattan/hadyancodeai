@@ -1,24 +1,24 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { isClineAccountNotAuthenticatedResult } from "../webview/lib/cline-account-state";
+import { isHadyanCodeAccountNotAuthenticatedResult } from "../webview/lib/hadyancode-account-state";
 import type { SidecarContext } from "./types";
 
-const clineAccountServiceCtorMock = vi.hoisted(() => vi.fn());
-const executeClineAccountActionMock = vi.hoisted(() => vi.fn());
+const hadyancodeAccountServiceCtorMock = vi.hoisted(() => vi.fn());
+const executeHadyanCodeAccountActionMock = vi.hoisted(() => vi.fn());
 const getProviderSettingsMock = vi.hoisted(() => vi.fn());
 const saveProviderSettingsMock = vi.hoisted(() => vi.fn());
 const resolveProviderApiKeyMock = vi.hoisted(() => vi.fn());
 
-vi.mock("@cline/core", async () => {
+vi.mock("@hadyancode/core", async () => {
 	const actual =
-		await vi.importActual<typeof import("@cline/core")>("@cline/core");
+		await vi.importActual<typeof import("@hadyancode/core")>("@hadyancode/core");
 	return {
 		...actual,
-		ClineAccountService: class {
+		HadyanCodeAccountService: class {
 			constructor(options: unknown) {
-				clineAccountServiceCtorMock(options);
+				hadyancodeAccountServiceCtorMock(options);
 			}
 		},
-		executeClineAccountAction: executeClineAccountActionMock,
+		executeHadyanCodeAccountAction: executeHadyanCodeAccountActionMock,
 		ProviderSettingsManager: class {
 			getProviderSettings = getProviderSettingsMock;
 		},
@@ -39,38 +39,38 @@ function createContext() {
 }
 
 const FETCH_ME_ARGS = {
-	action: "clineAccount",
+	action: "hadyancodeAccount",
 	operation: "fetchMe",
 } as const;
 
-async function runClineAccountCommand(ctx: SidecarContext) {
+async function runHadyanCodeAccountCommand(ctx: SidecarContext) {
 	const { handleCommand } = await import("./commands");
-	return handleCommand(ctx, "cline_account", { ...FETCH_ME_ARGS });
+	return handleCommand(ctx, "hadyancode_account", { ...FETCH_ME_ARGS });
 }
 
 beforeEach(() => {
-	clineAccountServiceCtorMock.mockReset();
-	executeClineAccountActionMock.mockReset();
+	hadyancodeAccountServiceCtorMock.mockReset();
+	executeHadyanCodeAccountActionMock.mockReset();
 	getProviderSettingsMock.mockReset();
 	saveProviderSettingsMock.mockReset();
 	resolveProviderApiKeyMock.mockReset();
 });
 
-describe("cline_account command auth states", () => {
+describe("hadyancode_account command auth states", () => {
 	it("returns a typed not-authenticated result when signed out, without telemetry or a thrown error", async () => {
 		const { ctx, capture } = createContext();
 		resolveProviderApiKeyMock.mockResolvedValue(null);
 		getProviderSettingsMock.mockReturnValue(undefined);
 
-		const result = await runClineAccountCommand(ctx);
+		const result = await runHadyanCodeAccountCommand(ctx);
 
 		expect(result).toEqual({
 			signedIn: false,
 			code: "ACCOUNT_NOT_AUTHENTICATED",
 		});
-		expect(isClineAccountNotAuthenticatedResult(result)).toBe(true);
-		expect(executeClineAccountActionMock).not.toHaveBeenCalled();
-		expect(clineAccountServiceCtorMock).not.toHaveBeenCalled();
+		expect(isHadyanCodeAccountNotAuthenticatedResult(result)).toBe(true);
+		expect(executeHadyanCodeAccountActionMock).not.toHaveBeenCalled();
+		expect(hadyancodeAccountServiceCtorMock).not.toHaveBeenCalled();
 		expect(capture).not.toHaveBeenCalled();
 	});
 
@@ -82,16 +82,16 @@ describe("cline_account command auth states", () => {
 		});
 		getProviderSettingsMock.mockReturnValue(undefined);
 		const user = { id: "user-1", email: "beatrix@cline.bot" };
-		executeClineAccountActionMock.mockResolvedValue(user);
+		executeHadyanCodeAccountActionMock.mockResolvedValue(user);
 
-		const result = await runClineAccountCommand(ctx);
+		const result = await runHadyanCodeAccountCommand(ctx);
 
 		expect(result).toBe(user);
-		expect(executeClineAccountActionMock).toHaveBeenCalledWith(
+		expect(executeHadyanCodeAccountActionMock).toHaveBeenCalledWith(
 			expect.objectContaining(FETCH_ME_ARGS),
 			expect.anything(),
 		);
-		const serviceOptions = clineAccountServiceCtorMock.mock.calls[0][0] as {
+		const serviceOptions = hadyancodeAccountServiceCtorMock.mock.calls[0][0] as {
 			getAuthToken: () => Promise<string | undefined>;
 		};
 		await expect(serviceOptions.getAuthToken()).resolves.toBe("fresh-token");
@@ -106,11 +106,11 @@ describe("cline_account command auth states", () => {
 		getProviderSettingsMock.mockReturnValue({
 			auth: { accessToken: "persisted-token" },
 		});
-		executeClineAccountActionMock.mockResolvedValue({ id: "user-1" });
+		executeHadyanCodeAccountActionMock.mockResolvedValue({ id: "user-1" });
 
-		await runClineAccountCommand(ctx);
+		await runHadyanCodeAccountCommand(ctx);
 
-		const serviceOptions = clineAccountServiceCtorMock.mock.calls[0][0] as {
+		const serviceOptions = hadyancodeAccountServiceCtorMock.mock.calls[0][0] as {
 			getAuthToken: () => Promise<string | undefined>;
 		};
 		await expect(serviceOptions.getAuthToken()).resolves.toBe(
@@ -122,21 +122,21 @@ describe("cline_account command auth states", () => {
 	it("reports one auth refresh soft-failure event when the refresh fails and no fallback token exists", async () => {
 		const { ctx, capture } = createContext();
 		const refreshError = new Error(
-			'OAuth credentials for provider "cline" are no longer valid. Re-run authentication for this provider.',
+			'OAuth credentials for provider "hadyancode" are no longer valid. Re-run authentication for this provider.',
 		);
 		refreshError.name = "OAuthReauthRequiredError";
 		resolveProviderApiKeyMock.mockRejectedValue(refreshError);
 		getProviderSettingsMock.mockReturnValue(undefined);
 
-		const result = await runClineAccountCommand(ctx);
+		const result = await runHadyanCodeAccountCommand(ctx);
 
-		expect(isClineAccountNotAuthenticatedResult(result)).toBe(true);
-		expect(executeClineAccountActionMock).not.toHaveBeenCalled();
+		expect(isHadyanCodeAccountNotAuthenticatedResult(result)).toBe(true);
+		expect(executeHadyanCodeAccountActionMock).not.toHaveBeenCalled();
 		expect(capture).toHaveBeenCalledTimes(1);
 		expect(capture).toHaveBeenCalledWith({
 			event: "user.auth_refresh_soft_failure",
 			properties: expect.objectContaining({
-				provider: "cline",
+				provider: "hadyancode",
 				errorName: "OAuthReauthRequiredError",
 				errorCode: "desktop_refresh_failed_no_fallback_token",
 			}),
@@ -149,7 +149,7 @@ describe("cline_account command auth states", () => {
  * cover the mid-session transitions that would otherwise keep evaluating flags
  * against a stale account (or the device).
  */
-describe("cline_account keeps feature-flag identity in sync", () => {
+describe("hadyancode_account keeps feature-flag identity in sync", () => {
 	async function currentFlagsUserId(): Promise<string | undefined> {
 		const { getDesktopFeatureFlagsContext } = await import("./feature-flags");
 		return getDesktopFeatureFlagsContext().userId ?? undefined;
@@ -157,8 +157,8 @@ describe("cline_account keeps feature-flag identity in sync", () => {
 
 	async function runOperation(ctx: SidecarContext, operation: string) {
 		const { handleCommand } = await import("./commands");
-		return handleCommand(ctx, "cline_account", {
-			action: "clineAccount",
+		return handleCommand(ctx, "hadyancode_account", {
+			action: "hadyancodeAccount",
 			operation,
 		});
 	}
@@ -174,7 +174,7 @@ describe("cline_account keeps feature-flag identity in sync", () => {
 		const { ctx } = createContext();
 		resolveProviderApiKeyMock.mockResolvedValue({ apiKey: "token" });
 		getProviderSettingsMock.mockReturnValue({});
-		executeClineAccountActionMock.mockResolvedValue({
+		executeHadyanCodeAccountActionMock.mockResolvedValue({
 			id: "acct-1",
 			email: "dev@example.com",
 		});
@@ -188,11 +188,11 @@ describe("cline_account keeps feature-flag identity in sync", () => {
 		const { ctx } = createContext();
 		resolveProviderApiKeyMock.mockResolvedValue({ apiKey: "token" });
 		getProviderSettingsMock.mockReturnValue({});
-		executeClineAccountActionMock.mockResolvedValue({ id: "acct-1" });
+		executeHadyanCodeAccountActionMock.mockResolvedValue({ id: "acct-1" });
 		await runOperation(ctx, "fetchMe");
 		expect(await currentFlagsUserId()).toBe("acct-1");
 
-		executeClineAccountActionMock.mockResolvedValue(undefined);
+		executeHadyanCodeAccountActionMock.mockResolvedValue(undefined);
 		getProviderSettingsMock.mockReturnValue({
 			auth: { accountId: "stale-acct" },
 		});
@@ -206,13 +206,13 @@ describe("cline_account keeps feature-flag identity in sync", () => {
 		const { ctx } = createContext();
 		resolveProviderApiKeyMock.mockResolvedValue({ apiKey: "token" });
 		getProviderSettingsMock.mockReturnValue({});
-		executeClineAccountActionMock.mockResolvedValue({ id: "acct-1" });
+		executeHadyanCodeAccountActionMock.mockResolvedValue({ id: "acct-1" });
 		await runOperation(ctx, "fetchMe");
 
-		executeClineAccountActionMock.mockResolvedValue(undefined);
+		executeHadyanCodeAccountActionMock.mockResolvedValue(undefined);
 		await runOperation(ctx, "switchAccount");
 
-		executeClineAccountActionMock.mockResolvedValue({ id: "acct-2" });
+		executeHadyanCodeAccountActionMock.mockResolvedValue({ id: "acct-2" });
 		await runOperation(ctx, "fetchMe");
 
 		expect(await currentFlagsUserId()).toBe("acct-2");
@@ -222,7 +222,7 @@ describe("cline_account keeps feature-flag identity in sync", () => {
 		const { ctx } = createContext();
 		resolveProviderApiKeyMock.mockResolvedValue({ apiKey: "token" });
 		getProviderSettingsMock.mockReturnValue({});
-		executeClineAccountActionMock.mockResolvedValue({ id: "acct-1" });
+		executeHadyanCodeAccountActionMock.mockResolvedValue({ id: "acct-1" });
 		await runOperation(ctx, "fetchMe");
 		expect(await currentFlagsUserId()).toBe("acct-1");
 
@@ -235,11 +235,11 @@ describe("cline_account keeps feature-flag identity in sync", () => {
 		expect(await currentFlagsUserId()).toBeUndefined();
 	});
 
-	it("clears the identity when sign-out blanks the cline auth settings", async () => {
+	it("clears the identity when sign-out blanks the hadyancode auth settings", async () => {
 		const { ctx } = createContext();
 		resolveProviderApiKeyMock.mockResolvedValue({ apiKey: "token" });
 		getProviderSettingsMock.mockReturnValue({});
-		executeClineAccountActionMock.mockResolvedValue({ id: "acct-1" });
+		executeHadyanCodeAccountActionMock.mockResolvedValue({ id: "acct-1" });
 		await runOperation(ctx, "fetchMe");
 		expect(await currentFlagsUserId()).toBe("acct-1");
 
@@ -247,13 +247,13 @@ describe("cline_account keeps feature-flag identity in sync", () => {
 		// the auth block. No account command is involved.
 		getProviderSettingsMock.mockReturnValue({ auth: { accountId: "" } });
 		saveProviderSettingsMock.mockReturnValue({
-			providerId: "cline",
+			providerId: "hadyancode",
 			enabled: true,
 			settingsPath: "/tmp/settings.json",
 		});
 		const { handleCommand } = await import("./commands");
 		await handleCommand(ctx, "save_provider_settings", {
-			provider: "cline",
+			provider: "hadyancode",
 			api_key: "",
 			settings: { auth: { accessToken: "", refreshToken: "", accountId: "" } },
 		});
@@ -265,7 +265,7 @@ describe("cline_account keeps feature-flag identity in sync", () => {
 		const { ctx } = createContext();
 		resolveProviderApiKeyMock.mockResolvedValue({ apiKey: "token" });
 		getProviderSettingsMock.mockReturnValue({});
-		executeClineAccountActionMock.mockResolvedValue({ id: "acct-1" });
+		executeHadyanCodeAccountActionMock.mockResolvedValue({ id: "acct-1" });
 		await runOperation(ctx, "fetchMe");
 
 		saveProviderSettingsMock.mockReturnValue({
@@ -279,7 +279,7 @@ describe("cline_account keeps feature-flag identity in sync", () => {
 			api_key: "sk-test",
 		});
 
-		// Saving an unrelated provider must not disturb the Cline identity.
+		// Saving an unrelated provider must not disturb the HadyanCode identity.
 		expect(await currentFlagsUserId()).toBe("acct-1");
 	});
 
@@ -290,7 +290,7 @@ describe("cline_account keeps feature-flag identity in sync", () => {
 
 		resolveProviderApiKeyMock.mockResolvedValue({ apiKey: "token" });
 		getProviderSettingsMock.mockReturnValue({});
-		executeClineAccountActionMock.mockResolvedValue({ id: "acct-1" });
+		executeHadyanCodeAccountActionMock.mockResolvedValue({ id: "acct-1" });
 		await runOperation(ctx, "fetchMe");
 		expect(getDesktopFeatureFlagsContext().distinctId).toBe("acct-1");
 

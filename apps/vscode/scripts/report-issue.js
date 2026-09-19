@@ -9,11 +9,11 @@ const rl = readline.createInterface({
 
 const ask = (question) => new Promise((resolve) => rl.question(`\n${question}`, resolve))
 
-const getClineVersion = () => {
+const getHadyanCodeVersion = () => {
 	try {
 		const extensions = execSync("code --list-extensions --show-versions").toString()
-		const clineMatch = extensions.match(/claude-dev@(\d+\.\d+\.\d+)/)
-		return clineMatch ? clineMatch[1] : "Not installed"
+		const hadyancodeMatch = extensions.match(/claude-dev@(\d+\.\d+\.\d+)/)
+		return hadyancodeMatch ? hadyancodeMatch[1] : "Not installed"
 	} catch (_err) {
 		return "Error getting version"
 	}
@@ -44,7 +44,7 @@ const collectSystemInfo = () => {
 		os: `${os.arch()}; ${os.version()}`,
 		nodeVersion: execSync("node -v").toString().trim(),
 		npmVersion: execSync("npm -v").toString().trim(),
-		clineVersion: getClineVersion(),
+		hadyancodeVersion: getHadyanCodeVersion(),
 	}
 }
 
@@ -63,10 +63,10 @@ const checkGitHubAuth = async () => {
 
 const createIssueUrl = (systemInfo, issueTitle) => {
 	return (
-		`https://github.com/cline/cline/issues/new?template=bug_report.yml` +
+		`https://github.com/cline/hadyancode/issues/new?template=bug_report.yml` +
 		`&title=${issueTitle}` +
 		`&operating-system=${systemInfo.os}` +
-		`&cline-version=${systemInfo.clineVersion}` +
+		`&hadyancode-version=${systemInfo.hadyancodeVersion}` +
 		`&system-info=${
 			`Node: ${systemInfo.nodeVersion}\n` +
 			`npm: ${systemInfo.npmVersion}\n` +

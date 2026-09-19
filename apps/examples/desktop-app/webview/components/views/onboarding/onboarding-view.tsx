@@ -1,6 +1,6 @@
 "use client";
 
-import { AgentWelcomeHero, Button, IconButton } from "@cline/ui";
+import { AgentWelcomeHero, Button, IconButton } from "@hadyancode/ui";
 import {
 	ArrowLeft,
 	CheckCircle2,
@@ -11,7 +11,7 @@ import {
 	Loader2,
 } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { ClineLogo } from "@/components/cline-logo";
+import { HadyanCodeLogo } from "@/components/hadyancode-logo";
 import { ImportSessionsDialog } from "@/components/import-sessions-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -27,14 +27,14 @@ import { useAccount } from "@/contexts/account-context";
 import { OAUTH_MANAGED_PROVIDERS } from "@/hooks/chat-session/constants";
 import { isFeatureEnabled, useFeatureFlags } from "@/hooks/use-feature-flags";
 import { useOAuthUserCode } from "@/hooks/use-oauth-user-code";
-import { isClineAccountNotAuthenticatedResult } from "@/lib/cline-account-state";
+import { isHadyanCodeAccountNotAuthenticatedResult } from "@/lib/hadyancode-account-state";
 import { desktopClient, openExternalUrl } from "@/lib/desktop-client";
 import {
 	readModelSelectionStorageFromWindow,
 	writeModelSelectionStorageToWindow,
 } from "@/lib/model-selection";
 import {
-	CLINE_DASHBOARD_URL,
+	HADYANCODE_DASHBOARD_URL,
 	getProviderApiKeyUrl,
 } from "@/lib/provider-key-urls";
 import {
@@ -62,10 +62,10 @@ export type OnboardingStep =
 	| "done";
 
 type OnboardingConnection =
-	| { kind: "cline" }
+	| { kind: "hadyancode" }
 	| { kind: "provider"; providerName: string };
 
-type SetupMethod = "cline" | "api-key";
+type SetupMethod = "hadyancode" | "api-key";
 
 /**
  * Providers surfaced first in the bring-your-own-key picker. Everything else
@@ -104,7 +104,7 @@ function isApiKeyOnlyProvider(provider: Provider): boolean {
 
 /**
  * Orders the provider catalog for the API-key setup step: OAuth-managed
- * providers (Cline itself, ClinePass, ChatGPT, OCA) are excluded because they
+ * providers (HadyanCode itself, HadyanCodePass, ChatGPT, OCA) are excluded because they
  * have dedicated sign-in paths, providers needing more than an API key are
  * excluded because this form only collects one, popular API-key providers
  * come first, and the rest follow alphabetically.
@@ -287,10 +287,10 @@ function WelcomeStep({ onContinue }: { onContinue: () => void }) {
 				<div className="w-full">
 					<AgentWelcomeHero variant="bot-only" />
 				</div>
-				<h1 className="mt-5 text-4xl font-semibold text-foreground">Cline</h1>
+				<h1 className="mt-5 text-4xl font-semibold text-foreground">HadyanCode</h1>
 				<p className="mt-2 text-lg text-foreground">Build software your way</p>
 				<p className="mt-6 text-md text-muted-foreground">
-					Cline is an AI coding agent. It reads your code, edits files, runs
+					HadyanCode is an AI coding agent. It reads your code, edits files, runs
 					commands, and works through tasks with you — in any project on your
 					machine.
 				</p>
@@ -325,23 +325,23 @@ function ConnectStep({
 	const [signingIn, setSigningIn] = useState(false);
 	const deviceUserCode = useOAuthUserCode(signingIn);
 	const [signInError, setSignInError] = useState<string | null>(null);
-	const [clineApiKey, setClineApiKey] = useState("");
-	const [clineKeySaving, setClineKeySaving] = useState(false);
-	const [clineKeyError, setClineKeyError] = useState<string | null>(null);
+	const [hadyancodeApiKey, setHadyanCodeApiKey] = useState("");
+	const [hadyancodeKeySaving, setHadyanCodeKeySaving] = useState(false);
+	const [hadyancodeKeyError, setHadyanCodeKeyError] = useState<string | null>(null);
 
 	// Increments whenever the user cancels a pending browser sign-in so a
 	// stale OAuth round-trip (which can dangle until the transport timeout)
 	// cannot advance or error the UI after the user has moved on.
 	const signInAttemptRef = useRef(0);
 
-	const signInWithCline = useCallback(async () => {
+	const signInWithHadyanCode = useCallback(async () => {
 		signInAttemptRef.current += 1;
 		const attempt = signInAttemptRef.current;
 		setSigningIn(true);
 		setSignInError(null);
 		try {
 			await desktopClient.invoke("run_provider_oauth_login", {
-				provider: "cline",
+				provider: "hadyancode",
 			});
 			if (signInAttemptRef.current !== attempt) {
 				// The sign-in completed after the user cancelled but before the
@@ -351,9 +351,9 @@ function ConnectStep({
 				void refreshAccount();
 				return;
 			}
-			rememberProviderSelection({ id: "cline" });
+			rememberProviderSelection({ id: "hadyancode" });
 			await refreshAccount();
-			onConnected({ kind: "cline" });
+			onConnected({ kind: "hadyancode" });
 		} catch (error) {
 			if (signInAttemptRef.current !== attempt) {
 				return;
@@ -369,7 +369,7 @@ function ConnectStep({
 		}
 	}, [onConnected, refreshAccount]);
 
-	const cancelSignInWithCline = useCallback(() => {
+	const cancelSignInWithHadyanCode = useCallback(() => {
 		signInAttemptRef.current += 1;
 		setSigningIn(false);
 		// Cancel the backend browser round-trip so a later-completed
@@ -380,7 +380,7 @@ function ConnectStep({
 			for (let attempt = 0; attempt < 3; attempt++) {
 				try {
 					await desktopClient.invoke("cancel_provider_oauth_login", {
-						provider: "cline",
+						provider: "hadyancode",
 					});
 					return;
 				} catch {
@@ -392,16 +392,16 @@ function ConnectStep({
 		})();
 	}, []);
 
-	const connectWithClineApiKey = useCallback(async () => {
-		const key = clineApiKey.trim();
+	const connectWithHadyanCodeApiKey = useCallback(async () => {
+		const key = hadyancodeApiKey.trim();
 		if (!key) {
 			return;
 		}
-		setClineKeySaving(true);
-		setClineKeyError(null);
+		setHadyanCodeKeySaving(true);
+		setHadyanCodeKeyError(null);
 		try {
 			await desktopClient.invoke("save_provider_settings", {
-				provider: "cline",
+				provider: "hadyancode",
 				enabled: true,
 				api_key: key,
 			});
@@ -409,21 +409,21 @@ function ConnectStep({
 			// account context swallows errors, so an invalid key would
 			// otherwise onboard the user into a broken signed-in state.
 			try {
-				const verified = await desktopClient.invoke("cline_account", {
-					action: "clineAccount",
+				const verified = await desktopClient.invoke("hadyancode_account", {
+					action: "hadyancodeAccount",
 					operation: "fetchMe",
 				});
 				// A typed not-authenticated result means the sidecar found no
 				// usable credential after the save — the key did not stick.
-				if (isClineAccountNotAuthenticatedResult(verified)) {
-					throw new Error("no Cline account credentials were found");
+				if (isHadyanCodeAccountNotAuthenticatedResult(verified)) {
+					throw new Error("no HadyanCode account credentials were found");
 				}
 			} catch (verifyError) {
 				// Roll back the persisted key so an unusable credential does
 				// not linger in provider settings.
 				await desktopClient
 					.invoke("save_provider_settings", {
-						provider: "cline",
+						provider: "hadyancode",
 						api_key: "",
 					})
 					.catch(() => undefined);
@@ -431,20 +431,20 @@ function ConnectStep({
 					`the key could not be verified (${getErrorMessage(verifyError)})`,
 				);
 			}
-			rememberProviderSelection({ id: "cline" });
+			rememberProviderSelection({ id: "hadyancode" });
 			await refreshAccount();
-			onConnected({ kind: "cline" });
+			onConnected({ kind: "hadyancode" });
 		} catch (error) {
-			setClineKeyError(getErrorMessage(error));
+			setHadyanCodeKeyError(getErrorMessage(error));
 		} finally {
 			// Credentials may have been saved (or rolled back); drop the
 			// short-lived catalog cache so consumers reload the persisted state.
 			invalidateProviderCatalogCache();
-			setClineKeySaving(false);
+			setHadyanCodeKeySaving(false);
 		}
-	}, [clineApiKey, onConnected, refreshAccount]);
+	}, [hadyancodeApiKey, onConnected, refreshAccount]);
 
-	const clineBusy = signingIn || clineKeySaving;
+	const hadyancodeBusy = signingIn || hadyancodeKeySaving;
 
 	const [providers, setProviders] = useState<Provider[]>([]);
 	const [providersLoading, setProvidersLoading] = useState(true);
@@ -518,8 +518,8 @@ function ConnectStep({
 		}
 	}, [apiKey, onConnected, selectedProvider, selectedProviderId]);
 
-	const [selectedMethod, setSelectedMethod] = useState<SetupMethod>("cline");
-	const [clineKeyFormExpanded, setClineKeyFormExpanded] = useState(false);
+	const [selectedMethod, setSelectedMethod] = useState<SetupMethod>("hadyancode");
+	const [hadyancodeKeyFormExpanded, setHadyanCodeKeyFormExpanded] = useState(false);
 
 	return (
 		<OnboardingContent surface="panel">
@@ -536,20 +536,20 @@ function ConnectStep({
 					<ArrowLeft className="size-4" />
 				</IconButton>
 				<h1 className="mt-6 text-2xl font-semibold tracking-tight text-foreground">
-					Set up Cline
+					Set up HadyanCode
 				</h1>
 				<p className="mt-4 text-sm text-muted-foreground">
-					Choose how Cline connects to models. You can add more providers
+					Choose how HadyanCode connects to models. You can add more providers
 					anytime in Settings.
 				</p>
 			</div>
 
 			<div className="mt-8 flex flex-col gap-3">
 				<SetupOptionCard
-					id="cline"
-					onSelect={() => setSelectedMethod("cline")}
-					selectLabel="Sign in with Cline"
-					selected={selectedMethod === "cline"}
+					id="hadyancode"
+					onSelect={() => setSelectedMethod("hadyancode")}
+					selectLabel="Sign in with HadyanCode"
+					selected={selectedMethod === "hadyancode"}
 				>
 					<SetupOptionHeader
 						accessory={
@@ -561,8 +561,8 @@ function ConnectStep({
 							</Badge>
 						}
 						description="Latest models with regular free promos. No API keys needed."
-						icon={<ClineLogo className="size-5" />}
-						title="Sign in with Cline"
+						icon={<HadyanCodeLogo className="size-5" />}
+						title="Sign in with HadyanCode"
 					/>
 					{user ? (
 						<div className="mt-6 flex flex-wrap items-center justify-end gap-6">
@@ -574,8 +574,8 @@ function ConnectStep({
 							</p>
 							<Button
 								onClick={() => {
-									rememberProviderSelection({ id: "cline" });
-									onConnected({ kind: "cline" });
+									rememberProviderSelection({ id: "hadyancode" });
+									onConnected({ kind: "hadyancode" });
 								}}
 								size="md"
 								tone="accent"
@@ -588,8 +588,8 @@ function ConnectStep({
 					) : (
 						<div className="mt-8 ml-12 flex flex-wrap items-center gap-1 max-[720px]:ml-0">
 							<Button
-								disabled={clineBusy}
-								onClick={() => void signInWithCline()}
+								disabled={hadyancodeBusy}
+								onClick={() => void signInWithHadyanCode()}
 								size="md"
 								tone="accent"
 								type="button"
@@ -600,7 +600,7 @@ function ConnectStep({
 							</Button>
 							{signingIn ? (
 								<Button
-									onClick={cancelSignInWithCline}
+									onClick={cancelSignInWithHadyanCode}
 									size="md"
 									tone="neutral"
 									type="button"
@@ -640,68 +640,68 @@ function ConnectStep({
 					{!user ? (
 						<div className="mt-6 ml-10 -mb-2 max-[720px]:ml-0">
 							<Button
-								aria-controls="onboarding-cline-key-form"
-								aria-expanded={clineKeyFormExpanded}
-								disabled={clineBusy}
+								aria-controls="onboarding-hadyancode-key-form"
+								aria-expanded={hadyancodeKeyFormExpanded}
+								disabled={hadyancodeBusy}
 								onClick={() => {
-									setSelectedMethod("cline");
-									setClineKeyFormExpanded(!clineKeyFormExpanded);
+									setSelectedMethod("hadyancode");
+									setHadyanCodeKeyFormExpanded(!hadyancodeKeyFormExpanded);
 								}}
 								size="xs"
 								tone="neutral"
 								type="button"
 								variant="ghost"
 							>
-								Use a Cline API key
+								Use a HadyanCode API key
 								<ChevronDown aria-hidden="true" className="size-3.5" />
 							</Button>
 							<ExpandablePanel
-								data-onboarding-cline-key-form
-								expanded={clineKeyFormExpanded}
-								id="onboarding-cline-key-form"
+								data-onboarding-hadyancode-key-form
+								expanded={hadyancodeKeyFormExpanded}
+								id="onboarding-hadyancode-key-form"
 							>
 								<div className="flex flex-col gap-2 pt-3 ml-2 max-[720px]:ml-0">
 									<div className="flex flex-wrap items-center gap-2">
 										<Input
-											aria-label="Cline API key"
+											aria-label="HadyanCode API key"
 											autoComplete="off"
 											className="min-w-52 flex-1 bg-background"
-											disabled={clineKeySaving}
+											disabled={hadyancodeKeySaving}
 											onChange={(event) => {
-												setClineApiKey(event.target.value);
-												setClineKeyError(null);
+												setHadyanCodeApiKey(event.target.value);
+												setHadyanCodeKeyError(null);
 											}}
 											onKeyDown={(event) => {
 												if (
 													event.key === "Enter" &&
-													clineApiKey.trim() &&
-													!clineKeySaving
+													hadyancodeApiKey.trim() &&
+													!hadyancodeKeySaving
 												) {
-													void connectWithClineApiKey();
+													void connectWithHadyanCodeApiKey();
 												}
 											}}
-											placeholder="Cline API key"
+											placeholder="HadyanCode API key"
 											type="password"
-											value={clineApiKey}
+											value={hadyancodeApiKey}
 										/>
 										<Button
-											disabled={!clineApiKey.trim() || clineKeySaving}
-											onClick={() => void connectWithClineApiKey()}
+											disabled={!hadyancodeApiKey.trim() || hadyancodeKeySaving}
+											onClick={() => void connectWithHadyanCodeApiKey()}
 											size="md"
 											tone="accent"
 											type="button"
 											variant="fill"
 										>
-											{clineKeySaving ? (
+											{hadyancodeKeySaving ? (
 												<Loader2 className="size-4 animate-spin" />
 											) : null}
-											{clineKeySaving ? "Connecting..." : "Connect"}
+											{hadyancodeKeySaving ? "Connecting..." : "Connect"}
 										</Button>
 									</div>
 									<Button
 										className="self-start -ml-1 mt-1"
-										disabled={clineKeySaving}
-										onClick={() => void openExternalUrl(CLINE_DASHBOARD_URL)}
+										disabled={hadyancodeKeySaving}
+										onClick={() => void openExternalUrl(HADYANCODE_DASHBOARD_URL)}
 										size="xs"
 										tone="neutral"
 										type="button"
@@ -710,9 +710,9 @@ function ConnectStep({
 										Find your key
 										<ExternalLink className="size-3" />
 									</Button>
-									{clineKeyError ? (
+									{hadyancodeKeyError ? (
 										<p className="text-xs text-destructive" role="alert">
-											Failed to save API key: {clineKeyError}
+											Failed to save API key: {hadyancodeKeyError}
 										</p>
 									) : null}
 								</div>
@@ -724,7 +724,7 @@ function ConnectStep({
 					id="api-key"
 					onSelect={() => {
 						setSelectedMethod("api-key");
-						setClineKeyFormExpanded(false);
+						setHadyanCodeKeyFormExpanded(false);
 					}}
 					selectLabel="Use your own API key"
 					selected={selectedMethod === "api-key"}
@@ -945,8 +945,8 @@ function ImportHistoryStep({
 				</h1>
 				<p className="mt-3 text-md text-muted-foreground">
 					{imported
-						? "Your sessions are in Cline's history now. You can import more anytime from the Sessions page."
-						: `Cline found ${found.count} session${found.count === 1 ? "" : "s"} from ${toolList} on this machine. Import them to keep your past conversations — and continue them here.`}
+						? "Your sessions are in HadyanCode's history now. You can import more anytime from the Sessions page."
+						: `HadyanCode found ${found.count} session${found.count === 1 ? "" : "s"} from ${toolList} on this machine. Import them to keep your past conversations — and continue them here.`}
 				</p>
 				{imported ? (
 					<Button
@@ -1009,7 +1009,7 @@ function DoneStep({
 				<p className="mt-3 text-md text-muted-foreground">
 					{connection?.kind === "provider"
 						? `${connection.providerName} is connected.`
-						: "Your Cline account is connected."}
+						: "Your HadyanCode account is connected."}
 				</p>
 				<Button
 					className="mt-8 w-full max-w-64"
@@ -1067,10 +1067,10 @@ export function OnboardingView({
 						onBack={() => setStep("welcome")}
 						onConnected={(nextConnection) => {
 							setConnection(nextConnection);
-							// The GitHub integration lives on the Cline account, so the
+							// The GitHub integration lives on the HadyanCode account, so the
 							// step only applies when one is connected
 							setStep(
-								nextConnection.kind === "cline" && githubStepEnabled
+								nextConnection.kind === "hadyancode" && githubStepEnabled
 									? "github"
 									: "import",
 							);

@@ -1,4 +1,4 @@
-import { estimateRequestInputTokens } from "@cline/shared";
+import { estimateRequestInputTokens } from "@hadyancode/shared";
 import {
 	captureCompactionBudgetEmergency,
 	captureCompactionExecuted,
@@ -443,7 +443,7 @@ export function createContextCompactionPrepareTurn(
 			// refuses to retry with a request that is not smaller) AND within
 			// the recovery token target. A marginal shrink would spend the
 			// run's single retry on a request that still cannot fit. On throw,
-			// decline, or an insufficient result, basic compaction runs so
+			// dehadyancode, or an insufficient result, basic compaction runs so
 			// recovery never depends on another successful LLM request.
 			if (userCompaction?.compact) {
 				try {

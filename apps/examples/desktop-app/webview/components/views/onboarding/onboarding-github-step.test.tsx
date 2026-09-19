@@ -26,7 +26,7 @@ type IntegrationsMock = {
 function mockIntegrationsCommand(handlers: IntegrationsMock) {
 	invoke.mockImplementation(
 		async (command: string, args?: Record<string, unknown>) => {
-			if (command !== "cline_integrations") {
+			if (command !== "hadyancode_integrations") {
 				throw new Error(`unexpected command: ${command}`);
 			}
 			const operation = String(args?.operation);
@@ -112,11 +112,11 @@ describe("GitHubConnectStep", () => {
 		mockIntegrationsCommand({
 			list: () => (connected ? [{ provider: "github" }] : []),
 			githubInstallUrl: () => ({
-				url: "https://github.com/apps/cline/installations/new?state=abc",
+				url: "https://github.com/apps/hadyancode/installations/new?state=abc",
 			}),
 			listGitHubRepositories: () => [
-				{ id: 1, full_name: "cline/cline", private: false },
-				{ id: 2, full_name: "cline/core-platform", private: true },
+				{ id: 1, full_name: "hadyancode/hadyancode", private: false },
+				{ id: 2, full_name: "hadyancode/core-platform", private: true },
 			],
 		});
 		const onContinue = await render();
@@ -126,10 +126,10 @@ describe("GitHubConnectStep", () => {
 			buttonByText("Connect GitHub").click();
 		});
 		expect(openExternalUrl).toHaveBeenCalledWith(
-			"https://github.com/apps/cline/installations/new?state=abc",
+			"https://github.com/apps/hadyancode/installations/new?state=abc",
 		);
 		expect(container.textContent).toContain(
-			"Finish installing the Cline GitHub App in your browser",
+			"Finish installing the HadyanCode GitHub App in your browser",
 		);
 
 		// First poll: still not installed.
@@ -144,8 +144,8 @@ describe("GitHubConnectStep", () => {
 		});
 		expect(container.textContent).toContain("Connected");
 		expect(container.textContent).toContain("Accessible repositories");
-		expect(container.textContent).toContain("cline/cline");
-		expect(container.textContent).toContain("cline/core-platform");
+		expect(container.textContent).toContain("hadyancode/hadyancode");
+		expect(container.textContent).toContain("hadyancode/core-platform");
 
 		expect(onContinue).not.toHaveBeenCalled();
 		await act(async () => {
@@ -242,7 +242,7 @@ describe("GitHubConnectStep", () => {
 
 		// Back to the actionable connect state, not a permanent spinner.
 		expect(container.textContent).not.toContain("Finish installing");
-		expect(container.textContent).toContain("Your Cline account session ended");
+		expect(container.textContent).toContain("Your HadyanCode account session ended");
 		expect(buttonByText("Connect GitHub")).toBeDefined();
 
 		const callsAfterSignOut = invoke.mock.calls.length;

@@ -3,7 +3,7 @@
 import {
 	formatSessionSearchPreview,
 	formatSessionSearchTitle,
-} from "@cline/shared/browser";
+} from "@hadyancode/shared/browser";
 import { Loader2 } from "lucide-react";
 import { type UIEvent, useEffect, useState } from "react";
 import {
@@ -121,7 +121,7 @@ export function SessionCommandBar({
 	return (
 		<CommandDialog
 			className="h-[min(38rem,calc(100vh-2rem))] w-[min(56rem,calc(100vw-2rem))] max-w-none sm:max-w-none"
-			description="Search messages across all Cline sessions"
+			description="Search messages across all HadyanCode sessions"
 			onOpenChange={onOpenChange}
 			open={open}
 			// Hits arrive filtered and ranked by the FTS index; letting cmdk

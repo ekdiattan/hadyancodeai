@@ -7,7 +7,7 @@ import {
 	type DialogDismissKey,
 	isAnyKeyDismiss,
 } from "../tui/utils/dialog-keys";
-import { getCliSubscriptionUrl } from "../utils/cline-pass-errors";
+import { getCliSubscriptionUrl } from "../utils/hadyancode-pass-errors";
 import open from "../utils/open";
 import type { CliMigrationNotice } from "./notice";
 
@@ -40,10 +40,10 @@ export function MigrationNoticeContent(
 	const [status, setStatus] = useState<string | undefined>();
 
 	const openSubscriptionPage = useCallback(() => {
-		setStatus("Opening ClinePass in your browser...");
+		setStatus("Opening HadyanCodePass in your browser...");
 		void open(subscriptionUrl, { wait: false })
 			.then(() => {
-				setStatus("Opened ClinePass in your browser.");
+				setStatus("Opened HadyanCodePass in your browser.");
 			})
 			.catch(() => {
 				setStatus(
@@ -67,7 +67,7 @@ export function MigrationNoticeContent(
 			<text fg={palette.act}>{notice.title}</text>
 			<box flexDirection="column">
 				<text selectable>
-					ClinePass is a $9.99/month subscription plan to get access to the
+					HadyanCodePass is a $9.99/month subscription plan to get access to the
 					latest open-weight coding models with enough quota for day-to-day
 					work, at a much lower cost than paying API costs directly.
 				</text>
@@ -79,7 +79,7 @@ export function MigrationNoticeContent(
 			</box>
 			<box flexDirection="row">
 				<box paddingX={1} backgroundColor={palette.act}>
-					<text fg={palette.textOnSelection}>Open ClinePass</text>
+					<text fg={palette.textOnSelection}>Open HadyanCodePass</text>
 				</box>
 			</box>
 			{status && <text fg={palette.muted}>{status}</text>}

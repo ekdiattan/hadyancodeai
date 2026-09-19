@@ -1,21 +1,21 @@
 import {
 	buildRemoteConfigSessionBlobUploadMetadata,
-	ClineAccountService,
-	type ClineCoreStartInput,
+	HadyanCodeAccountService,
+	type HadyanCodeCoreStartInput,
 	createRemoteConfigSessionMessagesArtifactUploader,
 	ProviderSettingsManager,
 	prepareRemoteConfigCoreIntegration,
 	REMOTE_CONFIG_SESSION_BLOB_UPLOAD_METADATA_KEY,
 	readRemoteConfigSessionBlobUploadMetadata,
 	registerRemoteConfigSessionBlobUpload,
-	resolveLocalClineAuthToken,
+	resolveLocalHadyanCodeAuthToken,
 	type SessionMessagesArtifactUploader,
-} from "@cline/core";
+} from "@hadyancode/core";
 import {
-	getClineEnvironmentConfig,
+	getHadyanCodeEnvironmentConfig,
 	type RemoteConfigBundle,
 	RemoteConfigSchema,
-} from "@cline/shared";
+} from "@hadyancode/shared";
 import { getCliTelemetryService } from "./telemetry";
 
 const initializedRemoteConfigKeys = new Set<string>();
@@ -38,15 +38,15 @@ async function loadCliRemoteConfigBundleUncached(): Promise<
 	RemoteConfigBundle | undefined
 > {
 	const manager = new ProviderSettingsManager();
-	const settings = manager.getProviderSettings("cline");
-	const authToken = resolveLocalClineAuthToken(settings)?.trim();
+	const settings = manager.getProviderSettings("hadyancode");
+	const authToken = resolveLocalHadyanCodeAuthToken(settings)?.trim();
 	if (!authToken) {
 		return undefined;
 	}
 
-	const service = new ClineAccountService({
+	const service = new HadyanCodeAccountService({
 		apiBaseUrl:
-			settings?.baseUrl?.trim() || getClineEnvironmentConfig().apiBaseUrl,
+			settings?.baseUrl?.trim() || getHadyanCodeEnvironmentConfig().apiBaseUrl,
 		getAuthToken: async () => authToken,
 	});
 	const response = await service.fetchRemoteConfig().catch(() => null);
@@ -66,7 +66,7 @@ async function loadCliRemoteConfigBundleUncached(): Promise<
 	}
 
 	return {
-		source: "cline-account",
+		source: "hadyancode-account",
 		version: response.organizationId?.trim() || "remote-config",
 		remoteConfig: remoteConfigResult.data,
 	};
@@ -139,7 +139,7 @@ function captureRemoteConfigInitialized(bundle: RemoteConfigBundle): void {
 }
 
 export async function prepareCliEnterpriseIntegration(
-	input: ClineCoreStartInput,
+	input: HadyanCodeCoreStartInput,
 ) {
 	const workspacePath =
 		input.config.workspaceRoot?.trim() || input.config.cwd?.trim();
@@ -155,7 +155,7 @@ export async function prepareCliEnterpriseIntegration(
 		workspacePath,
 		pluginName: "enterprise",
 		controlPlane: {
-			name: "cline-account",
+			name: "hadyancode-account",
 			async fetchBundle() {
 				return bundle;
 			},

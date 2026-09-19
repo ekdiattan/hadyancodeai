@@ -2,12 +2,12 @@
  * Shared types and interfaces for the chat view components
  */
 
-import { ClineAsk, ClineMessage } from "@shared/ExtensionMessage"
+import { HadyanCodeAsk, HadyanCodeMessage } from "@shared/ExtensionMessage"
 import { ListRange, VirtuosoHandle } from "react-virtuoso"
 import { ButtonActionType } from "../shared/buttonConfig"
 
 export interface PendingUserMessage {
-	message: ClineMessage
+	message: HadyanCodeMessage
 	afterTs: number
 }
 
@@ -54,10 +54,10 @@ export interface ChatState {
 	textAreaRef: React.RefObject<HTMLTextAreaElement>
 
 	// Derived values
-	lastMessage: ClineMessage | undefined
-	secondLastMessage: ClineMessage | undefined
-	clineAsk: ClineAsk | undefined
-	task: ClineMessage | undefined
+	lastMessage: HadyanCodeMessage | undefined
+	secondLastMessage: HadyanCodeMessage | undefined
+	hadyancodeAsk: HadyanCodeAsk | undefined
+	task: HadyanCodeMessage | undefined
 
 	// Handlers
 	handleFocusChange: (isFocused: boolean) => void
@@ -96,7 +96,7 @@ export interface ScrollBehavior {
 	setIsAtBottom: React.Dispatch<React.SetStateAction<boolean>>
 	pendingScrollToMessage: number | null
 	setPendingScrollToMessage: React.Dispatch<React.SetStateAction<number | null>>
-	scrolledPastUserMessage: ClineMessage | null
+	scrolledPastUserMessage: HadyanCodeMessage | null
 	handleRangeChanged: (range: ListRange) => void
 }
 

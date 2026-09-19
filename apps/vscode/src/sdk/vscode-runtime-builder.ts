@@ -1,5 +1,5 @@
-import { createMcpTools } from "@cline/core"
-import type { AgentTool, AgentToolContext } from "@cline/shared"
+import { createMcpTools } from "@hadyancode/core"
+import type { AgentTool, AgentToolContext } from "@hadyancode/shared"
 import type { VscodeTerminalManager } from "@/hosts/vscode/terminal/VscodeTerminalManager"
 import type { McpHub } from "@/services/mcp/McpHub"
 import { resolveMcpServerTimeoutMs } from "@/services/mcp/timeout"

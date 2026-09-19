@@ -7,7 +7,7 @@ import {
 } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { HUB_DEFAULT_COMMAND_TIMEOUT_MS } from "@cline/shared";
+import { HUB_DEFAULT_COMMAND_TIMEOUT_MS } from "@hadyancode/shared";
 import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 import {
 	createDefaultMcpServerClientFactory,
@@ -262,7 +262,7 @@ describe("mcp client request timeout", () => {
 	it("connects a moderately slow server without a configured timeout", async () => {
 		const factory = createDefaultMcpServerClientFactory();
 		// The old 1.5s initialize probe killed servers that needed ~2s to answer
-		// (https://github.com/cline/cline/issues/13035), so the default budget
+		// (https://github.com/cline/hadyancode/issues/13035), so the default budget
 		// must cover them. It deliberately stays small beyond that: initialize
 		// runs on the session.create critical path, so genuinely slow starters
 		// (e.g. JVM-based Oracle SQLcl) opt into patience with an explicit

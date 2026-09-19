@@ -1,12 +1,12 @@
 import { describe, expect, it, vi } from "vitest";
-import { ClineAccountService } from "./cline-account-service";
+import { HadyanCodeAccountService } from "./hadyancode-account-service";
 import {
-	type ClineAccountOperations,
-	executeClineAccountAction,
-	RpcClineAccountService,
+	type HadyanCodeAccountOperations,
+	executeHadyanCodeAccountAction,
+	RpcHadyanCodeAccountService,
 } from "./rpc";
 
-describe("ClineAccountService.fetchFeaturebaseToken", () => {
+describe("HadyanCodeAccountService.fetchFeaturebaseToken", () => {
 	it("returns featurebaseJwt on success", async () => {
 		const fetchImpl = vi.fn(async (input: unknown, init?: RequestInit) => {
 			expect(String(input)).toBe(
@@ -24,7 +24,7 @@ describe("ClineAccountService.fetchFeaturebaseToken", () => {
 			);
 		});
 
-		const service = new ClineAccountService({
+		const service = new HadyanCodeAccountService({
 			apiBaseUrl: "https://api.cline.bot",
 			getAuthToken: async () => "workos:token-123",
 			fetchImpl: fetchImpl as unknown as typeof fetch,
@@ -42,7 +42,7 @@ describe("ClineAccountService.fetchFeaturebaseToken", () => {
 			throw new Error("Network error");
 		});
 
-		const service = new ClineAccountService({
+		const service = new HadyanCodeAccountService({
 			apiBaseUrl: "https://api.cline.bot",
 			getAuthToken: async () => "workos:token-123",
 			fetchImpl: fetchImpl as unknown as typeof fetch,
@@ -55,7 +55,7 @@ describe("ClineAccountService.fetchFeaturebaseToken", () => {
 	it("returns undefined when auth token is missing", async () => {
 		const fetchImpl = vi.fn();
 
-		const service = new ClineAccountService({
+		const service = new HadyanCodeAccountService({
 			apiBaseUrl: "https://api.cline.bot",
 			getAuthToken: async () => undefined,
 			fetchImpl: fetchImpl as unknown as typeof fetch,
@@ -74,7 +74,7 @@ describe("ClineAccountService.fetchFeaturebaseToken", () => {
 			});
 		});
 
-		const service = new ClineAccountService({
+		const service = new HadyanCodeAccountService({
 			apiBaseUrl: "https://api.cline.bot",
 			getAuthToken: async () => "workos:token-123",
 			fetchImpl: fetchImpl as unknown as typeof fetch,
@@ -85,9 +85,9 @@ describe("ClineAccountService.fetchFeaturebaseToken", () => {
 	});
 });
 
-describe("executeClineAccountAction - fetchFeaturebaseToken", () => {
+describe("executeHadyanCodeAccountAction - fetchFeaturebaseToken", () => {
 	it("dispatches fetchFeaturebaseToken", async () => {
-		const service: ClineAccountOperations = {
+		const service: HadyanCodeAccountOperations = {
 			fetchMe: vi.fn(async () => ({
 				id: "u1",
 				email: "user1@example.com",
@@ -112,8 +112,8 @@ describe("executeClineAccountAction - fetchFeaturebaseToken", () => {
 			})),
 		};
 
-		const result = await executeClineAccountAction(
-			{ action: "clineAccount", operation: "fetchFeaturebaseToken" },
+		const result = await executeHadyanCodeAccountAction(
+			{ action: "hadyancodeAccount", operation: "fetchFeaturebaseToken" },
 			service,
 		);
 		expect(service.fetchFeaturebaseToken).toHaveBeenCalledTimes(1);
@@ -121,7 +121,7 @@ describe("executeClineAccountAction - fetchFeaturebaseToken", () => {
 	});
 
 	it("returns undefined when fetchFeaturebaseToken is not implemented", async () => {
-		const service: ClineAccountOperations = {
+		const service: HadyanCodeAccountOperations = {
 			fetchMe: vi.fn(async () => ({
 				id: "u1",
 				email: "user1@example.com",
@@ -143,15 +143,15 @@ describe("executeClineAccountAction - fetchFeaturebaseToken", () => {
 			switchAccount: vi.fn(async () => {}),
 		};
 
-		const result = await executeClineAccountAction(
-			{ action: "clineAccount", operation: "fetchFeaturebaseToken" },
+		const result = await executeHadyanCodeAccountAction(
+			{ action: "hadyancodeAccount", operation: "fetchFeaturebaseToken" },
 			service,
 		);
 		expect(result).toBeUndefined();
 	});
 });
 
-describe("RpcClineAccountService.fetchFeaturebaseToken", () => {
+describe("RpcHadyanCodeAccountService.fetchFeaturebaseToken", () => {
 	it("sends provider action payload and parses response", async () => {
 		const runProviderAction = vi.fn(async (request: unknown) => {
 			const parsed = request as {
@@ -159,14 +159,14 @@ describe("RpcClineAccountService.fetchFeaturebaseToken", () => {
 				operation: string;
 			};
 			expect(parsed).toEqual({
-				action: "clineAccount",
+				action: "hadyancodeAccount",
 				operation: "fetchFeaturebaseToken",
 			});
 			return {
 				result: { featurebaseJwt: "rpc-jwt-token" },
 			};
 		});
-		const service = new RpcClineAccountService({ runProviderAction });
+		const service = new RpcHadyanCodeAccountService({ runProviderAction });
 
 		const result = await service.fetchFeaturebaseToken();
 		expect(runProviderAction).toHaveBeenCalledTimes(1);

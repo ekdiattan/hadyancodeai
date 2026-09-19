@@ -36,20 +36,20 @@ describe("resolveCredentialError", () => {
 	});
 
 	it.each([
-		"cline",
-		"cline-pass",
+		"hadyancode",
+		"hadyancode-pass",
 		"oca",
 		"openai-codex",
 	])("allows OAuth-managed provider %s without a visible API key", (provider) => {
 		// OAuth credentials live in the backend provider settings store
-		// (ClinePass shares the Cline account login), never in the webview
+		// (HadyanCodePass shares the HadyanCode account login), never in the webview
 		// config, so the pre-flight gate must not demand an API key.
 		expect(resolveCredentialError(makeConfig({ provider }))).toBeNull();
 	});
 
 	it("treats provider ids case-insensitively", () => {
 		expect(
-			resolveCredentialError(makeConfig({ provider: "Cline-Pass" })),
+			resolveCredentialError(makeConfig({ provider: "HadyanCode-Pass" })),
 		).toBeNull();
 	});
 });

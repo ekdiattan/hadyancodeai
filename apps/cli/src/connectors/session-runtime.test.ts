@@ -14,9 +14,9 @@ const {
 	mockGetBooleanFlagEnabled: vi.fn(),
 }));
 
-vi.mock("@cline/core", async () => {
+vi.mock("@hadyancode/core", async () => {
 	const actual =
-		await vi.importActual<typeof import("@cline/core")>("@cline/core");
+		await vi.importActual<typeof import("@hadyancode/core")>("@hadyancode/core");
 	return {
 		...actual,
 		ProviderSettingsManager: class {
@@ -104,18 +104,18 @@ describe("buildConnectorStartRequest", () => {
 		expect(request.apiKey).toBe("env-openrouter-key");
 		expect(request.model).toBe("anthropic/claude-sonnet-4.6");
 		expect(mockGetLastUsedProviderSettings).toHaveBeenCalledWith({
-			isClinePassEnabled: true,
+			isHadyanCodePassEnabled: true,
 		});
 	});
 
 	it("uses auth material resolved by provider settings manager", async () => {
-		mockGetLastUsedProviderSettings.mockReturnValue({ provider: "cline-pass" });
+		mockGetLastUsedProviderSettings.mockReturnValue({ provider: "hadyancode-pass" });
 		mockGetProviderSettings.mockReturnValue({
-			provider: "cline-pass",
+			provider: "hadyancode-pass",
 			auth: { accessToken: "workos:resolved-token" },
 		});
 		mockGetProviderCollection.mockReturnValue({
-			provider: { env: ["CLINE_API_KEY"] },
+			provider: { env: ["HADYANCODE_API_KEY"] },
 		});
 		mockResolveSystemPrompt.mockResolvedValue("system");
 
@@ -128,22 +128,22 @@ describe("buildConnectorStartRequest", () => {
 			io: { writeln: vi.fn(), writeErr: vi.fn() },
 			loggerConfig: { enabled: false, level: "info", destination: "stdout" },
 			systemRules: "Rules",
-			defaultModel: "cline-pass/glm-5.2",
+			defaultModel: "hadyancode-pass/glm-5.2",
 		});
 
-		expect(request.provider).toBe("cline-pass");
+		expect(request.provider).toBe("hadyancode-pass");
 		expect(request.apiKey).toBe("workos:resolved-token");
-		expect(request.model).toBe("cline-pass/glm-5.2");
+		expect(request.model).toBe("hadyancode-pass/glm-5.2");
 	});
 
 	it("uses auth material resolved by provider settings manager", async () => {
-		mockGetLastUsedProviderSettings.mockReturnValue({ provider: "cline-pass" });
+		mockGetLastUsedProviderSettings.mockReturnValue({ provider: "hadyancode-pass" });
 		mockGetProviderSettings.mockReturnValue({
-			provider: "cline-pass",
+			provider: "hadyancode-pass",
 			auth: { accessToken: "workos:resolved-token" },
 		});
 		mockGetProviderCollection.mockReturnValue({
-			provider: { env: ["CLINE_API_KEY"] },
+			provider: { env: ["HADYANCODE_API_KEY"] },
 		});
 		mockResolveSystemPrompt.mockResolvedValue("system");
 
@@ -156,12 +156,12 @@ describe("buildConnectorStartRequest", () => {
 			io: { writeln: vi.fn(), writeErr: vi.fn() },
 			loggerConfig: { enabled: false, level: "info", destination: "stdout" },
 			systemRules: "Rules",
-			defaultModel: "cline-pass/glm-5.2",
+			defaultModel: "hadyancode-pass/glm-5.2",
 		});
 
-		expect(request.provider).toBe("cline-pass");
+		expect(request.provider).toBe("hadyancode-pass");
 		expect(request.apiKey).toBe("workos:resolved-token");
-		expect(request.model).toBe("cline-pass/glm-5.2");
+		expect(request.model).toBe("hadyancode-pass/glm-5.2");
 	});
 });
 

@@ -3,7 +3,7 @@ import { nightlifyPackageJson } from "./nightlify.mjs";
 
 const fixture = {
 	name: "claude-dev",
-	displayName: "Cline",
+	displayName: "HadyanCode",
 	publisher: "saoudrizwan",
 	version: "4.0.0",
 	main: "./dist/extension.js",
@@ -12,7 +12,7 @@ const fixture = {
 			activitybar: [
 				{
 					id: "claude-dev-ActivityBar",
-					title: "Cline",
+					title: "HadyanCode",
 					icon: "assets/icon.svg",
 				},
 			],
@@ -22,22 +22,22 @@ const fixture = {
 				{ type: "webview", id: "claude-dev.SidebarProvider" },
 			],
 		},
-		commands: [{ command: "cline.plusButtonClicked", title: "New Task" }],
-		keybindings: [{ command: "cline.addToChat", key: "ctrl+'" }],
+		commands: [{ command: "hadyancode.plusButtonClicked", title: "New Task" }],
+		keybindings: [{ command: "hadyancode.addToChat", key: "ctrl+'" }],
 		menus: {
 			"view/title": [
 				{
-					command: "cline.plusButtonClicked",
+					command: "hadyancode.plusButtonClicked",
 					when: "view == claude-dev.SidebarProvider",
 				},
 				// Mid-string references are NOT rewritten — a known limitation
 				// shared with the standalone nightly's publish-nightly.mjs.
-				{ command: "cline.addToChat", when: "config.cline.enableExtras" },
+				{ command: "hadyancode.addToChat", when: "config.hadyancode.enableExtras" },
 			],
 		},
 		configuration: {
-			title: "Cline",
-			properties: { "cline.enableExtras": { type: "boolean" } },
+			title: "HadyanCode",
+			properties: { "hadyancode.enableExtras": { type: "boolean" } },
 		},
 	},
 };
@@ -48,42 +48,42 @@ describe("nightlifyPackageJson", () => {
 	);
 
 	it("sets the nightly identity and the supplied version", () => {
-		expect(pkg.name).toBe("cline-nightly");
-		expect(pkg.displayName).toBe("Cline (Nightly)");
+		expect(pkg.name).toBe("hadyancode-nightly");
+		expect(pkg.displayName).toBe("HadyanCode (Nightly)");
 		expect(pkg.version).toBe("4.0.1752600000");
 		expect(pkg.publisher).toBe("saoudrizwan");
 	});
 
-	it("rewrites claude-dev IDs and the cline.* namespace", () => {
+	it("rewrites claude-dev IDs and the hadyancode.* namespace", () => {
 		expect(pkg.contributes.viewsContainers.activitybar[0].id).toBe(
-			"cline-nightly-ActivityBar",
+			"hadyancode-nightly-ActivityBar",
 		);
 		expect(pkg.contributes.viewsContainers.activitybar[0].title).toBe(
-			"Cline (Nightly)",
+			"HadyanCode (Nightly)",
 		);
 		expect(Object.keys(pkg.contributes.views)).toEqual([
-			"cline-nightly-ActivityBar",
+			"hadyancode-nightly-ActivityBar",
 		]);
-		expect(pkg.contributes.views["cline-nightly-ActivityBar"][0].id).toBe(
-			"cline-nightly.SidebarProvider",
+		expect(pkg.contributes.views["hadyancode-nightly-ActivityBar"][0].id).toBe(
+			"hadyancode-nightly.SidebarProvider",
 		);
 		expect(pkg.contributes.commands[0].command).toBe(
-			"cline-nightly.plusButtonClicked",
+			"hadyancode-nightly.plusButtonClicked",
 		);
 		expect(pkg.contributes.keybindings[0].command).toBe(
-			"cline-nightly.addToChat",
+			"hadyancode-nightly.addToChat",
 		);
 		expect(Object.keys(pkg.contributes.configuration.properties)).toEqual([
-			"cline-nightly.enableExtras",
+			"hadyancode-nightly.enableExtras",
 		]);
 	});
 
 	it("rewrites when-clauses that start with a rewritten ID, but not mid-string references", () => {
 		const [gated, midString] = pkg.contributes.menus["view/title"];
-		expect(gated.when).toBe("view == cline-nightly.SidebarProvider");
-		// Documented limitation: `config.cline.` does not match the `"cline.`
+		expect(gated.when).toBe("view == hadyancode-nightly.SidebarProvider");
+		// Documented limitation: `config.hadyancode.` does not match the `"hadyancode.`
 		// pattern, so it survives unrewritten (matches publish-nightly.mjs).
-		expect(midString.when).toBe("config.cline.enableExtras");
+		expect(midString.when).toBe("config.hadyancode.enableExtras");
 	});
 
 	it("requires a version", () => {

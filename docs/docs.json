@@ -1,7 +1,7 @@
 {
 	"$schema": "https://mintlify.com/docs.json",
 	"theme": "mint",
-	"name": "Cline",
+	"name": "HadyanCode",
 	"description": "AI-powered coding agent for complex work",
 	"colors": {
 		"primary": "#9D4EDD",
@@ -9,8 +9,8 @@
 		"dark": "#000000"
 	},
 	"logo": {
-		"light": "/assets/Cline_Logo-complete_black.png",
-		"dark": "/assets/Cline_Logo-complete_white.png",
+		"light": "/assets/HadyanCode_Logo-complete_black.png",
+		"dark": "/assets/HadyanCode_Logo-complete_white.png",
 		"href": "https://cline.bot/"
 	},
 	"favicon": {
@@ -40,38 +40,38 @@
 			{
 				"label": "GitHub",
 				"icon": "github",
-				"href": "https://github.com/cline/cline"
+				"href": "https://github.com/cline/hadyancode"
 			},
 			{
 				"label": "Discord",
 				"icon": "discord",
-				"href": "https://discord.gg/cline"
+				"href": "https://discord.gg/hadyancode"
 			}
 		],
 		"primary": {
 			"type": "button",
-			"label": "Install Cline",
+			"label": "Install HadyanCode",
 			"href": "https://cline.bot/install?utm_source=website&utm_medium=header"
 		}
 	},
 	"navigation": {
 		"tabs": [
 			{
-				"tab": "Cline",
+				"tab": "HadyanCode",
 				"icon": "robot",
 				"groups": [
 					{
 						"group": "Getting Started",
 						"pages": [
-							"cline-overview",
-							"getting-started/installing-cline",
-							"getting-started/cline-provider",
-							"getting-started/clinepass",
+							"hadyancode-overview",
+							"getting-started/installing-hadyancode",
+							"getting-started/hadyancode-provider",
+							"getting-started/hadyancodepass",
 							"getting-started/free-models",
 							{
 								"group": "Other Models & Providers",
 								"pages": [
-									"getting-started/authorizing-with-cline",
+									"getting-started/authorizing-with-hadyancode",
 									"running-models-locally/overview",
 									{
 										"group": "Cloud Providers",
@@ -138,15 +138,15 @@
 					{
 						"group": "Configurations",
 						"pages": [
-							"tools-reference/all-cline-tools",
-							"customization/cline-rules",
+							"tools-reference/all-hadyancode-tools",
+							"customization/hadyancode-rules",
 							"customization/skills",
 							"customization/plugins",
 							"mcp/mcp-overview",
 							"customization/hooks",
 							"cli/scheduling",
 							"cli/connectors",
-							"customization/clineignore"
+							"customization/hadyancodeignore"
 						]
 					},
 					{
@@ -221,7 +221,7 @@
 							"sdk/guides/scheduled-agents",
 							"sdk/events",
 							"sdk/model-providers",
-							"sdk/clinecore"
+							"sdk/hadyancodecore"
 						]
 					},
 					{
@@ -243,7 +243,7 @@
 					{
 						"group": "API Reference",
 						"pages": [
-							"sdk/reference/cline-core",
+							"sdk/reference/hadyancode-core",
 							"sdk/reference/agent",
 							"sdk/reference/gateway",
 							"sdk/reference/tools-api",
@@ -306,10 +306,10 @@
 								]
 							},
 							{
-								"group": "Control Other Cline Features",
+								"group": "Control Other HadyanCode Features",
 								"pages": [
-									"enterprise-solutions/configuration/infrastructure-configuration/control-other-cline-features/yolo-mode",
-									"enterprise-solutions/configuration/infrastructure-configuration/control-other-cline-features/mcp-server-controls"
+									"enterprise-solutions/configuration/infrastructure-configuration/control-other-hadyancode-features/yolo-mode",
+									"enterprise-solutions/configuration/infrastructure-configuration/control-other-hadyancode-features/mcp-server-controls"
 								]
 							},
 							{
@@ -333,7 +333,7 @@
 				"icon": "code",
 				"groups": [
 					{
-						"group": "Cline API",
+						"group": "HadyanCode API",
 						"pages": [
 							"api/overview",
 							"api/getting-started",
@@ -360,38 +360,38 @@
 	},
 	"footer": {
 		"socials": {
-			"x": "https://x.com/cline",
-			"github": "https://github.com/cline/cline",
-			"discord": "https://discord.gg/cline"
+			"x": "https://x.com/hadyancode",
+			"github": "https://github.com/cline/hadyancode",
+			"discord": "https://discord.gg/hadyancode"
 		}
 	},
 	"anchors": [
 		{
 			"name": "Overview",
 			"icon": "house",
-			"url": "cline-overview"
+			"url": "hadyancode-overview"
 		}
 	],
 	"redirects": [
 		{
-			"source": "/enterprise-solutions/configuration/infrastructure-configuration/control-other-cline-features/mcp-marketplace",
-			"destination": "/enterprise-solutions/configuration/infrastructure-configuration/control-other-cline-features/mcp-server-controls"
+			"source": "/enterprise-solutions/configuration/infrastructure-configuration/control-other-hadyancode-features/mcp-marketplace",
+			"destination": "/enterprise-solutions/configuration/infrastructure-configuration/control-other-hadyancode-features/mcp-server-controls"
 		},
 		{
 			"source": "/usage/cli",
 			"destination": "/usage/cli-overview"
 		},
 		{
-			"source": "/getting-started/installing-cline-jetbrains",
-			"destination": "/getting-started/installing-cline"
+			"source": "/getting-started/installing-hadyancode-jetbrains",
+			"destination": "/getting-started/installing-hadyancode"
 		},
 		{
 			"source": "/getting-started/for-new-coders",
-			"destination": "/getting-started/installing-cline"
+			"destination": "/getting-started/installing-hadyancode"
 		},
 		{
 			"source": "/getting-started/overview",
-			"destination": "/cline-overview"
+			"destination": "/hadyancode-overview"
 		},
 		{
 			"source": "/getting-started/your-first-project",
@@ -399,19 +399,19 @@
 		},
 		{
 			"source": "/introduction",
-			"destination": "/cline-overview"
+			"destination": "/hadyancode-overview"
 		},
 		{
 			"source": "/introduction/welcome",
-			"destination": "/cline-overview"
+			"destination": "/hadyancode-overview"
 		},
 		{
 			"source": "/introduction/overview",
-			"destination": "/cline-overview"
+			"destination": "/hadyancode-overview"
 		},
 		{
 			"source": "/getting-started/model-selection-guide",
-			"destination": "/getting-started/cline-provider"
+			"destination": "/getting-started/hadyancode-provider"
 		},
 		{
 			"source": "/provider-config/ollama",
@@ -431,30 +431,30 @@
 		},
 		{
 			"source": "/getting-started/understanding-context-management",
-			"destination": "/getting-started/cline-provider"
+			"destination": "/getting-started/hadyancode-provider"
 		},
 		{
 			"source": "/best-practices/understanding-context-management",
-			"destination": "/getting-started/cline-provider"
+			"destination": "/getting-started/hadyancode-provider"
 		},
 		{
 			"source": "/prompting/understanding-context-management",
-			"destination": "/getting-started/cline-provider"
+			"destination": "/getting-started/hadyancode-provider"
 		},
 		{
 			"source": "/model-config/context-windows",
-			"destination": "/getting-started/cline-provider"
+			"destination": "/getting-started/hadyancode-provider"
 		},
 		{
 			"source": "/core-features/model-selection-guide",
-			"destination": "/getting-started/cline-provider"
+			"destination": "/getting-started/hadyancode-provider"
 		},
 		{
 			"source": "/prompting/prompt-engineering-guide",
-			"destination": "/customization/cline-rules"
+			"destination": "/customization/hadyancode-rules"
 		},
 		{
-			"source": "/prompting/cline-memory-bank",
+			"source": "/prompting/hadyancode-memory-bank",
 			"destination": "/best-practices/memory-bank"
 		},
 		{
@@ -554,16 +554,16 @@
 			"destination": "/features/auto-approve"
 		},
 		{
-			"source": "/features/cline-rules",
-			"destination": "/customization/cline-rules"
+			"source": "/features/hadyancode-rules",
+			"destination": "/customization/hadyancode-rules"
 		},
 		{
-			"source": "/features/cline-rules/overview",
-			"destination": "/customization/cline-rules"
+			"source": "/features/hadyancode-rules/overview",
+			"destination": "/customization/hadyancode-rules"
 		},
 		{
-			"source": "/features/cline-rules/conditional-rules",
-			"destination": "/customization/cline-rules"
+			"source": "/features/hadyancode-rules/conditional-rules",
+			"destination": "/customization/hadyancode-rules"
 		},
 		{
 			"source": "/features/commands-and-shortcuts/overview",
@@ -590,16 +590,16 @@
 			"destination": "/core-workflows/using-commands"
 		},
 		{
-			"source": "/exploring-clines-tools/cline-tools-guide",
-			"destination": "/tools-reference/all-cline-tools"
+			"source": "/exploring-hadyancodes-tools/hadyancode-tools-guide",
+			"destination": "/tools-reference/all-hadyancode-tools"
 		},
 		{
-			"source": "/exploring-clines-tools/new-task-tool",
-			"destination": "/tools-reference/all-cline-tools"
+			"source": "/exploring-hadyancodes-tools/new-task-tool",
+			"destination": "/tools-reference/all-hadyancode-tools"
 		},
 		{
-			"source": "/exploring-clines-tools/remote-browser-support",
-			"destination": "/tools-reference/all-cline-tools"
+			"source": "/exploring-hadyancodes-tools/remote-browser-support",
+			"destination": "/tools-reference/all-hadyancode-tools"
 		},
 		{
 			"source": "/mcp/adding-mcp-servers-from-github",
@@ -638,20 +638,20 @@
 			"destination": "/enterprise-solutions/team-management/managing-members"
 		},
 		{
-			"source": "/features/customization/opening-cline-in-sidebar",
-			"destination": "/usage/ide#move-cline-to-the-right-sidebar"
+			"source": "/features/customization/opening-hadyancode-in-sidebar",
+			"destination": "/usage/ide#move-hadyancode-to-the-right-sidebar"
 		},
 		{
-			"source": "/prompting/prompt-engineering-guide/clineignore-file-guide",
-			"destination": "/customization/clineignore"
+			"source": "/prompting/prompt-engineering-guide/hadyancodeignore-file-guide",
+			"destination": "/customization/hadyancodeignore"
 		},
 		{
 			"source": "/getting-started/selecting-your-model",
-			"destination": "/getting-started/authorizing-with-cline"
+			"destination": "/getting-started/authorizing-with-hadyancode"
 		},
 		{
 			"source": "/model-config/model-comparison",
-			"destination": "/getting-started/cline-provider"
+			"destination": "/getting-started/hadyancode-provider"
 		},
 		{
 			"source": "/troubleshooting/terminal-integration-guide",
@@ -715,34 +715,34 @@
 		},
 		{
 			"source": "/cli/installation",
-			"destination": "/getting-started/installing-cline"
+			"destination": "/getting-started/installing-hadyancode"
 		},
 		{
 			"source": "/cli/three-core-flows",
 			"destination": "/usage/cli-overview#headless-mode"
 		},
 		{
-			"source": "/cline-cli/getting-started",
+			"source": "/hadyancode-cli/getting-started",
 			"destination": "/usage/cli-overview"
 		},
 		{
-			"source": "/cline-cli/installation",
-			"destination": "/getting-started/installing-cline"
+			"source": "/hadyancode-cli/installation",
+			"destination": "/getting-started/installing-hadyancode"
 		},
 		{
-			"source": "/cline-cli/three-core-flows",
+			"source": "/hadyancode-cli/three-core-flows",
 			"destination": "/usage/cli-overview#headless-mode"
 		},
 		{
-			"source": "/cline-cli/connectors",
+			"source": "/hadyancode-cli/connectors",
 			"destination": "/cli/connectors"
 		},
 		{
-			"source": "/cline-cli/scheduling",
+			"source": "/hadyancode-cli/scheduling",
 			"destination": "/cli/scheduling"
 		},
 		{
-			"source": "/cline-cli/mcp-servers",
+			"source": "/hadyancode-cli/mcp-servers",
 			"destination": "/mcp/mcp-overview"
 		},
 		{
@@ -750,15 +750,15 @@
 			"destination": "/mcp/mcp-overview"
 		},
 		{
-			"source": "/cline-cli/agent-teams",
+			"source": "/hadyancode-cli/agent-teams",
 			"destination": "/cli/agent-teams"
 		},
 		{
-			"source": "/cline-cli/cli-reference",
+			"source": "/hadyancode-cli/cli-reference",
 			"destination": "/cli/cli-reference"
 		},
 		{
-			"source": "/cline-cli/configuration",
+			"source": "/hadyancode-cli/configuration",
 			"destination": "/getting-started/config"
 		},
 		{
@@ -774,31 +774,31 @@
 			"destination": "/getting-started/config"
 		},
 		{
-			"source": "/cline-cli/acp-editor-integrations",
+			"source": "/hadyancode-cli/acp-editor-integrations",
 			"destination": "/usage/acp"
 		},
 		{
-			"source": "/cline-cli/samples/github-issue-rca",
+			"source": "/hadyancode-cli/samples/github-issue-rca",
 			"destination": "/cli/samples/github-issue-rca"
 		},
 		{
-			"source": "/cline-cli/samples/github-integration",
+			"source": "/hadyancode-cli/samples/github-integration",
 			"destination": "/cli/samples/github-integration"
 		},
 		{
-			"source": "/cline-cli/samples/github-pr-review",
+			"source": "/hadyancode-cli/samples/github-pr-review",
 			"destination": "/cli/samples/github-pr-review"
 		},
 		{
-			"source": "/cline-cli/samples/model-orchestration",
+			"source": "/hadyancode-cli/samples/model-orchestration",
 			"destination": "/cli/samples/model-orchestration"
 		},
 		{
-			"source": "/cline-sdk/overview",
+			"source": "/hadyancode-sdk/overview",
 			"destination": "/sdk/overview"
 		},
 		{
-			"source": "/cline-sdk/quickstart",
+			"source": "/hadyancode-sdk/quickstart",
 			"destination": "/sdk/guides/building-an-agent"
 		},
 		{
@@ -806,63 +806,63 @@
 			"destination": "/sdk/guides/building-an-agent"
 		},
 		{
-			"source": "/cline-sdk/examples",
+			"source": "/hadyancode-sdk/examples",
 			"destination": "/sdk/guides/building-an-agent"
 		},
 		{
-			"source": "/cline-sdk/agents",
-			"destination": "/sdk/clinecore"
+			"source": "/hadyancode-sdk/agents",
+			"destination": "/sdk/hadyancodecore"
 		},
 		{
-			"source": "/cline-sdk/sessions",
-			"destination": "/sdk/clinecore"
+			"source": "/hadyancode-sdk/sessions",
+			"destination": "/sdk/hadyancodecore"
 		},
 		{
-			"source": "/cline-sdk/tools",
+			"source": "/hadyancode-sdk/tools",
 			"destination": "/sdk/tools"
 		},
 		{
-			"source": "/cline-sdk/streaming-and-events",
+			"source": "/hadyancode-sdk/streaming-and-events",
 			"destination": "/sdk/events"
 		},
 		{
-			"source": "/cline-sdk/plugins",
+			"source": "/hadyancode-sdk/plugins",
 			"destination": "/sdk/plugins"
 		},
 		{
-			"source": "/cline-sdk/hooks",
+			"source": "/hadyancode-sdk/hooks",
 			"destination": "/sdk/plugins"
 		},
 		{
-			"source": "/cline-sdk/model-providers",
+			"source": "/hadyancode-sdk/model-providers",
 			"destination": "/sdk/model-providers"
 		},
 		{
-			"source": "/cline-sdk/guides/building-an-agent",
+			"source": "/hadyancode-sdk/guides/building-an-agent",
 			"destination": "/sdk/guides/building-an-agent"
 		},
 		{
-			"source": "/cline-sdk/guides/creating-custom-tools",
+			"source": "/hadyancode-sdk/guides/creating-custom-tools",
 			"destination": "/sdk/guides/creating-custom-tools"
 		},
 		{
-			"source": "/cline-sdk/guides/writing-plugins",
+			"source": "/hadyancode-sdk/guides/writing-plugins",
 			"destination": "/sdk/guides/writing-plugins"
 		},
 		{
-			"source": "/cline-sdk/guides/permission-handling",
+			"source": "/hadyancode-sdk/guides/permission-handling",
 			"destination": "/sdk/guides/permission-handling"
 		},
 		{
-			"source": "/cline-sdk/guides/scheduled-agents",
+			"source": "/hadyancode-sdk/guides/scheduled-agents",
 			"destination": "/sdk/guides/scheduled-agents"
 		},
 		{
-			"source": "/cline-sdk/guides/multi-agent-teams",
+			"source": "/hadyancode-sdk/guides/multi-agent-teams",
 			"destination": "/sdk/guides/multi-agent-teams"
 		},
 		{
-			"source": "/cline-sdk/guides/connectors",
+			"source": "/hadyancode-sdk/guides/connectors",
 			"destination": "/cli/connectors"
 		},
 		{
@@ -870,47 +870,47 @@
 			"destination": "/cli/connectors"
 		},
 		{
-			"source": "/cline-sdk/guides/going-to-production",
+			"source": "/hadyancode-sdk/guides/going-to-production",
 			"destination": "/sdk/guides/going-to-production"
 		},
 		{
-			"source": "/cline-sdk/architecture/overview",
+			"source": "/hadyancode-sdk/architecture/overview",
 			"destination": "/sdk/architecture/overview"
 		},
 		{
-			"source": "/cline-sdk/architecture/hub-spoke",
+			"source": "/hadyancode-sdk/architecture/hub-spoke",
 			"destination": "/sdk/architecture/hub-spoke"
 		},
 		{
-			"source": "/cline-sdk/architecture/packages",
+			"source": "/hadyancode-sdk/architecture/packages",
 			"destination": "/sdk/architecture/overview"
 		},
 		{
-			"source": "/cline-sdk/reference/cline-core",
-			"destination": "/sdk/reference/cline-core"
+			"source": "/hadyancode-sdk/reference/hadyancode-core",
+			"destination": "/sdk/reference/hadyancode-core"
 		},
 		{
-			"source": "/cline-sdk/reference/agent",
+			"source": "/hadyancode-sdk/reference/agent",
 			"destination": "/sdk/reference/agent"
 		},
 		{
-			"source": "/cline-sdk/reference/gateway",
+			"source": "/hadyancode-sdk/reference/gateway",
 			"destination": "/sdk/reference/gateway"
 		},
 		{
-			"source": "/cline-sdk/reference/tools-api",
+			"source": "/hadyancode-sdk/reference/tools-api",
 			"destination": "/sdk/reference/tools-api"
 		},
 		{
-			"source": "/cline-sdk/reference/events",
+			"source": "/hadyancode-sdk/reference/events",
 			"destination": "/sdk/reference/events"
 		},
 		{
-			"source": "/cline-sdk/reference/types",
+			"source": "/hadyancode-sdk/reference/types",
 			"destination": "/sdk/reference/types"
 		},
 		{
-			"source": "/cline-sdk/extensions",
+			"source": "/hadyancode-sdk/extensions",
 			"destination": "/sdk/plugins"
 		},
 		{
@@ -918,7 +918,7 @@
 			"destination": "/sdk/guides/writing-plugins"
 		},
 		{
-			"source": "/cline-sdk/guides/writing-extensions",
+			"source": "/hadyancode-sdk/guides/writing-extensions",
 			"destination": "/sdk/guides/writing-plugins"
 		},
 		{
@@ -943,11 +943,11 @@
 		},
 		{
 			"source": "/sdk/agents",
-			"destination": "/sdk/clinecore"
+			"destination": "/sdk/hadyancodecore"
 		},
 		{
 			"source": "/sdk/sessions",
-			"destination": "/sdk/clinecore"
+			"destination": "/sdk/hadyancodecore"
 		},
 		{
 			"source": "/sdk/streaming-and-events",
@@ -966,48 +966,48 @@
 			"destination": "/sdk/guides/building-an-agent"
 		},
 		{
-			"source": "/cline-cli/interactive-mode",
+			"source": "/hadyancode-cli/interactive-mode",
 			"destination": "/usage/cli-overview"
 		},
 		{
-			"source": "/cline-cli/overview",
+			"source": "/hadyancode-cli/overview",
 			"destination": "/usage/cli-overview"
 		},
 		{
-			"source": "/cline-cli/samples/overview",
+			"source": "/hadyancode-cli/samples/overview",
 			"destination": "/usage/cli-overview"
 		},
 		{
-			"source": "/cline-cli/samples/worktree-workflows",
+			"source": "/hadyancode-cli/samples/worktree-workflows",
 			"destination": "/usage/cli-overview"
 		},
 		{
 			"source": "/contributing/doc-templates",
-			"destination": "/cline-overview"
+			"destination": "/hadyancode-overview"
 		},
 		{
 			"source": "/contributing/documentation-guide",
-			"destination": "/cline-overview"
+			"destination": "/hadyancode-overview"
 		},
 		{
 			"source": "/customization/workflows",
-			"destination": "/customization/cline-rules"
+			"destination": "/customization/hadyancode-rules"
 		},
 		{
 			"source": "/features/web-tools",
-			"destination": "/tools-reference/all-cline-tools"
+			"destination": "/tools-reference/all-hadyancode-tools"
 		},
 		{
 			"source": "/getting-started/quick-start",
-			"destination": "/cline-overview"
+			"destination": "/hadyancode-overview"
 		},
 		{
-			"source": "/getting-started/what-is-cline",
-			"destination": "/cline-overview"
+			"source": "/getting-started/what-is-hadyancode",
+			"destination": "/hadyancode-overview"
 		},
 		{
 			"source": "/home",
-			"destination": "/cline-overview"
+			"destination": "/hadyancode-overview"
 		},
 		{
 			"source": "/provider-config/aihubmix",
@@ -1058,7 +1058,7 @@
 			"destination": "/provider-config/other-30-plus-providers#hugging-face"
 		},
 		{
-			"source": "/provider-config/litellm-and-cline-using-codestral",
+			"source": "/provider-config/litellm-and-hadyancode-using-codestral",
 			"destination": "/provider-config/openai-compatible"
 		},
 		{
@@ -1115,7 +1115,7 @@
 		},
 		{
 			"source": "/tools-reference/browser-automation",
-			"destination": "/tools-reference/all-cline-tools"
+			"destination": "/tools-reference/all-hadyancode-tools"
 		},
 		{
 			"source": "/troubleshooting/task-history-recovery",
@@ -1127,6 +1127,6 @@
 		}
 	],
 	"search": {
-		"prompt": "Search Cline documentation..."
+		"prompt": "Search HadyanCode documentation..."
 	}
 }

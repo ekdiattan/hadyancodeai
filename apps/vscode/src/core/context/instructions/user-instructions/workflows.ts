@@ -1,6 +1,6 @@
 import { synchronizeRuleToggles } from "@core/context/instructions/user-instructions/rule-helpers"
 import { ensureWorkflowsDirectoryExists, GlobalFileNames } from "@core/storage/disk"
-import { ClineRulesToggles } from "@shared/cline-rules"
+import { HadyanCodeRulesToggles } from "@shared/hadyancode-rules"
 import path from "path"
 import { Controller } from "@/core/controller"
 
@@ -18,11 +18,11 @@ import { Controller } from "@/core/controller"
  *   found are pruned (the file was deleted).
  */
 function mergeToggleStateAfterScan(
-	scanned: ClineRulesToggles,
-	preScan: ClineRulesToggles,
-	current: ClineRulesToggles,
-): ClineRulesToggles {
-	const merged: ClineRulesToggles = {}
+	scanned: HadyanCodeRulesToggles,
+	preScan: HadyanCodeRulesToggles,
+	current: HadyanCodeRulesToggles,
+): HadyanCodeRulesToggles {
+	const merged: HadyanCodeRulesToggles = {}
 	for (const [key, value] of Object.entries(scanned)) {
 		if (key in current) {
 			merged[key] = current[key]
@@ -57,8 +57,8 @@ export function refreshWorkflowToggles(
 	controller: Controller,
 	workingDirectory: string,
 ): Promise<{
-	globalWorkflowToggles: ClineRulesToggles
-	localWorkflowToggles: ClineRulesToggles
+	globalWorkflowToggles: HadyanCodeRulesToggles
+	localWorkflowToggles: HadyanCodeRulesToggles
 }> {
 	const run = refreshQueue.then(() => doRefreshWorkflowToggles(controller, workingDirectory))
 	refreshQueue = run.catch(() => undefined)
@@ -69,13 +69,13 @@ async function doRefreshWorkflowToggles(
 	controller: Controller,
 	workingDirectory: string,
 ): Promise<{
-	globalWorkflowToggles: ClineRulesToggles
-	localWorkflowToggles: ClineRulesToggles
+	globalWorkflowToggles: HadyanCodeRulesToggles
+	localWorkflowToggles: HadyanCodeRulesToggles
 }> {
 	// Global workflows
 	const globalWorkflowToggles = controller.stateManager.getGlobalSettingsKey("globalWorkflowToggles")
-	const globalClineWorkflowsFilePath = await ensureWorkflowsDirectoryExists()
-	const scannedGlobalToggles = await synchronizeRuleToggles(globalClineWorkflowsFilePath, globalWorkflowToggles)
+	const globalHadyanCodeWorkflowsFilePath = await ensureWorkflowsDirectoryExists()
+	const scannedGlobalToggles = await synchronizeRuleToggles(globalHadyanCodeWorkflowsFilePath, globalWorkflowToggles)
 	// Re-read state after the async scans: no `await` between here and the
 	// writes below, so concurrent toggle updates cannot be lost.
 	const updatedGlobalWorkflowToggles = mergeToggleStateAfterScan(

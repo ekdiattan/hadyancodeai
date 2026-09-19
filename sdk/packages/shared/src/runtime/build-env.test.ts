@@ -1,25 +1,25 @@
 import { describe, expect, it } from "vitest";
 import {
 	augmentNodeCommandForDebug,
-	CLINE_BUILD_ENV_ENV,
-	CLINE_DEBUG_HOST_ENV,
-	CLINE_DEBUG_PORT_BASE_ENV,
-	resolveClineBuildEnv,
-	withResolvedClineBuildEnv,
+	HADYANCODE_BUILD_ENV_ENV,
+	HADYANCODE_DEBUG_HOST_ENV,
+	HADYANCODE_DEBUG_PORT_BASE_ENV,
+	resolveHadyanCodeBuildEnv,
+	withResolvedHadyanCodeBuildEnv,
 } from "./build-env";
 
 describe("build env helpers", () => {
-	it("prefers explicit CLINE_BUILD_ENV", () => {
+	it("prefers explicit HADYANCODE_BUILD_ENV", () => {
 		expect(
-			resolveClineBuildEnv({
-				env: { [CLINE_BUILD_ENV_ENV]: "development", NODE_ENV: "production" },
+			resolveHadyanCodeBuildEnv({
+				env: { [HADYANCODE_BUILD_ENV_ENV]: "development", NODE_ENV: "production" },
 			}),
 		).toBe("development");
 	});
 
 	it("treats development conditions as a development build", () => {
 		expect(
-			resolveClineBuildEnv({
+			resolveHadyanCodeBuildEnv({
 				env: {},
 				execArgv: ["--conditions=development"],
 			}),
@@ -27,31 +27,31 @@ describe("build env helpers", () => {
 	});
 
 	it("defaults to production otherwise", () => {
-		expect(resolveClineBuildEnv({ env: {}, execArgv: [] })).toBe("production");
+		expect(resolveHadyanCodeBuildEnv({ env: {}, execArgv: [] })).toBe("production");
 	});
 
 	it("treats NODE_ENV=development as a development build", () => {
 		expect(
-			resolveClineBuildEnv({ env: { NODE_ENV: "development" }, execArgv: [] }),
+			resolveHadyanCodeBuildEnv({ env: { NODE_ENV: "development" }, execArgv: [] }),
 		).toBe("development");
 	});
 
 	it("does not treat NODE_ENV=test as a development build", () => {
 		expect(
-			resolveClineBuildEnv({ env: { NODE_ENV: "test" }, execArgv: [] }),
+			resolveHadyanCodeBuildEnv({ env: { NODE_ENV: "test" }, execArgv: [] }),
 		).toBe("production");
 	});
 
 	it("does not treat NODE_ENV=staging as a development build", () => {
 		expect(
-			resolveClineBuildEnv({ env: { NODE_ENV: "staging" }, execArgv: [] }),
+			resolveHadyanCodeBuildEnv({ env: { NODE_ENV: "staging" }, execArgv: [] }),
 		).toBe("production");
 	});
 
-	it("materializes CLINE_BUILD_ENV when absent", () => {
+	it("materializes HADYANCODE_BUILD_ENV when absent", () => {
 		expect(
-			withResolvedClineBuildEnv({ NODE_ENV: "development" }, { execArgv: [] })[
-				CLINE_BUILD_ENV_ENV
+			withResolvedHadyanCodeBuildEnv({ NODE_ENV: "development" }, { execArgv: [] })[
+				HADYANCODE_BUILD_ENV_ENV
 			],
 		).toBe("development");
 	});
@@ -59,7 +59,7 @@ describe("build env helpers", () => {
 	it("adds dynamic inspect and source maps for node commands in development", () => {
 		expect(
 			augmentNodeCommandForDebug(["node", "script.js"], {
-				env: { [CLINE_BUILD_ENV_ENV]: "development" },
+				env: { [HADYANCODE_BUILD_ENV_ENV]: "development" },
 				debugRole: "rpc",
 			}),
 		).toEqual([
@@ -74,9 +74,9 @@ describe("build env helpers", () => {
 		expect(
 			augmentNodeCommandForDebug(["node", "script.js"], {
 				env: {
-					[CLINE_BUILD_ENV_ENV]: "development",
-					[CLINE_DEBUG_HOST_ENV]: "0.0.0.0",
-					[CLINE_DEBUG_PORT_BASE_ENV]: "9500",
+					[HADYANCODE_BUILD_ENV_ENV]: "development",
+					[HADYANCODE_DEBUG_HOST_ENV]: "0.0.0.0",
+					[HADYANCODE_DEBUG_PORT_BASE_ENV]: "9500",
 				},
 				debugRole: "plugin-sandbox",
 			}),
@@ -91,7 +91,7 @@ describe("build env helpers", () => {
 	it("adds inspect and source maps for bun commands in development", () => {
 		expect(
 			augmentNodeCommandForDebug(["/usr/local/bin/bun", "script.js"], {
-				env: { [CLINE_BUILD_ENV_ENV]: "development" },
+				env: { [HADYANCODE_BUILD_ENV_ENV]: "development" },
 				debugRole: "rpc",
 			}),
 		).toEqual([
@@ -106,7 +106,7 @@ describe("build env helpers", () => {
 		expect(
 			augmentNodeCommandForDebug(["node", "--inspect=9229", "script.js"], {
 				env: {
-					[CLINE_BUILD_ENV_ENV]: "development",
+					[HADYANCODE_BUILD_ENV_ENV]: "development",
 					NODE_OPTIONS: "--enable-source-maps",
 				},
 			}),

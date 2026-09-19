@@ -11,9 +11,9 @@
  */
 
 import {
-	createClineTelemetryServiceConfig,
+	createHadyanCodeTelemetryServiceConfig,
 	type ITelemetryService,
-} from "@cline/shared";
+} from "@hadyancode/shared";
 import {
 	captureExtensionActivated,
 	identifyAccount,
@@ -70,7 +70,7 @@ function dumpActivationEvents(
  * `apps/cli/src/utils/telemetry.ts` (`captureCliExtensionActivated`).
  *
  * Cross-importing from `apps/cli/...` here would pull the full
- * `@cline/core` barrel which transitively requires `@cline/llms`, so
+ * `@hadyancode/core` barrel which transitively requires `@hadyancode/llms`, so
  * we replicate the exact memoization pattern locally and call the same
  * underlying core helper.
  */
@@ -106,10 +106,10 @@ async function smokeCli() {
 		"CLI: memoized captureCliExtensionActivated equivalent (only first call should emit)",
 	);
 	const logger = new CapturingLogger();
-	const cfg = createClineTelemetryServiceConfig({
+	const cfg = createHadyanCodeTelemetryServiceConfig({
 		metadata: {
 			extension_version: "0.0.0-smoke",
-			cline_type: "cli",
+			hadyancode_type: "cli",
 			platform: "smoke-cli",
 			platform_version: process.version,
 			os_type: process.platform,
@@ -135,10 +135,10 @@ async function smokeCliAuthenticated() {
 		"CLI: authenticated captureCliExtensionActivated should carry organization_id",
 	);
 	const logger = new CapturingLogger();
-	const cfg = createClineTelemetryServiceConfig({
+	const cfg = createHadyanCodeTelemetryServiceConfig({
 		metadata: {
 			extension_version: "0.0.0-smoke",
-			cline_type: "cli",
+			hadyancode_type: "cli",
 			platform: "smoke-cli",
 			platform_version: process.version,
 			os_type: process.platform,
@@ -153,7 +153,7 @@ async function smokeCliAuthenticated() {
 	captureCliActivation({
 		id: "user-smoke",
 		email: "user@example.com",
-		provider: "cline",
+		provider: "hadyancode",
 		organizationId: "org-smoke",
 		organizationName: "Smoke Org",
 		memberId: "member-smoke",
@@ -168,10 +168,10 @@ async function smokeCliAuthenticated() {
 async function smokeVscode() {
 	header("VS Code: createVscodeTelemetry-equivalent shared service");
 	const logger = new CapturingLogger();
-	const cfg = createClineTelemetryServiceConfig({
+	const cfg = createHadyanCodeTelemetryServiceConfig({
 		metadata: {
 			extension_version: "0.0.0-smoke",
-			cline_type: "VSCode Extension",
+			hadyancode_type: "VSCode Extension",
 			platform: "Visual Studio Code",
 			platform_version: "1.113.0",
 			os_type: process.platform,

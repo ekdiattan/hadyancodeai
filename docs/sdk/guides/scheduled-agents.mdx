@@ -13,47 +13,47 @@ The SDK supports running agents on cron schedules. Scheduled agents persist acro
 3. At each trigger time a new session is created and the agent is run
 4. Results are stored and can be routed to connectors (Slack, email, etc.)
 
-Scheduled agents rely on the [hub-spoke architecture](/sdk/architecture/hub-spoke) that is part of `ClineCore`. The hub runs as a background process on your machine. It starts automatically when needed and persists schedules across restarts.
+Scheduled agents rely on the [hub-spoke architecture](/sdk/architecture/hub-spoke) that is part of `HadyanCodeCore`. The hub runs as a background process on your machine. It starts automatically when needed and persists schedules across restarts.
 
-## Creating Schedules Programmatically with Cline SDK
+## Creating Schedules Programmatically with HadyanCode SDK
 
 ```typescript
-import { ClineCore } from "@cline/sdk"
+import { HadyanCodeCore } from "@hadyancode/sdk"
 
-const cline = await ClineCore.create({
+const hadyancode = await HadyanCodeCore.create({
   clientName: "scheduler",
   automation: true,
 })
 
-await cline.automation.start()
+await hadyancode.automation.start()
 
-// Use cline.automation to reconcile specs, ingest events, and list runs.
+// Use hadyancode.automation to reconcile specs, ingest events, and list runs.
 ```
 
-## Schedule Wizard with Cline CLI
+## Schedule Wizard with HadyanCode CLI
 
-An easy way to schedule task is to use Cline CLI for scheduling task, if you've already installed via `npm i -g cline`
+An easy way to schedule task is to use HadyanCode CLI for scheduling task, if you've already installed via `npm i -g hadyancode`
 
-Run `cline schedule` to open an interactive menu for creating and managing schedules, browsing execution history, and viewing performance statistics.
+Run `hadyancode schedule` to open an interactive menu for creating and managing schedules, browsing execution history, and viewing performance statistics.
 
 ## Creating Schedules with Flags
 
 ```bash
 # Daily at 9 AM on weekdays
-cline schedule create "PR summary" \
+hadyancode schedule create "PR summary" \
   --cron "0 9 * * MON-FRI" \
   --prompt "List all open PRs, their review status, and any that have been open more than 3 days" \
   --workspace /path/to/repo \
   --model anthropic/claude-sonnet-4-6
 
 # Every 6 hours
-cline schedule create "Health check" \
+hadyancode schedule create "Health check" \
   --cron "0 */6 * * *" \
   --prompt "Run the test suite and report any failures" \
   --workspace /path/to/project
 
 # Monday mornings
-cline schedule create "Weekly digest" \
+hadyancode schedule create "Weekly digest" \
   --cron "0 8 * * MON" \
   --prompt "Summarize last week's commits, PRs merged, and issues closed"
 ```
@@ -62,22 +62,22 @@ cline schedule create "Weekly digest" \
 
 ```bash
 # List all schedules
-cline schedule list
+hadyancode schedule list
 
 # Trigger a schedule immediately (without waiting for cron)
-cline schedule trigger <schedule-id>
+hadyancode schedule trigger <schedule-id>
 
 # Pause a schedule
-cline schedule pause <schedule-id>
+hadyancode schedule pause <schedule-id>
 
 # Resume a paused schedule
-cline schedule resume <schedule-id>
+hadyancode schedule resume <schedule-id>
 
 # Delete a schedule
-cline schedule delete <schedule-id>
+hadyancode schedule delete <schedule-id>
 
 # View execution history
-cline schedule executions <schedule-id>
+hadyancode schedule executions <schedule-id>
 ```
 
 ## Cron Expression Reference
@@ -96,7 +96,7 @@ cline schedule executions <schedule-id>
 ### Daily Standup Summary
 
 ```bash
-cline schedule create "Standup prep" \
+hadyancode schedule create "Standup prep" \
   --cron "0 8 * * MON-FRI" \
   --prompt "Summarize: (1) PRs merged yesterday, (2) PRs currently in review, (3) open issues assigned to team members. Format as a brief standup update." \
   --workspace /path/to/repo
@@ -105,7 +105,7 @@ cline schedule create "Standup prep" \
 ### Automated Dependency Updates
 
 ```bash
-cline schedule create "Dependency check" \
+hadyancode schedule create "Dependency check" \
   --cron "0 10 * * MON" \
   --prompt "Check for outdated npm dependencies. For any with security vulnerabilities, create a branch with the update and open a PR." \
   --workspace /path/to/project
@@ -114,7 +114,7 @@ cline schedule create "Dependency check" \
 ### Codebase Health Report
 
 ```bash
-cline schedule create "Code health" \
+hadyancode schedule create "Code health" \
   --cron "0 6 * * MON" \
   --prompt "Analyze the codebase for: (1) files with no test coverage, (2) TODO/FIXME comments older than 30 days, (3) functions longer than 100 lines. Produce a health report." \
   --workspace /path/to/project
@@ -134,10 +134,10 @@ Combine scheduled agents with [connectors](/cli/connectors) in CLI to route resu
 
 ```bash
 # Start a Telegram connector
-cline connect telegram -k $BOT_TOKEN
+hadyancode connect telegram -k $BOT_TOKEN
 
 # Schedule an agent whose output gets sent to Telegram
-cline schedule create "Morning briefing" \
+hadyancode schedule create "Morning briefing" \
   --cron "0 8 * * *" \
   --prompt "Summarize overnight activity in the repo"
 ```

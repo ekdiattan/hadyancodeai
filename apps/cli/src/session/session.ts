@@ -5,12 +5,12 @@ import type {
 	RuntimeHostMode,
 	SessionHistoryRecord,
 	SessionRecord,
-} from "@cline/core";
+} from "@hadyancode/core";
 import {
-	ClineCore,
+	HadyanCodeCore,
 	listSessionHistoryFromBackend,
 	resolveSessionBackend,
-} from "@cline/core";
+} from "@hadyancode/core";
 import {
 	createCliMessagesArtifactUploader,
 	prepareCliEnterpriseIntegration,
@@ -34,7 +34,7 @@ export async function createCliCore(options?: {
 	forceLocalBackend?: boolean;
 	cwd?: string;
 	workspaceRoot?: string;
-}): Promise<ClineCore> {
+}): Promise<HadyanCodeCore> {
 	const explicitBackendMode = options?.forceLocalBackend
 		? "local"
 		: options?.backendMode;
@@ -46,7 +46,7 @@ export async function createCliCore(options?: {
 		logger: options?.logger,
 		telemetry,
 	});
-	const core = await ClineCore.create({
+	const core = await HadyanCodeCore.create({
 		...(explicitBackendMode ? { backendMode: explicitBackendMode } : {}),
 		...(options?.forceLocalBackend !== true
 			? {
@@ -54,7 +54,7 @@ export async function createCliCore(options?: {
 						cwd,
 						workspaceRoot,
 						clientType: "cli",
-						displayName: "Cline CLI",
+						displayName: "HadyanCode CLI",
 					},
 				}
 			: {}),
@@ -80,7 +80,7 @@ export async function createCliCore(options?: {
 }
 
 async function withCliCore<T>(
-	run: (core: ClineCore) => Promise<T>,
+	run: (core: HadyanCodeCore) => Promise<T>,
 	options?: {
 		forceLocalBackend?: boolean;
 		logger?: BasicLogger;
@@ -165,7 +165,7 @@ export async function getLatestSessionRow(): Promise<unknown | undefined> {
 }
 
 export async function handleSessionHookEvent(
-	payload: Parameters<ClineCore["ingestHookEvent"]>[0],
+	payload: Parameters<HadyanCodeCore["ingestHookEvent"]>[0],
 ): Promise<void> {
 	await withCliCore(
 		async (core) => {

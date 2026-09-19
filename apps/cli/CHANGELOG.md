@@ -1,8 +1,8 @@
-# Cline CLI Changelog
+# HadyanCode CLI Changelog
 
 ## 3.0.61
 
-- Cline now handles a running Hub that is older than your CLI. Instead of quietly talking to a hub executing stale code, you get a prompt showing how many active sessions a replacement would interrupt, with enter-to-replace or escape-to-keep. The replacement drains the Hub first so in-flight turns finish, and a hub too old or wedged to accept the drain is left alone rather than killed
+- HadyanCode now handles a running Hub that is older than your CLI. Instead of quietly talking to a hub executing stale code, you get a prompt showing how many active sessions a replacement would interrupt, with enter-to-replace or escape-to-keep. The replacement drains the Hub first so in-flight turns finish, and a hub too old or wedged to accept the drain is left alone rather than killed
 - Windows binaries are now Authenticode-signed via Azure Trusted Signing, and a launch blocked by application-control policy now prints an actionable error instead of failing bare
 - Fixed the CLI dying when an enabled remote (SSE/streamable HTTP) MCP server is unreachable. The connect now has a 10s budget, so an offline server no longer stalls session startup past the Hub's deadline and tears the session down — previously the interactive TUI exited and one-shot runs failed
 - Fixed tool calling being silently disabled for Dify, SAP AI Core, opencode, and Codex CLI models. Their catalog entries declare no capabilities, and the empty list was read as an authoritative denial that stripped every tool from the request
@@ -10,38 +10,38 @@
 - Langfuse tracing now works in released builds. Detection identified the OpenTelemetry provider by class name, which minification renames, so tracing silently initialized as not-ready in every published binary while working in dev
 - Restoring a checkpoint now refuses to run when you have made commits after it, instead of silently knocking them off the branch where only the reflog could recover them. Chat-only restore is unaffected
 - `apply_patch` now preserves a file's existing CRLF line endings
-- Global rules are now also read from `~/Cline/Rules`, which is where the VS Code Rules tab writes them on WSL and headless installs
+- Global rules are now also read from `~/HadyanCode/Rules`, which is where the VS Code Rules tab writes them on WSL and headless installs
 - Signing in to OpenAI Codex (ChatGPT subscription) now fails with a clear "port in use" error when 1455 is occupied, instead of opening a browser to a flow that can never complete
 - A transient network failure while refreshing Codex or OpenAI-compatible-account tokens no longer logs you out
 - Aborting a session now also cancels the delegated subagents and teammates it spawned, instead of leaving their work running
-- Agent-created schedules now live in `~/.cline/schedules` instead of inheriting whichever chat folder they were created in. Schedules you create with `--workspace` are unchanged
+- Agent-created schedules now live in `~/.hadyancode/schedules` instead of inheriting whichever chat folder they were created in. Schedules you create with `--workspace` are unchanged
 - Fixed scheduled tasks disappearing after a hub restart
 - Fixed markdown flashing as it settled at the end of a streamed response
 - The message the model sees when you reject a tool call now names the tool and reads as your decision rather than an error
-- Cline provider models now come from the live catalog, so newly published models show up without a CLI update
+- HadyanCode provider models now come from the live catalog, so newly published models show up without a CLI update
 - Refreshed the model catalog. Adds ten providers (Bothub, OpenReason, SenseNova (China), TokenGo, TokenRouter, Vancine, Volcengine Ark, Volcengine Ark Coding Plan, above.dev, and klokintegration.se) and updates model lists and pricing across providers. This is an unusually wide refresh: the resolved default model changes for 57 providers. Most consequentially, Anthropic now resolves to Claude Fable 5.1 instead of Claude Opus 5, and Amazon Bedrock, Vertex, OpenRouter, Vercel AI Gateway, Kilo Gateway, LLM Gateway, DevPass, DigitalOcean, CrossModel, Eden AI, and NanoGPT follow it to Fable 5.1. If you use any provider without pinning a model, expect a different default
 
 ## 3.0.60
 
-- The config screen now separates Cline Plugins from Agent Plugins discovered by the Hub. Agent Plugins can be enabled or disabled with Space; the Hub persists the state and their skills and MCP servers follow it when the interactive runtime is rebuilt
+- The config screen now separates HadyanCode Plugins from Agent Plugins discovered by the Hub. Agent Plugins can be enabled or disabled with Space; the Hub persists the state and their skills and MCP servers follow it when the interactive runtime is rebuilt
 - Fixed the background hub process ballooning in memory during long sessions — session status updates were broadcasting a full copy of the conversation transcript to every connected client, which on a large task could grow the process to tens of gigabytes. Upgrading retires the running hub so the fix takes effect on the next command
 - New files are now created with your platform's native line endings
 - Fixed the codebase search tool crashing on files that contain a single enormous line
-- Cost estimates are no longer shown for Claude Code. Its usage is typically covered by a Claude Pro/Max subscription, but its models reuse Anthropic API pricing, so Cline was showing charges you were not being billed
+- Cost estimates are no longer shown for Claude Code. Its usage is typically covered by a Claude Pro/Max subscription, but its models reuse Anthropic API pricing, so HadyanCode was showing charges you were not being billed
 - Credentials embedded in git remote URLs are now redacted from the workspace information sent to the model
 - Installing an MCP server no longer misreads a `--` separator in the install arguments as part of the server command
-- Refreshed the model catalog. Adds seven providers (Agnes AI, Aixy, IteraCompute, LLM Tech, NeoSmith, Pendra, and Standard Compute) and updates model lists and pricing across providers. The resolved default model changes for ClinePass (now GLM 5.3), Z.ai, Hugging Face, evroc, LLM Gateway, NanoGPT, and Weights & Biases, so if you use one of those without pinning a model you will get a different default
+- Refreshed the model catalog. Adds seven providers (Agnes AI, Aixy, IteraCompute, LLM Tech, NeoSmith, Pendra, and Standard Compute) and updates model lists and pricing across providers. The resolved default model changes for HadyanCodePass (now GLM 5.3), Z.ai, Hugging Face, evroc, LLM Gateway, NanoGPT, and Weights & Biases, so if you use one of those without pinning a model you will get a different default
 
 ## 3.0.58
 
-- The first-launch "Try ClinePass" dialog no longer advertises the $4.99 first-month promo, which is ending
+- The first-launch "Try HadyanCodePass" dialog no longer advertises the $4.99 first-month promo, which is ending
 - The hub's event log is now capped at 64 MiB on disk. Events carrying full session snapshots could previously grow the log to tens of gigabytes on a long-running hub, since deleting rows never shrinks the file. Oldest events are dropped first and the space is returned, and pruning runs on volume as well as on a timer
 - Refreshed the model catalog. Adds two providers (AgentRouter and Opper) and updates model lists and pricing across providers. The resolved default model changes for Aki.io and NanoGPT, so if you use one of those without pinning a model you will get a different default
 
 ## 3.0.57
 
-- Added `cline hub drain`, which stops a hub from accepting new mutating work while it finishes what it is already running, and `cline hub drain --off` to lift it
-- Added `cline hub upgrade`, which drains the hub, waits for it to go idle, stops it, and starts a fresh one on the current build. An aborted upgrade lifts the drain again, so the hub is never left refusing work
+- Added `hadyancode hub drain`, which stops a hub from accepting new mutating work while it finishes what it is already running, and `hadyancode hub drain --off` to lift it
+- Added `hadyancode hub upgrade`, which drains the hub, waits for it to go idle, stops it, and starts a fresh one on the current build. An aborted upgrade lifts the drain again, so the hub is never left refusing work
 - Sessions now survive a hub restart. A reconnecting client replays the events it missed while disconnected, deduped by event id so nothing is delivered twice
 - Fixed tool calling being silently disabled for custom OpenAI-Compatible models whose capability list was inferred from convenience flags like `supportsReasoning`. The inferred list read as an authoritative denial and stripped every tool from the request
 - Langfuse traces now carry session and client identity for hub-backed and delegated-agent runs, instead of arriving without their session grouping or client version
@@ -59,21 +59,21 @@
 - Fixed `run_commands` failing with ENOENT when a structured command carried a full command line with no `args`
 - PowerShell commands now fail fast on the first error instead of emitting an error record per enumerated item and still reporting success
 - Fixed Gemini custom base URLs configured as a host root
-- Fixed `cline schedule` commands against a remote hub, which now register a workspace client so they are authorized under the new workspace-scoped schedule rules
+- Fixed `hadyancode schedule` commands against a remote hub, which now register a workspace client so they are authorized under the new workspace-scoped schedule rules
 - Usage now displays the billed gateway cost
 - Refreshed the model catalog, which adds AMD, Arcee, Echo, Jalapeno, Kosmik, LLM Gateway, RunInfra, and SCNet as providers and updates model lists, pricing, and per-provider default models across the board
 
 ## 3.0.55
 
-- Auto-updates no longer install while a CLI is attached to the Hub. The update is recorded at startup and installed on exit, once the Hub confirms nothing else is attached, so a background update can no longer swap the package out from under a live session and kill it with `Hub connection closed (code=1006)`. `cline update` still installs immediately and now tells you the update applies on next start
+- Auto-updates no longer install while a CLI is attached to the Hub. The update is recorded at startup and installed on exit, once the Hub confirms nothing else is attached, so a background update can no longer swap the package out from under a live session and kill it with `Hub connection closed (code=1006)`. `hadyancode update` still installs immediately and now tells you the update applies on next start
 - Added protections for an update landing under CLI 3.0.54 and earlier, whose updater restarts the Hub mid-session and then rejects every replacement, bricking a running session. The newly installed package defuses that path during install instead of leaving it to fire
-- Fixed two Cline installations on different builds shutting each other's Hub daemon down in a loop, which killed every live session with an abnormal socket close. Build identity is now compared through a total order, so at most one side of a pair can ever decide to retire the other (from SDK v0.0.75)
+- Fixed two HadyanCode installations on different builds shutting each other's Hub daemon down in a loop, which killed every live session with an abnormal socket close. Build identity is now compared through a total order, so at most one side of a pair can ever decide to retire the other (from SDK v0.0.75)
 - A newer build no longer replaces a Hub that is still serving sessions — it attaches to it and the swap happens on a later launch, instead of the sessions dying mid-handshake (from SDK v0.0.75)
 - Removed the "outdated Hub" notice. It reported a state you cannot act on, and the toast was capped narrower than the message, so it rendered cut off before the reassuring half of the sentence at every terminal width. The prompt for a genuine build mismatch, where there is something to do, is unchanged
 - Streaming assistant markdown no longer flashes back to raw text. Settled headings, links, and code stay rendered as new chunks arrive instead of the whole message being rebuilt and re-highlighted on every chunk, which also stops the transcript from jumping vertically mid-stream
 - Web search calls and their results from models that run search natively now render in the transcript (from SDK v0.0.75)
 - Idle plugin sandbox processes are now reclaimed instead of lingering for the life of the session (from SDK v0.0.75)
-- `cline doctor fix` now reports honestly: processes that survived a kill are separated from ones that appeared while the fix ran, a live parent respawning a daemon is named, and a startup lock held by a running process is reported as held rather than leaked (from SDK v0.0.75)
+- `hadyancode doctor fix` now reports honestly: processes that survived a kill are separated from ones that appeared while the fix ran, a live parent respawning a daemon is named, and a startup lock held by a running process is reported as held rather than leaked (from SDK v0.0.75)
 - Refreshed the model catalog, which adds Crusoe as a provider and updates model lists and per-provider default models across the board (from SDK v0.0.75)
 
 ## 3.0.54
@@ -82,7 +82,7 @@
 - Fixed truncated tool-call JSON being silently "repaired" into wrong arguments — a payload with an unterminated string is now rejected rather than getting an invented terminator (from SDK v0.0.74)
 - Fixed strict providers rejecting a turn with "user message must have content" when a message's content held only empty text parts (from SDK v0.0.74)
 - Fixed a mid-turn crash on streamed tool calls with non-zero or non-contiguous indexes, hit through LiteLLM's Anthropic passthrough (from SDK v0.0.74)
-- Managed Hub daemons now upgrade directionally: when another Cline install ships a newer Hub build, the CLI attaches to the newer daemon and prompts you to update and restart instead of the two installs repeatedly retiring each other's daemons. Yolo and sandbox sessions, which never attach to the shared Hub, are not interrupted by that prompt (from SDK v0.0.74)
+- Managed Hub daemons now upgrade directionally: when another HadyanCode install ships a newer Hub build, the CLI attaches to the newer daemon and prompts you to update and restart instead of the two installs repeatedly retiring each other's daemons. Yolo and sandbox sessions, which never attach to the shared Hub, are not interrupted by that prompt (from SDK v0.0.74)
 - Fixed the Hub daemon logging an unhandled `hub server close failed` error and exiting non-zero whenever a client was still connected at shutdown (from SDK v0.0.74)
 - Fixed per-task token totals being inflated roughly 5x on cache-heavy sessions — token telemetry now reports disjoint uncached-input, cache-read, and cache-write buckets instead of re-counting the whole cached conversation on every request (from SDK v0.0.74)
 - Upgrading the CLI now retires an already-running Hub daemon and respawns it on the new code, instead of the upgraded CLI continuing to talk to a daemon executing the previous release
@@ -96,7 +96,7 @@
 
 ## 3.0.52
 
-- Added `cline mcp uninstall` for removing an installed MCP server
+- Added `hadyancode mcp uninstall` for removing an installed MCP server
 - Schedules now reuse your saved provider settings instead of needing provider configuration of their own
 - Queued messages are legible on light-theme terminals — they were previously rendered in a color that washed out against a light background
 - MCP tool results render as readable text in the TUI instead of escaped JSON, and binary payloads survive being expanded instead of being mangled
@@ -114,12 +114,12 @@
 ## 3.0.51
 
 - Reasoning effort now applies consistently across providers instead of going through per-provider thinking overrides, including Ollama, and asking for reasoning to be off is respected everywhere (from SDK v0.0.71)
-- `meta/muse-spark-1.2-contributor` is now selectable on the Cline provider, alongside a refreshed model catalog (from SDK v0.0.71)
+- `meta/muse-spark-1.2-contributor` is now selectable on the HadyanCode provider, alongside a refreshed model catalog (from SDK v0.0.71)
 - Error telemetry now reports the model that was actually in use for the run (from SDK v0.0.71)
 
 ## 3.0.50
 
-- Added user-selectable color themes to the interactive TUI. Pick one with `/theme`, the command palette, or the Theme row in `/settings` — the picker previews each theme live. Built-in themes are Auto (terminal-adaptive, the default), Cline Dark, Cline Light, Tokyo Night, Gruvbox Dark, Nord, Dracula, Catppuccin Mocha, One Dark, Solarized Dark, and Solarized Light. Named themes paint the background, foreground, accents, syntax highlighting, and diff colors, and `CLINE_THEME` overrides the persisted choice at startup
+- Added user-selectable color themes to the interactive TUI. Pick one with `/theme`, the command palette, or the Theme row in `/settings` — the picker previews each theme live. Built-in themes are Auto (terminal-adaptive, the default), HadyanCode Dark, HadyanCode Light, Tokyo Night, Gruvbox Dark, Nord, Dracula, Catppuccin Mocha, One Dark, Solarized Dark, and Solarized Light. Named themes paint the background, foreground, accents, syntax highlighting, and diff colors, and `HADYANCODE_THEME` overrides the persisted choice at startup
 - The git branch shown below the prompt now updates when you switch branches from another terminal or your editor, instead of showing whatever was checked out when the TUI started
 - Telegram slash commands such as `/clear` now reach the connector command host — the Telegram library was intercepting them and they were silently dropped
 - Racing connector launches no longer collide: an instance is claimed before it opens socket mode, the hub supervises connector processes, and `doctor`/`connect` skip connectors that are already starting. Connector tools are also enabled by default, and the Slack greeting is no longer replayed on reconnect
@@ -127,7 +127,7 @@
 - Plan mode now hard-blocks file-editing shell commands instead of relying on prompting alone — `run_commands` stays available for read-only investigation, but file-manipulation commands, in-place editors (`sed -i`, `perl -i`), redirection to files, mutating git subcommands, package installs, and nested command strings (`sh -c`, `eval`, `sudo`) are rejected, on Windows and PowerShell too (from SDK v0.0.70)
 - A turn that ends with a completed plan is no longer rendered as a failed turn when a plan-blocked command was its only tool call
 - Running out of context is now recovered from instead of failing with a raw provider error: the run force-compacts and retries once, and the cases that genuinely cannot be recovered report why (from SDK v0.0.70)
-- Empty model responses are now retried on every provider, not just Ollama — OpenRouter, Cline, and OpenAI-compatible endpoints previously failed the task outright with "Model returned empty response" (from SDK v0.0.70)
+- Empty model responses are now retried on every provider, not just Ollama — OpenRouter, HadyanCode, and OpenAI-compatible endpoints previously failed the task outright with "Model returned empty response" (from SDK v0.0.70)
 - Claude 4.6+ and 5.x models are no longer rejected with "thinking.type.enabled is not supported" when they resolve from the offline catalog or from a hand-typed model id (from SDK v0.0.70)
 - Bedrock prompt caching works again — the provider was sending a cache format Bedrock silently discards, so cache reads and writes were always 0 — and Bedrock foundation models are now routed through geo inference profiles (from SDK v0.0.70)
 - Reasoning models on OpenAI-compatible endpoints now receive `max_completion_tokens` instead of the rejected `max_tokens`, and requests to models without image support substitute the image content instead of failing (from SDK v0.0.70)
@@ -139,17 +139,17 @@
 
 - `/undo` works again once the agent has used tools — the checkpoint picker counted tool results as user turns, so restore aborted with "Could not find user message for run N"
 - Checkpoints are actually created again; a run-boundary regression meant none were ever recorded in the CLI (from SDK v0.0.69)
-- Checkpoint restore is now a full workspace rewind: files Cline created during the task come back at their checkpoint-time content and files created after the checkpoint are removed, while `.gitignore`d paths (build output, `node_modules`, `.env`) are left alone (from SDK v0.0.69)
+- Checkpoint restore is now a full workspace rewind: files HadyanCode created during the task come back at their checkpoint-time content and files created after the checkpoint are removed, while `.gitignore`d paths (build output, `node_modules`, `.env`) are left alone (from SDK v0.0.69)
 - After a restore, the rewound message is prefilled as plain text instead of the raw `<user_input mode="act">` envelope
 - Ollama's response-start timeout is now 5 minutes instead of 30 seconds, so cold-loading a large local model no longer errors out mid-load (from SDK v0.0.69)
 - Empty Ollama responses are now retried instead of failing the task with "Model returned empty response" (from SDK v0.0.69)
-- Migrated users whose stored Cline model id isn't in the catalog now fall back to the default model instead of sending an unknown model id on every request (from SDK v0.0.69)
-- The ClinePass promo dialog can be dismissed with any key (Enter still opens the subscription page), and it is marked as shown when it appears, so force-quitting no longer replays it on every launch
-- Opening a URL no longer crashes the CLI on hosts without an opener binary (headless Linux without `xdg-open`); WSL2 containers now use `xdg-open`, Windows tries the absolute PowerShell path first, and `cline doctor log` converts Linux paths to `\\wsl$` UNC paths
+- Migrated users whose stored HadyanCode model id isn't in the catalog now fall back to the default model instead of sending an unknown model id on every request (from SDK v0.0.69)
+- The HadyanCodePass promo dialog can be dismissed with any key (Enter still opens the subscription page), and it is marked as shown when it appears, so force-quitting no longer replays it on every launch
+- Opening a URL no longer crashes the CLI on hosts without an opener binary (headless Linux without `xdg-open`); WSL2 containers now use `xdg-open`, Windows tries the absolute PowerShell path first, and `hadyancode doctor log` converts Linux paths to `\\wsl$` UNC paths
 - The hub now restarts through the installed wrapper after a Unix self-update, so npm cannot reuse a deleted cached executable
-- ACP: ClinePass is selectable as a provider, organizations can be selected, session resolution and text rendering on session restart are fixed, and agent errors now describe the actual failure
+- ACP: HadyanCodePass is selectable as a provider, organizations can be selected, session resolution and text rendering on session restart are fixed, and agent errors now describe the actual failure
 - Provider errors forwarded through the Vercel AI Gateway now surface the real upstream message instead of a raw Zod dump or `[object Object]` (from SDK v0.0.68)
-- Cline free models and recommended models now show their real display names in the model picker (from SDK v0.0.68)
+- HadyanCode free models and recommended models now show their real display names in the model picker (from SDK v0.0.68)
 - Sessions rooted at the filesystem root (`/`) no longer fail every command (from SDK v0.0.68)
 - On Windows, PowerShell commands now travel over UTF-8 stdin, so non-ASCII commands survive the active code page and long commands are not capped by the command-line limit (from SDK v0.0.68)
 - The live model catalog no longer drops the video input capability (from SDK v0.0.68)
@@ -157,10 +157,10 @@
 
 ## 3.0.48
 
-- `cline history` now opens inside the existing TUI, with resume and delete actions, instead of rendering a second view in the same process
+- `hadyancode history` now opens inside the existing TUI, with resume and delete actions, instead of rendering a second view in the same process
 - Connector threads (Slack, Discord, Telegram, Linear, Google Chat, WhatsApp) now recover when the session they were bound to is gone — the stale binding is dropped and the turn replays against a new session, instead of failing with "session not found" until `threads.json` is edited by hand
-- `cline --help` now reports the real default `--config` and `--data-dir` paths
-- The per-server `timeout` in `cline_mcp_settings.json` is now honored for `initialize`, `tools/list`, and `tools/call`, so slow MCP servers no longer fail against a hardcoded 5s limit (from SDK v0.0.67)
+- `hadyancode --help` now reports the real default `--config` and `--data-dir` paths
+- The per-server `timeout` in `hadyancode_mcp_settings.json` is now honored for `initialize`, `tools/list`, and `tools/call`, so slow MCP servers no longer fail against a hardcoded 5s limit (from SDK v0.0.67)
 - Reasoning controls are now routed from the models.dev catalog across providers, with clamped budgets and correct per-provider encoding (from SDK v0.0.67)
 - OpenRouter now defaults to `anthropic/claude-sonnet-5` (from SDK v0.0.67)
 - Fixed the China and international endpoint toggles being ignored for Qwen, Moonshot, and Z AI (from SDK v0.0.67)
@@ -169,12 +169,12 @@
 - Fixed auto-compaction state being rejected as stale, which added a redundant summarizer call on every turn past the compaction trigger (from SDK v0.0.67)
 - Fixed checkpoint restores across session resumes (from SDK v0.0.67)
 - Tool calls that pass line numbers as strings (`insert_line`, `read_files` bounds) are now accepted instead of erroring (from SDK v0.0.67)
-- A legacy single-file `.clinerules` no longer aborts the config scan (from SDK v0.0.67)
+- A legacy single-file `.hadyancoderules` no longer aborts the config scan (from SDK v0.0.67)
 - Plugins can now emit telemetry through `ctx.telemetry` (from SDK v0.0.67)
 
 ## 3.0.47
 
-- Free Cline models are now supported end to end: free models show as "(free)", and hitting the free limit renders a dedicated card with the reset time (from SDK v0.0.66)
+- Free HadyanCode models are now supported end to end: free models show as "(free)", and hitting the free limit renders a dedicated card with the reset time (from SDK v0.0.66)
 - `/settings` general toggles (plan/act mode, tool auto-approve, compaction mode) now persist across restarts
 - Upgraded the TUI stack from opentui 0.1.102 to 0.4.3
 - Fixed a grey panel left behind on screen after closing a dialog (model picker, help, command palette) — a leftover from the opentui upgrade
@@ -188,12 +188,12 @@
 
 ## 3.0.46
 
-- Fixed out-of-credits detection so the CLI reliably recognizes the Cline API's real `insufficient_credits` (402) error and shows the "add credits" card instead of a generic error
+- Fixed out-of-credits detection so the CLI reliably recognizes the HadyanCode API's real `insufficient_credits` (402) error and shows the "add credits" card instead of a generic error
 
 ## 3.0.45
 
-- Smaller install: the Claude Code and Codex providers are now optional and loaded on demand, cutting `npm i -g cline` from ~640MB to ~285MB (from SDK v0.0.65)
-- Kimi K3 is now available as a ClinePass model (from SDK v0.0.65)
+- Smaller install: the Claude Code and Codex providers are now optional and loaded on demand, cutting `npm i -g hadyancode` from ~640MB to ~285MB (from SDK v0.0.65)
+- Kimi K3 is now available as a HadyanCodePass model (from SDK v0.0.65)
 - Runs now retry once after refreshing expired OAuth credentials (from SDK v0.0.65)
 - Team runs: the spawn tool is no longer exposed to teammates, and errored teammate runs now report as failed instead of completed (from SDK v0.0.65)
 - Hub status output now includes version numbers
@@ -224,30 +224,30 @@
 
 ## 3.0.40
 
-- Added a manual API key escape hatch for Cline OAuth providers, so you can enter a key by hand from settings
+- Added a manual API key escape hatch for HadyanCode OAuth providers, so you can enter a key by hand from settings
 - Fixed provider config not reloading when switching models
 - Fixed auto-update failing to detect Bun global installs after symlink resolution
 - Fixed unexpected logouts caused by transient network or server errors during token refresh
-- The ClinePass usage-limit error is now surfaced clearly when you hit the limit
+- The HadyanCodePass usage-limit error is now surfaced clearly when you hit the limit
 - Session id is now preserved when continuing within the same session
 - Hardened context compaction budget handling
 
 ## 3.0.39
 
-- You can now select Cline free models on the ClinePass provider in the model picker
-- Removed the retired ClinePass GLM 5.1 model
+- You can now select HadyanCode free models on the HadyanCodePass provider in the model picker
+- Removed the retired HadyanCodePass GLM 5.1 model
 - Fixed OpenAI Codex model metadata under the GPT Subscription provider
 - `str_replace` edits now report accurate diffs
 - Fixed context compaction so canonical session history is preserved
 - The detached hub daemon now emits telemetry, and telemetry identity now includes `user_id`
-- Cline provider requests now send versioned client-identity headers
+- HadyanCode provider requests now send versioned client-identity headers
 
 ## 3.0.38
 
 - New plan/act accent palette: act mode is now blue (`#79b8ff`) and plan mode amber, replacing the old cyan/yellow — applied across dialogs, the model selector, config, onboarding, markdown, and syntax highlighting, with light-theme variants tuned for contrast
 - Restyled chat input: a minimal frame with full-width horizontal rules and a bold accent prompt glyph instead of the tinted background, plus slimmer user-message bubbles
 - Assistant markdown accents are now tinted by the mode (plan/act) they were produced in
-- Polished the status bar usage display and ClinePass model name
+- Polished the status bar usage display and HadyanCodePass model name
 - Harmonized the success/diff green and dark syntax-highlighting colors with the new brand palette
 - The thinking-level picker now defaults its cursor to Medium instead of Off
 - `read_files` now tolerates malformed input from weaker models: line-range entries (`start_line`/`end_line`) sent as separate array items are coalesced back onto the preceding file path instead of being rejected (from SDK v0.0.58)
@@ -266,7 +266,7 @@
 
 ## 3.0.35
 
-- ClinePass is now enabled for all CLI users
+- HadyanCodePass is now enabled for all CLI users
 - Recover missing interactive sessions when reading messages
 - Format structured commands in history export
 - Add the subscription promo code when linking to the dashboard subscription page
@@ -278,30 +278,30 @@
 
 ## 3.0.34
 
-- Fixed the ClinePass upgrade notice appearing immediately after completing onboarding.
-- Improved the wording of the ClinePass onboarding step.
-- Streamlined the Cline provider picker by merging the subscription and usage/billing options into one and removing the credits link.
+- Fixed the HadyanCodePass upgrade notice appearing immediately after completing onboarding.
+- Improved the wording of the HadyanCodePass onboarding step.
+- Streamlined the HadyanCode provider picker by merging the subscription and usage/billing options into one and removing the credits link.
 
 ## 3.0.33
 
-- Show a ClinePass subscription URL as a fallback during onboarding so you can still subscribe if the subscription screen can't open automatically
-- Hide the ClinePass promo for users who already have a ClinePass subscription
-- Use an adaptive plan accent color for ClinePass prompts so they fit the active theme
+- Show a HadyanCodePass subscription URL as a fallback during onboarding so you can still subscribe if the subscription screen can't open automatically
+- Hide the HadyanCodePass promo for users who already have a HadyanCodePass subscription
+- Use an adaptive plan accent color for HadyanCodePass prompts so they fit the active theme
 
 ## 3.0.32
 
-- Improved the ClinePass onboarding experience
-- Added an intermediate step before going to ClinePass model selection
-- Made the ClinePass subscription screen selectable
-- Promoted ClinePass in the startup notice
-- Used "ClinePass" as one word consistently and refined the provider UI copy
+- Improved the HadyanCodePass onboarding experience
+- Added an intermediate step before going to HadyanCodePass model selection
+- Made the HadyanCodePass subscription screen selectable
+- Promoted HadyanCodePass in the startup notice
+- Used "HadyanCodePass" as one word consistently and refined the provider UI copy
 - More accurate context compaction and clearer error messages (from SDK v0.0.54)
 
 ## 3.0.31
 
-- Show when request cost is covered by your Cline subscription
-- Prompt to switch to ClinePass when you run out of credits, and list ClinePass features in the not-subscribed message
-- Added an option to open the subscription page from the ClinePass options
+- Show when request cost is covered by your HadyanCode subscription
+- Prompt to switch to HadyanCodePass when you run out of credits, and list HadyanCodePass features in the not-subscribed message
+- Added an option to open the subscription page from the HadyanCodePass options
 - Added marketplace uninstall support and surfaced plugin-bundled skills
 - Require quoted prompts for one-shot mode
 - Capped MCP tool names at 64 characters for OpenAI-compatible providers
@@ -315,7 +315,7 @@
 - Refreshed the model catalog with the latest provider models
 - Preserved OpenRouter reasoning-disable behavior and improved OpenRouter prompt caching
 - Routed LiteLLM model fetches through the SDK and stopped unrelated models from appearing in the LiteLLM model list
-- Updated ClinePass models live, restored ClinePass models in onboarding, and improved ClinePass error messages
+- Updated HadyanCodePass models live, restored HadyanCodePass models in onboarding, and improved HadyanCodePass error messages
 - Threaded proxy/CA-aware networking into the inference path
 - Persisted Bedrock settings to providers.json
 - Normalized JSON-like tool inputs by schema for more reliable tool calls
@@ -324,34 +324,34 @@
 
 ## 3.0.29
 
-- Costs are now hidden for Cline free models
-- Fixed Z.ai model metadata resolution for Z.ai models accessed through the Cline provider
+- Costs are now hidden for HadyanCode free models
+- Fixed Z.ai model metadata resolution for Z.ai models accessed through the HadyanCode provider
 - Reverted the model-name-only display change from v3.0.28; the model picker, selector, and status bar return to their previous display behavior
 
 ## 3.0.28
 
-- Added a ClinePass onboarding flow with selectable ClinePass models, plus improved ClinePass error handling
+- Added a HadyanCodePass onboarding flow with selectable HadyanCodePass models, plus improved HadyanCodePass error handling
 - Added hub primitive catalogs and refreshed the hub dashboard design with a dedicated customizations breakout
 - Auto-approve toggles now apply immediately when changed
 - Feature flags now resolve using your user ID on startup
-- Fixed Cline model display names so they resolve by model name
+- Fixed HadyanCode model display names so they resolve by model name
 - Truncate large tool results by default (including MCP and custom tool output) to keep requests within context budget
 - Hardened parallel tool-call guidance for faster, more reliable multi-tool execution
 
 ## 3.0.27
 
-- Added a `cline skill` command to install and manage skills, matching `cline plugin install` and `cline mcp` (installs default to the Cline agent directory)
+- Added a `hadyancode skill` command to install and manage skills, matching `hadyancode plugin install` and `hadyancode mcp` (installs default to the HadyanCode agent directory)
 - Added a prefilled MCP install wizard command for quicker MCP server setup
 - Improved error handling and messaging when plugin MCP OAuth authorization fails
 - The CLI now rejects unknown commands and unquoted multi-word input with a clear error instead of silently treating bad arguments as a prompt
 
 ## 3.0.26
 
-- Reverted the expandable model picker sections and ClinePass models, restoring the previous model-selection UI
+- Reverted the expandable model picker sections and HadyanCodePass models, restoring the previous model-selection UI
 
 ## 3.0.25
 
-- Added ClinePass support, with selectable ClinePass models in the model picker
+- Added HadyanCodePass support, with selectable HadyanCodePass models in the model picker
 - Made model picker sections expandable
 - Added MCP server support to plugins, including authorizing plugin MCP OAuth during install
 - Encouraged parallel tool calls for faster task execution
@@ -363,14 +363,14 @@
 - Fixed disabled-reasoning handling for StepFun flash
 - Fixed history resume rendering isolation
 - Fixed the Hugging Face URL
-- Fixed Cline OAuth token formatting in provider config
+- Fixed HadyanCode OAuth token formatting in provider config
 
 ## 3.0.24
 
 - Plugin commands can now submit prompts to the agent
 - Added support for overriding the API base URL
 - Open the verification URL automatically when starting device authentication
-- Enforced a single shared Cline Hub, so a stale hub is respawned after an upgrade
+- Enforced a single shared HadyanCode Hub, so a stale hub is respawned after an upgrade
 - Suppressed flickering console windows on Windows
 - Fixed truncation of structured tool operation result strings so oversized tool output stays within limits
 - Stopped echoing the full command text in run_commands tool results
@@ -391,7 +391,7 @@
 ## 3.0.21
 
 - Added a global auto-update setting that controls automatic updates on CLI startup
-- Added a Cline credits refill link
+- Added a HadyanCode credits refill link
 - Fixed scrolling for inline ask-question responses
 - Fixed connector thread session routing and stale hub session handling
 - Added support for Vertex AI Application Default Credentials (ADC) with tool use
@@ -411,29 +411,29 @@
 - Fix Slack channel mentions so replies post in the original message's thread.
 - Fix the abort indicator to clear immediately when a task is cancelled.
 - Sync the Fireworks AI model registry and refresh the bundled model catalog with current platform offerings.
-- Bump the bundled SDK to v0.0.43, which forces a running Cline Hub to restart so it picks up the latest SDK code.
+- Bump the bundled SDK to v0.0.43, which forces a running HadyanCode Hub to restart so it picks up the latest SDK code.
 
 ## 3.0.17
 
-- Fix a regression introduced in 3.0.15 where the interactive CLI could get stuck after stopping and restarting Cline Hub and then pressing Escape to cancel a request. The CLI now detects stale or missing sessions, recovers any pending messages, and starts a fresh session instead of failing with "session not found".
+- Fix a regression introduced in 3.0.15 where the interactive CLI could get stuck after stopping and restarting HadyanCode Hub and then pressing Escape to cancel a request. The CLI now detects stale or missing sessions, recovers any pending messages, and starts a fresh session instead of failing with "session not found".
 - Fix Ctrl+C and Hub shutdown races that surfaced as "hook dispatch failed" and WebSocket connection errors from late hook events racing against Hub shutdown.
 - Fix the Hub daemon being shut down prematurely when a runtime request was aborted, so the daemon now stays alive.
 - Improve the Telegram connector with a new `--allowed-user-id` flag to restrict which Telegram users are authorized to interact with the agent.
 
 ## 3.0.16
 
-- Install official Cline plugins by slug off the new github.com/cline/plugins collection.
-- Uninstall plugins using `cline plugin uninstall <plugin>` or in the TUI.
+- Install official HadyanCode plugins by slug off the new github.com/cline/plugins collection.
+- Uninstall plugins using `hadyancode plugin uninstall <plugin>` or in the TUI.
 - Plugins can now bundle skills, and plugin skills are grouped together in settings.
 - Add Slack socket mode support.
 - Allow a custom base URL for Anthropic vendor-type providers.
 - Fix OAuth token migration for users signed in through the old extension.
 - Use a union schema for read-files tool input validation.
-- Add a `CLINE_PLUGIN_IMPORT_TIMEOUT_MS` env override to control the plugin import timeout.
+- Add a `HADYANCODE_PLUGIN_IMPORT_TIMEOUT_MS` env override to control the plugin import timeout.
 
 ## 3.0.15
 
-- Add Cline Hub, a web app for monitoring connected clients, viewing and driving sessions, streaming assistant output, and restarting the local hub, with local, LAN, and tunnel usage gated by a room secret.
+- Add HadyanCode Hub, a web app for monitoring connected clients, viewing and driving sessions, streaming assistant output, and restarting the local hub, with local, LAN, and tunnel usage gated by a room secret.
 - Support global AGENTS rules so agent rules can be applied across all sessions, not just per-project.
 - Let plugins contribute static or dynamic rule content when installed in the sandbox.
 - Bind Discord sessions to individual message authors so different Discord users no longer share chat state in a thread.
@@ -460,7 +460,7 @@
 
 - Show a loading dialog while the config screen switches provider or model so the transition no longer looks frozen.
 - Render the ask question tool prompt inline with the conversation so the question and suggested answers stay attached to the assistant turn that asked them, instead of appearing in a separate modal.
-- Allow manual `cline update` runs to install the latest published version immediately, bypassing the release age gate that delays automatic updates.
+- Allow manual `hadyancode update` runs to install the latest published version immediately, bypassing the release age gate that delays automatic updates.
 - Refresh the bundled SDK to 0.0.42, updating the model catalog.
 
 ## 3.0.11
@@ -525,7 +525,7 @@
 
 ## 3.0.3
 
-- Add `--worktree` flag that auto-creates a fresh git worktree under `~/.cline/worktrees/` and runs the task there. Works with `--taskId` and `--continue` so you can resume a task in an isolated worktree to try a different approach.
+- Add `--worktree` flag that auto-creates a fresh git worktree under `~/.hadyancode/worktrees/` and runs the task there. Works with `--taskId` and `--continue` so you can resume a task in an isolated worktree to try a different approach.
 - Show session status in the CLI history view and refresh status rows in place while the standalone history TUI is open.
 - Restore the OpenAI compatible provider in the auth flow and preserve stored model metadata when configuring or migrating OpenAI-compatible providers.
 - Fix dropped macOS screenshots when pasting them into the TUI or asking the agent to read them: paths containing U+202F (narrow no-break space) and other Unicode variants now resolve to the real file instead of failing with ENOENT.
@@ -545,7 +545,7 @@
 
 ## 3.0.0
 
-Introducing our new Cline CLI built on our new SDK and comes with a snappy new TUI.
+Introducing our new HadyanCode CLI built on our new SDK and comes with a snappy new TUI.
 
 Install:
 
@@ -562,7 +562,7 @@ npm install -g cline@nightly
 ## 0.0.13
 
 - Detect prompt-cache support from cache write pricing so providers with write-only caching are represented correctly in the model catalog
-- Dual-publish `@clinebot/cli` mirror wrapper so existing users who installed via `npm i -g @clinebot/cli` continue receiving updates
+- Dual-publish `@hadyancodebot/cli` mirror wrapper so existing users who installed via `npm i -g @hadyancodebot/cli` continue receiving updates
 - Fix response truncation for OpenAI Codex model responses
 
 ## 0.0.12
@@ -615,14 +615,14 @@ npm install -g cline@nightly
 
 - Fix crash when pressing Escape to cancel a running turn
 - Add plugin and SDK tool toggles to the settings panel
-- Add `@cline/sdk` as a user-facing alias for `@cline/core`
+- Add `@hadyancode/sdk` as a user-facing alias for `@hadyancode/core`
 - Improve hub recovery with better error handling, logging, and recovery timeouts
 - Show session summary (ID, model, cost, resume command) on exit
 - Fix OAuth browser-launch failure
 - Fix compact no-op being reported indistinctly
 - Fix CLI history resume being non-transactional (could leave blank UI or corrupt session on disk)
 - Fix cross-client session history not loading Code/VS Code sessions, and fix interactive turn status showing stale state
-- Fix configuration file paths for hooks and rules (now resolve from `~/.cline/hooks` and `~/.cline/rules`)
+- Fix configuration file paths for hooks and rules (now resolve from `~/.hadyancode/hooks` and `~/.hadyancode/rules`)
 - Fix Telegram connector: honor `--no-tools` flag, lock tool-disabled mode across state changes, post replies as raw text to avoid markdown parse failures, add `/help` and `/start` commands
 - Clean up CLI program description and compact slash command descriptions
 - Clean up CLI flags
@@ -656,7 +656,7 @@ npm install -g cline@nightly
 - Pasting 5+ lines into the input shows a compact preview marker instead of flooding the textarea. The full content is still submitted.
 - Arrow-key history navigation respects cursor position so you don't lose your place when scrolling through previous prompts.
 - The TUI renders immediately instead of blocking while the hub daemon boots. Hub readiness and session hydration happen in the background.
-- Listing previous sessions no longer hydrates every full session, making `cline history` and the history picker snappy even with hundreds of sessions.
+- Listing previous sessions no longer hydrates every full session, making `hadyancode history` and the history picker snappy even with hundreds of sessions.
 - Updating the CLI no longer leaves you connected to a stale hub daemon. Incompatible versions are detected and replaced automatically, eliminating the "Unsupported hub schedule command" class of errors.
 - Schedules can now trigger on external events (webhooks, GitHub events, plugin-emitted signals) in addition to cron intervals, with deduplication, filtering, and retry policies.
 - Plugins can register automation event types that feed into the scheduling system, enabling custom triggers from any source.
@@ -672,7 +672,7 @@ npm install -g cline@nightly
 
 - Rewritten TUI from Ink to OpenTUI with streaming markdown, syntax-highlighted diffs, scrollable chat, and mouse support
 - Dialog system for model picker, tool approval, settings browser, session history, and onboarding
-- Interactive setup wizards: `cline connect`, `cline schedule`, `cline mcp`
+- Interactive setup wizards: `hadyancode connect`, `hadyancode schedule`, `hadyancode mcp`
 - Plan/Act mode toggle with system prompt and tool rebuilding on switch
 - Input autocomplete for slash commands and file mentions
 - Message queuing and steer messages during running turns

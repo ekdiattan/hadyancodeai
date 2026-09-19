@@ -1,4 +1,4 @@
-import { UpdateSettingsRequest, UserOrganization } from "@shared/proto/index.cline"
+import { UpdateSettingsRequest, UserOrganization } from "@shared/proto/index.hadyancode"
 import { VSCodeCheckbox } from "@vscode/webview-ui-toolkit/react"
 import { useExtensionState } from "@/context/ExtensionStateContext"
 import { StateServiceClient } from "@/services/grpc-client"

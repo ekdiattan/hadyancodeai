@@ -1,4 +1,4 @@
-import { CLINE_DEFAULT_MODEL_ID } from "@cline/shared/browser";
+import { HADYANCODE_DEFAULT_MODEL_ID } from "@hadyancode/shared/browser";
 import type { ChatSessionConfig } from "@/lib/chat-schema";
 import { readModelSelectionStorageFromWindow } from "@/lib/model-selection";
 import { normalizeProviderId } from "@/lib/provider-id";
@@ -17,9 +17,9 @@ export const DEFAULT_CHAT_CONFIG: ChatSessionConfig = {
 	sessionId: undefined,
 	workspaceRoot: "",
 	cwd: "",
-	provider: "cline",
-	model: CLINE_DEFAULT_MODEL_ID,
-	apiKey: process.env.CLINE_API_KEY || "",
+	provider: "hadyancode",
+	model: HADYANCODE_DEFAULT_MODEL_ID,
+	apiKey: process.env.HADYANCODE_API_KEY || "",
 	mode: "act",
 	systemPrompt: undefined,
 	maxIterations: undefined,

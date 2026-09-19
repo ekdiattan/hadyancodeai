@@ -4,8 +4,8 @@ import {
 	type BasicLogger,
 	createContributionRegistry,
 	resolveAndLoadAgentPlugins,
-} from "@cline/core";
-import type { AgentTool, Message } from "@cline/shared";
+} from "@hadyancode/core";
+import type { AgentTool, Message } from "@hadyancode/shared";
 import {
 	type ChatCommandDefinition,
 	type ChatCommandHost,

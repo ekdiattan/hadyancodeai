@@ -1,4 +1,4 @@
-import { formatDisplayUserInput } from "@cline/shared/browser";
+import { formatDisplayUserInput } from "@hadyancode/shared/browser";
 import type { ChatMessage } from "@/lib/chat-schema";
 
 export function formatChatMessageContent(

@@ -19,12 +19,12 @@ const {
 	probeHubServer,
 	requestHubShutdown,
 	readHubDiscovery,
-	resolveClineDataDir,
+	resolveHadyanCodeDataDir,
 	resolveHubBuildId,
 	resolveHubBuildIdentity,
 	withHubStartupLock,
 	writeHubDiscovery,
-	CLINE_RUN_AS_HUB_DAEMON_ENV,
+	HADYANCODE_RUN_AS_HUB_DAEMON_ENV,
 } = vi.hoisted(() => ({
 	spawn: vi.fn(() => ({ unref: vi.fn() })),
 	closeSync: vi.fn(),
@@ -80,7 +80,7 @@ const {
 	probeHubServer: vi.fn(),
 	requestHubShutdown: vi.fn(async () => true),
 	readHubDiscovery: vi.fn(),
-	resolveClineDataDir: vi.fn(() => "/tmp/cline-data"),
+	resolveHadyanCodeDataDir: vi.fn(() => "/tmp/hadyancode-data"),
 	resolveHubBuildId: vi.fn(() => "current-build"),
 	resolveHubBuildIdentity: vi.fn(() => ({
 		buildId: "current-build",
@@ -91,11 +91,11 @@ const {
 			await callback(),
 	),
 	writeHubDiscovery: vi.fn(),
-	CLINE_RUN_AS_HUB_DAEMON_ENV: "CLINE_RUN_AS_HUB_DAEMON",
+	HADYANCODE_RUN_AS_HUB_DAEMON_ENV: "HADYANCODE_RUN_AS_HUB_DAEMON",
 }));
 
-const originalRunAsHubDaemon = process.env[CLINE_RUN_AS_HUB_DAEMON_ENV];
-const originalConnectorCliLaunch = process.env.CLINE_CONNECTOR_CLI_LAUNCH;
+const originalRunAsHubDaemon = process.env[HADYANCODE_RUN_AS_HUB_DAEMON_ENV];
+const originalConnectorCliLaunch = process.env.HADYANCODE_CONNECTOR_CLI_LAUNCH;
 
 vi.mock("node:child_process", () => ({
 	spawn,
@@ -107,17 +107,17 @@ vi.mock("node:fs", () => ({
 	openSync,
 }));
 
-vi.mock("@cline/shared", () => ({
-	CLINE_RUN_AS_HUB_DAEMON_ENV,
-	CLINE_HUB_PORT: 25463,
-	CLINE_HUB_DEV_PORT: 25466,
+vi.mock("@hadyancode/shared", () => ({
+	HADYANCODE_RUN_AS_HUB_DAEMON_ENV,
+	HADYANCODE_HUB_PORT: 25463,
+	HADYANCODE_HUB_DEV_PORT: 25466,
 	isHubProtocolCompatible: (record: { protocolVersion?: string }) => ({
 		compatible: record.protocolVersion === "v1",
 	}),
 	isHubDaemonProcess: (env: NodeJS.ProcessEnv = process.env) =>
-		env[CLINE_RUN_AS_HUB_DAEMON_ENV] === "1",
-	resolveClineBuildEnv: () => "production",
-	withResolvedClineBuildEnv: (env: NodeJS.ProcessEnv) => env,
+		env[HADYANCODE_RUN_AS_HUB_DAEMON_ENV] === "1",
+	resolveHadyanCodeBuildEnv: () => "production",
+	withResolvedHadyanCodeBuildEnv: (env: NodeJS.ProcessEnv) => env,
 }));
 
 vi.mock("../client", () => ({
@@ -141,7 +141,7 @@ vi.mock("../discovery", () => ({
 	isManagedHubReusable,
 	probeHubServer,
 	readHubDiscovery,
-	resolveClineDataDir,
+	resolveHadyanCodeDataDir,
 	resolveHubBuildId,
 	resolveHubBuildIdentity,
 	withHubStartupLock,
@@ -156,7 +156,7 @@ describe("ensureDetachedHubServer", () => {
 		// cases all retire the same URL.
 		const { __test__ } = await import(".");
 		__test__.resetRetireAttempts();
-		delete process.env[CLINE_RUN_AS_HUB_DAEMON_ENV];
+		delete process.env[HADYANCODE_RUN_AS_HUB_DAEMON_ENV];
 		spawn.mockReset();
 		spawn.mockImplementation(() => ({ unref: vi.fn() }));
 		closeSync.mockReset();
@@ -186,19 +186,19 @@ describe("ensureDetachedHubServer", () => {
 		vi.clearAllMocks();
 		vi.unstubAllGlobals();
 		if (originalRunAsHubDaemon === undefined) {
-			delete process.env[CLINE_RUN_AS_HUB_DAEMON_ENV];
+			delete process.env[HADYANCODE_RUN_AS_HUB_DAEMON_ENV];
 		} else {
-			process.env[CLINE_RUN_AS_HUB_DAEMON_ENV] = originalRunAsHubDaemon;
+			process.env[HADYANCODE_RUN_AS_HUB_DAEMON_ENV] = originalRunAsHubDaemon;
 		}
 		if (originalConnectorCliLaunch === undefined) {
-			delete process.env.CLINE_CONNECTOR_CLI_LAUNCH;
+			delete process.env.HADYANCODE_CONNECTOR_CLI_LAUNCH;
 		} else {
-			process.env.CLINE_CONNECTOR_CLI_LAUNCH = originalConnectorCliLaunch;
+			process.env.HADYANCODE_CONNECTOR_CLI_LAUNCH = originalConnectorCliLaunch;
 		}
 	});
 
 	it("does not use port 0 for default production startup", async () => {
-		process.env.CLINE_CONNECTOR_CLI_LAUNCH = JSON.stringify({
+		process.env.HADYANCODE_CONNECTOR_CLI_LAUNCH = JSON.stringify({
 			launcher: "bun",
 			connectArgsPrefix: ["/workspace/apps/cli/src/index.ts", "connect"],
 			cwd: "/workspace",
@@ -237,9 +237,9 @@ describe("ensureDetachedHubServer", () => {
 		expect(spawnArgs).toContain("--port");
 		expect(spawnArgs).toContain("25463");
 		expect(spawnArgs).not.toContain("0");
-		expect(spawnOptions?.env?.[CLINE_RUN_AS_HUB_DAEMON_ENV]).toBe("1");
-		expect(spawnOptions?.env?.CLINE_CONNECTOR_CLI_LAUNCH).toBe(
-			process.env.CLINE_CONNECTOR_CLI_LAUNCH,
+		expect(spawnOptions?.env?.[HADYANCODE_RUN_AS_HUB_DAEMON_ENV]).toBe("1");
+		expect(spawnOptions?.env?.HADYANCODE_CONNECTOR_CLI_LAUNCH).toBe(
+			process.env.HADYANCODE_CONNECTOR_CLI_LAUNCH,
 		);
 	});
 
@@ -248,7 +248,7 @@ describe("ensureDetachedHubServer", () => {
 		try {
 			const textFileBusy = Object.assign(
 				new Error(
-					"ETXTBSY: text file is busy, posix_spawn '/usr/local/bin/cline'",
+					"ETXTBSY: text file is busy, posix_spawn '/usr/local/bin/hadyancode'",
 				),
 				{ code: "ETXTBSY" },
 			);
@@ -285,7 +285,7 @@ describe("ensureDetachedHubServer", () => {
 	});
 
 	it("does not spawn another detached daemon from inside the hub daemon process", async () => {
-		process.env[CLINE_RUN_AS_HUB_DAEMON_ENV] = "1";
+		process.env[HADYANCODE_RUN_AS_HUB_DAEMON_ENV] = "1";
 
 		const { spawnDetachedHubServer } = await import(".");
 		spawnDetachedHubServer("/workspace");
@@ -295,7 +295,7 @@ describe("ensureDetachedHubServer", () => {
 	});
 
 	it("does not prewarm another detached daemon from inside the hub daemon process", async () => {
-		process.env[CLINE_RUN_AS_HUB_DAEMON_ENV] = "1";
+		process.env[HADYANCODE_RUN_AS_HUB_DAEMON_ENV] = "1";
 
 		const { prewarmDetachedHubServer } = await import(".");
 		prewarmDetachedHubServer("/workspace");
@@ -334,7 +334,7 @@ describe("ensureDetachedHubServer", () => {
 		try {
 			const textFileBusy = Object.assign(
 				new Error(
-					"ETXTBSY: text file is busy, posix_spawn '/usr/local/bin/cline'",
+					"ETXTBSY: text file is busy, posix_spawn '/usr/local/bin/hadyancode'",
 				),
 				{ code: "ETXTBSY" },
 			);
@@ -591,7 +591,7 @@ describe("ensureDetachedHubServer", () => {
 			const pending = expect(
 				ensureDetachedHubServer("/workspace"),
 			).rejects.toThrow(
-				"An incompatible Cline Hub is already running at ws://127.0.0.1:25463/hub and could not be retired automatically.",
+				"An incompatible HadyanCode Hub is already running at ws://127.0.0.1:25463/hub and could not be retired automatically.",
 			);
 			await vi.runAllTimersAsync();
 
@@ -664,7 +664,7 @@ describe("ensureDetachedHubServer", () => {
 
 		const { ensureDetachedHubServer } = await import(".");
 		await expect(ensureDetachedHubServer("/workspace")).rejects.toThrow(
-			"A compatible Cline Hub is already running at ws://127.0.0.1:25463/hub, but its discovery record is missing or unreadable and no usable auth token is available.",
+			"A compatible HadyanCode Hub is already running at ws://127.0.0.1:25463/hub, but its discovery record is missing or unreadable and no usable auth token is available.",
 		);
 		expect(spawn).not.toHaveBeenCalled();
 	});
@@ -820,7 +820,7 @@ describe("upgradeManagedHub", () => {
 	beforeEach(async () => {
 		const { __test__ } = await import(".");
 		__test__.resetRetireAttempts();
-		delete process.env[CLINE_RUN_AS_HUB_DAEMON_ENV];
+		delete process.env[HADYANCODE_RUN_AS_HUB_DAEMON_ENV];
 		spawn.mockReset();
 		spawn.mockImplementation(() => ({ unref: vi.fn() }));
 		rememberRecoverableLocalHubUrl.mockReset();
@@ -846,9 +846,9 @@ describe("upgradeManagedHub", () => {
 		vi.clearAllMocks();
 		vi.unstubAllGlobals();
 		if (originalRunAsHubDaemon === undefined) {
-			delete process.env[CLINE_RUN_AS_HUB_DAEMON_ENV];
+			delete process.env[HADYANCODE_RUN_AS_HUB_DAEMON_ENV];
 		} else {
-			process.env[CLINE_RUN_AS_HUB_DAEMON_ENV] = originalRunAsHubDaemon;
+			process.env[HADYANCODE_RUN_AS_HUB_DAEMON_ENV] = originalRunAsHubDaemon;
 		}
 	});
 

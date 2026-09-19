@@ -1,14 +1,14 @@
 import { mkdtempSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { loadSqliteDb } from "@cline/shared/db";
+import { loadSqliteDb } from "@hadyancode/shared/db";
 import { describe, expect, it } from "vitest";
 import { HubRunAdmissionRejectedError, HubRunQueue } from "./hub-run-queue";
 
 describe("HubRunQueue", () => {
 	it("opens its database in WAL mode", () => {
 		const dbPath = join(
-			mkdtempSync(join(tmpdir(), "cline-hub-runs-")),
+			mkdtempSync(join(tmpdir(), "hadyancode-hub-runs-")),
 			"hub-runs.db",
 		);
 		const queue = new HubRunQueue({ dbPath });

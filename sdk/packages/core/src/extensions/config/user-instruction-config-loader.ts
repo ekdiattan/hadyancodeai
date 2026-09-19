@@ -8,7 +8,7 @@ import {
 	relative,
 	resolve,
 } from "node:path";
-import { stripUtf8Bom } from "@cline/shared";
+import { stripUtf8Bom } from "@hadyancode/shared";
 import {
 	AGENTS_RULES_FILE_NAME,
 	RULES_CONFIG_DIRECTORY_NAME,
@@ -18,7 +18,7 @@ import {
 	resolveWorkflowsConfigSearchPaths as resolveWorkflowsConfigSearchPathsFromShared,
 	SKILLS_CONFIG_DIRECTORY_NAME,
 	WORKFLOWS_CONFIG_DIRECTORY_NAME,
-} from "@cline/shared/storage";
+} from "@hadyancode/shared/storage";
 import YAML from "yaml";
 import {
 	type AgentPluginPackageSkill,
@@ -128,8 +128,8 @@ function isIgnorableDirectoryError(error: unknown): boolean {
 	const nodeError = error as NodeJS.ErrnoException;
 	return (
 		nodeError?.code === "ENOENT" ||
-		// ENOTDIR: a path component is a file, e.g. `.clinerules/workflows`
-		// when `.clinerules` is a legacy single-file ruleset. Treat it like a
+		// ENOTDIR: a path component is a file, e.g. `.hadyancoderules/workflows`
+		// when `.hadyancoderules` is a legacy single-file ruleset. Treat it like a
 		// missing directory instead of aborting the whole config scan.
 		nodeError?.code === "ENOTDIR" ||
 		nodeError?.code === "EACCES" ||
@@ -224,16 +224,16 @@ async function discoverAgentPluginSkillFile(
 }
 
 async function discoverManagedPluginRoots(
-	clineDirectoryPath: string,
+	hadyancodeDirectoryPath: string,
 ): Promise<string[]> {
 	try {
-		const entries = await readdir(clineDirectoryPath, { withFileTypes: true });
+		const entries = await readdir(hadyancodeDirectoryPath, { withFileTypes: true });
 		const pluginRoots: string[] = [];
 		for (const entry of entries) {
 			if (!entry.isDirectory()) {
 				continue;
 			}
-			const pluginRoot = join(clineDirectoryPath, entry.name);
+			const pluginRoot = join(hadyancodeDirectoryPath, entry.name);
 			const manifestPath = join(pluginRoot, MANAGED_PLUGIN_MANIFEST_FILE_NAME);
 			try {
 				const content = await readFile(manifestPath, "utf8");
@@ -266,7 +266,7 @@ function parseMarkdownFrontmatter(
 ): ParseMarkdownFrontmatterResult {
 	// Strip a leading UTF-8 BOM (e.g. added by Windows Notepad's "UTF-8 with BOM" encoding),
 	// which Node's `utf-8` decoding does not strip on its own. Without this the frontmatter
-	// regex below never matches a file that starts with "\uFEFF---" (see cline/cline#12151).
+	// regex below never matches a file that starts with "\uFEFF---" (see hadyancode/hadyancode#12151).
 	const normalizedContent = stripUtf8Bom(content);
 
 	const frontmatterRegex = /^---\r?\n([\s\S]*?)\r?\n---\r?\n?([\s\S]*)$/;
@@ -455,7 +455,7 @@ export function resolveWorkflowsConfigSearchPaths(
 async function discoverSkillFiles(
 	directoryPath: string,
 ): Promise<ReadonlyArray<UnifiedConfigFileCandidate>> {
-	if (basename(directoryPath) === ".cline") {
+	if (basename(directoryPath) === ".hadyancode") {
 		const pluginRoots = await discoverManagedPluginRoots(directoryPath);
 		const nestedCandidates = await Promise.all(
 			pluginRoots.map((pluginRoot) =>
@@ -509,7 +509,7 @@ async function discoverSkillFiles(
 async function discoverRulesLikeFiles(
 	directoryPath: string,
 ): Promise<ReadonlyArray<UnifiedConfigFileCandidate>> {
-	if (basename(directoryPath) === ".cline") {
+	if (basename(directoryPath) === ".hadyancode") {
 		const pluginRoots = await discoverManagedPluginRoots(directoryPath);
 		const nestedCandidates = await Promise.all(
 			pluginRoots.map((pluginRoot) =>
@@ -579,7 +579,7 @@ async function discoverRulesLikeFiles(
 async function discoverManagedWorkflowFiles(
 	directoryPath: string,
 ): Promise<ReadonlyArray<UnifiedConfigFileCandidate>> {
-	if (basename(directoryPath) === ".cline") {
+	if (basename(directoryPath) === ".hadyancode") {
 		const pluginRoots = await discoverManagedPluginRoots(directoryPath);
 		const nestedCandidates = await Promise.all(
 			pluginRoots.map((pluginRoot) =>
@@ -604,7 +604,7 @@ export function createSkillsConfigDefinition(
 		]),
 	);
 	const managedRoot = options?.workspacePath
-		? join(options.workspacePath, ".cline")
+		? join(options.workspacePath, ".hadyancode")
 		: undefined;
 
 	return {
@@ -663,7 +663,7 @@ export function createRulesConfigDefinition(
 		options?.directories ??
 		resolveRulesConfigSearchPaths(options?.workspacePath);
 	const managedRoot = options?.workspacePath
-		? join(options.workspacePath, ".cline")
+		? join(options.workspacePath, ".hadyancode")
 		: undefined;
 
 	return {
@@ -671,7 +671,7 @@ export function createRulesConfigDefinition(
 		directories: managedRoot ? [...directories, managedRoot] : directories,
 		discoverFiles: discoverRulesLikeFiles,
 		includeFile: (fileName, filePath) =>
-			fileName === ".clinerules" ||
+			fileName === ".hadyancoderules" ||
 			isMarkdownFile(fileName) ||
 			isMarkdownFile(filePath),
 		parseFile: (context) =>
@@ -690,7 +690,7 @@ export function createWorkflowsConfigDefinition(
 		options?.directories ??
 		resolveWorkflowsConfigSearchPaths(options?.workspacePath);
 	const managedRoot = options?.workspacePath
-		? join(options.workspacePath, ".cline")
+		? join(options.workspacePath, ".hadyancode")
 		: undefined;
 
 	return {

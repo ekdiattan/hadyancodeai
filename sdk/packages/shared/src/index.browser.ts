@@ -285,13 +285,13 @@ export {
 } from "./parse/string";
 export { formatHumanReadableDate, formatUptime } from "./parse/time";
 export { validateWithZod, zodToJsonSchema } from "./parse/zod";
-export type { ClineSystemPromptOptions } from "./prompt/cline";
+export type { HadyanCodeSystemPromptOptions } from "./prompt/hadyancode";
 export {
-	buildClineSystemPrompt,
+	buildHadyanCodeSystemPrompt,
 	MODE_TAG_INSTRUCTIONS,
 	PLAN_MODE_INSTRUCTIONS,
 	PLAN_MODE_INSTRUCTIONS_MANUAL_SWITCH,
-} from "./prompt/cline";
+} from "./prompt/hadyancode";
 export type {
 	ModeSwitchNotice,
 	ModeSwitchNoticeTracker,
@@ -312,8 +312,8 @@ export {
 	stripModeNotices,
 	xmlTagsRemoval,
 } from "./prompt/format";
-export { CLINE_DEFAULT_MODEL_ID } from "./providers/defaults";
-export { isClineProvider } from "./providers/utils";
+export { HADYANCODE_DEFAULT_MODEL_ID } from "./providers/defaults";
+export { isHadyanCodeProvider } from "./providers/utils";
 export { REMOTE_URI_SCHEME } from "./remote-config/constants";
 export type {
 	AnthropicModel,
@@ -345,8 +345,8 @@ export {
 	AwsBedrockCustomModelSchema,
 	AwsBedrockModelSchema,
 	AwsBedrockSettingsSchema,
-	ClineModelSchema,
-	ClineSettingsSchema,
+	HadyanCodeModelSchema,
+	HadyanCodeSettingsSchema,
 	EnterpriseTelemetrySchema,
 	GlobalInstructionsFileSchema,
 	LiteLLMModelSchema,
@@ -360,7 +360,7 @@ export {
 	VertexModelSchema,
 	VertexSettingsSchema,
 } from "./remote-config/schema";
-export { CLINE_DEFAULT_RPC_ADDRESS, CLINE_DEFAULT_RPC_PORT } from "./rpc";
+export { HADYANCODE_DEFAULT_RPC_ADDRESS, HADYANCODE_DEFAULT_RPC_PORT } from "./rpc";
 export type {
 	AddProviderActionRequest,
 	ChatAttachmentFile,
@@ -372,7 +372,7 @@ export type {
 	ChatStartSessionResponse,
 	ChatToolCallResult,
 	ChatTurnResult,
-	ClineAccountActionRequest,
+	HadyanCodeAccountActionRequest,
 	EnterpriseAuthenticateRequest,
 	EnterpriseAuthenticateResponse,
 	EnterpriseStatusRequest,
@@ -423,18 +423,18 @@ export {
 	TEAM_PROGRESS_EVENT_TYPE,
 } from "./rpc/team-progress";
 export type {
-	ClineEnvironment,
-	ClineEnvironmentConfig,
-	ResolveClineEnvironmentOptions,
-} from "./runtime/cline-environment";
+	HadyanCodeEnvironment,
+	HadyanCodeEnvironmentConfig,
+	ResolveHadyanCodeEnvironmentOptions,
+} from "./runtime/hadyancode-environment";
 export {
-	CLINE_ENVIRONMENT_ENV,
-	CLINE_ENVIRONMENT_OVERRIDE_ENV,
-	CLINE_ENVIRONMENTS,
-	DEFAULT_CLINE_ENVIRONMENT,
-	getClineEnvironmentConfig,
-	resolveClineEnvironment,
-} from "./runtime/cline-environment";
+	HADYANCODE_ENVIRONMENT_ENV,
+	HADYANCODE_ENVIRONMENT_OVERRIDE_ENV,
+	HADYANCODE_ENVIRONMENTS,
+	DEFAULT_HADYANCODE_ENVIRONMENT,
+	getHadyanCodeEnvironmentConfig,
+	resolveHadyanCodeEnvironment,
+} from "./runtime/hadyancode-environment";
 export type {
 	CaptureAgentUnexpectedReasoningTokensInput,
 	CaptureSdkErrorInput,
@@ -465,10 +465,10 @@ export {
 	TASK_PROVIDER_STREAM_FAILED_EVENT,
 	TASK_PROVIDER_STREAM_STARTED_EVENT,
 } from "./services/telemetry";
-export type { ClineTelemetryServiceConfig } from "./services/telemetry-config";
+export type { HadyanCodeTelemetryServiceConfig } from "./services/telemetry-config";
 export {
-	createClineTelemetryServiceConfig,
-	createClineTelemetryServiceMetadata,
+	createHadyanCodeTelemetryServiceConfig,
+	createHadyanCodeTelemetryServiceMetadata,
 } from "./services/telemetry-config";
 export type {
 	HookSessionContext,
@@ -503,8 +503,8 @@ export {
 export type { RuntimeEnv } from "./session/runtime-env";
 export * from "./session/workspace";
 export {
-	CLINE_CHAT_WORKSPACE_DIRECTORY_NAME,
-	CLINE_WORKSPACES_DIRECTORY_NAME,
+	HADYANCODE_CHAT_WORKSPACE_DIRECTORY_NAME,
+	HADYANCODE_WORKSPACES_DIRECTORY_NAME,
 	isChatWorkspacePath,
 } from "./storage/chat-workspace-paths";
 export * from "./tasks";

@@ -22,7 +22,7 @@ import {
 	type AgentToolContext,
 	getDefaultShell,
 	getShellInvocation,
-} from "@cline/shared";
+} from "@hadyancode/shared";
 import {
 	type ProcessStartTokenProbeResult,
 	probeProcessStartTokenAsync,
@@ -38,7 +38,7 @@ import type { RunCommandExecutionController } from "./run-command-execution-cont
 const MAX_DETACHED_LOG_BYTES = 10 * 1024 * 1024;
 const DEFAULT_DETACHED_LOG_RETENTION_MS = 24 * 60 * 60 * 1_000;
 const DEFAULT_ACTIVE_COMMAND_POLL_INTERVAL_MS = 60_000;
-const DETACHED_LOG_DIRECTORY_PREFIX = "cline-command-";
+const DETACHED_LOG_DIRECTORY_PREFIX = "hadyancode-command-";
 const DETACHED_LOG_FILENAME = "output.log";
 const DETACHED_LOG_ACTIVE_COMMAND_FILENAME = "active-command.json";
 const DETACHED_LOG_COMPLETED_FILENAME = "completed-at";

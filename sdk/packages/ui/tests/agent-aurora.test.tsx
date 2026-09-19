@@ -26,10 +26,10 @@ describe("AgentAurora", () => {
 	it("renders the deterministic decorative field", async () => {
 		await act(async () => root.render(<AgentAurora />));
 
-		const aurora = container.querySelector(".cline-ui-agent-aurora");
+		const aurora = container.querySelector(".hadyancode-ui-agent-aurora");
 		expect(aurora?.getAttribute("aria-hidden")).toBe("true");
 		expect(
-			aurora?.querySelectorAll(".cline-ui-agent-aurora__star"),
+			aurora?.querySelectorAll(".hadyancode-ui-agent-aurora__star"),
 		).toHaveLength(32);
 		const markup = aurora?.innerHTML;
 

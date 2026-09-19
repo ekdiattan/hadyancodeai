@@ -1,5 +1,5 @@
-import { UserOrganizationUpdateRequest } from "@shared/proto/cline/account"
-import { Empty } from "@shared/proto/cline/common"
+import { UserOrganizationUpdateRequest } from "@shared/proto/hadyancode/account"
+import { Empty } from "@shared/proto/hadyancode/common"
 import type { Controller } from "../index"
 
 /**

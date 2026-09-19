@@ -46,7 +46,7 @@ export class GrpcRecorderBuilder {
 	static getRecorder(controller: Controller): IRecorder {
 		if (!GrpcRecorderBuilder.recorder) {
 			GrpcRecorderBuilder.recorder = GrpcRecorder.builder()
-				.enableIf(process.env.GRPC_RECORDER_ENABLED === "true" && process.env.CLINE_ENVIRONMENT === "local")
+				.enableIf(process.env.GRPC_RECORDER_ENABLED === "true" && process.env.HADYANCODE_ENVIRONMENT === "local")
 				.withLogFileHandler(new LogFileHandler())
 				.build(controller)
 		}
@@ -90,7 +90,7 @@ function testFilters(): GrpcRequestFilter[] {
 	 */
 	return [
 		(req) => req.is_streaming,
-		(req) => ["cline.UiService", "cline.McpService", "cline.WebService"].includes(req.service),
+		(req) => ["hadyancode.UiService", "hadyancode.McpService", "hadyancode.WebService"].includes(req.service),
 		(req) =>
 			[
 				"refreshOpenRouterModels",

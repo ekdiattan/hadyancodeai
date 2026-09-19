@@ -42,31 +42,31 @@
 			"@utils/*": [
 				"./src/utils/*"
 			],
-			"@cline/agents": [
+			"@hadyancode/agents": [
 				"../../sdk/packages/agents/src/index.ts"
 			],
-			"@cline/agents/*": [
+			"@hadyancode/agents/*": [
 				"../../sdk/packages/agents/src/*",
 				"../../sdk/packages/agents/src/*/index.ts"
 			],
-			"@cline/core": [
+			"@hadyancode/core": [
 				"../../sdk/packages/core/src/index.ts"
 			],
-			"@cline/core/*": [
+			"@hadyancode/core/*": [
 				"../../sdk/packages/core/src/*",
 				"../../sdk/packages/core/src/*/index.ts"
 			],
-			"@cline/llms": [
+			"@hadyancode/llms": [
 				"../../sdk/packages/llms/src/index.ts"
 			],
-			"@cline/llms/*": [
+			"@hadyancode/llms/*": [
 				"../../sdk/packages/llms/src/*",
 				"../../sdk/packages/llms/src/*/index.ts"
 			],
-			"@cline/shared": [
+			"@hadyancode/shared": [
 				"../../sdk/packages/shared/src/index.ts"
 			],
-			"@cline/shared/*": [
+			"@hadyancode/shared/*": [
 				"../../sdk/packages/shared/src/*",
 				"../../sdk/packages/shared/src/*/index.ts"
 			]

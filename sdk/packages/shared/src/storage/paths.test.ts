@@ -4,10 +4,10 @@ import { dirname, join } from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
 import {
 	AGENT_CONFIG_DIRECTORY_NAME,
-	CLINE_CHAT_WORKSPACE_DIRECTORY_NAME,
-	CLINE_CONNECTOR_SETTINGS_FILE_NAME,
-	CLINE_MCP_SETTINGS_FILE_NAME,
-	CLINE_WORKSPACES_DIRECTORY_NAME,
+	HADYANCODE_CHAT_WORKSPACE_DIRECTORY_NAME,
+	HADYANCODE_CONNECTOR_SETTINGS_FILE_NAME,
+	HADYANCODE_MCP_SETTINGS_FILE_NAME,
+	HADYANCODE_WORKSPACES_DIRECTORY_NAME,
 	discoverPluginModulePaths,
 	getPluginDisplayName,
 	HOOKS_CONFIG_DIRECTORY_NAME,
@@ -17,7 +17,7 @@ import {
 	resolveAgentPluginSearchPaths,
 	resolveAgentsConfigDirPath,
 	resolveChatWorkspacePath,
-	resolveClineDataDir,
+	resolveHadyanCodeDataDir,
 	resolveConfiguredPluginModulePaths,
 	resolveConnectorDataDir,
 	resolveConnectorSettingsPath,
@@ -36,46 +36,46 @@ import {
 } from "./paths";
 
 type EnvSnapshot = {
-	CLINE_DIR: string | undefined;
-	CLINE_DATA_DIR: string | undefined;
-	CLINE_CONNECTOR_DATA_DIR: string | undefined;
-	CLINE_CONNECTOR_SETTINGS_PATH: string | undefined;
-	CLINE_DB_DATA_DIR: string | undefined;
-	CLINE_GLOBAL_SETTINGS_PATH: string | undefined;
-	CLINE_MCP_SETTINGS_PATH: string | undefined;
-	CLINE_PROVIDER_SETTINGS_PATH: string | undefined;
-	CLINE_SESSION_DATA_DIR: string | undefined;
-	CLINE_TEAM_DATA_DIR: string | undefined;
+	HADYANCODE_DIR: string | undefined;
+	HADYANCODE_DATA_DIR: string | undefined;
+	HADYANCODE_CONNECTOR_DATA_DIR: string | undefined;
+	HADYANCODE_CONNECTOR_SETTINGS_PATH: string | undefined;
+	HADYANCODE_DB_DATA_DIR: string | undefined;
+	HADYANCODE_GLOBAL_SETTINGS_PATH: string | undefined;
+	HADYANCODE_MCP_SETTINGS_PATH: string | undefined;
+	HADYANCODE_PROVIDER_SETTINGS_PATH: string | undefined;
+	HADYANCODE_SESSION_DATA_DIR: string | undefined;
+	HADYANCODE_TEAM_DATA_DIR: string | undefined;
 };
 
 function captureEnv(): EnvSnapshot {
 	return {
-		CLINE_DIR: process.env.CLINE_DIR,
-		CLINE_DATA_DIR: process.env.CLINE_DATA_DIR,
-		CLINE_CONNECTOR_DATA_DIR: process.env.CLINE_CONNECTOR_DATA_DIR,
-		CLINE_CONNECTOR_SETTINGS_PATH: process.env.CLINE_CONNECTOR_SETTINGS_PATH,
-		CLINE_DB_DATA_DIR: process.env.CLINE_DB_DATA_DIR,
-		CLINE_GLOBAL_SETTINGS_PATH: process.env.CLINE_GLOBAL_SETTINGS_PATH,
-		CLINE_MCP_SETTINGS_PATH: process.env.CLINE_MCP_SETTINGS_PATH,
-		CLINE_PROVIDER_SETTINGS_PATH: process.env.CLINE_PROVIDER_SETTINGS_PATH,
-		CLINE_SESSION_DATA_DIR: process.env.CLINE_SESSION_DATA_DIR,
-		CLINE_TEAM_DATA_DIR: process.env.CLINE_TEAM_DATA_DIR,
+		HADYANCODE_DIR: process.env.HADYANCODE_DIR,
+		HADYANCODE_DATA_DIR: process.env.HADYANCODE_DATA_DIR,
+		HADYANCODE_CONNECTOR_DATA_DIR: process.env.HADYANCODE_CONNECTOR_DATA_DIR,
+		HADYANCODE_CONNECTOR_SETTINGS_PATH: process.env.HADYANCODE_CONNECTOR_SETTINGS_PATH,
+		HADYANCODE_DB_DATA_DIR: process.env.HADYANCODE_DB_DATA_DIR,
+		HADYANCODE_GLOBAL_SETTINGS_PATH: process.env.HADYANCODE_GLOBAL_SETTINGS_PATH,
+		HADYANCODE_MCP_SETTINGS_PATH: process.env.HADYANCODE_MCP_SETTINGS_PATH,
+		HADYANCODE_PROVIDER_SETTINGS_PATH: process.env.HADYANCODE_PROVIDER_SETTINGS_PATH,
+		HADYANCODE_SESSION_DATA_DIR: process.env.HADYANCODE_SESSION_DATA_DIR,
+		HADYANCODE_TEAM_DATA_DIR: process.env.HADYANCODE_TEAM_DATA_DIR,
 	};
 }
 
 function restoreEnv(snapshot: EnvSnapshot): void {
-	process.env.CLINE_DATA_DIR = snapshot.CLINE_DATA_DIR;
-	process.env.CLINE_CONNECTOR_DATA_DIR = snapshot.CLINE_CONNECTOR_DATA_DIR;
-	process.env.CLINE_CONNECTOR_SETTINGS_PATH =
-		snapshot.CLINE_CONNECTOR_SETTINGS_PATH;
-	process.env.CLINE_DIR = snapshot.CLINE_DIR;
-	process.env.CLINE_DB_DATA_DIR = snapshot.CLINE_DB_DATA_DIR;
-	process.env.CLINE_GLOBAL_SETTINGS_PATH = snapshot.CLINE_GLOBAL_SETTINGS_PATH;
-	process.env.CLINE_MCP_SETTINGS_PATH = snapshot.CLINE_MCP_SETTINGS_PATH;
-	process.env.CLINE_PROVIDER_SETTINGS_PATH =
-		snapshot.CLINE_PROVIDER_SETTINGS_PATH;
-	process.env.CLINE_SESSION_DATA_DIR = snapshot.CLINE_SESSION_DATA_DIR;
-	process.env.CLINE_TEAM_DATA_DIR = snapshot.CLINE_TEAM_DATA_DIR;
+	process.env.HADYANCODE_DATA_DIR = snapshot.HADYANCODE_DATA_DIR;
+	process.env.HADYANCODE_CONNECTOR_DATA_DIR = snapshot.HADYANCODE_CONNECTOR_DATA_DIR;
+	process.env.HADYANCODE_CONNECTOR_SETTINGS_PATH =
+		snapshot.HADYANCODE_CONNECTOR_SETTINGS_PATH;
+	process.env.HADYANCODE_DIR = snapshot.HADYANCODE_DIR;
+	process.env.HADYANCODE_DB_DATA_DIR = snapshot.HADYANCODE_DB_DATA_DIR;
+	process.env.HADYANCODE_GLOBAL_SETTINGS_PATH = snapshot.HADYANCODE_GLOBAL_SETTINGS_PATH;
+	process.env.HADYANCODE_MCP_SETTINGS_PATH = snapshot.HADYANCODE_MCP_SETTINGS_PATH;
+	process.env.HADYANCODE_PROVIDER_SETTINGS_PATH =
+		snapshot.HADYANCODE_PROVIDER_SETTINGS_PATH;
+	process.env.HADYANCODE_SESSION_DATA_DIR = snapshot.HADYANCODE_SESSION_DATA_DIR;
+	process.env.HADYANCODE_TEAM_DATA_DIR = snapshot.HADYANCODE_TEAM_DATA_DIR;
 }
 
 describe("storage path resolution", () => {
@@ -86,7 +86,7 @@ describe("storage path resolution", () => {
 	});
 
 	it("only auto-discovers Agent Plugins from the user home", () => {
-		const homeRoot = mkdtempSync(join(tmpdir(), "cline-agent-plugin-home-"));
+		const homeRoot = mkdtempSync(join(tmpdir(), "hadyancode-agent-plugin-home-"));
 		const previousHome = process.env.HOME ?? "~";
 		try {
 			setHomeDir(homeRoot);
@@ -99,156 +99,156 @@ describe("storage path resolution", () => {
 		}
 	});
 
-	it("uses CLINE_DATA_DIR as-is when set", () => {
+	it("uses HADYANCODE_DATA_DIR as-is when set", () => {
 		snapshot = captureEnv();
-		process.env.CLINE_DATA_DIR = "/tmp/cline-data";
+		process.env.HADYANCODE_DATA_DIR = "/tmp/hadyancode-data";
 
-		expect(resolveClineDataDir()).toBe("/tmp/cline-data");
+		expect(resolveHadyanCodeDataDir()).toBe("/tmp/hadyancode-data");
 	});
 
-	it("falls back to CLINE_DATA_DIR/sessions for session storage", () => {
+	it("falls back to HADYANCODE_DATA_DIR/sessions for session storage", () => {
 		snapshot = captureEnv();
-		delete process.env.CLINE_SESSION_DATA_DIR;
-		process.env.CLINE_DATA_DIR = "/tmp/cline-data";
+		delete process.env.HADYANCODE_SESSION_DATA_DIR;
+		process.env.HADYANCODE_DATA_DIR = "/tmp/hadyancode-data";
 
-		expect(resolveSessionDataDir()).toBe(join("/tmp/cline-data", "sessions"));
+		expect(resolveSessionDataDir()).toBe(join("/tmp/hadyancode-data", "sessions"));
 	});
 
-	it("falls back to CLINE_DATA_DIR/teams for team storage", () => {
+	it("falls back to HADYANCODE_DATA_DIR/teams for team storage", () => {
 		snapshot = captureEnv();
-		delete process.env.CLINE_TEAM_DATA_DIR;
-		process.env.CLINE_DATA_DIR = "/tmp/cline-data";
+		delete process.env.HADYANCODE_TEAM_DATA_DIR;
+		process.env.HADYANCODE_DATA_DIR = "/tmp/hadyancode-data";
 
-		expect(resolveTeamDataDir()).toBe(join("/tmp/cline-data", "teams"));
+		expect(resolveTeamDataDir()).toBe(join("/tmp/hadyancode-data", "teams"));
 	});
 
-	it("falls back to CLINE_DATA_DIR/connectors for connector storage", () => {
+	it("falls back to HADYANCODE_DATA_DIR/connectors for connector storage", () => {
 		snapshot = captureEnv();
-		delete process.env.CLINE_CONNECTOR_DATA_DIR;
-		process.env.CLINE_DATA_DIR = "/tmp/cline-data";
+		delete process.env.HADYANCODE_CONNECTOR_DATA_DIR;
+		process.env.HADYANCODE_DATA_DIR = "/tmp/hadyancode-data";
 
 		expect(resolveConnectorDataDir()).toBe(
-			join("/tmp/cline-data", "connectors"),
+			join("/tmp/hadyancode-data", "connectors"),
 		);
 	});
 
-	it("falls back to CLINE_DATA_DIR/connectors/settings.json for connector settings", () => {
+	it("falls back to HADYANCODE_DATA_DIR/connectors/settings.json for connector settings", () => {
 		snapshot = captureEnv();
-		delete process.env.CLINE_CONNECTOR_DATA_DIR;
-		delete process.env.CLINE_CONNECTOR_SETTINGS_PATH;
-		process.env.CLINE_DATA_DIR = "/tmp/cline-data";
+		delete process.env.HADYANCODE_CONNECTOR_DATA_DIR;
+		delete process.env.HADYANCODE_CONNECTOR_SETTINGS_PATH;
+		process.env.HADYANCODE_DATA_DIR = "/tmp/hadyancode-data";
 
 		expect(resolveConnectorSettingsPath()).toBe(
-			join("/tmp/cline-data", "connectors", CLINE_CONNECTOR_SETTINGS_FILE_NAME),
+			join("/tmp/hadyancode-data", "connectors", HADYANCODE_CONNECTOR_SETTINGS_FILE_NAME),
 		);
 	});
 
-	it("uses CLINE_CONNECTOR_SETTINGS_PATH as-is when set", () => {
+	it("uses HADYANCODE_CONNECTOR_SETTINGS_PATH as-is when set", () => {
 		snapshot = captureEnv();
-		process.env.CLINE_CONNECTOR_SETTINGS_PATH =
-			"/tmp/cline-connectors/custom-settings.json";
+		process.env.HADYANCODE_CONNECTOR_SETTINGS_PATH =
+			"/tmp/hadyancode-connectors/custom-settings.json";
 
 		expect(resolveConnectorSettingsPath()).toBe(
-			"/tmp/cline-connectors/custom-settings.json",
+			"/tmp/hadyancode-connectors/custom-settings.json",
 		);
 	});
 
-	it("falls back to CLINE_DATA_DIR/db for sqlite storage", () => {
+	it("falls back to HADYANCODE_DATA_DIR/db for sqlite storage", () => {
 		snapshot = captureEnv();
-		delete process.env.CLINE_DB_DATA_DIR;
-		process.env.CLINE_DATA_DIR = "/tmp/cline-data";
+		delete process.env.HADYANCODE_DB_DATA_DIR;
+		process.env.HADYANCODE_DATA_DIR = "/tmp/hadyancode-data";
 
-		expect(resolveDbDataDir()).toBe(join("/tmp/cline-data", "db"));
+		expect(resolveDbDataDir()).toBe(join("/tmp/hadyancode-data", "db"));
 	});
 
-	it("falls back to CLINE_DATA_DIR/settings/providers.json for provider settings", () => {
+	it("falls back to HADYANCODE_DATA_DIR/settings/providers.json for provider settings", () => {
 		snapshot = captureEnv();
-		delete process.env.CLINE_PROVIDER_SETTINGS_PATH;
-		process.env.CLINE_DATA_DIR = "/tmp/cline-data";
+		delete process.env.HADYANCODE_PROVIDER_SETTINGS_PATH;
+		process.env.HADYANCODE_DATA_DIR = "/tmp/hadyancode-data";
 
 		expect(resolveProviderSettingsPath()).toBe(
-			join("/tmp/cline-data", "settings", "providers.json"),
+			join("/tmp/hadyancode-data", "settings", "providers.json"),
 		);
 	});
 
-	it("falls back to CLINE_DATA_DIR/settings/global-settings.json for global settings", () => {
+	it("falls back to HADYANCODE_DATA_DIR/settings/global-settings.json for global settings", () => {
 		snapshot = captureEnv();
-		delete process.env.CLINE_GLOBAL_SETTINGS_PATH;
-		process.env.CLINE_DATA_DIR = "/tmp/cline-data";
+		delete process.env.HADYANCODE_GLOBAL_SETTINGS_PATH;
+		process.env.HADYANCODE_DATA_DIR = "/tmp/hadyancode-data";
 
 		expect(resolveGlobalSettingsPath()).toBe(
-			join("/tmp/cline-data", "settings", "global-settings.json"),
+			join("/tmp/hadyancode-data", "settings", "global-settings.json"),
 		);
 	});
 
-	it("falls back to CLINE_DATA_DIR/settings/cline_mcp_settings.json for MCP settings", () => {
+	it("falls back to HADYANCODE_DATA_DIR/settings/hadyancode_mcp_settings.json for MCP settings", () => {
 		snapshot = captureEnv();
-		delete process.env.CLINE_MCP_SETTINGS_PATH;
-		process.env.CLINE_DATA_DIR = "/tmp/cline-data";
+		delete process.env.HADYANCODE_MCP_SETTINGS_PATH;
+		process.env.HADYANCODE_DATA_DIR = "/tmp/hadyancode-data";
 
 		expect(resolveMcpSettingsPath()).toBe(
-			join("/tmp/cline-data", "settings", CLINE_MCP_SETTINGS_FILE_NAME),
+			join("/tmp/hadyancode-data", "settings", HADYANCODE_MCP_SETTINGS_FILE_NAME),
 		);
 	});
 
-	it("falls back to ~/.cline/.agents for agent configs", () => {
+	it("falls back to ~/.hadyancode/.agents for agent configs", () => {
 		snapshot = captureEnv();
-		process.env.CLINE_DIR = "/tmp/home/.cline";
+		process.env.HADYANCODE_DIR = "/tmp/home/.hadyancode";
 
 		expect(resolveAgentsConfigDirPath()).toBe(
-			join("/tmp/home", ".cline", AGENT_CONFIG_DIRECTORY_NAME),
+			join("/tmp/home", ".hadyancode", AGENT_CONFIG_DIRECTORY_NAME),
 		);
 	});
 
-	it("resolves global hooks from ~/.cline", () => {
+	it("resolves global hooks from ~/.hadyancode", () => {
 		snapshot = captureEnv();
-		process.env.CLINE_DIR = "/tmp/home/.cline";
-		process.env.CLINE_DATA_DIR = "/tmp/home/.cline/data";
+		process.env.HADYANCODE_DIR = "/tmp/home/.hadyancode";
+		process.env.HADYANCODE_DATA_DIR = "/tmp/home/.hadyancode/data";
 
 		expect(resolveHooksConfigSearchPaths()).toEqual(
 			expect.arrayContaining([
-				join("/tmp/home", ".cline", HOOKS_CONFIG_DIRECTORY_NAME),
+				join("/tmp/home", ".hadyancode", HOOKS_CONFIG_DIRECTORY_NAME),
 			]),
 		);
 		expect(resolveHooksConfigSearchPaths()).not.toContain(
-			join("/tmp/home", ".cline", "data", HOOKS_CONFIG_DIRECTORY_NAME),
+			join("/tmp/home", ".hadyancode", "data", HOOKS_CONFIG_DIRECTORY_NAME),
 		);
 	});
 
-	it("resolves global rules from ~/.cline", () => {
+	it("resolves global rules from ~/.hadyancode", () => {
 		snapshot = captureEnv();
-		process.env.CLINE_DIR = "/tmp/home/.cline";
-		process.env.CLINE_DATA_DIR = "/tmp/home/.cline/data";
+		process.env.HADYANCODE_DIR = "/tmp/home/.hadyancode";
+		process.env.HADYANCODE_DATA_DIR = "/tmp/home/.hadyancode/data";
 
 		expect(resolveRulesConfigSearchPaths()).toEqual(
 			expect.arrayContaining([
 				resolveGlobalAgentsRulesPath(),
-				join("/tmp/home", ".cline", RULES_CONFIG_DIRECTORY_NAME),
-				// xdg-user-dir's unconfigured Documents fallback (cline/cline#13542)
+				join("/tmp/home", ".hadyancode", RULES_CONFIG_DIRECTORY_NAME),
+				// xdg-user-dir's unconfigured Documents fallback (hadyancode/hadyancode#13542)
 				join(
 					dirname(dirname(resolveGlobalAgentsRulesPath())),
-					"Cline",
+					"HadyanCode",
 					"Rules",
 				),
 			]),
 		);
 		expect(resolveRulesConfigSearchPaths()).not.toContain(
-			join("/tmp/home", ".cline", "data", RULES_CONFIG_DIRECTORY_NAME),
+			join("/tmp/home", ".hadyancode", "data", RULES_CONFIG_DIRECTORY_NAME),
 		);
 	});
 
-	it("resolves legacy and new workflow paths, with .cline paths later for duplicate-name precedence", () => {
+	it("resolves legacy and new workflow paths, with .hadyancode paths later for duplicate-name precedence", () => {
 		snapshot = captureEnv();
-		process.env.CLINE_DIR = "/tmp/home/.cline";
+		process.env.HADYANCODE_DIR = "/tmp/home/.hadyancode";
 		const workspacePath = "/repo/demo";
 
 		const paths = resolveWorkflowsConfigSearchPaths(workspacePath);
 
 		expect(paths).toEqual([
-			join(workspacePath, ".clinerules", "workflows"),
-			expect.stringContaining(join("Documents", "Cline", "Workflows")),
-			join("/tmp/home", ".cline", "workflows"),
-			join(workspacePath, ".cline", "workflows"),
+			join(workspacePath, ".hadyancoderules", "workflows"),
+			expect.stringContaining(join("Documents", "HadyanCode", "Workflows")),
+			join("/tmp/home", ".hadyancode", "workflows"),
+			join(workspacePath, ".hadyancode", "workflows"),
 		]);
 	});
 });
@@ -261,48 +261,48 @@ describe("chat workspace paths", () => {
 	});
 
 	it("exports the canonical path segments", () => {
-		expect(CLINE_WORKSPACES_DIRECTORY_NAME).toBe("workspaces");
-		expect(CLINE_CHAT_WORKSPACE_DIRECTORY_NAME).toBe("chat");
+		expect(HADYANCODE_WORKSPACES_DIRECTORY_NAME).toBe("workspaces");
+		expect(HADYANCODE_CHAT_WORKSPACE_DIRECTORY_NAME).toBe("chat");
 	});
 
-	it("resolves the shared chat workspace under the cline data dir", () => {
+	it("resolves the shared chat workspace under the hadyancode data dir", () => {
 		snapshot = captureEnv();
-		delete process.env.CLINE_DATA_DIR;
-		process.env.CLINE_DIR = "/tmp/home/.cline";
+		delete process.env.HADYANCODE_DATA_DIR;
+		process.env.HADYANCODE_DIR = "/tmp/home/.hadyancode";
 
 		expect(resolveChatWorkspacePath()).toBe(
-			join("/tmp/home/.cline", "data", "workspaces", "chat"),
+			join("/tmp/home/.hadyancode", "data", "workspaces", "chat"),
 		);
 	});
 
-	it("honors the CLINE_DATA_DIR override", () => {
+	it("honors the HADYANCODE_DATA_DIR override", () => {
 		snapshot = captureEnv();
-		process.env.CLINE_DATA_DIR = "/tmp/cline-data";
+		process.env.HADYANCODE_DATA_DIR = "/tmp/hadyancode-data";
 
 		expect(resolveChatWorkspacePath()).toBe(
-			join("/tmp/cline-data", "workspaces", "chat"),
+			join("/tmp/hadyancode-data", "workspaces", "chat"),
 		);
 	});
 
 	it.each([
-		"/home/user/.cline/data/workspaces/chat",
-		"//home//user//.cline//data//workspaces//chat//",
-		"C:\\Users\\dev\\.cline\\data\\workspaces\\chat\\",
-		"\\\\server\\share\\.cline\\data\\workspaces\\chat",
+		"/home/user/.hadyancode/data/workspaces/chat",
+		"//home//user//.hadyancode//data//workspaces//chat//",
+		"C:\\Users\\dev\\.hadyancode\\data\\workspaces\\chat\\",
+		"\\\\server\\share\\.hadyancode\\data\\workspaces\\chat",
 	])("recognizes chat workspace root %s", (path) => {
 		expect(isChatWorkspacePath(path)).toBe(true);
 	});
 
 	it.each([
-		".cline/data/workspaces/chat",
+		".hadyancode/data/workspaces/chat",
 		"/tmp/chat",
-		"/tmp/cline/sessions/session-a1b2c3-temp/project",
-		"/home/user/cline/data/workspaces/chat",
-		"/home/user/.cline/workspaces/chat",
-		"/home/user/.cline/data/other/chat",
-		"/home/user/.cline/data/workspaces/Chat",
-		"/home/user/.cline/data/workspaces/chat/my-app",
-		"/home/user/.cline/data/workspaces",
+		"/tmp/hadyancode/sessions/session-a1b2c3-temp/project",
+		"/home/user/hadyancode/data/workspaces/chat",
+		"/home/user/.hadyancode/workspaces/chat",
+		"/home/user/.hadyancode/data/other/chat",
+		"/home/user/.hadyancode/data/workspaces/Chat",
+		"/home/user/.hadyancode/data/workspaces/chat/my-app",
+		"/home/user/.hadyancode/data/workspaces",
 	])("rejects non-chat workspace path %s", (path) => {
 		expect(isChatWorkspacePath(path)).toBe(false);
 	});
@@ -312,7 +312,7 @@ describe("getPluginDisplayName", () => {
 	const tempRoots: string[] = [];
 
 	function createTempRoot(): string {
-		const root = mkdtempSync(join(tmpdir(), "cline-plugin-name-"));
+		const root = mkdtempSync(join(tmpdir(), "hadyancode-plugin-name-"));
 		tempRoots.push(root);
 		return root;
 	}
@@ -335,13 +335,13 @@ describe("getPluginDisplayName", () => {
 		mkdirSync(packageDir, { recursive: true });
 		writeFileSync(
 			join(packageDir, "package.json"),
-			JSON.stringify({ name: "cline-agents-squad-plugin" }),
+			JSON.stringify({ name: "hadyancode-agents-squad-plugin" }),
 		);
 		const entryPath = join(packageDir, "index.ts");
 		writeFileSync(entryPath, "export default {};");
 
 		expect(getPluginDisplayName(entryPath, root)).toBe(
-			"cline-agents-squad-plugin",
+			"hadyancode-agents-squad-plugin",
 		);
 	});
 
@@ -394,11 +394,11 @@ describe("getPluginDisplayName", () => {
 	});
 });
 
-describe("Cline plugin discovery boundary", () => {
+describe("HadyanCode plugin discovery boundary", () => {
 	const tempRoots: string[] = [];
 
 	function createTempRoot(): string {
-		const root = mkdtempSync(join(tmpdir(), "cline-plugin-boundary-"));
+		const root = mkdtempSync(join(tmpdir(), "hadyancode-plugin-boundary-"));
 		tempRoots.push(root);
 		return root;
 	}
@@ -412,7 +412,7 @@ describe("Cline plugin discovery boundary", () => {
 	/**
 	 * A minimal conformant Agent Plugin: a skill with an executable script, a
 	 * second vendor's extension directory, and a vendored dependency. None of it
-	 * is a Cline plugin module.
+	 * is a HadyanCode plugin module.
 	 */
 	function writeAgentPlugin(pluginRoot: string): void {
 		writeFile(
@@ -461,7 +461,7 @@ describe("Cline plugin discovery boundary", () => {
 		}
 	});
 
-	it("claims nothing from an Agent Plugin dropped into a Cline plugin root", () => {
+	it("claims nothing from an Agent Plugin dropped into a HadyanCode plugin root", () => {
 		const root = createTempRoot();
 		writeAgentPlugin(join(root, "summarizer"));
 
@@ -500,7 +500,7 @@ describe("Cline plugin discovery boundary", () => {
 		expect(discoverPluginModulePaths(root)).toEqual([entryPath]);
 	});
 
-	it("still discovers bare Cline plugin modules", () => {
+	it("still discovers bare HadyanCode plugin modules", () => {
 		const root = createTempRoot();
 		const first = writeFile(join(root, "alpha.ts"), "export default {};");
 		const second = writeFile(
@@ -511,12 +511,12 @@ describe("Cline plugin discovery boundary", () => {
 		expect(discoverPluginModulePaths(root)).toEqual([first, second]);
 	});
 
-	it("still honors package.json-declared Cline plugin entries", () => {
+	it("still honors package.json-declared HadyanCode plugin entries", () => {
 		const root = createTempRoot();
 		const packageDir = join(root, "declared");
 		writeFile(
 			join(packageDir, "package.json"),
-			JSON.stringify({ cline: { plugins: [{ paths: ["entry.ts"] }] } }),
+			JSON.stringify({ hadyancode: { plugins: [{ paths: ["entry.ts"] }] } }),
 		);
 		const entryPath = writeFile(
 			join(packageDir, "entry.ts"),
@@ -530,7 +530,7 @@ describe("Cline plugin discovery boundary", () => {
 	it("resolves no module entries for an Agent Plugin directory", () => {
 		const root = createTempRoot();
 		writeAgentPlugin(root);
-		// An index.ts at the root would otherwise be claimed as the Cline plugin
+		// An index.ts at the root would otherwise be claimed as the HadyanCode plugin
 		// entry point, so this asserts the manifest wins over the index fallback.
 		writeFile(join(root, "index.ts"), "export default {};");
 

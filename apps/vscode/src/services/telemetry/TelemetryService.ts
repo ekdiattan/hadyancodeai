@@ -3,7 +3,7 @@ import type { BrowserSettings } from "@shared/BrowserSettings"
 import { ShowMessageType } from "@shared/proto/host/window"
 import type { TaskFeedbackType } from "@shared/WebviewMessage"
 import * as os from "os"
-import { ClineAccountUserInfo } from "@/services/auth/AuthService"
+import { HadyanCodeAccountUserInfo } from "@/services/auth/AuthService"
 import { Setting } from "@/shared/proto/index.host"
 import { Logger } from "@/shared/services/Logger"
 import { Mode } from "@/shared/storage/types"
@@ -93,19 +93,19 @@ export enum TerminalHangStage {
 
 export type TelemetryMetadata = {
 	/**
-	 * The extension or cline-core version. JetBrains and CLI have different
-	 * versioning than the VSCode Extension, but on those platforms this will be the _cline-core version_
+	 * The extension or hadyancode-core version. JetBrains and CLI have different
+	 * versioning than the VSCode Extension, but on those platforms this will be the _hadyancode-core version_
 	 * which uses the same as the versioning as the VSCode extension.
 	 */
 	extension_version: string
 	/**
-	 * The type of cline distribution, e.g VSCode Extension, JetBrains Plugin or CLI. This
+	 * The type of hadyancode distribution, e.g VSCode Extension, JetBrains Plugin or CLI. This
 	 * is different than the `platform` because there are many variants of VSCode and JetBrains but they
 	 * all use the same extension or plugin.
 	 */
-	cline_type: string
+	hadyancode_type: string
 	/**
-	 * The version of the host-side Cline distribution package: the JetBrains plugin version
+	 * The version of the host-side HadyanCode distribution package: the JetBrains plugin version
 	 * (e.g. 1.1.61) on JetBrains, the extension version on VSCode (where it matches
 	 * `extension_version`). Absent when the host does not report one (e.g. CLI).
 	 */
@@ -133,7 +133,7 @@ export type TelemetryMetadata = {
 const MAX_ERROR_MESSAGE_LENGTH = 500
 
 /**
- * TelemetryService handles telemetry event tracking for the Cline extension
+ * TelemetryService handles telemetry event tracking for the HadyanCode extension
  * Uses an abstracted telemetry provider to support multiple analytics backends
  * Respects user privacy settings and VSCode's global telemetry configuration
  */
@@ -159,79 +159,79 @@ export class TelemetryService {
 	private lastLegacyBacklogEventKey?: string
 	public static readonly METRICS = {
 		TASK: {
-			TURNS_TOTAL: "cline.turns.total",
-			TURNS_PER_TASK: "cline.turns.per_task",
-			TOKENS_INPUT_TOTAL: "cline.tokens.input.total",
-			TOKENS_INPUT_PER_RESPONSE: "cline.tokens.input.per_response",
-			TOKENS_OUTPUT_TOTAL: "cline.tokens.output.total",
-			TOKENS_OUTPUT_PER_RESPONSE: "cline.tokens.output.per_response",
-			COST_TOTAL: "cline.cost.total",
-			COST_PER_EVENT: "cline.cost.per_event",
+			TURNS_TOTAL: "hadyancode.turns.total",
+			TURNS_PER_TASK: "hadyancode.turns.per_task",
+			TOKENS_INPUT_TOTAL: "hadyancode.tokens.input.total",
+			TOKENS_INPUT_PER_RESPONSE: "hadyancode.tokens.input.per_response",
+			TOKENS_OUTPUT_TOTAL: "hadyancode.tokens.output.total",
+			TOKENS_OUTPUT_PER_RESPONSE: "hadyancode.tokens.output.per_response",
+			COST_TOTAL: "hadyancode.cost.total",
+			COST_PER_EVENT: "hadyancode.cost.per_event",
 		},
 		CACHE: {
-			WRITE_TOTAL: "cline.cache.write.tokens.total",
-			WRITE_PER_EVENT: "cline.cache.write.tokens.per_event",
-			READ_TOTAL: "cline.cache.read.tokens.total",
-			READ_PER_EVENT: "cline.cache.read.tokens.per_event",
-			HITS_TOTAL: "cline.cache.hits.total",
+			WRITE_TOTAL: "hadyancode.cache.write.tokens.total",
+			WRITE_PER_EVENT: "hadyancode.cache.write.tokens.per_event",
+			READ_TOTAL: "hadyancode.cache.read.tokens.total",
+			READ_PER_EVENT: "hadyancode.cache.read.tokens.per_event",
+			HITS_TOTAL: "hadyancode.cache.hits.total",
 		},
 		TOOLS: {
-			CALLS_TOTAL: "cline.tool.calls.total",
-			CALLS_PER_TASK: "cline.tool.calls.per_task",
+			CALLS_TOTAL: "hadyancode.tool.calls.total",
+			CALLS_PER_TASK: "hadyancode.tool.calls.per_task",
 		},
 		ERRORS: {
-			TOTAL: "cline.errors.total",
-			PER_TASK: "cline.errors.per_task",
+			TOTAL: "hadyancode.errors.total",
+			PER_TASK: "hadyancode.errors.per_task",
 		},
 		API: {
-			TTFT_SECONDS: "cline.api.ttft.seconds",
-			DURATION_SECONDS: "cline.api.duration.seconds",
-			THROUGHPUT_TOKENS_PER_SECOND: "cline.api.throughput.tokens_per_second",
+			TTFT_SECONDS: "hadyancode.api.ttft.seconds",
+			DURATION_SECONDS: "hadyancode.api.duration.seconds",
+			THROUGHPUT_TOKENS_PER_SECOND: "hadyancode.api.throughput.tokens_per_second",
 		},
 		HOOKS: {
-			EXECUTIONS_TOTAL: "cline.hooks.executions.total",
-			DURATION_SECONDS: "cline.hooks.duration.seconds",
-			FAILURES_TOTAL: "cline.hooks.failures.total",
-			CANCELLATIONS_TOTAL: "cline.hooks.cancellations.total",
-			CONTEXT_MODIFICATIONS_TOTAL: "cline.hooks.context_modifications.total",
-			CACHE_ACCESSES_TOTAL: "cline.hooks.cache.accesses.total",
+			EXECUTIONS_TOTAL: "hadyancode.hooks.executions.total",
+			DURATION_SECONDS: "hadyancode.hooks.duration.seconds",
+			FAILURES_TOTAL: "hadyancode.hooks.failures.total",
+			CANCELLATIONS_TOTAL: "hadyancode.hooks.cancellations.total",
+			CONTEXT_MODIFICATIONS_TOTAL: "hadyancode.hooks.context_modifications.total",
+			CACHE_ACCESSES_TOTAL: "hadyancode.hooks.cache.accesses.total",
 		},
 		AI_OUTPUT: {
-			ACCEPTED_LINES_ADDED: "cline.ai_output.accepted.lines_added.total",
-			ACCEPTED_LINES_DELETED: "cline.ai_output.accepted.lines_deleted.total",
-			ACCEPTED_LINES_CHANGED: "cline.ai_output.accepted.lines_changed.total",
-			ACCEPTED_FILES_CREATED: "cline.ai_output.accepted.files_created.total",
-			ACCEPTED_FILES_DELETED: "cline.ai_output.accepted.files_deleted.total",
-			ACCEPTED_FILES_MOVED: "cline.ai_output.accepted.files_moved.total",
-			REJECTED_LINES_ADDED: "cline.ai_output.rejected.lines_added.total",
-			REJECTED_LINES_DELETED: "cline.ai_output.rejected.lines_deleted.total",
-			REJECTED_LINES_CHANGED: "cline.ai_output.rejected.lines_changed.total",
-			REJECTED_FILES_CREATED: "cline.ai_output.rejected.files_created.total",
-			REJECTED_FILES_DELETED: "cline.ai_output.rejected.files_deleted.total",
-			REJECTED_FILES_MOVED: "cline.ai_output.rejected.files_moved.total",
+			ACCEPTED_LINES_ADDED: "hadyancode.ai_output.accepted.lines_added.total",
+			ACCEPTED_LINES_DELETED: "hadyancode.ai_output.accepted.lines_deleted.total",
+			ACCEPTED_LINES_CHANGED: "hadyancode.ai_output.accepted.lines_changed.total",
+			ACCEPTED_FILES_CREATED: "hadyancode.ai_output.accepted.files_created.total",
+			ACCEPTED_FILES_DELETED: "hadyancode.ai_output.accepted.files_deleted.total",
+			ACCEPTED_FILES_MOVED: "hadyancode.ai_output.accepted.files_moved.total",
+			REJECTED_LINES_ADDED: "hadyancode.ai_output.rejected.lines_added.total",
+			REJECTED_LINES_DELETED: "hadyancode.ai_output.rejected.lines_deleted.total",
+			REJECTED_LINES_CHANGED: "hadyancode.ai_output.rejected.lines_changed.total",
+			REJECTED_FILES_CREATED: "hadyancode.ai_output.rejected.files_created.total",
+			REJECTED_FILES_DELETED: "hadyancode.ai_output.rejected.files_deleted.total",
+			REJECTED_FILES_MOVED: "hadyancode.ai_output.rejected.files_moved.total",
 		},
 		GRPC: {
-			RESPONSE_SIZE_BYTES: "cline.grpc.response.size_bytes",
+			RESPONSE_SIZE_BYTES: "hadyancode.grpc.response.size_bytes",
 		},
 		MIGRATION: {
-			// Fires whenever Cline checks an old pre-SDK task and decides whether/how to migrate it.
-			LEGACY_TASK_ATTEMPTS_TOTAL: "cline.migration.legacy_task.attempts.total",
-			// Fires when the user opens an old task and Cline successfully copies it into SDK session storage.
-			LEGACY_TASK_SUCCESS_TOTAL: "cline.migration.legacy_task.success.total",
-			// Fires when Cline tried to migrate an old task but failed while building or writing the SDK session.
-			LEGACY_TASK_FAILURES_TOTAL: "cline.migration.legacy_task.failures.total",
+			// Fires whenever HadyanCode checks an old pre-SDK task and decides whether/how to migrate it.
+			LEGACY_TASK_ATTEMPTS_TOTAL: "hadyancode.migration.legacy_task.attempts.total",
+			// Fires when the user opens an old task and HadyanCode successfully copies it into SDK session storage.
+			LEGACY_TASK_SUCCESS_TOTAL: "hadyancode.migration.legacy_task.success.total",
+			// Fires when HadyanCode tried to migrate an old task but failed while building or writing the SDK session.
+			LEGACY_TASK_FAILURES_TOTAL: "hadyancode.migration.legacy_task.failures.total",
 			// Fires when no migration happens because it is unnecessary or impossible, e.g. already migrated or missing old messages.
-			LEGACY_TASK_SKIPPED_TOTAL: "cline.migration.legacy_task.skipped.total",
+			LEGACY_TASK_SKIPPED_TOTAL: "hadyancode.migration.legacy_task.skipped.total",
 			// Fires for every migration decision; measures how long the check/migration took.
-			LEGACY_TASK_DURATION_SECONDS: "cline.migration.legacy_task.duration.seconds",
-			// Fires when Cline finds old conversation messages; records how many old messages were found.
-			LEGACY_TASK_LEGACY_MESSAGES_COUNT: "cline.migration.legacy_task.legacy_messages.count",
+			LEGACY_TASK_DURATION_SECONDS: "hadyancode.migration.legacy_task.duration.seconds",
+			// Fires when HadyanCode finds old conversation messages; records how many old messages were found.
+			LEGACY_TASK_LEGACY_MESSAGES_COUNT: "hadyancode.migration.legacy_task.legacy_messages.count",
 			// Fires after conversion; records how many messages made it into SDK-compatible form.
-			LEGACY_TASK_CONVERTED_MESSAGES_COUNT: "cline.migration.legacy_task.converted_messages.count",
+			LEGACY_TASK_CONVERTED_MESSAGES_COUNT: "hadyancode.migration.legacy_task.converted_messages.count",
 			// Fires when history is listed; counts old pre-SDK tasks still waiting to be migrated.
-			LEGACY_TASK_PENDING_COUNT: "cline.migration.legacy_task.pending.count",
+			LEGACY_TASK_PENDING_COUNT: "hadyancode.migration.legacy_task.pending.count",
 			// Fires when history is listed; counts old tasks that already made it safely into SDK session storage.
-			LEGACY_TASK_MIGRATED_COUNT: "cline.migration.legacy_task.migrated.count",
+			LEGACY_TASK_MIGRATED_COUNT: "hadyancode.migration.legacy_task.migrated.count",
 		},
 	}
 	// Event constants for tracking user interactions and system events
@@ -297,7 +297,7 @@ export class TelemetryService {
 			SLASH_COMMAND_USED: "task.slash_command_used",
 			// Tracks when a feature is toggled on/off
 			FEATURE_TOGGLED: "task.feature_toggled",
-			// Tracks when individual Cline rules are toggled on/off
+			// Tracks when individual HadyanCode rules are toggled on/off
 			RULE_TOGGLED: "task.rule_toggled",
 			// Tracks when auto condense setting is toggled on/off
 			AUTO_CONDENSE_TOGGLED: "task.auto_condense_toggled",
@@ -324,7 +324,7 @@ export class TelemetryService {
 			MODEL_FAVORITE_TOGGLED: "ui.model_favorite_toggled",
 			// Tracks when a button is clicked
 			BUTTON_CLICKED: "ui.button_clicked",
-			// Tracks when the Cline panel becomes visible
+			// Tracks when the HadyanCode panel becomes visible
 			PANEL_OPENED: "ui.panel_opened",
 			// Tracks when the user explicitly starts a new task flow
 			NEW_TASK_CLICKED: "ui.new_task_clicked",
@@ -352,10 +352,10 @@ export class TelemetryService {
 		const hostVersion = await HostProvider.env.getHostVersion({})
 		const metadata: TelemetryMetadata = {
 			extension_version: extensionVersion,
-			...(hostVersion.clineVersion ? { host_plugin_version: hostVersion.clineVersion } : {}),
+			...(hostVersion.hadyancodeVersion ? { host_plugin_version: hostVersion.hadyancodeVersion } : {}),
 			platform: hostVersion.platform || "unknown",
 			platform_version: hostVersion.version || "unknown",
-			cline_type: hostVersion.clineType || "unknown",
+			hadyancode_type: hostVersion.hadyancodeType || "unknown",
 			os_type: os.platform(),
 			os_version: os.version(),
 			// `remoteName` is normalized by the host bridge to `undefined` for local workspaces.
@@ -397,13 +397,13 @@ export class TelemetryService {
 		// We only enable telemetry if global host telemetry is enabled
 		const hostSetting = await HostProvider.env.getTelemetrySettings({})
 		if (hostSetting.isEnabled === Setting.DISABLED) {
-			// Only show warning if user has opted in to Cline telemetry but host telemetry is disabled
+			// Only show warning if user has opted in to HadyanCode telemetry but host telemetry is disabled
 			if (didUserOptIn) {
 				void HostProvider.window
 					.showMessage({
 						type: ShowMessageType.WARNING,
 						message:
-							"Anonymous Cline error and usage reporting is enabled, but IDE telemetry is disabled. To enable error and usage reporting for this extension, enable telemetry in IDE settings.",
+							"Anonymous HadyanCode error and usage reporting is enabled, but IDE telemetry is disabled. To enable error and usage reporting for this extension, enable telemetry in IDE settings.",
 						options: {
 							items: ["Open Settings"],
 						},
@@ -424,13 +424,13 @@ export class TelemetryService {
 	 * this file have no caller on this line but are called on
 	 * `legacy-extension`. They are kept, not deleted: the signals they emit
 	 * originate in this bundle (webview UI, VS Code storage, host terminal,
-	 * checkpoints, focus chain, legacy-task migration), so @cline/core cannot
+	 * checkpoints, focus chain, legacy-task migration), so @hadyancode/core cannot
 	 * emit them and the missing piece is a call site here. Tracked in
-	 * https://linear.app/cline-bot/issue/ENG-2401
+	 * https://linear.app/hadyancode-bot/issue/ENG-2401
 	 *
-	 * Anything whose event @cline/core already emits was deleted instead: a
+	 * Anything whose event @hadyancode/core already emits was deleted instead: a
 	 * second capture path for a core-owned event is how the
-	 * task.provider_api_error double-emission happened (cline/cline#12820).
+	 * task.provider_api_error double-emission happened (hadyancode/hadyancode#12820).
 	 *
 	 * So: do not "clean up" an uncalled capture method here as dead code
 	 * without checking `legacy-extension` for callers first.
@@ -674,7 +674,7 @@ export class TelemetryService {
 	 * Identifies the accounts user
 	 * @param userInfo The user's information
 	 */
-	public identifyAccount(userInfo: ClineAccountUserInfo) {
+	public identifyAccount(userInfo: HadyanCodeAccountUserInfo) {
 		const propertiesWithMetadata: TelemetryProperties = {
 			...this.telemetryMetadata,
 		}
@@ -1169,13 +1169,13 @@ export class TelemetryService {
 	}
 
 	/**
-	 * Records when individual Cline rules are toggled on/off
+	 * Records when individual HadyanCode rules are toggled on/off
 	 * @param ulid Unique identifier for the task (to track rule changes within task context)
 	 * @param ruleFileName The filename of the rule (sanitized to exclude full path)
 	 * @param enabled Whether the rule is being enabled (true) or disabled (false)
 	 * @param isGlobal Whether this is a global rule or workspace-specific rule
 	 */
-	public captureClineRuleToggled(ulid: string, ruleFileName: string, enabled: boolean, isGlobal: boolean) {
+	public captureHadyanCodeRuleToggled(ulid: string, ruleFileName: string, enabled: boolean, isGlobal: boolean) {
 		// Sanitize filename to remove any path information for privacy
 		const sanitizedFileName = ruleFileName.split("/").pop() || ruleFileName.split("\\").pop() || ruleFileName
 

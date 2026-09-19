@@ -16,8 +16,8 @@ import { spawn } from "node:child_process";
 import { userInfo } from "node:os";
 import { basename, delimiter } from "node:path";
 
-const PATH_MARKER_START = "__CLINE_SIDECAR_PATH_START__";
-const PATH_MARKER_END = "__CLINE_SIDECAR_PATH_END__";
+const PATH_MARKER_START = "__HADYANCODE_SIDECAR_PATH_START__";
+const PATH_MARKER_END = "__HADYANCODE_SIDECAR_PATH_END__";
 
 /**
  * Kept well under the Tauri shell's 5s endpoint-readiness poll: this
@@ -35,10 +35,10 @@ const SHELL_TIMEOUT_MS = 2_000;
 const PRINT_PATH_COMMAND = `/bin/sh -c 'printf "%s%s%s" "${PATH_MARKER_START}" "$PATH" "${PATH_MARKER_END}"'`;
 
 /**
- * Escape hatch: set CLINE_SIDECAR_SKIP_SHELL_PATH=1 to leave PATH untouched
+ * Escape hatch: set HADYANCODE_SIDECAR_SKIP_SHELL_PATH=1 to leave PATH untouched
  * (e.g. if a broken shell profile makes resolution misbehave).
  */
-const SKIP_ENV_VAR = "CLINE_SIDECAR_SKIP_SHELL_PATH";
+const SKIP_ENV_VAR = "HADYANCODE_SIDECAR_SKIP_SHELL_PATH";
 
 export function defaultShellFor(platform: NodeJS.Platform): string {
 	return platform === "darwin" ? "/bin/zsh" : "/bin/bash";
@@ -182,7 +182,7 @@ export function resolveLoginShellPath(
  * platform default shell before giving up.
  *
  * No-op on Windows (the GUI PATH comes from the registry there) and when
- * CLINE_SIDECAR_SKIP_SHELL_PATH is set. Failures are reported via the
+ * HADYANCODE_SIDECAR_SKIP_SHELL_PATH is set. Failures are reported via the
  * returned status but never block startup. The result never contains the
  * resolved PATH itself so it is safe to log verbatim.
  */

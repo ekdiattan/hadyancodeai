@@ -1,14 +1,14 @@
 #!/usr/bin/env bun
 
 /**
- * Interactive Playwright launcher for the Cline VS Code extension.
+ * Interactive Playwright launcher for the HadyanCode VS Code extension.
  *
  * Overview:
- *  - Starts the mock Cline API server (from the e2e test fixtures).
+ *  - Starts the mock HadyanCode API server (from the e2e test fixtures).
  *  - Downloads a stable build of VS Code (via @vscode/test-electron).
  *  - Creates a temporary VS Code user profile directory.
- *  - Installs and links the Cline extension (from dist/e2e.vsix and the dev path).
- *  - Opens a test workspace and automatically reveals the Cline sidebar.
+ *  - Installs and links the HadyanCode extension (from dist/e2e.vsix and the dev path).
+ *  - Opens a test workspace and automatically reveals the HadyanCode sidebar.
  *  - Records **all gRPC calls** during the session for later inspection.
  *  - Keeps VS Code running for manual interactive testing until the window is closed or Ctrl+C is pressed.
  *  - Cleans up all resources (mock server, temp profile, Electron process) on exit.
@@ -20,7 +20,7 @@
  *   2. From the repo root, start the interactive session:
  *        bun run test:e2e:ui
  *
- *   3. VS Code will launch with the Cline extension loaded and gRPC recording enabled.
+ *   3. VS Code will launch with the HadyanCode extension loaded and gRPC recording enabled.
  *
  *   4. Interact with the extension manually.
  *
@@ -32,11 +32,11 @@ import { mkdtempSync } from "fs"
 import os from "os"
 import path from "path"
 import { _electron } from "playwright"
-import { ClineApiServerMock } from "../src/test/e2e/fixtures/server"
+import { HadyanCodeApiServerMock } from "../src/test/e2e/fixtures/server"
 import { E2ETestHelper } from "../src/test/e2e/utils/helpers"
 
 async function main() {
-	await ClineApiServerMock.startGlobalServer()
+	await HadyanCodeApiServerMock.startGlobalServer()
 
 	const userDataDir = mkdtempSync(path.join(os.tmpdir(), "vsce-interactive"))
 	const executablePath = await downloadAndUnzipVSCode("stable", undefined, new SilentReporter())
@@ -48,7 +48,7 @@ async function main() {
 			...process.env,
 			TEMP_PROFILE: "true",
 			E2E_TEST: "true",
-			CLINE_ENVIRONMENT: "local",
+			HADYANCODE_ENVIRONMENT: "local",
 			GRPC_RECORDER_ENABLED: "true",
 			GRPC_RECORDER_TESTS_FILTERS_ENABLED: "true",
 		},
@@ -68,9 +68,9 @@ async function main() {
 
 	const page = await app.firstWindow()
 
-	await E2ETestHelper.openClineSidebar(page)
+	await E2ETestHelper.openHadyanCodeSidebar(page)
 
-	console.log("VSCode with Cline extension is now running!")
+	console.log("VSCode with HadyanCode extension is now running!")
 	console.log(`Temporary data directory on: ${userDataDir}`)
 	console.log("You can manually interact with the extension.")
 	console.log("Press Ctrl+C to close when done.")
@@ -79,7 +79,7 @@ async function main() {
 		console.log("Cleaning up resources...")
 		try {
 			await app?.close()
-			await ClineApiServerMock.stopGlobalServer?.()
+			await HadyanCodeApiServerMock.stopGlobalServer?.()
 			await E2ETestHelper.rmForRetries(userDataDir, { recursive: true })
 		} catch (e) {
 			console.log(`We could teardown interactive playwright properly, error:${e}`)

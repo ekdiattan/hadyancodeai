@@ -1,12 +1,12 @@
-# Cline SDK Examples
+# HadyanCode SDK Examples
 
-Learn how to build with the Cline SDK through working examples, ordered from simple to complex.
+Learn how to build with the HadyanCode SDK through working examples, ordered from simple to complex.
 
 ## SDK Skill
-If you use a coding agent (Claude Code, Codex, Cline, etc.), install the [Cline SDK skill](https://github.com/cline/sdk-skill) to give your agent context on the SDK's APIs and best practices to help you build with the Cline SDK.
+If you use a coding agent (Claude Code, Codex, HadyanCode, etc.), install the [HadyanCode SDK skill](https://github.com/cline/sdk-skill) to give your agent context on the SDK's APIs and best practices to help you build with the HadyanCode SDK.
 
 ```bash
-npx skills add cline/sdk-skill
+npx skills add hadyancode/sdk-skill
 ```
 
 Prompt it to scaffold agents, create custom tools, wire up plugins, configure providers, and more.
@@ -19,7 +19,7 @@ All examples live in this directory. Each is a standalone project with its own `
 cd apps/examples/<example-name>
 bun install
 bun run build:sdk
-export CLINE_API_KEY="cline_..."
+export HADYANCODE_API_KEY="hadyancode_..."
 bun dev
 ```
 
@@ -33,7 +33,7 @@ Requires Node.js 22+.
 |---------|-------------|----------|
 | [quickstart](./quickstart) | Send one prompt, stream the response. ~15 lines of code. | `Agent`, `subscribe`, `run()` |
 | [cli-agent](./cli-agent) | Interactive terminal chat with a shell tool. | `createTool`, multi-turn `run()`/`continue()`, streaming |
-| [cline-core-cli-agent](./cline-core-cli-agent) | Interactive terminal chat powered by ClineCore. | `ClineCore.create()`, `cline.start()`, `cline.send()`, built-in tools, streaming |
+| [hadyancode-core-cli-agent](./hadyancode-core-cli-agent) | Interactive terminal chat powered by HadyanCodeCore. | `HadyanCodeCore.create()`, `hadyancode.start()`, `hadyancode.send()`, built-in tools, streaming |
 
 ### Intermediate
 
@@ -55,14 +55,14 @@ Requires Node.js 22+.
 When building your own app, install the public SDK package:
 
 ```bash
-npm add @cline/sdk
+npm add @hadyancode/sdk
 ```
 
-`@cline/sdk` re-exports everything from `@cline/core`. You only need `@cline/agents` or `@cline/llms` if you want lower-level control over the agent runtime or model gateway directly.
+`@hadyancode/sdk` re-exports everything from `@hadyancode/core`. You only need `@hadyancode/agents` or `@hadyancode/llms` if you want lower-level control over the agent runtime or model gateway directly.
 
 ## Learn more
 
 - [SDK package docs](../../sdk/packages/README.md)
 - [Architecture guide](../../ARCHITECTURE.md)
-- [Plugin examples](../../examples/plugins) - extend the Cline SDK and CLI with custom tools and event hooks
-- [Hook examples](../../examples/hooks) - lifecycle hooks for logging, blocking, and injection for Cline SDK and CLI
+- [Plugin examples](../../examples/plugins) - extend the HadyanCode SDK and CLI with custom tools and event hooks
+- [Hook examples](../../examples/hooks) - lifecycle hooks for logging, blocking, and injection for HadyanCode SDK and CLI

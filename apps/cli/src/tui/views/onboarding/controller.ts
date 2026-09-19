@@ -8,14 +8,14 @@ import {
 	refreshProviderModelsFromSource,
 	resolveProviderConfig,
 	saveLocalProviderSettings,
-} from "@cline/core";
-import { isClineProvider } from "@cline/shared";
+} from "@hadyancode/core";
+import { isHadyanCodeProvider } from "@hadyancode/shared";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { isChatProviderModel } from "../../../utils/chat-models";
 import {
 	getCliSubscriptionUrl,
 	getIndividualPlanFeatures,
-} from "../../../utils/cline-pass-errors";
+} from "../../../utils/hadyancode-pass-errors";
 import {
 	type CodexCliStatus,
 	checkCodexCliInstalled,
@@ -28,12 +28,12 @@ import { getCliTelemetryService } from "../../../utils/telemetry";
 import {
 	loadCurrentUserPlanFromProviderSettings,
 	loadIndividualSubscriptionPlansFromProviderSettings,
-} from "../../cline-account";
+} from "../../hadyancode-account";
 import {
 	buildFeaturedModelEntries,
-	type ClineModelPickerEntry,
-	useClineRecommendedModels,
-} from "../../components/model-selector/cline-model-picker";
+	type HadyanCodeModelPickerEntry,
+	useHadyanCodeRecommendedModels,
+} from "../../components/model-selector/hadyancode-model-picker";
 import {
 	type SearchableItem,
 	useSearchableList,
@@ -57,8 +57,8 @@ import {
 import { FIELD_ORDER } from "./fields";
 import { useOnboardingKeyboard } from "./keyboard";
 import {
-	CLINE_PASS_SUBSCRIPTION_OPTIONS,
-	type ClinePassSubscriptionStatus,
+	HADYANCODE_PASS_SUBSCRIPTION_OPTIONS,
+	type HadyanCodePassSubscriptionStatus,
 	DEFAULT_THINKING_LEVEL_INDEX,
 	getMainMenuOptions,
 	type ModelEntry,
@@ -66,7 +66,7 @@ import {
 	type OnboardingStep,
 	type ProviderEntry,
 	type ReasoningEffort,
-	shouldUseFeaturedClineModelPicker,
+	shouldUseFeaturedHadyanCodeModelPicker,
 	type ThinkingLevel,
 	toModelEntriesFromKnownModels,
 	toModelEntry,
@@ -91,7 +91,7 @@ export function useOnboardingController(props: OnboardingControllerProps) {
 	const menuOptions = useMemo(
 		() =>
 			getMainMenuOptions({
-				isClinePassEnabled: true,
+				isHadyanCodePassEnabled: true,
 			}),
 		[],
 	);
@@ -162,19 +162,19 @@ export function useOnboardingController(props: OnboardingControllerProps) {
 	const [modelsDefaultId, setModelsDefaultId] = useState("");
 	const [customModelId, setCustomModelId] = useState("");
 	const [customModelError, setCustomModelError] = useState("");
-	const [clinePassSubscriptionStatus, setClinePassSubscriptionStatus] =
-		useState<ClinePassSubscriptionStatus>("loading");
-	const [clinePassSubscriptionError, setClinePassSubscriptionError] =
+	const [hadyancodePassSubscriptionStatus, setHadyanCodePassSubscriptionStatus] =
+		useState<HadyanCodePassSubscriptionStatus>("loading");
+	const [hadyancodePassSubscriptionError, setHadyanCodePassSubscriptionError] =
 		useState("");
-	const [clinePassCurrentPlanName, setClinePassCurrentPlanName] = useState("");
-	const [clinePassPlanFeatures, setClinePassPlanFeatures] = useState<string[]>(
+	const [hadyancodePassCurrentPlanName, setHadyanCodePassCurrentPlanName] = useState("");
+	const [hadyancodePassPlanFeatures, setHadyanCodePassPlanFeatures] = useState<string[]>(
 		[],
 	);
-	const [clinePassSubscriptionSelected, setClinePassSubscriptionSelected] =
+	const [hadyancodePassSubscriptionSelected, setHadyanCodePassSubscriptionSelected] =
 		useState(0);
-	const [clinePassSubscriptionOpenStatus, setClinePassSubscriptionOpenStatus] =
+	const [hadyancodePassSubscriptionOpenStatus, setHadyanCodePassSubscriptionOpenStatus] =
 		useState("");
-	const clinePassSubscriptionUrl = useMemo(() => getCliSubscriptionUrl(), []);
+	const hadyancodePassSubscriptionUrl = useMemo(() => getCliSubscriptionUrl(), []);
 
 	const modelItems: SearchableItem[] = useMemo(
 		() =>
@@ -190,7 +190,7 @@ export function useOnboardingController(props: OnboardingControllerProps) {
 
 	const createCustomModelItem = useCallback(
 		(_search: string, filteredItems: SearchableItem[]) => {
-			if (activeProviderId === "cline-pass") {
+			if (activeProviderId === "hadyancode-pass") {
 				return undefined;
 			}
 			if (filteredItems.some((item) => item.key === CUSTOM_MODEL_ID_ACTION)) {
@@ -208,26 +208,26 @@ export function useOnboardingController(props: OnboardingControllerProps) {
 
 	const modelList = useSearchableList(modelItems, createCustomModelItem);
 
-	// Cline featured model picker (ClinePass gets Subscribed/Free sections)
-	const recommended = useClineRecommendedModels();
-	const clineEntries: ClineModelPickerEntry[] = useMemo(
+	// HadyanCode featured model picker (HadyanCodePass gets Subscribed/Free sections)
+	const recommended = useHadyanCodeRecommendedModels();
+	const hadyancodeEntries: HadyanCodeModelPickerEntry[] = useMemo(
 		() =>
 			recommended.data
 				? buildFeaturedModelEntries(activeProviderId, recommended.data)
 				: [],
 		[recommended.data, activeProviderId],
 	);
-	const [clineModelSelected, setClineModelSelected] = useState(0);
-	const [clineModelReasoningIds, setClineModelReasoningIds] = useState<
+	const [hadyancodeModelSelected, setHadyanCodeModelSelected] = useState(0);
+	const [hadyancodeModelReasoningIds, setHadyanCodeModelReasoningIds] = useState<
 		Set<string>
 	>(new Set());
 
 	useEffect(() => {
-		// The featured picker serves both cline and cline-pass, so pool
+		// The featured picker serves both hadyancode and hadyancode-pass, so pool
 		// reasoning support from both catalogs. Display names need no catalog
-		// here: fetchClineRecommendedModels resolves them.
+		// here: fetchHadyanCodeRecommendedModels resolves them.
 		void Promise.allSettled(
-			["cline", "cline-pass"].map((providerId) =>
+			["hadyancode", "hadyancode-pass"].map((providerId) =>
 				getLocalProviderModels(providerId),
 			),
 		).then((results) => {
@@ -238,7 +238,7 @@ export function useOnboardingController(props: OnboardingControllerProps) {
 					if (m.supportsReasoning) ids.add(m.id);
 				}
 			}
-			setClineModelReasoningIds(ids);
+			setHadyanCodeModelReasoningIds(ids);
 		});
 	}, []);
 
@@ -295,11 +295,11 @@ export function useOnboardingController(props: OnboardingControllerProps) {
 		[providerSettingsManager],
 	);
 
-	const refreshClinePassSubscriptionStatus = useCallback(() => {
-		setClinePassSubscriptionStatus("loading");
-		setClinePassSubscriptionError("");
-		setClinePassCurrentPlanName("");
-		setClinePassSubscriptionOpenStatus("");
+	const refreshHadyanCodePassSubscriptionStatus = useCallback(() => {
+		setHadyanCodePassSubscriptionStatus("loading");
+		setHadyanCodePassSubscriptionError("");
+		setHadyanCodePassCurrentPlanName("");
+		setHadyanCodePassSubscriptionOpenStatus("");
 
 		loadCurrentUserPlanFromProviderSettings({ providerSettingsManager })
 			.then(
@@ -321,7 +321,7 @@ export function useOnboardingController(props: OnboardingControllerProps) {
 			)
 			.then(({ currentPlanResult, availablePlansResult }) => {
 				if (availablePlansResult.status === "fulfilled") {
-					setClinePassPlanFeatures(
+					setHadyanCodePassPlanFeatures(
 						getIndividualPlanFeatures(availablePlansResult.value),
 					);
 				}
@@ -331,22 +331,22 @@ export function useOnboardingController(props: OnboardingControllerProps) {
 					const message =
 						error instanceof Error ? error.message : String(error);
 					if (message.trim().toLowerCase() === "no plan found for user") {
-						setClinePassSubscriptionStatus("unsubscribed");
+						setHadyanCodePassSubscriptionStatus("unsubscribed");
 						return;
 					}
-					setClinePassSubscriptionError(message);
-					setClinePassSubscriptionStatus("error");
+					setHadyanCodePassSubscriptionError(message);
+					setHadyanCodePassSubscriptionStatus("error");
 					return;
 				}
 
 				const plan = currentPlanResult.value?.plan;
 				if (plan) {
-					setClinePassCurrentPlanName(
-						plan.displayName || plan.name || plan.id || "ClinePass",
+					setHadyanCodePassCurrentPlanName(
+						plan.displayName || plan.name || plan.id || "HadyanCodePass",
 					);
-					setClinePassSubscriptionStatus("subscribed");
+					setHadyanCodePassSubscriptionStatus("subscribed");
 				} else {
-					setClinePassSubscriptionStatus("unsubscribed");
+					setHadyanCodePassSubscriptionStatus("unsubscribed");
 				}
 			});
 	}, [providerSettingsManager]);
@@ -357,9 +357,9 @@ export function useOnboardingController(props: OnboardingControllerProps) {
 			const provider = providers.find((p) => p.id === providerId);
 			setActiveProviderName(provider?.name ?? providerId);
 			setModelsDefaultId(provider?.defaultModelId ?? "");
-			if (shouldUseFeaturedClineModelPicker(providerId)) {
-				setClineModelSelected(0);
-				setStep("cline_model");
+			if (shouldUseFeaturedHadyanCodeModelPicker(providerId)) {
+				setHadyanCodeModelSelected(0);
+				setStep("hadyancode_model");
 			} else if (providerId === "openai-compatible") {
 				const existing =
 					providerSettingsManager.getProviderSettings(providerId);
@@ -374,25 +374,25 @@ export function useOnboardingController(props: OnboardingControllerProps) {
 		[providers, loadModelsForProvider, providerSettingsManager],
 	);
 
-	const transitionToClinePassSubscription = useCallback(() => {
-		setActiveProviderId("cline-pass");
-		const provider = providers.find((p) => p.id === "cline-pass");
-		setActiveProviderName(provider?.name ?? "ClinePass");
+	const transitionToHadyanCodePassSubscription = useCallback(() => {
+		setActiveProviderId("hadyancode-pass");
+		const provider = providers.find((p) => p.id === "hadyancode-pass");
+		setActiveProviderName(provider?.name ?? "HadyanCodePass");
 		setModelsDefaultId(provider?.defaultModelId ?? "");
-		setClinePassSubscriptionSelected(0);
-		setStep("cline_pass_subscription");
-		refreshClinePassSubscriptionStatus();
-	}, [providers, refreshClinePassSubscriptionStatus]);
+		setHadyanCodePassSubscriptionSelected(0);
+		setStep("hadyancode_pass_subscription");
+		refreshHadyanCodePassSubscriptionStatus();
+	}, [providers, refreshHadyanCodePassSubscriptionStatus]);
 
 	const handleAuthComplete = useCallback(
 		(providerId: OnboardingOAuthProviderId) => {
-			if (providerId === "cline-pass") {
-				transitionToClinePassSubscription();
+			if (providerId === "hadyancode-pass") {
+				transitionToHadyanCodePassSubscription();
 				return;
 			}
 			transitionToModelPicker(providerId);
 		},
-		[transitionToClinePassSubscription, transitionToModelPicker],
+		[transitionToHadyanCodePassSubscription, transitionToModelPicker],
 	);
 
 	const resetAuth = useCallback(() => {
@@ -429,7 +429,7 @@ export function useOnboardingController(props: OnboardingControllerProps) {
 
 	const startOAuthFlow = useCallback(
 		(providerId: OnboardingOAuthProviderId) => {
-			if (isClineProvider(providerId)) {
+			if (isHadyanCodeProvider(providerId)) {
 				startDeviceCodeFlow(providerId);
 				return;
 			}
@@ -458,33 +458,33 @@ export function useOnboardingController(props: OnboardingControllerProps) {
 		],
 	);
 
-	const continueFromClinePassSubscription = useCallback(() => {
-		transitionToModelPicker("cline-pass");
+	const continueFromHadyanCodePassSubscription = useCallback(() => {
+		transitionToModelPicker("hadyancode-pass");
 	}, [transitionToModelPicker]);
 
-	const openClinePassSubscriptionPage = useCallback(() => {
-		setClinePassSubscriptionOpenStatus("Opening subscription page...");
-		void open(clinePassSubscriptionUrl, { wait: false })
+	const openHadyanCodePassSubscriptionPage = useCallback(() => {
+		setHadyanCodePassSubscriptionOpenStatus("Opening subscription page...");
+		void open(hadyancodePassSubscriptionUrl, { wait: false })
 			.then(() => {
-				setClinePassSubscriptionOpenStatus(
+				setHadyanCodePassSubscriptionOpenStatus(
 					"Opened subscription page in your browser.",
 				);
 			})
 			.catch(() => {
-				setClinePassSubscriptionOpenStatus(
-					`Could not open browser automatically. Open ${clinePassSubscriptionUrl}`,
+				setHadyanCodePassSubscriptionOpenStatus(
+					`Could not open browser automatically. Open ${hadyancodePassSubscriptionUrl}`,
 				);
 			});
-	}, [clinePassSubscriptionUrl]);
+	}, [hadyancodePassSubscriptionUrl]);
 
 	useEffect(() => {
 		if (
-			step === "cline_pass_subscription" &&
-			clinePassSubscriptionStatus === "subscribed"
+			step === "hadyancode_pass_subscription" &&
+			hadyancodePassSubscriptionStatus === "subscribed"
 		) {
-			transitionToModelPicker("cline-pass");
+			transitionToModelPicker("hadyancode-pass");
 		}
-	}, [step, clinePassSubscriptionStatus, transitionToModelPicker]);
+	}, [step, hadyancodePassSubscriptionStatus, transitionToModelPicker]);
 
 	const refreshCodexCliStatus = useCallback(() => {
 		setCodexCliStatus(undefined);
@@ -685,7 +685,7 @@ export function useOnboardingController(props: OnboardingControllerProps) {
 		completeModelSelection(modelId);
 	}, [customModelId, completeModelSelection]);
 
-	const saveClineModelSelection = useCallback(
+	const saveHadyanCodeModelSelection = useCallback(
 		(modelId: string, modelName: string) => {
 			const existing =
 				providerSettingsManager.getProviderSettings(activeProviderId);
@@ -697,7 +697,7 @@ export function useOnboardingController(props: OnboardingControllerProps) {
 				{ setLastUsed: true },
 			);
 			setSelectedModelId(modelId);
-			if (clineModelReasoningIds.has(modelId)) {
+			if (hadyancodeModelReasoningIds.has(modelId)) {
 				setSelectedModelName(modelName);
 				setThinkingSelected(DEFAULT_THINKING_LEVEL_INDEX);
 				setStep("thinking_level");
@@ -705,7 +705,7 @@ export function useOnboardingController(props: OnboardingControllerProps) {
 				setStep("done");
 			}
 		},
-		[activeProviderId, clineModelReasoningIds, providerSettingsManager],
+		[activeProviderId, hadyancodeModelReasoningIds, providerSettingsManager],
 	);
 
 	const saveThinkingLevel = useCallback(
@@ -765,11 +765,11 @@ export function useOnboardingController(props: OnboardingControllerProps) {
 		menuSelected,
 		providerList,
 		modelList,
-		clineEntries,
-		clineModelSelected,
-		clinePassSubscriptionStatus,
-		clinePassSubscriptionOptions: CLINE_PASS_SUBSCRIPTION_OPTIONS,
-		clinePassSubscriptionSelected,
+		hadyancodeEntries,
+		hadyancodeModelSelected,
+		hadyancodePassSubscriptionStatus,
+		hadyancodePassSubscriptionOptions: HADYANCODE_PASS_SUBSCRIPTION_OPTIONS,
+		hadyancodePassSubscriptionSelected,
 		thinkingSelected,
 		setStep,
 		setMenuSelected,
@@ -785,12 +785,12 @@ export function useOnboardingController(props: OnboardingControllerProps) {
 		setDeviceVerifyUrl,
 		setDeviceError,
 		setDeviceStatus,
-		setClineModelSelected,
-		setClinePassSubscriptionSelected,
+		setHadyanCodeModelSelected,
+		setHadyanCodePassSubscriptionSelected,
 		setThinkingSelected,
-		continueFromClinePassSubscription,
-		refreshClinePassSubscriptionStatus,
-		openClinePassSubscriptionPage,
+		continueFromHadyanCodePassSubscription,
+		refreshHadyanCodePassSubscriptionStatus,
+		openHadyanCodePassSubscriptionPage,
 		abortOAuth: () => {
 			authAbortRef.current = true;
 		},
@@ -803,7 +803,7 @@ export function useOnboardingController(props: OnboardingControllerProps) {
 		startDeviceCodeFlow,
 		selectProvider,
 		loadModelsForProvider,
-		saveClineModelSelection,
+		saveHadyanCodeModelSelection,
 		saveCodexCliConfig,
 		saveByoConfig,
 		saveModelSelection,
@@ -822,16 +822,16 @@ export function useOnboardingController(props: OnboardingControllerProps) {
 		byoValues,
 		codexCliChecking,
 		codexCliStatus,
-		clineEntries,
-		clineModelSelected,
-		clinePassCurrentPlanName,
-		clinePassPlanFeatures,
-		clinePassSubscriptionError,
-		clinePassSubscriptionOpenStatus,
-		clinePassSubscriptionOptions: CLINE_PASS_SUBSCRIPTION_OPTIONS,
-		clinePassSubscriptionSelected,
-		clinePassSubscriptionStatus,
-		clinePassSubscriptionUrl,
+		hadyancodeEntries,
+		hadyancodeModelSelected,
+		hadyancodePassCurrentPlanName,
+		hadyancodePassPlanFeatures,
+		hadyancodePassSubscriptionError,
+		hadyancodePassSubscriptionOpenStatus,
+		hadyancodePassSubscriptionOptions: HADYANCODE_PASS_SUBSCRIPTION_OPTIONS,
+		hadyancodePassSubscriptionSelected,
+		hadyancodePassSubscriptionStatus,
+		hadyancodePassSubscriptionUrl,
 		deviceError,
 		deviceStatus,
 		deviceUserCode,

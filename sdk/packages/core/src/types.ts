@@ -9,19 +9,19 @@ export type {
 	IFeatureFlagsProvider,
 	WorkspaceInfo,
 	WorkspaceManifest,
-} from "@cline/shared";
+} from "@hadyancode/shared";
 export {
 	FEATURE_FLAGS,
 	FeatureFlagDefaultValue,
-} from "@cline/shared";
-export { ClineCore } from "./ClineCore";
+} from "@hadyancode/shared";
+export { HadyanCodeCore } from "./HadyanCodeCore";
 export type {
-	ClineCoreListHistoryOptions,
-	ClineCoreOptions,
-	ClineCoreStartInput,
+	HadyanCodeCoreListHistoryOptions,
+	HadyanCodeCoreOptions,
+	HadyanCodeCoreStartInput,
 	HubOptions,
 	RemoteOptions,
-} from "./cline-core/types";
+} from "./hadyancode-core/types";
 export type {
 	AgentPluginPackageDiagnostic,
 	AgentPluginPackageDiagnosticScope,

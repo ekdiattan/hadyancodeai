@@ -6,11 +6,11 @@ import {
 
 const {
 	getValidOpenAICodexCredentials,
-	getValidClineCredentials,
+	getValidHadyanCodeCredentials,
 	getValidOcaCredentials,
 } = vi.hoisted(() => ({
 	getValidOpenAICodexCredentials: vi.fn(),
-	getValidClineCredentials: vi.fn(),
+	getValidHadyanCodeCredentials: vi.fn(),
 	getValidOcaCredentials: vi.fn(),
 }));
 
@@ -18,8 +18,8 @@ vi.mock("../../auth/codex", () => ({
 	getValidOpenAICodexCredentials,
 }));
 
-vi.mock("../../auth/cline", () => ({
-	getValidClineCredentials,
+vi.mock("../../auth/hadyancode", () => ({
+	getValidHadyanCodeCredentials,
 }));
 
 vi.mock("../../auth/oca", () => ({
@@ -79,10 +79,10 @@ describe("RuntimeOAuthTokenManager", () => {
 		);
 	});
 
-	it("resolves ClinePass OAuth using Cline storage and WorkOS formatting", async () => {
+	it("resolves HadyanCodePass OAuth using HadyanCode storage and WorkOS formatting", async () => {
 		const getProviderSettings = vi.fn().mockReturnValue({
-			provider: "cline",
-			baseUrl: "https://api.cline.test",
+			provider: "hadyancode",
+			baseUrl: "https://api.hadyancode.test",
 			auth: {
 				accessToken: "workos:access-old",
 				refreshToken: "refresh-old",
@@ -92,7 +92,7 @@ describe("RuntimeOAuthTokenManager", () => {
 		});
 		const saveProviderSettings = vi.fn();
 
-		getValidClineCredentials.mockResolvedValueOnce({
+		getValidHadyanCodeCredentials.mockResolvedValueOnce({
 			access: "access-new",
 			refresh: "refresh-new",
 			expires: 4_000_000_000_000,
@@ -107,16 +107,16 @@ describe("RuntimeOAuthTokenManager", () => {
 		});
 
 		const result = await manager.resolveProviderApiKey({
-			providerId: "cline-pass",
+			providerId: "hadyancode-pass",
 		});
 
-		expect(getProviderSettings).toHaveBeenCalledWith("cline");
-		expect(getValidClineCredentials).toHaveBeenCalledWith(
+		expect(getProviderSettings).toHaveBeenCalledWith("hadyancode");
+		expect(getValidHadyanCodeCredentials).toHaveBeenCalledWith(
 			expect.objectContaining({
 				access: "access-old",
 				refresh: "refresh-old",
 			}),
-			expect.objectContaining({ apiBaseUrl: "https://api.cline.test" }),
+			expect.objectContaining({ apiBaseUrl: "https://api.hadyancode.test" }),
 			{ forceRefresh: false },
 		);
 		expect(result).toMatchObject({
@@ -126,7 +126,7 @@ describe("RuntimeOAuthTokenManager", () => {
 		});
 		expect(saveProviderSettings).toHaveBeenCalledWith(
 			expect.objectContaining({
-				provider: "cline",
+				provider: "hadyancode",
 				auth: expect.objectContaining({
 					accessToken: "workos:access-new",
 					refreshToken: "refresh-new",

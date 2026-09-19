@@ -1,6 +1,5 @@
 import { createInterface } from "node:readline";
 import {
-	BUILT_IN_PROVIDER,
 	createOAuthClientCallbacks,
 	ensureCustomProvidersLoaded,
 	getProviderAuthHandler,
@@ -8,7 +7,7 @@ import {
 	type ProviderSettings,
 	type ProviderSettingsManager,
 	saveProviderOAuthCredentials,
-} from "@cline/core";
+} from "@hadyancode/core";
 import { Command } from "commander";
 import React from "react";
 import { disableOpenTuiGraphicsProbe } from "../tui/opentui-env";
@@ -149,14 +148,14 @@ async function ensureQuickSetupInputValid(
 	}
 	if (
 		input.baseurl?.trim() &&
-		normalizedProvider !== BUILT_IN_PROVIDER.OPENAI_COMPATIBLE &&
-		normalizedProvider !== BUILT_IN_PROVIDER.OPENAI_NATIVE
+		normalizedProvider !== "openai-compatible" &&
+		normalizedProvider !== "openai-native"
 	) {
 		return "base URL is only supported for OpenAI and OpenAI-compatible providers";
 	}
 	if (
 		input.azureApiVersion?.trim() &&
-		normalizedProvider !== BUILT_IN_PROVIDER.OPENAI_COMPATIBLE
+		normalizedProvider !== "openai-compatible"
 	) {
 		return "Azure API version is only supported for OpenAI-compatible providers";
 	}
@@ -430,7 +429,7 @@ export async function runAuthProviderCommand(
 ): Promise<number> {
 	if (!isOAuthProvider(providerId)) {
 		io.writeErr(
-			`provider "${providerId}" does not support OAuth login (supported: cline, openai-codex, oca)`,
+			`provider "${providerId}" does not support OAuth login (supported: hadyancode, openai-codex, oca)`,
 		);
 		return 1;
 	}

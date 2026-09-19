@@ -1,18 +1,18 @@
 // ---------------------------------------------------------------------------
 // Process-level helpers for headless / contract-style CLI tests.
 //
-// These helpers spawn cline as a child process and return stdout, stderr,
+// These helpers spawn hadyancode as a child process and return stdout, stderr,
 // and exit code - without going through the TUI harness. Use these for:
 //   - Exit code assertions
 //   - Pure stdout/stderr contract tests
-//   - Piped stdin tests (echo "..." | cline -y ...)
+//   - Piped stdin tests (echo "..." | hadyancode -y ...)
 //   - JSON output validation
 //   - Timeout behavior
 // ---------------------------------------------------------------------------
 
 import { type SpawnSyncOptions, spawnSync } from "node:child_process";
-import { CLINE_BIN } from "./constants.js";
-import { clineEnv } from "./env.js";
+import { HADYANCODE_BIN } from "./constants.js";
+import { hadyancodeEnv } from "./env.js";
 
 export interface RunResult {
 	stdout: string;
@@ -35,12 +35,12 @@ export interface RunOptions {
 }
 
 /**
- * Run `cline [args]` synchronously and return stdout/stderr/exitCode.
+ * Run `hadyancode [args]` synchronously and return stdout/stderr/exitCode.
  *
  * Suitable for deterministic, fast-exiting commands like:
- *   cline --help, cline --version, cline auth -p ... -k ..., etc.
+ *   hadyancode --help, hadyancode --version, hadyancode auth -p ... -k ..., etc.
  */
-export function runCline(args: string[], opts: RunOptions = {}): RunResult {
+export function runHadyanCode(args: string[], opts: RunOptions = {}): RunResult {
 	const {
 		config = "default",
 		env: extraEnv = {},
@@ -53,11 +53,11 @@ export function runCline(args: string[], opts: RunOptions = {}): RunResult {
 		encoding: "utf8",
 		timeout,
 		cwd,
-		env: { ...clineEnv(config), ...extraEnv },
+		env: { ...hadyancodeEnv(config), ...extraEnv },
 		input: stdin,
 	};
 
-	const result = spawnSync(CLINE_BIN, args, spawnOpts);
+	const result = spawnSync(HADYANCODE_BIN, args, spawnOpts);
 
 	const stdout = (result.stdout as string) ?? "";
 	const stderr = (result.stderr as string) ?? "";
@@ -71,7 +71,7 @@ export function runCline(args: string[], opts: RunOptions = {}): RunResult {
 }
 
 /**
- * Assert that a runCline result exited with the expected code.
+ * Assert that a runHadyanCode result exited with the expected code.
  * Throws a descriptive error if the code doesn't match.
  */
 export function assertExitCode(

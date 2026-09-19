@@ -41,9 +41,9 @@ describe("distinctId", () => {
 				workspaceClient: {},
 				envClient: {
 					getHostVersion: sandbox.stub().resolves({
-						clineVersion: "1.0.0",
+						hadyancodeVersion: "1.0.0",
 						platform: "darwin",
-						clineType: "vscode",
+						hadyancodeType: "vscode",
 					}),
 				},
 				windowClient: {},
@@ -130,9 +130,9 @@ describe("distinctId", () => {
 		expect(getDeviceId()).to.equal(MOCK_MACHINE_ID)
 
 		// Simulate authentication replacing the distinct ID with the user ID.
-		setDistinctId("cline-user-id-789")
+		setDistinctId("hadyancode-user-id-789")
 
-		expect(getDistinctId()).to.equal("cline-user-id-789")
+		expect(getDistinctId()).to.equal("hadyancode-user-id-789")
 		expect(getDeviceId()).to.equal(MOCK_MACHINE_ID)
 	})
 

@@ -1,11 +1,11 @@
 import { WebviewProvider } from "./core/webview"
 import "./utils/path" // necessary to have access to String.prototype.toPosix
 
-import { setSdkLogger } from "@cline/core"
+import { setSdkLogger } from "@hadyancode/core"
 import { HostProvider } from "@/hosts/host-provider"
 import { Logger } from "@/shared/services/Logger"
 import type { StorageContext } from "@/shared/storage/storage-context"
-import { clearOnboardingModelsCache } from "./core/controller/models/getClineOnboardingModels"
+import { clearOnboardingModelsCache } from "./core/controller/models/getHadyanCodeOnboardingModels"
 import { HookDiscoveryCache } from "./core/hooks/HookDiscoveryCache"
 import { HookProcessRegistry } from "./core/hooks/HookProcessRegistry"
 import { StateManager } from "./core/storage/StateManager"
@@ -17,7 +17,7 @@ import { featureFlagsService } from "./services/feature-flags"
 import { getDistinctId } from "./services/logging/distinctId"
 import { telemetryService } from "./services/telemetry"
 import { PostHogClientProvider } from "./services/telemetry/providers/posthog/PostHogClientProvider"
-import { ClineTempManager } from "./services/temp"
+import { HadyanCodeTempManager } from "./services/temp"
 import { ShowMessageType } from "./shared/proto/host/window"
 import { syncWorker } from "./shared/services/worker/sync"
 import { getBlobStoreSettingsFromEnv } from "./shared/services/worker/worker"
@@ -25,11 +25,11 @@ import { getLatestAnnouncementId } from "./utils/announcements"
 import { arePathsEqual } from "./utils/path"
 
 /**
- * Performs intialization for Cline that is common to all platforms.
+ * Performs intialization for HadyanCode that is common to all platforms.
  *
  * @param context
  * @returns The webview provider
- * @throws ClineConfigurationError if endpoints.json exists but is invalid
+ * @throws HadyanCodeConfigurationError if endpoints.json exists but is invalid
  */
 export async function initialize(storageContext: StorageContext): Promise<WebviewProvider> {
 	// Configure the shared Logging class to use HostProvider's output channels and debug logger
@@ -37,9 +37,9 @@ export async function initialize(storageContext: StorageContext): Promise<Webvie
 	Logger.subscribe((msg: string) => HostProvider.env.debugLog({ value: msg })) // Host debug logging
 
 	// Register the SDK early logger so diagnostic events from
-	// ProviderSettingsManager, RuntimeOAuthTokenManager, and Cline auth
-	// flow through Logger.debug → Cline output channel.
-	// These components operate before/outside of ClineCore sessions, so the
+	// ProviderSettingsManager, RuntimeOAuthTokenManager, and HadyanCode auth
+	// flow through Logger.debug → HadyanCode output channel.
+	// These components operate before/outside of HadyanCodeCore sessions, so the
 	// session-scoped logger can't reach them.
 	setSdkLogger({
 		debug: (message) => Logger.debug(message),
@@ -47,16 +47,16 @@ export async function initialize(storageContext: StorageContext): Promise<Webvie
 		error: (message) => Logger.error(message),
 	})
 
-	// Initialize ClineEndpoint configuration (reads bundled and ~/.cline/endpoints.json if present)
-	// This must be done before any other code that calls ClineEnv.config()
-	// Throws ClineConfigurationError if config file exists but is invalid
-	const { ClineEndpoint } = await import("./config")
-	await ClineEndpoint.initialize(HostProvider.get().extensionFsPath)
+	// Initialize HadyanCodeEndpoint configuration (reads bundled and ~/.hadyancode/endpoints.json if present)
+	// This must be done before any other code that calls HadyanCodeEnv.config()
+	// Throws HadyanCodeConfigurationError if config file exists but is invalid
+	const { HadyanCodeEndpoint } = await import("./config")
+	await HadyanCodeEndpoint.initialize(HostProvider.get().extensionFsPath)
 
 	try {
 		await StateManager.initialize(storageContext)
 	} catch (error) {
-		Logger.error("[Cline] CRITICAL: Failed to initialize StateManager:", error)
+		Logger.error("[HadyanCode] CRITICAL: Failed to initialize StateManager:", error)
 		HostProvider.window.showMessage({
 			type: ShowMessageType.ERROR,
 			message: "Failed to initialize storage. Please check logs for details or try restarting the client.",
@@ -71,7 +71,7 @@ export async function initialize(storageContext: StorageContext): Promise<Webvie
 	// =============== External services ===============
 	await ErrorService.initialize()
 	// Initialize PostHog client provider (skip in self-hosted mode)
-	if (!ClineEndpoint.isSelfHosted()) {
+	if (!HadyanCodeEndpoint.isSelfHosted()) {
 		PostHogClientProvider.getInstance()
 	}
 
@@ -89,7 +89,7 @@ export async function initialize(storageContext: StorageContext): Promise<Webvie
 	const blobStoreSettings = stateManager.getRemoteConfigSettings()?.blobStoreConfig ?? getBlobStoreSettingsFromEnv()
 	syncWorker().init({ ...blobStoreSettings, userDistinctId: getDistinctId() })
 	// Clean up old temp files in background (non-blocking) and start periodic cleanup every 24 hours
-	ClineTempManager.startPeriodicCleanup()
+	HadyanCodeTempManager.startPeriodicCleanup()
 
 	telemetryService.captureExtensionActivated()
 
@@ -99,11 +99,11 @@ export async function initialize(storageContext: StorageContext): Promise<Webvie
 async function showVersionUpdateAnnouncement(stateManager: StateManager) {
 	// Version checking for autoupdate notification
 	const currentVersion = ExtensionRegistryInfo.version
-	const previousVersion = stateManager.getGlobalStateKey("clineVersion")
+	const previousVersion = stateManager.getGlobalStateKey("hadyancodeVersion")
 	// Perform post-update actions if necessary
 	try {
 		if (!previousVersion || currentVersion !== previousVersion) {
-			Logger.log(`Cline version changed: ${previousVersion} -> ${currentVersion}. First run or update detected.`)
+			Logger.log(`HadyanCode version changed: ${previousVersion} -> ${currentVersion}. First run or update detected.`)
 
 			// Check if there's a new announcement to show
 			const lastShownAnnouncementId = stateManager.getGlobalStateKey("lastShownAnnouncementId")
@@ -112,15 +112,15 @@ async function showVersionUpdateAnnouncement(stateManager: StateManager) {
 			if (lastShownAnnouncementId !== latestAnnouncementId) {
 				// Show notification when there's a new announcement (major/minor updates or fresh installs)
 				const message = previousVersion
-					? `Cline has been updated to v${currentVersion}`
-					: `Welcome to Cline v${currentVersion}`
+					? `HadyanCode has been updated to v${currentVersion}`
+					: `Welcome to HadyanCode v${currentVersion}`
 				HostProvider.window.showMessage({
 					type: ShowMessageType.INFORMATION,
 					message,
 				})
 			}
 			// Always update the main version tracker for the next launch.
-			stateManager.setGlobalState("clineVersion", currentVersion)
+			stateManager.setGlobalState("hadyancodeVersion", currentVersion)
 		}
 	} catch (error) {
 		const errorMessage = error instanceof Error ? error.message : String(error)
@@ -130,7 +130,7 @@ async function showVersionUpdateAnnouncement(stateManager: StateManager) {
 
 /**
  * Checks if this workspace was opened from the worktree quick launch button.
- * If so, opens the Cline sidebar and clears the state.
+ * If so, opens the HadyanCode sidebar and clears the state.
  */
 async function checkWorktreeAutoOpen(stateManager: StateManager): Promise<void> {
 	try {
@@ -153,8 +153,8 @@ async function checkWorktreeAutoOpen(stateManager: StateManager): Promise<void> 
 		if (arePathsEqual(currentPath, worktreeAutoOpenPath)) {
 			// Clear the state first to prevent re-triggering
 			stateManager.setGlobalState("worktreeAutoOpenPath", undefined)
-			// Open the Cline sidebar
-			await HostProvider.workspace.openClineSidebarPanel({})
+			// Open the HadyanCode sidebar
+			await HostProvider.workspace.openHadyanCodeSidebarPanel({})
 		}
 	} catch (error) {
 		Logger.error("Error checking worktree auto-open", error)
@@ -162,7 +162,7 @@ async function checkWorktreeAutoOpen(stateManager: StateManager): Promise<void> 
 }
 
 /**
- * Performs cleanup when Cline is deactivated that is common to all platforms.
+ * Performs cleanup when HadyanCode is deactivated that is common to all platforms.
  */
 export async function tearDown(): Promise<void> {
 	try {
@@ -181,12 +181,12 @@ export async function tearDown(): Promise<void> {
 		// Clean up hook discovery cache
 		HookDiscoveryCache.getInstance().dispose()
 		// Stop periodic temp file cleanup
-		ClineTempManager.stopPeriodicCleanup()
+		HadyanCodeTempManager.stopPeriodicCleanup()
 	} finally {
 		try {
 			await StateManager.get().flushPendingState()
 		} catch (error) {
-			Logger.error("[Cline] Failed to flush pending state during teardown:", error)
+			Logger.error("[HadyanCode] Failed to flush pending state during teardown:", error)
 		}
 	}
 }

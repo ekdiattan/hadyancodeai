@@ -2,13 +2,13 @@ import type {
 	AgentSideConnection,
 	SessionUpdate,
 } from "@agentclientprotocol/sdk";
-import { projectSessionMessagesForDisplay } from "@cline/core";
+import { projectSessionMessagesForDisplay } from "@hadyancode/core";
 import {
 	type ContentBlock,
 	formatDisplayUserInput,
 	type MessageWithMetadata,
 	type ToolResultContent,
-} from "@cline/shared";
+} from "@hadyancode/shared";
 import { ACT_MODE_CONTINUATION_PROMPT } from "../runtime/interactive/mode";
 import { buildToolTitle, mapToolKind } from "./tool-utils";
 

@@ -1,8 +1,8 @@
 import { existsSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
-import * as LlmsModels from "@cline/llms";
-import { ReasoningLevelSchema } from "@cline/shared";
-import { resolveClineDataDir } from "@cline/shared/storage";
+import * as LlmsModels from "@hadyancode/llms";
+import { ReasoningLevelSchema } from "@hadyancode/shared";
+import { resolveHadyanCodeDataDir } from "@hadyancode/shared/storage";
 import {
 	emptyStoredProviderSettings,
 	type ProviderSettings,
@@ -85,8 +85,8 @@ interface LegacyGlobalState {
 	minimaxApiLine?: "china" | "international";
 	planModeOpenRouterModelId?: string;
 	actModeOpenRouterModelId?: string;
-	planModeClineModelId?: string;
-	actModeClineModelId?: string;
+	planModeHadyanCodeModelId?: string;
+	actModeHadyanCodeModelId?: string;
 	planModeOpenAiModelId?: string;
 	actModeOpenAiModelId?: string;
 	planModeOpenAiModelInfo?: LegacyOpenAiModelInfo;
@@ -129,9 +129,9 @@ interface LegacyGlobalState {
 
 interface LegacySecrets {
 	apiKey?: string;
-	clineApiKey?: string;
-	"cline:clineAccountId"?: string;
-	clineAccountId?: string;
+	hadyancodeApiKey?: string;
+	"hadyancode:hadyancodeAccountId"?: string;
+	hadyancodeAccountId?: string;
 	openRouterApiKey?: string;
 	awsAccessKey?: string;
 	awsSecretKey?: string;
@@ -179,8 +179,7 @@ interface LegacyProviderStorage {
 }
 
 const LEGACY_OPENAI_COMPATIBLE_PROVIDER_ID = "openai";
-const OPENAI_COMPATIBLE_PROVIDER_ID =
-	LlmsModels.BUILT_IN_PROVIDER.OPENAI_COMPATIBLE;
+const OPENAI_COMPATIBLE_PROVIDER_ID = "openai-compatible";
 const LEGACY_OPENAI_COMPATIBLE_CONTEXT_WINDOW = 128_000;
 
 export interface MigrateLegacyProviderSettingsOptions {
@@ -196,7 +195,7 @@ export interface MigrateLegacyProviderSettingsResult {
 	lastUsedProvider?: string;
 }
 
-export type LegacyClineUserInfo = {
+export type LegacyHadyanCodeUserInfo = {
 	idToken: string;
 	expiresAt: number;
 	refreshToken: string;
@@ -205,7 +204,7 @@ export type LegacyClineUserInfo = {
 		email: string;
 		displayName: string;
 		termsAcceptedAt: string;
-		clineBenchConsent: boolean;
+		hadyancodeBenchConsent: boolean;
 		createdAt: string;
 		updatedAt: string;
 	};
@@ -214,13 +213,13 @@ export type LegacyClineUserInfo = {
 };
 
 /**
- * Resolves legacy Cline account auth data from the raw `cline:clineAccountId`
+ * Resolves legacy HadyanCode account auth data from the raw `hadyancode:hadyancodeAccountId`
  * secret string into the auth fields used by `ProviderSettings`.
  *
  * Returns `undefined` when the input is missing, empty, whitespace-only, or
  * unparseable JSON.
  */
-export function resolveLegacyClineAuth(
+export function resolveLegacyHadyanCodeAuth(
 	rawAccountData: string | undefined,
 ): ProviderSettings["auth"] | undefined {
 	const trimmed = rawAccountData?.trim();
@@ -228,7 +227,7 @@ export function resolveLegacyClineAuth(
 		return undefined;
 	}
 	try {
-		const data = JSON.parse(trimmed) as LegacyClineUserInfo;
+		const data = JSON.parse(trimmed) as LegacyHadyanCodeUserInfo;
 		if (!data) {
 			return undefined;
 		}
@@ -282,7 +281,7 @@ function readJsonObject<T extends object>(filePath: string): T | undefined {
 function resolveLegacyStorage(
 	options: MigrateLegacyProviderSettingsOptions,
 ): LegacyProviderStorage | undefined {
-	const dataDir = options.dataDir ?? resolveClineDataDir();
+	const dataDir = options.dataDir ?? resolveHadyanCodeDataDir();
 	const globalStatePath =
 		options.globalStatePath ?? join(dataDir, "globalState.json");
 	const secretsPath = options.secretsPath ?? join(dataDir, "secrets.json");
@@ -333,7 +332,7 @@ function resolveModelForProvider(
 			: undefined;
 	const providerModelKeyById: Record<string, keyof LegacyGlobalState> = {
 		openrouter: `${modePrefix}OpenRouterModelId` as keyof LegacyGlobalState,
-		cline: `${modePrefix}ClineModelId` as keyof LegacyGlobalState,
+		hadyancode: `${modePrefix}HadyanCodeModelId` as keyof LegacyGlobalState,
 		openai: `${modePrefix}OpenAiModelId` as keyof LegacyGlobalState,
 		ollama: `${modePrefix}OllamaModelId` as keyof LegacyGlobalState,
 		lmstudio: `${modePrefix}LmStudioModelId` as keyof LegacyGlobalState,
@@ -444,7 +443,7 @@ function getDefaultModelForProvider(providerId: string): string | undefined {
 	const providerCollection = LlmsModels.getProviderCollectionSync(providerId);
 	const defaultModelId = providerCollection?.provider.defaultModelId;
 	// The declared default may live only in the collection's model list (e.g.
-	// Cline's generated block holds a few free models while its default,
+	// HadyanCode's generated block holds a few free models while its default,
 	// anthropic/claude-sonnet-5, comes from the collection catalog).
 	if (
 		defaultModelId &&
@@ -459,20 +458,20 @@ function getDefaultModelForProvider(providerId: string): string | undefined {
 }
 
 /**
- * Cline is a fixed-catalog provider: an unknown legacy model id (retired
+ * HadyanCode is a fixed-catalog provider: an unknown legacy model id (retired
  * model, a suffixed variant like `...:1m`, corrupted state) would otherwise
  * be carried into inference requests as-is. Resolve the legacy id against the
- * runtime catalog (the collection model list, which `buildClineModels` in
- * @cline/llms mirrors), folding alias spellings onto their canonical ids
+ * runtime catalog (the collection model list, which `buildHadyanCodeModels` in
+ * @hadyancode/llms mirrors), folding alias spellings onto their canonical ids
  * (e.g. OpenRouter's `z-ai/...` -> `zai/...`) so those users keep their
  * model. Returns undefined for unavailable models so the caller falls back
  * to the catalog default.
  */
-function resolveKnownClineModel(
+function resolveKnownHadyanCodeModel(
 	providerId: string,
 	modelId: string | undefined,
 ): string | undefined {
-	if (!modelId || providerId !== "cline") {
+	if (!modelId || providerId !== "hadyancode") {
 		return modelId;
 	}
 	const catalogModels =
@@ -511,7 +510,7 @@ function buildLegacyProviderSettings(
 		? normalizeLegacyProviderId(rawActiveProviderForMode)
 		: undefined;
 	const model =
-		resolveKnownClineModel(
+		resolveKnownHadyanCodeModel(
 			targetProviderId,
 			resolveModelForProvider(
 				legacyGlobalState,
@@ -530,7 +529,7 @@ function buildLegacyProviderSettings(
 
 	const secretByProvider: Record<string, string | undefined> = {
 		anthropic: legacySecrets.apiKey,
-		cline: legacySecrets.clineApiKey,
+		hadyancode: legacySecrets.hadyancodeApiKey,
 		openai: legacySecrets.openAiApiKey,
 		"openai-native": legacySecrets.openAiNativeApiKey,
 		openrouter: legacySecrets.openRouterApiKey,
@@ -569,20 +568,20 @@ function buildLegacyProviderSettings(
 	if (providerId === "openai-codex") {
 		Object.assign(providerSpecific, resolveLegacyCodexAuth(legacySecrets));
 	}
-	if (providerId === "cline") {
+	if (providerId === "hadyancode") {
 		try {
 			const legacyAuthString = trimNonEmpty(
-				legacySecrets["cline:clineAccountId"],
+				legacySecrets["hadyancode:hadyancodeAccountId"],
 			);
 
 			if (legacyAuthString) {
 				providerSpecific.auth = {
 					...(providerSpecific.auth ?? {}),
-					...resolveLegacyClineAuth(legacyAuthString),
+					...resolveLegacyHadyanCodeAuth(legacyAuthString),
 				};
 			}
 		} catch {
-			// Failed to parse stored cline auth data
+			// Failed to parse stored hadyancode auth data
 		}
 	}
 	if (
@@ -843,16 +842,16 @@ function collectCandidateProviderIds(
 	) {
 		candidates.add("vertex");
 	}
-	if (trimNonEmpty(legacySecrets.clineApiKey)) candidates.add("cline");
-	const legacyClineAuth = resolveLegacyClineAuth(
-		trimNonEmpty(legacySecrets["cline:clineAccountId"]),
+	if (trimNonEmpty(legacySecrets.hadyancodeApiKey)) candidates.add("hadyancode");
+	const legacyHadyanCodeAuth = resolveLegacyHadyanCodeAuth(
+		trimNonEmpty(legacySecrets["hadyancode:hadyancodeAccountId"]),
 	);
 	if (
-		legacyClineAuth?.accessToken ||
-		legacyClineAuth?.refreshToken ||
-		legacyClineAuth?.accountId
+		legacyHadyanCodeAuth?.accessToken ||
+		legacyHadyanCodeAuth?.refreshToken ||
+		legacyHadyanCodeAuth?.accountId
 	) {
-		candidates.add("cline");
+		candidates.add("hadyancode");
 	}
 	if (trimNonEmpty(legacySecrets.ocaApiKey)) candidates.add("oca");
 	if (

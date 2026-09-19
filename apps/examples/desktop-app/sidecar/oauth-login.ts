@@ -1,13 +1,13 @@
-import type { ProviderSettingsManager } from "@cline/core";
+import type { ProviderSettingsManager } from "@hadyancode/core";
 import {
-	completeClineDeviceAuth,
+	completeHadyanCodeDeviceAuth,
 	getProviderAuthStorageId,
 	loginLocalProvider,
 	markLocalProviderEnabled,
 	saveLocalProviderOAuthCredentials,
-	startClineDeviceAuth,
-} from "@cline/core";
-import { getClineEnvironmentConfig } from "@cline/shared";
+	startHadyanCodeDeviceAuth,
+} from "@hadyancode/core";
+import { getHadyanCodeEnvironmentConfig } from "@hadyancode/shared";
 
 export class OAuthLoginCancelledError extends Error {
 	constructor(providerId: string) {
@@ -35,7 +35,7 @@ export type OAuthLoginDependencies = {
 };
 
 /**
- * Cline account providers sign in with the WorkOS device-code grant, whose
+ * HadyanCode account providers sign in with the WorkOS device-code grant, whose
  * browser page asks the user to confirm a short code. `loginLocalProvider`
  * runs that flow but discards the code, so use the split helpers instead and
  * surface the code through `onUserCode` for the UI to display.
@@ -46,18 +46,18 @@ async function loginProviderForDesktop(
 	openUrl: (url: string) => void,
 	onUserCode?: (userCode: string) => void,
 ): ReturnType<typeof loginLocalProvider> {
-	if (providerId !== "cline" && providerId !== "cline-pass") {
+	if (providerId !== "hadyancode" && providerId !== "hadyancode-pass") {
 		return loginLocalProvider(providerId, existing, openUrl);
 	}
-	const device = await startClineDeviceAuth();
+	const device = await startHadyanCodeDeviceAuth();
 	onUserCode?.(device.userCode);
 	openUrl(device.verificationUriComplete ?? device.verificationUri);
-	return completeClineDeviceAuth({
+	return completeHadyanCodeDeviceAuth({
 		deviceCode: device.deviceCode,
 		expiresInSeconds: device.expiresInSeconds,
 		pollIntervalSeconds: device.pollIntervalSeconds,
 		apiBaseUrl:
-			existing?.baseUrl?.trim() || getClineEnvironmentConfig().apiBaseUrl,
+			existing?.baseUrl?.trim() || getHadyanCodeEnvironmentConfig().apiBaseUrl,
 		provider: providerId,
 	});
 }

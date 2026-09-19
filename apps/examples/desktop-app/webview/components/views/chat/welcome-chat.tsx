@@ -1,11 +1,11 @@
 "use client";
 
-import type { AgendaTaskRecord } from "@cline/shared";
+import type { AgendaTaskRecord } from "@hadyancode/shared";
 import {
 	type AgentQuickAction,
 	AgentQuickActions,
 	AgentWelcomeHero,
-} from "@cline/ui";
+} from "@hadyancode/ui";
 import type { ReactNode } from "react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { AgendaTaskReviewDialog } from "@/components/agenda-task-review-dialog";
@@ -132,7 +132,7 @@ export function WelcomeScreen({
 					)}
 				>
 					{active ? (
-						<div className="cline-view-enter">
+						<div className="hadyancode-view-enter">
 							<h1 className="sr-only">What would you like to build?</h1>
 							<AgentWelcomeHero />
 
@@ -156,7 +156,7 @@ export function WelcomeScreen({
 						className={
 							active
 								? "hidden"
-								: "cline-view-enter h-full min-h-0 overflow-hidden"
+								: "hadyancode-view-enter h-full min-h-0 overflow-hidden"
 						}
 						key="conversation-body"
 					>
@@ -176,7 +176,7 @@ export function WelcomeScreen({
 						<>
 							<AgentQuickActions
 								actions={actions}
-								className="cline-view-enter mt-11"
+								className="hadyancode-view-enter mt-11"
 								disabled={runningTaskId !== null}
 								onSelect={(action) => {
 									const task = quickActionTasks.find(

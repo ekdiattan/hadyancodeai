@@ -62,7 +62,7 @@ describe("createHubDaemonTelemetry", () => {
 		providerSettingsManagerConstructions.count = 0;
 	});
 
-	it("identifies the cached cline account at startup", () => {
+	it("identifies the cached hadyancode account at startup", () => {
 		mockGetProviderSettings.mockReturnValue({
 			auth: { accountId: " usr-123 " },
 		});
@@ -71,14 +71,14 @@ describe("createHubDaemonTelemetry", () => {
 		expect(mockCreateConfiguredTelemetryHandle).toHaveBeenCalledWith(
 			expect.objectContaining({
 				metadata: expect.objectContaining({
-					cline_type: "hub",
-					platform: "cline-hub-daemon",
+					hadyancode_type: "hub",
+					platform: "hadyancode-hub-daemon",
 				}),
 			}),
 		);
 		expect(mockIdentifyAccount).toHaveBeenCalledExactlyOnceWith(
 			mockTelemetryService,
-			{ id: "usr-123", provider: "cline" },
+			{ id: "usr-123", provider: "hadyancode" },
 		);
 	});
 
@@ -93,7 +93,7 @@ describe("createHubDaemonTelemetry", () => {
 		vi.advanceTimersByTime(5 * 60 * 1000);
 		expect(mockIdentifyAccount).toHaveBeenCalledExactlyOnceWith(
 			mockTelemetryService,
-			{ id: "usr-456", provider: "cline" },
+			{ id: "usr-456", provider: "hadyancode" },
 		);
 	});
 
@@ -121,7 +121,7 @@ describe("createHubDaemonTelemetry", () => {
 			mockTelemetryService,
 			{
 				id: "usr-123",
-				provider: "cline",
+				provider: "hadyancode",
 				organizationId: "org-1",
 				organizationName: "Acme",
 				memberId: "member-9",

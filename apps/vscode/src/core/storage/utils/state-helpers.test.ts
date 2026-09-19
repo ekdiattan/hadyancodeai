@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it, mock } from "bun:test"
 import fs from "node:fs"
 import os from "node:os"
 import path from "node:path"
-import { ClineFileStorage } from "@shared/storage/ClineFileStorage"
+import { HadyanCodeFileStorage } from "@shared/storage/HadyanCodeFileStorage"
 
 mock.module("../StateManager", () => ({ StateManager: {} }))
 
@@ -16,9 +16,9 @@ describe("readGlobalStateFromStorage terminal execution mode", () => {
 	})
 
 	async function readTerminalExecutionMode(storedValue?: "vscodeTerminal" | "backgroundExec") {
-		const temporaryDirectory = fs.mkdtempSync(path.join(os.tmpdir(), "cline-terminal-mode-"))
+		const temporaryDirectory = fs.mkdtempSync(path.join(os.tmpdir(), "hadyancode-terminal-mode-"))
 		temporaryDirectories.push(temporaryDirectory)
-		const storage = new ClineFileStorage(path.join(temporaryDirectory, "globalState.json"))
+		const storage = new HadyanCodeFileStorage(path.join(temporaryDirectory, "globalState.json"))
 		if (storedValue !== undefined) {
 			await storage.update("vscodeTerminalExecutionMode", storedValue)
 		}

@@ -1,7 +1,7 @@
-import { getProviderAuthStorageId } from "@cline/core"
-import { createSessionId } from "@cline/shared"
-import { CLINE_ACCOUNT_AUTH_ERROR_MESSAGE } from "@shared/ClineAccount"
-import type { ClineMessage } from "@shared/ExtensionMessage"
+import { getProviderAuthStorageId } from "@hadyancode/core"
+import { createSessionId } from "@hadyancode/shared"
+import type { HadyanCodeMessage } from "@shared/ExtensionMessage"
+import { HADYANCODE_ACCOUNT_AUTH_ERROR_MESSAGE } from "@shared/HadyanCodeAccount"
 import type { HistoryItem } from "@shared/HistoryItem"
 import type { Settings } from "@shared/storage/state-keys"
 import type { Mode } from "@shared/storage/types"
@@ -21,8 +21,8 @@ type StartInput = Parameters<VscodeSessionHost["start"]>[0]
 type InitialMessages = StartInput["initialMessages"]
 type SessionConfig = Awaited<ReturnType<SdkSessionConfigBuilder["build"]>>
 
-function usesClineAccountAuth(providerId: string): boolean {
-	return getProviderAuthStorageId(providerId) === "cline"
+function usesHadyanCodeAccountAuth(providerId: string): boolean {
+	return getProviderAuthStorageId(providerId) === "hadyancode"
 }
 
 export interface SdkTaskStartCoordinatorOptions {
@@ -52,8 +52,8 @@ export interface SdkTaskStartCoordinatorOptions {
 	createTempSessionHost: () => Promise<SdkSessionHost>
 	loadInitialMessages: (reader: SdkSessionHost, taskId: string) => Promise<unknown[] | undefined>
 	resolveContextMentions: (text: string) => Promise<string>
-	isClineManagedProviderActive: () => boolean
-	emitClineAuthError: (task?: string) => void
+	isHadyanCodeManagedProviderActive: () => boolean
+	emitHadyanCodeAuthError: (task?: string) => void
 	captureProviderApiError?: (event: ProviderFailureTelemetry) => void
 	postStateToWebview: () => Promise<void>
 }
@@ -94,13 +94,13 @@ export class SdkTaskStartCoordinator {
 				`[SdkController] Session config: provider=${config.providerId}, model=${config.modelId}, hasApiKey=${!!config.apiKey}`,
 			)
 
-			if (usesClineAccountAuth(config.providerId) && !config.apiKey) {
+			if (usesHadyanCodeAccountAuth(config.providerId) && !config.apiKey) {
 				Logger.warn(
-					`[SdkController] ${config.providerId} provider selected but no Cline auth token — emitting auth error`,
+					`[SdkController] ${config.providerId} provider selected but no HadyanCode auth token — emitting auth error`,
 				)
 				// No task/session id exists yet, so this preflight auth UI path is
 				// intentionally not recorded as task-joinable provider error telemetry.
-				this.options.emitClineAuthError(prompt)
+				this.options.emitHadyanCodeAuthError(prompt)
 				return undefined
 			}
 
@@ -236,7 +236,7 @@ export class SdkTaskStartCoordinator {
 		// AND images/files) arrives from the extension. Omitting them left the
 		// optimistic message unconfirmed forever, so it was re-injected into the
 		// transcript even after "New Task" cleared it (#12924).
-		const taskMessage: ClineMessage = {
+		const taskMessage: HadyanCodeMessage = {
 			ts: Date.now(),
 			type: "say",
 			say: "task",
@@ -255,8 +255,8 @@ export class SdkTaskStartCoordinator {
 		const errorDetails =
 			error instanceof Error ? `${error.name}: ${error.message}\n${error.stack?.substring(0, 500)}` : String(error)
 		Logger.error(`[SdkController] Failed to init task: ${errorDetails}`)
-		;(globalThis as Record<string, unknown>).__cline_last_init_error = errorDetails
-		;(globalThis as Record<string, unknown>).__cline_last_init_error_raw = error
+		;(globalThis as Record<string, unknown>).__hadyancode_last_init_error = errorDetails
+		;(globalThis as Record<string, unknown>).__hadyancode_last_init_error_raw = error
 		this.options.messages.appendAndEmit(
 			[
 				{
@@ -275,14 +275,14 @@ export class SdkTaskStartCoordinator {
 		Logger.error("[SdkController] Failed to reinit task:", error)
 
 		const reinitErrorMsg = error instanceof Error ? error.message : String(error)
-		const isClineAuthReinit =
-			this.options.isClineManagedProviderActive() &&
-			(reinitErrorMsg.includes(CLINE_ACCOUNT_AUTH_ERROR_MESSAGE) ||
+		const isHadyanCodeAuthReinit =
+			this.options.isHadyanCodeManagedProviderActive() &&
+			(reinitErrorMsg.includes(HADYANCODE_ACCOUNT_AUTH_ERROR_MESSAGE) ||
 				reinitErrorMsg.toLowerCase().includes("missing api key") ||
 				reinitErrorMsg.toLowerCase().includes("unauthorized"))
 
-		if (isClineAuthReinit) {
-			this.options.emitClineAuthError()
+		if (isHadyanCodeAuthReinit) {
+			this.options.emitHadyanCodeAuthError()
 			return
 		}
 

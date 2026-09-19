@@ -1,7 +1,7 @@
 import {
-	CLINE_CONNECTOR_CLI_LAUNCH_ENV,
+	HADYANCODE_CONNECTOR_CLI_LAUNCH_ENV,
 	readConnectorCliLaunchSpec,
-} from "@cline/shared";
+} from "@hadyancode/shared";
 import { describe, expect, it } from "vitest";
 import {
 	configureMenubarConnectorCliLaunch,
@@ -30,11 +30,11 @@ describe("menubar connector CLI launch", () => {
 	it("honors an explicit installed CLI path", () => {
 		expect(
 			resolveMenubarConnectorCliLaunchSpec("/workspace", {
-				env: { CLINE_CLI_PATH: "/Applications/Cline/bin/cline" },
+				env: { HADYANCODE_CLI_PATH: "/Applications/HadyanCode/bin/hadyancode" },
 				exists: () => false,
 			}),
 		).toEqual({
-			launcher: "/Applications/Cline/bin/cline",
+			launcher: "/Applications/HadyanCode/bin/hadyancode",
 			connectArgsPrefix: ["connect"],
 			cwd: "/workspace",
 		});
@@ -48,9 +48,9 @@ describe("menubar connector CLI launch", () => {
 			env,
 		);
 
-		expect(env[CLINE_CONNECTOR_CLI_LAUNCH_ENV]).toBeDefined();
+		expect(env[HADYANCODE_CONNECTOR_CLI_LAUNCH_ENV]).toBeDefined();
 		expect(readConnectorCliLaunchSpec(env)).toEqual({
-			launcher: "cline",
+			launcher: "hadyancode",
 			connectArgsPrefix: ["connect"],
 			cwd: "/workspace",
 		});

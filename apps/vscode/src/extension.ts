@@ -12,7 +12,7 @@ import { sendMcpButtonClickedEvent } from "./core/controller/ui/subscribeToMcpBu
 import { sendSettingsButtonClickedEvent } from "./core/controller/ui/subscribeToSettingsButtonClicked"
 import { sendWorktreesButtonClickedEvent } from "./core/controller/ui/subscribeToWorktreesButtonClicked"
 import { WebviewProvider } from "./core/webview"
-import { createClineAPI } from "./exports"
+import { createHadyanCodeAPI } from "./exports"
 import "./utils/path" // necessary to have access to String.prototype.toPosix
 import path from "node:path"
 import type { ExtensionContext } from "vscode"
@@ -21,10 +21,10 @@ import { vscodeHostBridgeClient } from "@/hosts/vscode/hostbridge/client/host-gr
 import { createStorageContext } from "@/shared/storage/storage-context"
 import { readTextFromClipboard, writeTextToClipboard } from "@/utils/env"
 import { initialize, tearDown } from "./common"
-import { addToCline } from "./core/controller/commands/addToCline"
-import { explainWithCline } from "./core/controller/commands/explainWithCline"
-import { fixWithCline } from "./core/controller/commands/fixWithCline"
-import { improveWithCline } from "./core/controller/commands/improveWithCline"
+import { addToHadyanCode } from "./core/controller/commands/addToHadyanCode"
+import { explainWithHadyanCode } from "./core/controller/commands/explainWithHadyanCode"
+import { fixWithHadyanCode } from "./core/controller/commands/fixWithHadyanCode"
+import { improveWithHadyanCode } from "./core/controller/commands/improveWithHadyanCode"
 import { sendAddToInputEvent } from "./core/controller/ui/subscribeToAddToInput"
 import { sendShowWebviewEvent } from "./core/controller/ui/subscribeToShowWebview"
 import { HookDiscoveryCache } from "./core/hooks/HookDiscoveryCache"
@@ -39,7 +39,7 @@ import {
 import { workspaceResolver } from "./core/workspace"
 import { findMatchingNotebookCell, getContextForCommand, showWebview } from "./hosts/vscode/commandUtils"
 import { abortCommitGeneration, generateCommitMsg } from "./hosts/vscode/commit-message-generator"
-import { registerClineOutputChannel } from "./hosts/vscode/hostbridge/env/debugLog"
+import { registerHadyanCodeOutputChannel } from "./hosts/vscode/hostbridge/env/debugLog"
 import {
 	disposeVscodeCommentReviewController,
 	getVscodeCommentReviewController,
@@ -76,7 +76,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	await cleanupLegacyVSCodeStorage(context)
 
 	// 3. One-time export of VSCode's native storage to shared file-backed stores.
-	// After this, all platforms (VSCode, CLI, JetBrains) read from ~/.cline/data/.
+	// After this, all platforms (VSCode, CLI, JetBrains) read from ~/.hadyancode/data/.
 	const workspacePath = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath
 	const storageContext = createStorageContext({ workspacePath })
 	await exportVSCodeStorageToSharedFiles(context, storageContext)
@@ -157,14 +157,14 @@ export async function activate(context: vscode.ExtensionContext) {
 		const isTaskUri = uriPath === TASK_URI_PATH || uriPath === LG_TASK_URI_PATH
 
 		if (isTaskUri) {
-			await openClineSidebarForTaskUri()
+			await openHadyanCodeSidebarForTaskUri()
 		}
 
 		let success = await SharedUriHandler.handleUri(url)
 
 		// Task deeplinks can race with first-time sidebar initialization.
 		if (!success && isTaskUri) {
-			await openClineSidebarForTaskUri()
+			await openHadyanCodeSidebarForTaskUri()
 			success = await SharedUriHandler.handleUri(url)
 		}
 
@@ -178,23 +178,23 @@ export async function activate(context: vscode.ExtensionContext) {
 	// registered handler above, which the harness can't synthesize. When running
 	// under browser-capture (debug harness) mode, expose the same handler on
 	// globalThis so the harness can deliver simulated OAuth callbacks via
-	// `ext.evaluate`. Gated on CLINE_CAPTURE_BROWSER so it never ships in prod.
-	if (process.env.CLINE_CAPTURE_BROWSER === "1" || process.env.CLINE_CAPTURE_BROWSER === "true") {
-		;(globalThis as Record<string, unknown>).__clineHandleUri = (url: string) => SharedUriHandler.handleUri(url)
+	// `ext.evaluate`. Gated on HADYANCODE_CAPTURE_BROWSER so it never ships in prod.
+	if (process.env.HADYANCODE_CAPTURE_BROWSER === "1" || process.env.HADYANCODE_CAPTURE_BROWSER === "true") {
+		;(globalThis as Record<string, unknown>).__hadyancodeHandleUri = (url: string) => SharedUriHandler.handleUri(url)
 	}
 
 	// Register size testing commands in development mode
 	if (IS_DEV) {
-		vscode.commands.executeCommand("setContext", "cline.isDevMode", IS_DEV)
+		vscode.commands.executeCommand("setContext", "hadyancode.isDevMode", IS_DEV)
 		// Use dynamic import to avoid loading the module in production
 		import("./dev/commands/tasks")
 			.then((module) => {
 				const devTaskCommands = module.registerTaskCommands(webview.controller)
 				context.subscriptions.push(...devTaskCommands)
-				Logger.log("[Cline Dev] Dev mode activated & dev commands registered")
+				Logger.log("[HadyanCode Dev] Dev mode activated & dev commands registered")
 			})
 			.catch((error) => {
-				Logger.log(`[Cline Dev] Failed to register dev commands: ${error}`)
+				Logger.log(`[HadyanCode Dev] Failed to register dev commands: ${error}`)
 			})
 	}
 
@@ -260,37 +260,37 @@ export async function activate(context: vscode.ExtensionContext) {
 					// diagnostics themselves via getContextForCommand.
 					const actions: vscode.CodeAction[] = []
 
-					// Add to Cline (Always available)
-					const addAction = new vscode.CodeAction("Add to Cline", vscode.CodeActionKind.QuickFix)
+					// Add to HadyanCode (Always available)
+					const addAction = new vscode.CodeAction("Add to HadyanCode", vscode.CodeActionKind.QuickFix)
 					addAction.command = {
 						command: commands.AddToChat,
-						title: "Add to Cline",
+						title: "Add to HadyanCode",
 					}
 					actions.push(addAction)
 
-					// Explain with Cline (Always available)
-					const explainAction = new vscode.CodeAction("Explain with Cline", vscode.CodeActionKind.RefactorExtract) // Using a refactor kind
+					// Explain with HadyanCode (Always available)
+					const explainAction = new vscode.CodeAction("Explain with HadyanCode", vscode.CodeActionKind.RefactorExtract) // Using a refactor kind
 					explainAction.command = {
 						command: commands.ExplainCode,
-						title: "Explain with Cline",
+						title: "Explain with HadyanCode",
 					}
 					actions.push(explainAction)
 
-					// Improve with Cline (Always available)
-					const improveAction = new vscode.CodeAction("Improve with Cline", vscode.CodeActionKind.RefactorRewrite) // Using a refactor kind
+					// Improve with HadyanCode (Always available)
+					const improveAction = new vscode.CodeAction("Improve with HadyanCode", vscode.CodeActionKind.RefactorRewrite) // Using a refactor kind
 					improveAction.command = {
 						command: commands.ImproveCode,
-						title: "Improve with Cline",
+						title: "Improve with HadyanCode",
 					}
 					actions.push(improveAction)
 
-					// Fix with Cline (Only if diagnostics exist)
+					// Fix with HadyanCode (Only if diagnostics exist)
 					if (context.diagnostics.length > 0) {
-						const fixAction = new vscode.CodeAction("Fix with Cline", vscode.CodeActionKind.QuickFix)
+						const fixAction = new vscode.CodeAction("Fix with HadyanCode", vscode.CodeActionKind.QuickFix)
 						fixAction.isPreferred = true
 						fixAction.command = {
-							command: commands.FixWithCline,
-							title: "Fix with Cline",
+							command: commands.FixWithHadyanCode,
+							title: "Fix with HadyanCode",
 						}
 						actions.push(fixAction)
 					}
@@ -314,17 +314,20 @@ export async function activate(context: vscode.ExtensionContext) {
 			if (!context) {
 				return
 			}
-			await addToCline(context.controller, context.commandContext)
+			await addToHadyanCode(context.controller, context.commandContext)
 		}),
 	)
 	context.subscriptions.push(
-		vscode.commands.registerCommand(commands.FixWithCline, async (range: vscode.Range, diagnostics: vscode.Diagnostic[]) => {
-			const context = await getContextForCommand(range, diagnostics)
-			if (!context) {
-				return
-			}
-			await fixWithCline(context.controller, context.commandContext)
-		}),
+		vscode.commands.registerCommand(
+			commands.FixWithHadyanCode,
+			async (range: vscode.Range, diagnostics: vscode.Diagnostic[]) => {
+				const context = await getContextForCommand(range, diagnostics)
+				if (!context) {
+					return
+				}
+				await fixWithHadyanCode(context.controller, context.commandContext)
+			},
+		),
 	)
 	context.subscriptions.push(
 		vscode.commands.registerCommand(commands.ExplainCode, async (range: vscode.Range) => {
@@ -332,7 +335,7 @@ export async function activate(context: vscode.ExtensionContext) {
 			if (!context) {
 				return
 			}
-			await explainWithCline(context.controller, context.commandContext)
+			await explainWithHadyanCode(context.controller, context.commandContext)
 		}),
 	)
 	context.subscriptions.push(
@@ -341,7 +344,7 @@ export async function activate(context: vscode.ExtensionContext) {
 			if (!context) {
 				return
 			}
-			await improveWithCline(context.controller, context.commandContext)
+			await improveWithHadyanCode(context.controller, context.commandContext)
 		}),
 	)
 
@@ -421,7 +424,7 @@ Current Notebook Cell Context (JSON, sanitized of image data):
 ${ctx.cellJson || "{}"}
 \`\`\``
 
-				await addToCline(ctx.controller, ctx.commandContext, notebookContext)
+				await addToHadyanCode(ctx.controller, ctx.commandContext, notebookContext)
 			},
 		),
 	)
@@ -437,7 +440,7 @@ ${ctx.cellJson || "{}"}
 					? `\n\nCurrent Notebook Cell Context (JSON, sanitized of image data):\n\`\`\`json\n${ctx.cellJson}\n\`\`\``
 					: undefined
 
-				await explainWithCline(ctx.controller, ctx.commandContext, notebookContext)
+				await explainWithHadyanCode(ctx.controller, ctx.commandContext, notebookContext)
 			},
 		),
 	)
@@ -463,7 +466,7 @@ Current Notebook Cell Context (JSON, sanitized of image data):
 ${ctx.cellJson || "{}"}
 \`\`\``
 
-				await improveWithCline(ctx.controller, ctx.commandContext, notebookContext)
+				await improveWithHadyanCode(ctx.controller, ctx.commandContext, notebookContext)
 			},
 		),
 	)
@@ -471,7 +474,10 @@ ${ctx.cellJson || "{}"}
 	// Register the openWalkthrough command handler
 	context.subscriptions.push(
 		vscode.commands.registerCommand(commands.Walkthrough, async () => {
-			await vscode.commands.executeCommand("workbench.action.openWalkthrough", `${context.extension.id}#ClineWalkthrough`)
+			await vscode.commands.executeCommand(
+				"workbench.action.openWalkthrough",
+				`${context.extension.id}#HadyanCodeWalkthrough`,
+			)
 			telemetryService.captureButtonClick("command_openWalkthrough")
 		}),
 	)
@@ -491,7 +497,7 @@ ${ctx.cellJson || "{}"}
 	// This listener catches legacy secrets.json writes from older windows and
 	// triggers a re-read from providers.json via restoreRefreshTokenAndRetrieveAuthInfo().
 	const unsubSecrets = storageContext.secrets.onDidChange((event) => {
-		if (event.key === "cline:clineAccountId") {
+		if (event.key === "hadyancode:hadyancodeAccountId") {
 			const secretValue = storageContext.secrets.get<string>(event.key)
 			const activeWebview = WebviewProvider.getVisibleInstance()
 			const controller = activeWebview?.controller
@@ -508,9 +514,9 @@ ${ctx.cellJson || "{}"}
 	})
 	context.subscriptions.push({ dispose: unsubSecrets })
 
-	Logger.log(`[Cline] extension activated in ${performance.now() - activationStartTime} ms`)
+	Logger.log(`[HadyanCode] extension activated in ${performance.now() - activationStartTime} ms`)
 
-	return createClineAPI(webview.controller)
+	return createHadyanCodeAPI(webview.controller)
 }
 
 async function showJupyterPromptInput(title: string, placeholder: string): Promise<string | undefined> {
@@ -560,8 +566,8 @@ async function showJupyterPromptInput(title: string, placeholder: string): Promi
 }
 
 function setupHostProvider(context: ExtensionContext) {
-	const outputChannel = registerClineOutputChannel(context)
-	outputChannel.appendLine("[Cline] Setting up VS Code host...")
+	const outputChannel = registerHadyanCodeOutputChannel(context)
+	outputChannel.appendLine("[HadyanCode] Setting up VS Code host...")
 
 	const createWebview = () => new VscodeWebviewProvider(context)
 	const createEditPreview = () => new VscodeEditPreview()
@@ -603,7 +609,7 @@ function getUriPath(url: string): string | undefined {
 	}
 }
 
-async function openClineSidebarForTaskUri(): Promise<void> {
+async function openHadyanCodeSidebarForTaskUri(): Promise<void> {
 	const sidebarWaitTimeoutMs = 3000
 	const sidebarWaitIntervalMs = 50
 
@@ -617,7 +623,7 @@ async function openClineSidebarForTaskUri(): Promise<void> {
 		await new Promise((resolve) => setTimeout(resolve, sidebarWaitIntervalMs))
 	}
 
-	Logger.warn("Task URI handling timed out waiting for Cline sidebar visibility")
+	Logger.warn("Task URI handling timed out waiting for HadyanCode sidebar visibility")
 }
 
 async function getBinaryLocation(name: string): Promise<string> {
@@ -697,7 +703,7 @@ async function cleanupLegacyVSCodeStorage(context: ExtensionContext): Promise<vo
 
 		Logger.info("[VS Code Storage Migrations] Starting")
 
-		// Migrate custom instructions to global Cline rules (one-time cleanup)
+		// Migrate custom instructions to global HadyanCode rules (one-time cleanup)
 		await migrateCustomInstructionsToGlobalRules(context)
 
 		// Migrate welcomeViewCompleted setting based on existing API keys (one-time cleanup)

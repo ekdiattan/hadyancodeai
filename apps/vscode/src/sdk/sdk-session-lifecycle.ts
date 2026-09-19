@@ -5,13 +5,13 @@ import type {
 	RestoreInput,
 	RestoreResult,
 	StartSessionResult,
-} from "@cline/core"
-import { formatModeSwitchNotice, type ModeSwitchNotice } from "@cline/shared"
+} from "@hadyancode/core"
+import { formatModeSwitchNotice, type ModeSwitchNotice } from "@hadyancode/shared"
 import { StateManager } from "@/core/storage/StateManager"
 import type { VscodeTerminalManager } from "@/hosts/vscode/terminal/VscodeTerminalManager"
 import { McpHub } from "@/services/mcp/McpHub"
 import { Logger } from "@/shared/services/Logger"
-import type { ActiveSession } from "./cline-session-factory"
+import type { ActiveSession } from "./hadyancode-session-factory"
 import type { SdkForegroundCommandCoordinator } from "./sdk-foreground-command-coordinator"
 import { buildToolPolicies } from "./sdk-tool-policies"
 import type { SdkSessionHost } from "./session-host"

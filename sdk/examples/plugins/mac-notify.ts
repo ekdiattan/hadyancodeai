@@ -1,15 +1,15 @@
 /**
  * macOS Notification Plugin Example
  *
- * Sends a Notification Center alert when a Cline run completes successfully.
+ * Sends a Notification Center alert when a HadyanCode run completes successfully.
  *
  * CLI usage:
- *   cline plugin install https://github.com/cline/cline/blob/main/sdk/examples/plugins/mac-notify.ts --cwd .
- *   cline -i "Run the test suite"
+ *   hadyancode plugin install https://github.com/cline/hadyancode/blob/main/sdk/examples/plugins/mac-notify.ts --cwd .
+ *   hadyancode -i "Run the test suite"
  */
 
 import { execFile } from "node:child_process";
-import type { AgentPlugin, AgentRunResult } from "@cline/core";
+import type { AgentPlugin, AgentRunResult } from "@hadyancode/core";
 
 function quoteAppleScriptString(value: string): string {
 	return `"${value
@@ -58,7 +58,7 @@ const plugin: AgentPlugin = {
 			if (result.status !== "completed") {
 				return;
 			}
-			sendMacNotification("Cline session completed", summarizeResult(result));
+			sendMacNotification("HadyanCode session completed", summarizeResult(result));
 		},
 	},
 };

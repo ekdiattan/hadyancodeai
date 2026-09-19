@@ -1,5 +1,5 @@
-import { SessionSource } from "@cline/core";
-import type { Message } from "@cline/shared";
+import { SessionSource } from "@hadyancode/core";
+import type { Message } from "@hadyancode/shared";
 import { deriveForkSessionTitle } from "./title";
 
 type SourceSession = {

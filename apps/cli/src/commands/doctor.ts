@@ -8,17 +8,17 @@ import {
 	probeHubServer,
 	readHubDiscovery,
 	readSupersededHubDiscovery,
-	resolveClineDataDir,
+	resolveHadyanCodeDataDir,
 	resolveProductionHubOwnerContext,
 	resolveSharedHubOwnerContext,
 	stopLocalHubServerGracefully,
-} from "@cline/core";
+} from "@hadyancode/core";
 import {
 	type ActiveConnectorRecord,
 	formatUptime,
-	resolveClineBuildEnv,
+	resolveHadyanCodeBuildEnv,
 	type SupervisedConnectorRecord,
-} from "@cline/shared";
+} from "@hadyancode/shared";
 import { Command } from "commander";
 import { version as cliVersion } from "../../package.json";
 import { isProcessRunning } from "../connectors/common";
@@ -167,7 +167,7 @@ function listMatchingProcesses(pattern: string): ProcessRecord[] {
 		return [];
 	}
 	// "--" stops pgrep's option parsing so patterns that start with dashes
-	// (e.g. the "--cline-hub-daemon" marker) are treated as patterns.
+	// (e.g. the "--hadyancode-hub-daemon" marker) are treated as patterns.
 	const result = spawnSync("pgrep", ["-fal", "--", pattern], {
 		encoding: "utf8",
 	});
@@ -203,7 +203,7 @@ function listMatchingProcesses(pattern: string): ProcessRecord[] {
 
 function resolveCliLogPath(): string {
 	const { name } = getCliBuildInfo();
-	return join(resolveClineDataDir(), "logs", `${name}.log`);
+	return join(resolveHadyanCodeDataDir(), "logs", `${name}.log`);
 }
 
 async function defaultOpenPath(target: string): Promise<void> {
@@ -227,7 +227,7 @@ function listStaleCliPids(): number[] {
 	const patterns = [
 		"/apps/cli/src/index.ts",
 		"/apps/cli/dist/index.js",
-		"/dist/cline",
+		"/dist/hadyancode",
 	];
 	const records = new Map<number, ProcessRecord>();
 	for (const pattern of patterns) {
@@ -247,7 +247,7 @@ function listStaleHubPids(currentHubPids: number[]): number[] {
 	const patterns = [
 		"/sdk/packages/core/src/hub/daemon/entry.ts",
 		"/sdk/packages/core/dist/hub/daemon/entry.js",
-		"--cline-hub-daemon",
+		"--hadyancode-hub-daemon",
 	];
 	const records = new Map<number, ProcessRecord>();
 	for (const pattern of patterns) {
@@ -411,7 +411,7 @@ function formatHubUptimeFromStartedAt(
 }
 
 function resolveCliHubOwnerContext() {
-	return resolveClineBuildEnv() === "production"
+	return resolveHadyanCodeBuildEnv() === "production"
 		? resolveProductionHubOwnerContext()
 		: resolveSharedHubOwnerContext();
 }
@@ -687,7 +687,7 @@ export async function runDoctorCommand(
 			before.staleSidecarPids.length > 0
 		) {
 			io.writeln(
-				"\nRun `cline doctor fix` to kill all stale local processes, including stale sidecars.",
+				"\nRun `hadyancode doctor fix` to kill all stale local processes, including stale sidecars.",
 			);
 		}
 		return 0;

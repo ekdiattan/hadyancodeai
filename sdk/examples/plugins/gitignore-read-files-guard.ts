@@ -5,13 +5,13 @@
  * workspace .gitignore file.
  *
  * CLI usage:
- *   cline plugin install https://github.com/cline/cline/blob/main/sdk/examples/plugins/gitignore-read-files-guard.ts --cwd .
- *   cline -i "Read the ignored .env file"
+ *   hadyancode plugin install https://github.com/cline/hadyancode/blob/main/sdk/examples/plugins/gitignore-read-files-guard.ts --cwd .
+ *   hadyancode -i "Read the ignored .env file"
  */
 
 import { spawn } from "node:child_process";
 import { isAbsolute, relative, resolve, sep } from "node:path";
-import type { AgentPlugin } from "@cline/core";
+import type { AgentPlugin } from "@hadyancode/core";
 
 const FILE_ACCESS_TOOL_NAMES = new Set(["read_files", "editor", "apply_patch"]);
 

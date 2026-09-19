@@ -1,9 +1,9 @@
-import { runSubprocessEvent } from "@cline/core";
+import { runSubprocessEvent } from "@hadyancode/core";
 import type {
 	ConnectorAuthorizationDecision,
 	ConnectorAuthorizationRequest,
 	ConnectorHookEvent,
-} from "@cline/shared";
+} from "@hadyancode/shared";
 import { z } from "zod";
 import type { CliLoggerAdapter } from "../logging/adapter";
 

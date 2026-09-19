@@ -37,12 +37,12 @@ defaults:
 
 jobs:
   publish-main:
-    name: Publish cline
+    name: Publish hadyancode
     permissions:
       contents: write
       id-token: write
     if: |
-      github.repository == 'cline/cline' &&
+      github.repository == 'hadyancode/hadyancode' &&
       github.ref == 'refs/heads/main' &&
       github.event_name == 'workflow_dispatch' &&
       github.event.inputs.publish_target == 'main' &&
@@ -163,16 +163,16 @@ jobs:
           VERSION: ${{ steps.version.outputs.version }}
         run: |
           EXPECTED=(
-            "@cline/cli-darwin-arm64"
-            "@cline/cli-darwin-x64"
-            "@cline/cli-linux-arm64"
-            "@cline/cli-linux-x64"
-            "@cline/cli-windows-arm64"
-            "@cline/cli-windows-x64"
+            "@hadyancode/cli-darwin-arm64"
+            "@hadyancode/cli-darwin-x64"
+            "@hadyancode/cli-linux-arm64"
+            "@hadyancode/cli-linux-x64"
+            "@hadyancode/cli-windows-arm64"
+            "@hadyancode/cli-windows-x64"
           )
 
           for package_name in "${EXPECTED[@]}"; do
-            dir="apps/cli/dist/${package_name#@cline/}"
+            dir="apps/cli/dist/${package_name#@hadyancode/}"
             if [ ! -f "$dir/package.json" ]; then
               echo "Missing package manifest: $dir/package.json"
               exit 1
@@ -200,8 +200,8 @@ jobs:
           account: ${{ secrets.AZURE_TRUSTED_SIGNING_ACCOUNT_NAME }}
           certificate-profile: ${{ secrets.AZURE_TRUSTED_SIGNING_CERTIFICATE_PROFILE_CLI }}
           files: |
-            apps/cli/dist/cli-windows-x64/bin/cline.exe
-            apps/cli/dist/cli-windows-arm64/bin/cline.exe
+            apps/cli/dist/cli-windows-x64/bin/hadyancode.exe
+            apps/cli/dist/cli-windows-arm64/bin/hadyancode.exe
 
       - name: Publish to NPM with latest tag
         env:
@@ -231,7 +231,7 @@ jobs:
           # Slack section blocks reject text longer than 3000 characters, and the
           # Slack action logs that rejection WITHOUT failing the step - so an
           # over-long changelog silently drops the release announcement while the
-          # run stays green (cline@3.0.50 hit this). Post a trimmed copy to Slack
+          # run stays green (hadyancode@3.0.50 hit this). Post a trimmed copy to Slack
           # and link out to the full notes. The GitHub release body stays whole.
           SLACK_CONTENT=$(CONTENT="$CONTENT" RELEASE_URL="$RELEASE_URL" python3 -c '
           import os
@@ -270,7 +270,7 @@ jobs:
         env:
           VERSION: ${{ steps.version.outputs.version }}
         run: |
-          echo "Published cline@${VERSION} to npm with dist-tag 'latest'"
+          echo "Published hadyancode@${VERSION} to npm with dist-tag 'latest'"
           echo "Install with: npm install -g cline"
 
       - name: Post release to Slack
@@ -280,12 +280,12 @@ jobs:
           token: ${{ secrets.SLACK_RELEASE_BOT_TOKEN }}
           payload: |
             channel: "C0APVKGGZFC"
-            text: "Cline CLI v${{ steps.version.outputs.version }}"
+            text: "HadyanCode CLI v${{ steps.version.outputs.version }}"
             blocks:
               - type: "section"
                 text:
                   type: "mrkdwn"
-                  text: "Cline CLI v${{ steps.version.outputs.version }}"
+                  text: "HadyanCode CLI v${{ steps.version.outputs.version }}"
               - type: "section"
                 text:
                   type: "mrkdwn"
@@ -293,15 +293,15 @@ jobs:
               - type: "context"
                 elements:
                   - type: "mrkdwn"
-                    text: "<https://www.npmjs.com/package/cline/v/${{ steps.version.outputs.version }}|View on npm>${{ steps.prev_tag.outputs.prev_tag != '' && format(' | Full Changelog: https://github.com/{0}/compare/{1}...{2}', github.repository, steps.prev_tag.outputs.prev_tag, steps.version.outputs.tag) || '' }}"
+                    text: "<https://www.npmjs.com/package/hadyancode/v/${{ steps.version.outputs.version }}|View on npm>${{ steps.prev_tag.outputs.prev_tag != '' && format(' | Full Changelog: https://github.com/{0}/compare/{1}...{2}', github.repository, steps.prev_tag.outputs.prev_tag, steps.version.outputs.tag) || '' }}"
 
   publish-nightly:
-    name: Publish cline nightly
+    name: Publish hadyancode nightly
     permissions:
       contents: read
       id-token: write
     if: |
-      github.repository == 'cline/cline' &&
+      github.repository == 'hadyancode/hadyancode' &&
       github.ref == 'refs/heads/main' &&
       (
         github.event_name == 'schedule' ||
@@ -433,16 +433,16 @@ jobs:
           VERSION: ${{ steps.version.outputs.version }}
         run: |
           EXPECTED=(
-            "@cline/cli-darwin-arm64"
-            "@cline/cli-darwin-x64"
-            "@cline/cli-linux-arm64"
-            "@cline/cli-linux-x64"
-            "@cline/cli-windows-arm64"
-            "@cline/cli-windows-x64"
+            "@hadyancode/cli-darwin-arm64"
+            "@hadyancode/cli-darwin-x64"
+            "@hadyancode/cli-linux-arm64"
+            "@hadyancode/cli-linux-x64"
+            "@hadyancode/cli-windows-arm64"
+            "@hadyancode/cli-windows-x64"
           )
 
           for package_name in "${EXPECTED[@]}"; do
-            dir="apps/cli/dist/${package_name#@cline/}"
+            dir="apps/cli/dist/${package_name#@hadyancode/}"
             if [ ! -f "$dir/package.json" ]; then
               echo "Missing package manifest: $dir/package.json"
               exit 1
@@ -471,8 +471,8 @@ jobs:
           account: ${{ secrets.AZURE_TRUSTED_SIGNING_ACCOUNT_NAME }}
           certificate-profile: ${{ secrets.AZURE_TRUSTED_SIGNING_CERTIFICATE_PROFILE_CLI }}
           files: |
-            apps/cli/dist/cli-windows-x64/bin/cline.exe
-            apps/cli/dist/cli-windows-arm64/bin/cline.exe
+            apps/cli/dist/cli-windows-x64/bin/hadyancode.exe
+            apps/cli/dist/cli-windows-arm64/bin/hadyancode.exe
 
       - name: Publish to NPM with nightly tag
         if: steps.check_commits.outputs.skip != 'true'
@@ -486,5 +486,5 @@ jobs:
         env:
           VERSION: ${{ steps.version.outputs.version }}
         run: |
-          echo "Published cline@${VERSION} to npm with dist-tag 'nightly'"
+          echo "Published hadyancode@${VERSION} to npm with dist-tag 'nightly'"
           echo "Install with: npm install -g cline@nightly"

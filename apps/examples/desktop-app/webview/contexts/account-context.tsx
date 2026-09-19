@@ -1,6 +1,6 @@
 "use client";
 
-import type { ClineAccountOrganization, ClineAccountUser } from "@cline/core";
+import type { HadyanCodeAccountOrganization, HadyanCodeAccountUser } from "@hadyancode/core";
 import {
 	createContext,
 	useCallback,
@@ -9,20 +9,20 @@ import {
 	useMemo,
 	useState,
 } from "react";
-import { isClineAccountNotAuthenticatedResult } from "@/lib/cline-account-state";
+import { isHadyanCodeAccountNotAuthenticatedResult } from "@/lib/hadyancode-account-state";
 import { desktopClient } from "@/lib/desktop-client";
 
-export const ACCOUNT_IDENTITY_STORAGE_KEY = "cline.code.account-identity.v1";
+export const ACCOUNT_IDENTITY_STORAGE_KEY = "hadyancode.code.account-identity.v1";
 
 const SIGNED_OUT_ERROR_MARKERS = [
-	"No Cline account auth token found",
+	"No HadyanCode account auth token found",
 	"no longer valid",
 ];
 
 type AccountContextValue = {
-	user: ClineAccountUser | null;
-	organizations: ClineAccountOrganization[];
-	activeOrganization: ClineAccountOrganization | null;
+	user: HadyanCodeAccountUser | null;
+	organizations: HadyanCodeAccountOrganization[];
+	activeOrganization: HadyanCodeAccountOrganization | null;
 	refreshAccount: () => Promise<void>;
 };
 
@@ -35,12 +35,12 @@ const AccountContext = createContext<AccountContextValue>({
 
 export function parseCachedAccountUser(
 	raw: string | null,
-): ClineAccountUser | null {
+): HadyanCodeAccountUser | null {
 	if (!raw) {
 		return null;
 	}
 	try {
-		const parsed = JSON.parse(raw) as { user?: ClineAccountUser | null };
+		const parsed = JSON.parse(raw) as { user?: HadyanCodeAccountUser | null };
 		const user = parsed?.user;
 		if (!user || typeof user !== "object") {
 			return null;
@@ -57,7 +57,7 @@ export function parseCachedAccountUser(
 	}
 }
 
-function readCachedAccountUser(): ClineAccountUser | null {
+function readCachedAccountUser(): HadyanCodeAccountUser | null {
 	if (typeof window === "undefined") {
 		return null;
 	}
@@ -70,7 +70,7 @@ function readCachedAccountUser(): ClineAccountUser | null {
 	}
 }
 
-function writeCachedAccountUser(user: ClineAccountUser | null): void {
+function writeCachedAccountUser(user: HadyanCodeAccountUser | null): void {
 	if (typeof window === "undefined") {
 		return;
 	}
@@ -94,17 +94,17 @@ export function isSignedOutAccountError(error: unknown): boolean {
 }
 
 export function AccountProvider({ children }: { children: React.ReactNode }) {
-	const [user, setUser] = useState<ClineAccountUser | null>(null);
+	const [user, setUser] = useState<HadyanCodeAccountUser | null>(null);
 
 	const refreshAccount = useCallback(async () => {
 		try {
-			const me = await desktopClient.invoke<ClineAccountUser>("cline_account", {
-				action: "clineAccount",
+			const me = await desktopClient.invoke<HadyanCodeAccountUser>("hadyancode_account", {
+				action: "hadyancodeAccount",
 				operation: "fetchMe",
 			});
 			// Signed out arrives as a typed result, not an error: an expected
 			// state that clears the cached identity without any error handling.
-			if (isClineAccountNotAuthenticatedResult(me)) {
+			if (isHadyanCodeAccountNotAuthenticatedResult(me)) {
 				setUser(null);
 				writeCachedAccountUser(null);
 				return;

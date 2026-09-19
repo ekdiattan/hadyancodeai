@@ -1,53 +1,56 @@
 // Replaces classic message streaming from src/core/task/index.ts (see origin/main)
 //
-// Translates SDK session events into ClineMessage[] for webview consumption.
-// The webview expects ClineMessage objects with ask/say types; this module
+// Translates SDK session events into HadyanCodeMessage[] for webview consumption.
+// The webview expects HadyanCodeMessage objects with ask/say types; this module
 // maps SDK CoreSessionEvent and AgentEvent types to that format.
 //
 // Key mappings:
-// - SDK "chunk" event (agent stream) → ClineMessage say="text" with partial=true
-// - SDK "agent_event" content_start (text) → ClineMessage say="text" with partial=true
-// - SDK "agent_event" content_start (reasoning) → ClineMessage say="reasoning" with partial=true
-// - SDK "agent_event" content_start (tool) → ClineMessage say="tool" with partial=true
+// - SDK "chunk" event (agent stream) → HadyanCodeMessage say="text" with partial=true
+// - SDK "agent_event" content_start (text) → HadyanCodeMessage say="text" with partial=true
+// - SDK "agent_event" content_start (reasoning) → HadyanCodeMessage say="reasoning" with partial=true
+// - SDK "agent_event" content_start (tool) → HadyanCodeMessage say="tool" with partial=true
 //   IMPORTANT: The webview's ChatRow.tsx parses message.text as JSON when
-//   say==="tool", expecting ClineSayTool format: {tool, path, content, ...}.
+//   say==="tool", expecting HadyanCodeSayTool format: {tool, path, content, ...}.
 //   We must convert SDK tool names (read_files, editor, run_commands, etc.)
 //   and their inputs to this format.
-// - SDK "agent_event" content_start (tool: MCP) → ClineMessage say="use_mcp_server" with partial=true
+// - SDK "agent_event" content_start (tool: MCP) → HadyanCodeMessage say="use_mcp_server" with partial=true
 //   MCP tools use serverName__toolName naming convention. The webview renders
-//   MCP tool calls via say/ask="use_mcp_server" with ClineAskUseMcpServer JSON.
+//   MCP tool calls via say/ask="use_mcp_server" with HadyanCodeAskUseMcpServer JSON.
 // - SDK "agent_event" content_end (tool: MCP) → say="use_mcp_server" + say="mcp_server_response"
-// - SDK "agent_event" content_end → ClineMessage with partial=false
-// - SDK "agent_event" content_start (tool: attempt_completion) → ClineMessage say="completion_result"
-// - SDK "agent_event" content_end (tool: attempt_completion) → ClineMessage say="completion_result" (final)
+// - SDK "agent_event" content_end → HadyanCodeMessage with partial=false
+// - SDK "agent_event" content_start (tool: attempt_completion) → HadyanCodeMessage say="completion_result"
+// - SDK "agent_event" content_end (tool: attempt_completion) → HadyanCodeMessage say="completion_result" (final)
 // - SDK "agent_event" done (reason "completed", turn ended on text) → retags that final
 //   say="text" row in place to say="completion_result" (act) / say="plan_completion_result" (plan)
-// - SDK "agent_event" error → ClineMessage say="error"
-// - SDK "agent_event" usage → ClineMessage say="api_req_started" with ClineApiReqInfo JSON
+// - SDK "agent_event" error → HadyanCodeMessage say="error"
+// - SDK "agent_event" usage → HadyanCodeMessage say="api_req_started" with HadyanCodeApiReqInfo JSON
 // - SDK "ended" event → finalizes the session
 
-import type { CoreSessionEvent } from "@cline/core"
-import { PATCH_MARKERS, projectSessionMessagesForDisplay } from "@cline/core"
-import type { MessageWithMetadata as SdkMessage } from "@cline/llms"
-import { type AgentEvent, formatDisplayUserInput, type ProviderErrorClass } from "@cline/shared"
+import type { CoreSessionEvent } from "@hadyancode/core"
+import { PATCH_MARKERS, projectSessionMessagesForDisplay } from "@hadyancode/core"
+import type { MessageWithMetadata as SdkMessage } from "@hadyancode/llms"
+import { type AgentEvent, formatDisplayUserInput, type ProviderErrorClass } from "@hadyancode/shared"
 import { COMMAND_OUTPUT_STRING } from "@shared/combineCommandSequences"
 import type {
-	ClineApiReqInfo,
-	ClineAskUseMcpServer,
-	ClineAskUseSubagents,
-	ClineCompactionInfo,
-	ClineMessage,
-	ClineSay,
-	ClineSaySubagentStatus,
-	ClineSayTool,
-	ClineSubagentUsageInfo,
+	HadyanCodeApiReqInfo,
+	HadyanCodeAskUseMcpServer,
+	HadyanCodeAskUseSubagents,
+	HadyanCodeCompactionInfo,
+	HadyanCodeMessage,
+	HadyanCodeSay,
+	HadyanCodeSaySubagentStatus,
+	HadyanCodeSayTool,
+	HadyanCodeSubagentUsageInfo,
 	SubagentStatusItem,
 } from "@shared/ExtensionMessage"
 import { Logger } from "@shared/services/Logger"
 import * as path from "path"
-import { isClineManagedProvider } from "@/shared/utils/cline"
+import { isHadyanCodeManagedProvider } from "@/shared/utils/hadyancode"
 import { arePathsEqual, getDesktopDir } from "@/utils/path"
-import { CLINE_FREE_PROMOTION_ENDED_ERROR_CODE, isClineFreePromotionEndedMessage } from "../services/error/ClineError"
+import {
+	HADYANCODE_FREE_PROMOTION_ENDED_ERROR_CODE,
+	isHadyanCodeFreePromotionEndedMessage,
+} from "../services/error/HadyanCodeError"
 import { MessageIdMinter } from "./message-id-minter"
 import { describeCredentialRejectedError, describeMissingCredentialError } from "./provider-credential-error"
 import { extractPersistedHookContextChips, isSyntheticSdkUserMessage, isSyntheticUserPrompt } from "./sdk-user-message-mapping"
@@ -58,12 +61,12 @@ import { isDeniedToolApprovalMistake, isKnownToolApprovalDenial } from "./tool-a
 // ---------------------------------------------------------------------------
 
 /**
- * Result of translating a single SDK event into ClineMessages.
+ * Result of translating a single SDK event into HadyanCodeMessages.
  * May produce zero or more messages.
  */
 export interface TranslationResult {
 	/** Messages produced by this event */
-	messages: ClineMessage[]
+	messages: HadyanCodeMessage[]
 	/** Whether the session has ended */
 	sessionEnded: boolean
 	/** Whether the agent turn is complete */
@@ -97,7 +100,7 @@ function normalizeUsageEvent(usageEvent: {
 	const cacheWrites = usageEvent.cacheWriteTokens ?? 0
 
 	// SDK provider usage reports inputTokens as the full request size, with
-	// cache reads/writes included. Classic Cline/webview metrics expect
+	// cache reads/writes included. Classic HadyanCode/webview metrics expect
 	// tokensIn, cacheReads, and cacheWrites to be disjoint buckets.
 	const uncachedInputTokens = Math.max(0, inputTokens - cacheReads - cacheWrites)
 
@@ -465,8 +468,8 @@ export class MessageTranslatorState {
 		return this.spawnAgentStatusTs
 	}
 
-	/** Build a ClineSaySubagentStatus from the current entries */
-	buildSubagentStatus(overallStatus: ClineSaySubagentStatus["status"]): ClineSaySubagentStatus {
+	/** Build a HadyanCodeSaySubagentStatus from the current entries */
+	buildSubagentStatus(overallStatus: HadyanCodeSaySubagentStatus["status"]): HadyanCodeSaySubagentStatus {
 		const items = this.getSpawnAgentItems()
 		const completed = items.filter((e) => e.status === "completed" || e.status === "failed").length
 		const successes = items.filter((e) => e.status === "completed").length
@@ -530,11 +533,11 @@ export class MessageTranslatorState {
 // ---------------------------------------------------------------------------
 
 /**
- * Tools whose ClineSayTool.path is a filesystem path. webFetch/webSearch/
+ * Tools whose HadyanCodeSayTool.path is a filesystem path. webFetch/webSearch/
  * useSkill and MCP tools reuse `path` for URLs, queries, and names, so they
  * are deliberately excluded.
  */
-const FILESYSTEM_PATH_TOOLS: ReadonlySet<ClineSayTool["tool"]> = new Set([
+const FILESYSTEM_PATH_TOOLS: ReadonlySet<HadyanCodeSayTool["tool"]> = new Set([
 	"readFile",
 	"listFilesTopLevel",
 	"listFilesRecursive",
@@ -546,12 +549,12 @@ const FILESYSTEM_PATH_TOOLS: ReadonlySet<ClineSayTool["tool"]> = new Set([
 ])
 
 /**
- * Relativize a ClineSayTool's filesystem paths against the task cwd before it
+ * Relativize a HadyanCodeSayTool's filesystem paths against the task cwd before it
  * is shown in the chat view, restoring the classic extension's getReadablePath
  * display behavior that was lost in the SDK migration (the SDK works with
  * absolute paths). Display-only — executors receive the raw tool input.
  */
-function toDisplaySayTool(sayTool: ClineSayTool, cwd: string | undefined): ClineSayTool {
+function toDisplaySayTool(sayTool: HadyanCodeSayTool, cwd: string | undefined): HadyanCodeSayTool {
 	if (!cwd || !FILESYSTEM_PATH_TOOLS.has(sayTool.tool)) {
 		return sayTool
 	}
@@ -625,15 +628,15 @@ function relativizePatchPaths(patch: string | undefined, cwd: string): string | 
 }
 
 // ---------------------------------------------------------------------------
-// SDK tool name → classic ClineSayTool mapping
+// SDK tool name → classic HadyanCodeSayTool mapping
 // ---------------------------------------------------------------------------
 
 /**
- * Map an SDK tool name and its input to a ClineSayTool object that the
+ * Map an SDK tool name and its input to a HadyanCodeSayTool object that the
  * webview's ChatRow.tsx can render.
  *
- * The webview does `JSON.parse(message.text) as ClineSayTool` when
- * `say === "tool"`, so the text MUST be valid ClineSayTool JSON.
+ * The webview does `JSON.parse(message.text) as HadyanCodeSayTool` when
+ * `say === "tool"`, so the text MUST be valid HadyanCodeSayTool JSON.
  *
  * SDK tool names → classic tool names:
  *   read_files/read_file               → readFile
@@ -649,9 +652,9 @@ function relativizePatchPaths(patch: string | undefined, cwd: string): string | 
  *   web_search                         → webSearch
  *   skills/use_skill                   → useSkill
  *   ask_question/ask_followup_question → (not a visual tool — handled by askQuestion executor in SdkController)
- *   MCP tools (serverName__toolName)   → (handled before reaching sdkToolToClineSayTool — emitted as say="use_mcp_server")
+ *   MCP tools (serverName__toolName)   → (handled before reaching sdkToolToHadyanCodeSayTool — emitted as say="use_mcp_server")
  */
-function sdkToolToClineSayTool(toolName: string, input?: unknown): ClineSayTool {
+function sdkToolToHadyanCodeSayTool(toolName: string, input?: unknown): HadyanCodeSayTool {
 	// Parse input if it's a string (some SDK tools pass stringified JSON)
 	const parsedInput = parseToolInput(input)
 
@@ -694,7 +697,7 @@ function sdkToolToClineSayTool(toolName: string, input?: unknown): ClineSayTool 
 			const oldText = getStringField(parsedInput, "old_text") ?? getStringField(parsedInput, "old_str")
 			// `insert_line` inserts into an existing file (the SDK editor executor requires
 			// the file to already exist), so it is an edit — not a new-file creation. Without
-			// this the card mislabels a prepend/insert as "Cline wants to create a new file".
+			// this the card mislabels a prepend/insert as "HadyanCode wants to create a new file".
 			const insertLine = getNumberField(parsedInput, "insert_line")
 			const isEdit = toolName === "replace_in_file" || !!oldText || insertLine != null
 
@@ -822,7 +825,7 @@ function sdkToolToClineSayTool(toolName: string, input?: unknown): ClineSayTool 
 				getStringField(parsedInput, "command") ??
 				""
 			return {
-				tool: toolName as ClineSayTool["tool"],
+				tool: toolName as HadyanCodeSayTool["tool"],
 				path: filePath,
 			}
 		}
@@ -908,11 +911,11 @@ function extractFileReads(input: Record<string, unknown> | undefined): FileReadR
 }
 
 /**
- * Map a read request's line range onto ClineSayTool fields. An omitted start_line with an
+ * Map a read request's line range onto HadyanCodeSayTool fields. An omitted start_line with an
  * explicit end_line means the read began at line 1; an omitted end_line stays undefined
  * (open-ended read — the UI renders it as "start+").
  */
-function readLineRangeFields(read: FileReadRequest | undefined): Pick<ClineSayTool, "readLineStart" | "readLineEnd"> {
+function readLineRangeFields(read: FileReadRequest | undefined): Pick<HadyanCodeSayTool, "readLineStart" | "readLineEnd"> {
 	if (!read || (read.startLine == null && read.endLine == null)) {
 		return {}
 	}
@@ -945,16 +948,16 @@ function getApplyPatchString(input: unknown): string | undefined {
 }
 
 /**
- * Split a multi-file apply_patch string into one ClineSayTool per file so each
- * "Cline wants to edit this file" row renders only that file's diff (cline#9904).
+ * Split a multi-file apply_patch string into one HadyanCodeSayTool per file so each
+ * "HadyanCode wants to edit this file" row renders only that file's diff (hadyancode#9904).
  *
  * Returns [] for single-file (or unparseable) patches so callers keep the existing
  * single-message behavior — only genuinely multi-file patches are split.
  */
-function splitApplyPatchByFile(patch: string): ClineSayTool[] {
+function splitApplyPatchByFile(patch: string): HadyanCodeSayTool[] {
 	const lines = patch.split("\n")
-	const blocks: { tool: ClineSayTool["tool"]; path: string; lines: string[] }[] = []
-	let current: { tool: ClineSayTool["tool"]; path: string; lines: string[] } | undefined
+	const blocks: { tool: HadyanCodeSayTool["tool"]; path: string; lines: string[] }[] = []
+	let current: { tool: HadyanCodeSayTool["tool"]; path: string; lines: string[] } | undefined
 
 	for (const line of lines) {
 		if (line === PATCH_MARKERS.END) {
@@ -965,7 +968,7 @@ function splitApplyPatchByFile(patch: string): ClineSayTool[] {
 			if (current) {
 				blocks.push(current)
 			}
-			const tool: ClineSayTool["tool"] =
+			const tool: HadyanCodeSayTool["tool"] =
 				marker === PATCH_MARKERS.ADD
 					? "newFileCreated"
 					: marker === PATCH_MARKERS.DELETE
@@ -982,7 +985,7 @@ function splitApplyPatchByFile(patch: string): ClineSayTool[] {
 
 	// Only split genuine multi-file patches. Bail out (→ single whole-patch
 	// message) if fewer than two files, or if any block has an empty path — a
-	// pathless row can't route to the per-file diff view (cline#9904).
+	// pathless row can't route to the per-file diff view (hadyancode#9904).
 	if (blocks.length < 2 || blocks.some((block) => block.path === "")) {
 		return []
 	}
@@ -1090,13 +1093,13 @@ function parseMcpToolName(toolName: string): { serverName: string; toolName: str
 }
 
 /**
- * Build a ClineAskUseMcpServer JSON payload for MCP tool calls.
+ * Build a HadyanCodeAskUseMcpServer JSON payload for MCP tool calls.
  * This is what the webview's ChatRow expects when rendering MCP tool calls
  * (message.ask === "use_mcp_server" or message.say === "use_mcp_server").
  */
 function buildMcpToolPayload(mcpInfo: { serverName: string; toolName: string }, input?: unknown): string {
 	const parsedInput = parseToolInput(input)
-	// Format arguments as a JSON string (matching classic ClineAskUseMcpServer.arguments)
+	// Format arguments as a JSON string (matching classic HadyanCodeAskUseMcpServer.arguments)
 	let argumentsStr: string | undefined
 	if (parsedInput && Object.keys(parsedInput).length > 0) {
 		argumentsStr = JSON.stringify(parsedInput, null, 2)
@@ -1109,7 +1112,7 @@ function buildMcpToolPayload(mcpInfo: { serverName: string; toolName: string }, 
 		serverName: mcpInfo.serverName,
 		toolName: mcpInfo.toolName,
 		arguments: argumentsStr,
-	} satisfies ClineAskUseMcpServer)
+	} satisfies HadyanCodeAskUseMcpServer)
 }
 
 function extractCommandText(input: unknown): string {
@@ -1131,12 +1134,12 @@ function extractCommandText(input: unknown): string {
 }
 
 /**
- * Build the Cline approval ask message for an SDK tool approval request.
+ * Build the HadyanCode approval ask message for an SDK tool approval request.
  * Keeps approval prompts aligned with the SDK event translator so the webview
  * can render specialized rows (MCP, commands, subagents) instead of a generic
  * tool approval with missing context.
  */
-export function buildToolApprovalAskMessage(toolName: string, input: unknown, ts: number, cwd?: string): ClineMessage {
+export function buildToolApprovalAskMessage(toolName: string, input: unknown, ts: number, cwd?: string): HadyanCodeMessage {
 	const mcpInfo = parseMcpToolName(toolName)
 	if (mcpInfo) {
 		return {
@@ -1167,7 +1170,7 @@ export function buildToolApprovalAskMessage(toolName: string, input: unknown, ts
 			ask: "use_subagents",
 			text: JSON.stringify({
 				prompts: [taskPrompt],
-			} satisfies ClineAskUseSubagents),
+			} satisfies HadyanCodeAskUseSubagents),
 			partial: false,
 		}
 	}
@@ -1176,7 +1179,7 @@ export function buildToolApprovalAskMessage(toolName: string, input: unknown, ts
 		ts,
 		type: "ask",
 		ask: "tool",
-		text: JSON.stringify(toDisplaySayTool(sdkToolToClineSayTool(toolName, input), cwd)),
+		text: JSON.stringify(toDisplaySayTool(sdkToolToHadyanCodeSayTool(toolName, input), cwd)),
 		partial: false,
 	}
 }
@@ -1186,7 +1189,7 @@ export function buildToolApprovalAskMessage(toolName: string, input: unknown, ts
 // ---------------------------------------------------------------------------
 
 /**
- * Translate an SDK AgentEvent into ClineMessage(s).
+ * Translate an SDK AgentEvent into HadyanCodeMessage(s).
  */
 /**
  * Extract a compaction divider payload from a status notice's metadata.
@@ -1194,7 +1197,9 @@ export function buildToolApprovalAskMessage(toolName: string, input: unknown, ts
  * (apps/cli/src/tui/utils/compaction-status.ts). Returns undefined for
  * non-compaction status notices.
  */
-export function parseCompactionNoticeMetadata(metadata: Record<string, unknown> | undefined): ClineCompactionInfo | undefined {
+export function parseCompactionNoticeMetadata(
+	metadata: Record<string, unknown> | undefined,
+): HadyanCodeCompactionInfo | undefined {
 	if (!metadata || (metadata.phase !== "started" && metadata.phase !== "completed" && metadata.phase !== "skipped")) {
 		return undefined
 	}
@@ -1234,7 +1239,7 @@ function asFiniteNumber(value: unknown): number | undefined {
 const INTERNAL_STATUS_NOTICES = new Set(["compaction-budget-adjusted"])
 
 /** Build the say:"compaction" divider message for a compaction status payload. */
-export function buildCompactionMessage(info: ClineCompactionInfo, ts: number): ClineMessage {
+export function buildCompactionMessage(info: HadyanCodeCompactionInfo, ts: number): HadyanCodeMessage {
 	return {
 		ts,
 		type: "say",
@@ -1255,7 +1260,7 @@ export function buildCompactionMessage(info: ClineCompactionInfo, ts: number): C
  */
 function finalizeDanglingCompaction(
 	state: MessageTranslatorState,
-	messages: ClineMessage[],
+	messages: HadyanCodeMessage[],
 	status: "cancelled" | "failed",
 ): void {
 	const ts = state.takeOpenCompactionTs()
@@ -1265,8 +1270,8 @@ function finalizeDanglingCompaction(
 	messages.push(buildCompactionMessage({ status, mode: "auto" }, ts))
 }
 
-function translateAgentEvent(event: AgentEvent, state: MessageTranslatorState): ClineMessage[] {
-	const messages: ClineMessage[] = []
+function translateAgentEvent(event: AgentEvent, state: MessageTranslatorState): HadyanCodeMessage[] {
+	const messages: HadyanCodeMessage[] = []
 
 	switch (event.type) {
 		case "content_start": {
@@ -1382,13 +1387,13 @@ function translateAgentEvent(event: AgentEvent, state: MessageTranslatorState): 
 
 						// Emit the combined prompts list (replaces itself on each new spawn_agent)
 						const allPrompts = state.getSpawnAgentItems().map((e) => e.prompt)
-						const approvalPayload: ClineAskUseSubagents = {
+						const approvalPayload: HadyanCodeAskUseSubagents = {
 							prompts: allPrompts,
 						}
 						messages.push({
 							ts: state.getSpawnAgentPromptsTs(),
 							type: "say",
-							say: "use_subagents" as ClineSay,
+							say: "use_subagents" as HadyanCodeSay,
 							text: JSON.stringify(approvalPayload),
 							partial: true,
 						})
@@ -1400,27 +1405,27 @@ function translateAgentEvent(event: AgentEvent, state: MessageTranslatorState): 
 
 					// MCP tools use serverName__toolName naming convention.
 					// The webview renders MCP tool calls via say/ask="use_mcp_server"
-					// with ClineAskUseMcpServer JSON, not generic say="tool".
+					// with HadyanCodeAskUseMcpServer JSON, not generic say="tool".
 					const mcpInfo = parseMcpToolName(toolName)
 					if (mcpInfo) {
 						const mcpPayload = buildMcpToolPayload(mcpInfo, input)
 						messages.push({
 							ts: state.getStreamingToolTs(),
 							type: "say",
-							say: "use_mcp_server" as ClineSay,
+							say: "use_mcp_server" as HadyanCodeSay,
 							text: mcpPayload,
 							partial: true,
 						})
 						break
 					}
 
-					// All other tools → say="tool" with ClineSayTool JSON
+					// All other tools → say="tool" with HadyanCodeSayTool JSON
 					// apply_patch is intentionally NOT split per-file here: the streaming
 					// (partial) row shows the whole patch, and the per-file split happens
 					// only at content_end (see below), mirroring read_files. Splitting at
 					// content_start would mint streaming ids that content_end cannot
-					// reproduce for files ≥2, orphaning those partial rows (cline#9904).
-					const sayTool = toDisplaySayTool(sdkToolToClineSayTool(toolName, input), state.currentCwd())
+					// reproduce for files ≥2, orphaning those partial rows (hadyancode#9904).
+					const sayTool = toDisplaySayTool(sdkToolToHadyanCodeSayTool(toolName, input), state.currentCwd())
 					messages.push({
 						ts: state.getStreamingToolTs(),
 						type: "say",
@@ -1438,7 +1443,7 @@ function translateAgentEvent(event: AgentEvent, state: MessageTranslatorState): 
 			// spawn_agent progress updates → emit say:"subagent" with live stats.
 			// The SDK's spawn_agent tool may emit content_update events with
 			// sub-agent progress (iterations, tool calls, usage). We translate
-			// these into the ClineSaySubagentStatus format for the rich UI.
+			// these into the HadyanCodeSaySubagentStatus format for the rich UI.
 			const updateToolName = event.toolName ?? state.getStreamingToolName()
 			if (updateToolName === "spawn_agent" && state.hasSpawnAgents()) {
 				const callId = event.toolCallId ?? ""
@@ -1463,7 +1468,7 @@ function translateAgentEvent(event: AgentEvent, state: MessageTranslatorState): 
 				messages.push({
 					ts: state.getSpawnAgentStatusTs(),
 					type: "say",
-					say: "subagent" as ClineSay,
+					say: "subagent" as HadyanCodeSay,
 					text: JSON.stringify(status),
 					partial: true,
 				})
@@ -1571,7 +1576,7 @@ function translateAgentEvent(event: AgentEvent, state: MessageTranslatorState): 
 						const items = state.getSpawnAgentItems()
 						const allDone = items.every((e) => e.status === "completed" || e.status === "failed")
 						const hasFailed = items.some((e) => e.status === "failed")
-						const overallStatus: ClineSaySubagentStatus["status"] = allDone
+						const overallStatus: HadyanCodeSaySubagentStatus["status"] = allDone
 							? hasFailed
 								? "failed"
 								: "completed"
@@ -1581,14 +1586,14 @@ function translateAgentEvent(event: AgentEvent, state: MessageTranslatorState): 
 						messages.push({
 							ts: state.getSpawnAgentStatusTs(),
 							type: "say",
-							say: "subagent" as ClineSay,
+							say: "subagent" as HadyanCodeSay,
 							text: JSON.stringify(status),
 							partial: !allDone,
 						})
 
 						// When all done, emit subagent_usage for cost accounting
 						if (allDone) {
-							const usagePayload: ClineSubagentUsageInfo = {
+							const usagePayload: HadyanCodeSubagentUsageInfo = {
 								source: "subagents",
 								tokensIn: items.reduce((acc, e) => acc + (e.inputTokens || 0), 0),
 								tokensOut: items.reduce((acc, e) => acc + (e.outputTokens || 0), 0),
@@ -1599,7 +1604,7 @@ function translateAgentEvent(event: AgentEvent, state: MessageTranslatorState): 
 							messages.push({
 								ts: state.nextTs(),
 								type: "say",
-								say: "subagent_usage" as ClineSay,
+								say: "subagent_usage" as HadyanCodeSay,
 								text: JSON.stringify(usagePayload),
 								partial: false,
 							})
@@ -1671,7 +1676,7 @@ function translateAgentEvent(event: AgentEvent, state: MessageTranslatorState): 
 						messages.push({
 							ts: mcpTs,
 							type: "say",
-							say: "use_mcp_server" as ClineSay,
+							say: "use_mcp_server" as HadyanCodeSay,
 							text: mcpPayload,
 							partial: false,
 						})
@@ -1682,7 +1687,7 @@ function translateAgentEvent(event: AgentEvent, state: MessageTranslatorState): 
 							messages.push({
 								ts: state.nextTs(),
 								type: "say",
-								say: "mcp_server_response" as ClineSay,
+								say: "mcp_server_response" as HadyanCodeSay,
 								text: mcpOutputStr,
 								partial: false,
 							})
@@ -1705,7 +1710,7 @@ function translateAgentEvent(event: AgentEvent, state: MessageTranslatorState): 
 						if (fileReads.length > 1) {
 							const cwd = state.currentCwd()
 							fileReads.forEach((fileRead, index) => {
-								const sayTool: ClineSayTool = {
+								const sayTool: HadyanCodeSayTool = {
 									tool: "readFile",
 									path: fileRead.path,
 									...readLineRangeFields(fileRead),
@@ -1724,7 +1729,7 @@ function translateAgentEvent(event: AgentEvent, state: MessageTranslatorState): 
 
 					// apply_patch may edit multiple files in one call. Emit one tool
 					// message per file so each diff row shows only that file's changes
-					// instead of the whole multi-file patch (cline#9904). Single-file
+					// instead of the whole multi-file patch (hadyancode#9904). Single-file
 					// patches fall through to the single-message path below.
 					if (toolName === "apply_patch" && !event.error) {
 						const patch = getApplyPatchString(storedInput)
@@ -1744,7 +1749,7 @@ function translateAgentEvent(event: AgentEvent, state: MessageTranslatorState): 
 						}
 					}
 
-					const sayTool = toDisplaySayTool(sdkToolToClineSayTool(toolName, storedInput), state.currentCwd())
+					const sayTool = toDisplaySayTool(sdkToolToHadyanCodeSayTool(toolName, storedInput), state.currentCwd())
 					// If there's an error, include it in the tool message
 					if (event.error) {
 						messages.push({
@@ -1789,7 +1794,7 @@ function translateAgentEvent(event: AgentEvent, state: MessageTranslatorState): 
 				say: "api_req_started",
 				text: JSON.stringify({
 					request: undefined, // Will be filled in by usage event
-				} satisfies ClineApiReqInfo),
+				} satisfies HadyanCodeApiReqInfo),
 				partial: false,
 			})
 			break
@@ -1835,10 +1840,10 @@ function translateAgentEvent(event: AgentEvent, state: MessageTranslatorState): 
 
 		case "usage": {
 			// Usage events carry token counts. The webview reads them from an
-			// api_req_started message's ClineApiReqInfo, so emit a follow-up
+			// api_req_started message's HadyanCodeApiReqInfo, so emit a follow-up
 			// api_req_started update carrying the usage data for cost display.
 			const usageEvent = normalizeUsageEvent(event)
-			const apiReqInfo: ClineApiReqInfo = {
+			const apiReqInfo: HadyanCodeApiReqInfo = {
 				tokensIn: usageEvent.tokensIn,
 				tokensOut: usageEvent.tokensOut,
 				cacheWrites: usageEvent.cacheWrites,
@@ -1923,14 +1928,14 @@ function translateAgentEvent(event: AgentEvent, state: MessageTranslatorState): 
 			state.setErrorSeen()
 
 			// Serialize the error message for the webview's ErrorRow to parse.
-			// The webview uses ClineError.parse() on the `api_req_failed` text to
+			// The webview uses HadyanCodeError.parse() on the `api_req_failed` text to
 			// detect special error types (insufficient credits, spend limit, auth,
 			// quota exceeded) and render appropriate UI (e.g. "Add Credits" button).
 			//
 			// The error object from the SDK is a standard JS Error. Its `message`
-			// may contain JSON from the API (e.g. Cline provider's 402 response with
+			// may contain JSON from the API (e.g. HadyanCode provider's 402 response with
 			// `code: "insufficient_credits"`). We try to reshape it into the
-			// ClineError-serialized format the webview expects so that ErrorRow
+			// HadyanCodeError-serialized format the webview expects so that ErrorRow
 			// can render the correct UI (Buy Credits button, etc.).
 			const errorPayload = reshapeErrorForWebview(
 				event.error,
@@ -1948,7 +1953,7 @@ function translateAgentEvent(event: AgentEvent, state: MessageTranslatorState): 
 				say: "api_req_started",
 				text: JSON.stringify({
 					streamingFailedMessage: errorPayload,
-				} satisfies ClineApiReqInfo),
+				} satisfies HadyanCodeApiReqInfo),
 				partial: false,
 			})
 
@@ -2009,7 +2014,7 @@ export function translateSessionEvent(event: CoreSessionEvent, state: MessageTra
 		}
 
 		case "agent_event": {
-			// Sub-agent events should NOT produce ClineMessages in the main chat.
+			// Sub-agent events should NOT produce HadyanCodeMessages in the main chat.
 			// The sub-agent's work is represented by the parent's spawn_agent tool
 			// events (content_start/update/end), which we translate into the rich
 			// SubagentStatusRow UI. Without this filter, every sub-agent tool call,
@@ -2091,7 +2096,7 @@ export function translateSessionEvent(event: CoreSessionEvent, state: MessageTra
 				result.messages.push({
 					ts: state.nextTs(),
 					type: "say",
-					say: "hook_status" as ClineSay,
+					say: "hook_status" as HadyanCodeSay,
 					text: toolName ? `Running ${toolName}...` : "Running tool...",
 					partial: false,
 				})
@@ -2099,7 +2104,7 @@ export function translateSessionEvent(event: CoreSessionEvent, state: MessageTra
 				result.messages.push({
 					ts: state.nextTs(),
 					type: "say",
-					say: "hook_status" as ClineSay,
+					say: "hook_status" as HadyanCodeSay,
 					text: toolName ? `${toolName} completed` : "Tool completed",
 					partial: false,
 				})
@@ -2148,7 +2153,7 @@ export function translateSessionEvent(event: CoreSessionEvent, state: MessageTra
 		case "team_progress":
 		case "pending_prompts": {
 			// These are handled by the team/subagent system, not translated
-			// to ClineMessages at this layer
+			// to HadyanCodeMessages at this layer
 			break
 		}
 
@@ -2192,7 +2197,7 @@ function textContentBlocksToText(content: SdkMessage["content"]): string {
 	return text.join("\n").trim()
 }
 
-function agentEventToMessages(event: AgentEvent, state: MessageTranslatorState): ClineMessage[] {
+function agentEventToMessages(event: AgentEvent, state: MessageTranslatorState): HadyanCodeMessage[] {
 	return translateSessionEvent(
 		{
 			type: "agent_event",
@@ -2206,7 +2211,7 @@ function agentEventToMessages(event: AgentEvent, state: MessageTranslatorState):
 }
 
 function appendPersistedMetricsMessage(
-	clineMessages: ClineMessage[],
+	hadyancodeMessages: HadyanCodeMessage[],
 	message: SdkMessageWithMetrics,
 	state: MessageTranslatorState,
 ): void {
@@ -2232,7 +2237,7 @@ function appendPersistedMetricsMessage(
 		return
 	}
 
-	clineMessages.push({
+	hadyancodeMessages.push({
 		ts: state.nextTs(),
 		type: "say",
 		say: "api_req_started",
@@ -2242,7 +2247,7 @@ function appendPersistedMetricsMessage(
 			cacheWrites: usage.cacheWrites,
 			cacheReads: usage.cacheReads,
 			cost: usage.totalCost,
-		} satisfies ClineApiReqInfo),
+		} satisfies HadyanCodeApiReqInfo),
 		partial: false,
 	})
 }
@@ -2252,10 +2257,10 @@ function finalizePersistedToolUse(
 	state: MessageTranslatorState,
 	output?: unknown,
 	isError?: boolean,
-): ClineMessage[] {
+): HadyanCodeMessage[] {
 	// Reuse the same content_start → content_end path as live SDK events. The
 	// start event seeds MessageTranslatorState with the tool input; the end event
-	// produces the final non-partial ClineMessage shape the webview expects.
+	// produces the final non-partial HadyanCodeMessage shape the webview expects.
 	agentEventToMessages(
 		{
 			type: "content_start",
@@ -2280,7 +2285,7 @@ function finalizePersistedToolUse(
 	)
 }
 
-export interface SdkMessagesToClineMessagesOptions {
+export interface SdkMessagesToHadyanCodeMessagesOptions {
 	/**
 	 * Whether the transcript's LAST agent turn ended cleanly (per the session record's status).
 	 * Only that final turn is ever retagged into the inferred completion row — persisted
@@ -2299,16 +2304,16 @@ export interface SdkMessagesToClineMessagesOptions {
 }
 
 /**
- * Convert SDK-persisted LLM messages back into the ClineMessage format used by
+ * Convert SDK-persisted LLM messages back into the HadyanCodeMessage format used by
  * the webview. Keep this in the live message translator so history rendering
- * and streaming rendering share the same SDK tool → Cline UI mapping.
+ * and streaming rendering share the same SDK tool → HadyanCode UI mapping.
  */
-export function sdkMessagesToClineMessages(
+export function sdkMessagesToHadyanCodeMessages(
 	messages: SdkMessageWithMetrics[],
 	minter?: MessageIdMinter,
-	options?: SdkMessagesToClineMessagesOptions,
-): ClineMessage[] {
-	const clineMessages: ClineMessage[] = []
+	options?: SdkMessagesToHadyanCodeMessagesOptions,
+): HadyanCodeMessage[] {
+	const hadyancodeMessages: HadyanCodeMessage[] = []
 	// Plan/act mode of the turn currently being replayed, recovered from each user message's
 	// persisted <user_input mode="..."> wrapper (stamped as `uiMode` before sanitization).
 	let currentMode: "plan" | "act" | "yolo" | undefined
@@ -2324,20 +2329,20 @@ export function sdkMessagesToClineMessages(
 
 	const flushUnmatchedToolUses = () => {
 		for (const toolUse of pendingToolUses.values()) {
-			clineMessages.push(...finalizePersistedToolUse(toolUse, state))
+			hadyancodeMessages.push(...finalizePersistedToolUse(toolUse, state))
 		}
 		pendingToolUses.clear()
 	}
 
 	// Add or update by ts — the synthesized turn-end `done` below retags an already-emitted
 	// text row in place (same ts), mirroring the live path's upsert-by-ts message store.
-	const upsertClineMessages = (updates: ClineMessage[]) => {
+	const upsertHadyanCodeMessages = (updates: HadyanCodeMessage[]) => {
 		for (const update of updates) {
-			const existingIndex = clineMessages.findIndex((m) => m.ts === update.ts)
+			const existingIndex = hadyancodeMessages.findIndex((m) => m.ts === update.ts)
 			if (existingIndex !== -1) {
-				clineMessages[existingIndex] = update
+				hadyancodeMessages[existingIndex] = update
 			} else {
-				clineMessages.push(update)
+				hadyancodeMessages.push(update)
 			}
 		}
 	}
@@ -2351,7 +2356,7 @@ export function sdkMessagesToClineMessages(
 	// interrupted response as a deliberate turn end. The final turn's outcome IS known (the
 	// caller gates it on the session record's status via `finalTurnCompleted`).
 	const endFinalTurn = () => {
-		upsertClineMessages(
+		upsertHadyanCodeMessages(
 			agentEventToMessages({ type: "done", reason: "completed", text: "", iterations: 0 } as AgentEvent, state),
 		)
 		state.clearTurnOutcome()
@@ -2365,11 +2370,11 @@ export function sdkMessagesToClineMessages(
 			if (typeof message.content === "string") {
 				const text = message.content.trim()
 				if (text) {
-					clineMessages.push(
+					hadyancodeMessages.push(
 						...agentEventToMessages({ type: "content_end", contentType: "text", text } as AgentEvent, state),
 					)
 				}
-				appendPersistedMetricsMessage(clineMessages, message, state)
+				appendPersistedMetricsMessage(hadyancodeMessages, message, state)
 				continue
 			}
 
@@ -2377,7 +2382,7 @@ export function sdkMessagesToClineMessages(
 				switch (block.type) {
 					case "text":
 						if (block.text.trim()) {
-							clineMessages.push(
+							hadyancodeMessages.push(
 								...agentEventToMessages(
 									{
 										type: "content_end",
@@ -2391,7 +2396,7 @@ export function sdkMessagesToClineMessages(
 						break
 					case "thinking":
 						if (block.thinking.trim()) {
-							clineMessages.push(
+							hadyancodeMessages.push(
 								...agentEventToMessages(
 									{
 										type: "content_end",
@@ -2405,7 +2410,7 @@ export function sdkMessagesToClineMessages(
 						break
 					case "image":
 						if (block.data && block.mediaType.startsWith("image/")) {
-							clineMessages.push(
+							hadyancodeMessages.push(
 								...agentEventToMessages(
 									{
 										type: "content_end",
@@ -2423,7 +2428,7 @@ export function sdkMessagesToClineMessages(
 						}
 						break
 					case "media":
-						clineMessages.push(
+						hadyancodeMessages.push(
 							...agentEventToMessages(
 								{
 									type: "content_end",
@@ -2443,7 +2448,7 @@ export function sdkMessagesToClineMessages(
 						break
 				}
 			}
-			appendPersistedMetricsMessage(clineMessages, message, state)
+			appendPersistedMetricsMessage(hadyancodeMessages, message, state)
 			continue
 		}
 
@@ -2453,7 +2458,7 @@ export function sdkMessagesToClineMessages(
 		const hookChips = extractPersistedHookContextChips(message)
 		if (hookChips.length > 0) {
 			for (const chip of hookChips) {
-				clineMessages.push({
+				hadyancodeMessages.push({
 					ts: state.nextTs(),
 					type: "say",
 					say: "hook_status",
@@ -2475,10 +2480,10 @@ export function sdkMessagesToClineMessages(
 				state.clearTurnOutcome()
 				currentMode = sourceMessage.uiMode ?? currentMode
 				if (!isSyntheticSdkUserMessage(message)) {
-					clineMessages.push({
+					hadyancodeMessages.push({
 						ts: state.nextTs(),
 						type: "say",
-						say: clineMessages.length === 0 ? "task" : "user_feedback",
+						say: hadyancodeMessages.length === 0 ? "task" : "user_feedback",
 						text,
 						partial: false,
 					})
@@ -2492,10 +2497,10 @@ export function sdkMessagesToClineMessages(
 			state.clearTurnOutcome()
 			currentMode = sourceMessage.uiMode ?? currentMode
 			if (!isSyntheticSdkUserMessage(message)) {
-				clineMessages.push({
+				hadyancodeMessages.push({
 					ts: state.nextTs(),
 					type: "say",
-					say: clineMessages.length === 0 ? "task" : "user_feedback",
+					say: hadyancodeMessages.length === 0 ? "task" : "user_feedback",
 					text: userText,
 					partial: false,
 				})
@@ -2513,7 +2518,7 @@ export function sdkMessagesToClineMessages(
 			}
 
 			pendingToolUses.delete(block.tool_use_id)
-			clineMessages.push(...finalizePersistedToolUse(toolUse, state, block.content, block.is_error))
+			hadyancodeMessages.push(...finalizePersistedToolUse(toolUse, state, block.content, block.is_error))
 		}
 	}
 
@@ -2531,7 +2536,7 @@ export function sdkMessagesToClineMessages(
 	// the last raw message to determine UI state. If the usage
 	// event is last, the webview shows "Thinking..." instead of
 	// the completion UI
-	clineMessages.push({
+	hadyancodeMessages.push({
 		ts: state.nextTs(),
 		type: "ask",
 		ask: "completion_result",
@@ -2540,7 +2545,7 @@ export function sdkMessagesToClineMessages(
 	})
 
 	flushUnmatchedToolUses()
-	return clineMessages
+	return hadyancodeMessages
 }
 
 // ---------------------------------------------------------------------------
@@ -2635,7 +2640,7 @@ function describeVertexGlobalRegionError(rawMessage: string, providerId?: string
 }
 
 /**
- * Reshape an SDK error into the serialized ClineError JSON the webview's
+ * Reshape an SDK error into the serialized HadyanCodeError JSON the webview's
  * ErrorRow expects (`code`, `providerId`, `details`), extracting structured
  * info from the error message when present and falling back to raw text.
  */
@@ -2645,25 +2650,25 @@ export function reshapeErrorForWebview(
 	modelId?: string,
 	errorClass?: ProviderErrorClass,
 ): string {
-	// The ClineError-JSON branches below are cline-provider flows (balance,
-	// spend limit), so "cline" stays their fallback id. The missing-credential
+	// The HadyanCodeError-JSON branches below are hadyancode-provider flows (balance,
+	// spend limit), so "hadyancode" stays their fallback id. The missing-credential
 	// message instead gets the raw value: defaulting there would name the wrong
 	// provider when the active provider id is unknown.
-	const clineErrorProviderId = providerId ?? "cline"
+	const hadyancodeErrorProviderId = providerId ?? "hadyancode"
 	const rawMessage = error.message ?? "Unknown error"
 
-	// A retired cline-free/ model answers "model not found" once its free
+	// A retired hadyancode-free/ model answers "model not found" once its free
 	// promotion ends and the id is removed from the catalog. Stamp the payload
 	// with a dedicated code so the webview renders the promotion-ended card
 	// instead of the generic model-not-found guidance below.
-	if (isClineFreePromotionEndedMessage(rawMessage, modelId)) {
+	if (isHadyanCodeFreePromotionEndedMessage(rawMessage, modelId)) {
 		return JSON.stringify({
 			message: rawMessage,
-			code: CLINE_FREE_PROMOTION_ENDED_ERROR_CODE,
-			providerId: clineErrorProviderId,
+			code: HADYANCODE_FREE_PROMOTION_ENDED_ERROR_CODE,
+			providerId: hadyancodeErrorProviderId,
 			modelId,
 			details: {
-				code: CLINE_FREE_PROMOTION_ENDED_ERROR_CODE,
+				code: HADYANCODE_FREE_PROMOTION_ENDED_ERROR_CODE,
 				message: rawMessage,
 			},
 		})
@@ -2681,11 +2686,11 @@ export function reshapeErrorForWebview(
 	// HTTP 401/403 while the typed error was still available). Raw provider
 	// bodies here are dead ends — e.g. Mistral's `{"detail":"Invalid API Key"}`
 	// is identical for a wrong, empty, or wrong-scope key — so point the user
-	// at the key configuration instead. Cline-account providers keep the JSON
+	// at the key configuration instead. HadyanCode-account providers keep the JSON
 	// path below (the webview renders their auth failures as a sign-in card),
 	// and so does an *unknown* provider id: rewriting without knowing the
-	// provider could suppress that sign-in card for a cline-account failure.
-	if (errorClass === "auth" && providerId !== undefined && !isClineManagedProvider(providerId)) {
+	// provider could suppress that sign-in card for a hadyancode-account failure.
+	if (errorClass === "auth" && providerId !== undefined && !isHadyanCodeManagedProvider(providerId)) {
 		return describeCredentialRejectedError(rawMessage, providerId)
 	}
 
@@ -2712,7 +2717,7 @@ export function reshapeErrorForWebview(
 		// and delivers only a human-readable string such as
 		// "Not enough credits available" or "Your daily spend limit of $20.00
 		// has been reached." Detect these by keyword and synthesize the
-		// ClineError-compatible JSON the webview expects.
+		// HadyanCodeError-compatible JSON the webview expects.
 		const lower = rawMessage.toLowerCase()
 		if (
 			lower.includes("insufficient_credits") ||
@@ -2728,7 +2733,7 @@ export function reshapeErrorForWebview(
 			return JSON.stringify({
 				message: rawMessage,
 				code: "insufficient_credits",
-				providerId: clineErrorProviderId,
+				providerId: hadyancodeErrorProviderId,
 				details: {
 					current_balance: balance,
 					message: rawMessage,
@@ -2739,7 +2744,7 @@ export function reshapeErrorForWebview(
 			return JSON.stringify({
 				message: rawMessage,
 				code: "SPEND_LIMIT_EXCEEDED",
-				providerId: clineErrorProviderId,
+				providerId: hadyancodeErrorProviderId,
 				details: {
 					code: "SPEND_LIMIT_EXCEEDED",
 					message: rawMessage,
@@ -2758,13 +2763,13 @@ export function reshapeErrorForWebview(
 	}
 
 	// Detect insufficient credits (402) — needs code + current_balance for
-	// ClineError.getErrorType() to return ClineErrorType.Balance
+	// HadyanCodeError.getErrorType() to return HadyanCodeErrorType.Balance
 	const code = (parsed.code as string) ?? error.code
 	if (code === "insufficient_credits" && typeof parsed.current_balance === "number") {
 		return JSON.stringify({
 			message: (parsed.message as string) ?? rawMessage,
 			code: "insufficient_credits",
-			providerId: clineErrorProviderId,
+			providerId: hadyancodeErrorProviderId,
 			details: {
 				current_balance: parsed.current_balance,
 				total_spent: parsed.total_spent,
@@ -2780,7 +2785,7 @@ export function reshapeErrorForWebview(
 		return JSON.stringify({
 			message: (parsed.message as string) ?? rawMessage,
 			code: "SPEND_LIMIT_EXCEEDED",
-			providerId: clineErrorProviderId,
+			providerId: hadyancodeErrorProviderId,
 			details: {
 				code: "SPEND_LIMIT_EXCEEDED",
 				limit_scope: parsed.limit_scope,
@@ -2794,6 +2799,6 @@ export function reshapeErrorForWebview(
 	}
 
 	// For other structured errors, pass through the parsed JSON so
-	// ClineError.parse() can still extract what it can.
+	// HadyanCodeError.parse() can still extract what it can.
 	return JSON.stringify(parsed)
 }

@@ -18,13 +18,13 @@ export const GlobalFileNames = {
 	apiConversationHistory: "api_conversation_history.json",
 	contextHistory: "context_history.json",
 	uiMessages: "ui_messages.json",
-	clineRecommendedModels: "cline_recommended_models.json",
-	mcpSettings: "cline_mcp_settings.json",
-	clineRules: ".clinerules",
-	workflows: ".clinerules/workflows",
-	hooksDir: ".clinerules/hooks",
-	clineruleSkillsDir: ".clinerules/skills",
-	clineSkillsDir: ".cline/skills",
+	hadyancodeRecommendedModels: "hadyancode_recommended_models.json",
+	mcpSettings: "hadyancode_mcp_settings.json",
+	hadyancodeRules: ".hadyancoderules",
+	workflows: ".hadyancoderules/workflows",
+	hooksDir: ".hadyancoderules/hooks",
+	hadyancoderuleSkillsDir: ".hadyancoderules/skills",
+	hadyancodeSkillsDir: ".hadyancode/skills",
 	claudeSkillsDir: ".claude/skills",
 	agentsSkillsDir: ".agents/skills",
 	cursorRulesDir: ".cursor/rules",
@@ -36,16 +36,16 @@ export const GlobalFileNames = {
 }
 
 /**
- * Returns the cross-platform path to the Cline home directory (~/.cline).
+ * Returns the cross-platform path to the HadyanCode home directory (~/.hadyancode).
  * This works on macOS, Linux, and Windows:
- * - macOS: /Users/username/.cline
- * - Linux: /home/username/.cline
- * - Windows: C:\Users\username\.cline
+ * - macOS: /Users/username/.hadyancode
+ * - Linux: /home/username/.hadyancode
+ * - Windows: C:\Users\username\.hadyancode
  *
- * This is intended to eventually replace ~/Documents/Cline as the global config location.
+ * This is intended to eventually replace ~/Documents/HadyanCode as the global config location.
  */
-function getClineHomePath(): string {
-	return path.join(os.homedir(), ".cline")
+function getHadyanCodeHomePath(): string {
+	return path.join(os.homedir(), ".hadyancode")
 }
 
 export async function ensureTaskDirectoryExists(taskId: string): Promise<string> {
@@ -54,53 +54,53 @@ export async function ensureTaskDirectoryExists(taskId: string): Promise<string>
 
 export async function ensureRulesDirectoryExists(): Promise<string> {
 	const userDocumentsPath = await getDocumentsPath()
-	const clineRulesDir = path.join(userDocumentsPath, "Cline", "Rules")
+	const hadyancodeRulesDir = path.join(userDocumentsPath, "HadyanCode", "Rules")
 	try {
-		await fs.mkdir(clineRulesDir, { recursive: true })
+		await fs.mkdir(hadyancodeRulesDir, { recursive: true })
 	} catch (_error) {
-		return path.join(os.homedir(), "Documents", "Cline", "Rules") // in case creating a directory in documents fails for whatever reason (e.g. permissions) - this is fine because we will fail gracefully with a path that does not exist
+		return path.join(os.homedir(), "Documents", "HadyanCode", "Rules") // in case creating a directory in documents fails for whatever reason (e.g. permissions) - this is fine because we will fail gracefully with a path that does not exist
 	}
-	return clineRulesDir
+	return hadyancodeRulesDir
 }
 
 export async function ensureWorkflowsDirectoryExists(): Promise<string> {
 	const userDocumentsPath = await getDocumentsPath()
-	const clineWorkflowsDir = path.join(userDocumentsPath, "Cline", "Workflows")
+	const hadyancodeWorkflowsDir = path.join(userDocumentsPath, "HadyanCode", "Workflows")
 	try {
-		await fs.mkdir(clineWorkflowsDir, { recursive: true })
+		await fs.mkdir(hadyancodeWorkflowsDir, { recursive: true })
 	} catch (_error) {
-		return path.join(os.homedir(), "Documents", "Cline", "Workflows") // in case creating a directory in documents fails for whatever reason (e.g. permissions) - this is fine because we will fail gracefully with a path that does not exist
+		return path.join(os.homedir(), "Documents", "HadyanCode", "Workflows") // in case creating a directory in documents fails for whatever reason (e.g. permissions) - this is fine because we will fail gracefully with a path that does not exist
 	}
-	return clineWorkflowsDir
+	return hadyancodeWorkflowsDir
 }
 
 export async function ensureMcpServersDirectoryExists(): Promise<string> {
 	const userDocumentsPath = await getDocumentsPath()
-	const mcpServersDir = path.join(userDocumentsPath, "Cline", "MCP")
+	const mcpServersDir = path.join(userDocumentsPath, "HadyanCode", "MCP")
 	try {
 		await fs.mkdir(mcpServersDir, { recursive: true })
 	} catch (_error) {
-		return path.join(os.homedir(), "Documents", "Cline", "MCP") // in case creating a directory in documents fails for whatever reason (e.g. permissions) - this is fine since this path is only ever used in the system prompt
+		return path.join(os.homedir(), "Documents", "HadyanCode", "MCP") // in case creating a directory in documents fails for whatever reason (e.g. permissions) - this is fine since this path is only ever used in the system prompt
 	}
 	return mcpServersDir
 }
 
 export async function ensureHooksDirectoryExists(): Promise<string> {
 	const userDocumentsPath = await getDocumentsPath()
-	const clineHooksDir = path.join(userDocumentsPath, "Cline", "Hooks")
+	const hadyancodeHooksDir = path.join(userDocumentsPath, "HadyanCode", "Hooks")
 	try {
-		await fs.mkdir(clineHooksDir, { recursive: true })
+		await fs.mkdir(hadyancodeHooksDir, { recursive: true })
 	} catch (_error) {
-		return path.join(os.homedir(), "Documents", "Cline", "Hooks") // in case creating a directory in documents fails for whatever reason (e.g. permissions) - this is fine because we will fail gracefully with a path that does not exist
+		return path.join(os.homedir(), "Documents", "HadyanCode", "Hooks") // in case creating a directory in documents fails for whatever reason (e.g. permissions) - this is fine because we will fail gracefully with a path that does not exist
 	}
-	return clineHooksDir
+	return hadyancodeHooksDir
 }
 
 /**
- * Returns the global skills directory path (~/.cline/skills) without creating it.
+ * Returns the global skills directory path (~/.hadyancode/skills) without creating it.
  */
-function getClineSkillsDirectoryPath(): string {
-	return path.join(getClineHomePath(), "skills")
+function getHadyanCodeSkillsDirectoryPath(): string {
+	return path.join(getHadyanCodeHomePath(), "skills")
 }
 
 function getAgentSkillsDirectoryPath(): string {
@@ -290,7 +290,7 @@ export function setRuntimeHooksDir(dir: string | undefined): void {
  * Gets the paths to all hooks directories to search for hooks, including:
  * 1. The runtime hooks directory (if set via --hooks-dir CLI flag)
  * 2. The global hooks directory (if it exists)
- * 3. Each workspace root's .clinerules/hooks directory (if they exist)
+ * 3. Each workspace root's .hadyancoderules/hooks directory (if they exist)
  *
  * Note: Hooks from different directories may be executed concurrently.
  * No execution order is guaranteed between hooks from different directories.
@@ -320,8 +320,8 @@ export async function getAllHooksDirs(workspaceRootPaths?: string[]): Promise<st
 
 /**
  * Resolves this window's workspace root paths for hook discovery. Workspace
- * identity must come from the window's host, not global state: ~/.cline global
- * state is shared across every Cline instance, so a persisted value can point
+ * identity must come from the window's host, not global state: ~/.hadyancode global
+ * state is shared across every HadyanCode instance, so a persisted value can point
  * at another window's project.
  *
  * Blank entries are filtered out, and a host lookup failure degrades to no
@@ -338,7 +338,7 @@ export async function getWindowWorkspaceRoots(): Promise<string[]> {
 }
 
 /**
- * Gets the paths to the workspace's .clinerules/hooks directories to search for
+ * Gets the paths to the workspace's .hadyancoderules/hooks directories to search for
  * hooks. A workspace may not use hooks, and the resulting array will be empty. A
  * multi-root workspace may have multiple hooks directories.
  */
@@ -348,7 +348,7 @@ export async function getWorkspaceHooksDirs(workspaceRootPaths?: string[]): Prom
 	return (
 		await Promise.all(
 			workspaceRootPaths.map(async (workspaceRootPath) => {
-				// Look for a .clinerules/hooks folder in this workspace root.
+				// Look for a .hadyancoderules/hooks folder in this workspace root.
 				const candidate = path.join(workspaceRootPath, GlobalFileNames.hooksDir)
 				return (await isDirectory(candidate)) ? candidate : undefined
 			}),

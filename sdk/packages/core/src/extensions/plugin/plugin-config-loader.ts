@@ -4,20 +4,20 @@ import type {
 	AgentConfig,
 	PluginSetupContext,
 	WorkspaceInfo,
-} from "@cline/shared";
+} from "@hadyancode/shared";
 import {
 	discoverPluginModulePaths as discoverPluginModulePathsFromShared,
 	resolveConfiguredPluginModulePaths,
 	resolvePluginConfigSearchPaths as resolvePluginConfigSearchPathsFromShared,
 	SKILLS_CONFIG_DIRECTORY_NAME,
-} from "@cline/shared/storage";
+} from "@hadyancode/shared/storage";
 import { filterDisabledPluginPaths } from "../../services/global-settings";
 import type { PluginLoadDiagnostics } from "./plugin-load-report";
 import { loadAgentPluginsFromPathsWithDiagnostics } from "./plugin-loader";
 import { loadSandboxedPlugins } from "./plugin-sandbox";
 import type { PluginTargeting } from "./plugin-targeting";
 
-export { getPluginDisplayName } from "@cline/shared/storage";
+export { getPluginDisplayName } from "@hadyancode/shared/storage";
 
 type AgentPlugin = NonNullable<AgentConfig["extensions"]>[number];
 
@@ -100,10 +100,10 @@ function readDeclaredPluginEntryPaths(packageRoot: string): string[] {
 		const parsed = JSON.parse(
 			readFileSync(join(packageRoot, PACKAGE_JSON_FILE_NAME), "utf8"),
 		) as unknown;
-		if (!isRecord(parsed) || !isRecord(parsed.cline)) {
+		if (!isRecord(parsed) || !isRecord(parsed.hadyancode)) {
 			return [];
 		}
-		const entries = parsed.cline.plugins;
+		const entries = parsed.hadyancode.plugins;
 		if (!Array.isArray(entries)) {
 			return [];
 		}

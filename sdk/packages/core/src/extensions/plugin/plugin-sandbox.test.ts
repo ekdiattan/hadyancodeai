@@ -8,7 +8,7 @@ import type {
 	AgentTool,
 	AgentToolContext,
 	Message,
-} from "@cline/shared";
+} from "@hadyancode/shared";
 import {
 	afterAll,
 	beforeAll,
@@ -19,7 +19,7 @@ import {
 	vi,
 } from "vitest";
 import {
-	CLINE_PLUGIN_IDLE_TIMEOUT_MS_ENV,
+	HADYANCODE_PLUGIN_IDLE_TIMEOUT_MS_ENV,
 	loadSandboxedPlugins,
 } from "./plugin-sandbox";
 
@@ -106,7 +106,7 @@ describe("plugin-sandbox", () => {
 				"      description: 'emit host event',",
 				"      inputSchema: { type: 'object', properties: { value: { type: 'string' } }, required: ['value'] },",
 				"      execute: async (input) => {",
-				"        globalThis.__clinePluginHost?.emitEvent?.('test_event', { value: input.value });",
+				"        globalThis.__hadyancodePluginHost?.emitEvent?.('test_event', { value: input.value });",
 				"        return { ok: true };",
 				"      },",
 				"    });",
@@ -123,7 +123,7 @@ describe("plugin-sandbox", () => {
 				"  name: 'sandbox-run-end',",
 				"  manifest: { capabilities: ['hooks'] },",
 				"  hooks: { afterRun(ctx) {",
-				"    globalThis.__clinePluginHost?.emitEvent?.('run_end_hook', {",
+				"    globalThis.__hadyancodePluginHost?.emitEvent?.('run_end_hook', {",
 				"      finishReason: ctx.result?.status,",
 				"      iterations: ctx.result?.iterations,",
 				"    });",
@@ -286,12 +286,12 @@ describe("plugin-sandbox", () => {
 			"utf8",
 		);
 
-		const sdkDepDir = join(dir, "node_modules", "@cline", "shared");
+		const sdkDepDir = join(dir, "node_modules", "@hadyancode", "shared");
 		await mkdir(sdkDepDir, { recursive: true });
 		await writeFile(
 			join(sdkDepDir, "package.json"),
 			JSON.stringify({
-				name: "@cline/shared",
+				name: "@hadyancode/shared",
 				type: "module",
 				exports: "./index.js",
 			}),
@@ -305,7 +305,7 @@ describe("plugin-sandbox", () => {
 		await writeFile(
 			join(dir, "plugin-sdk.ts"),
 			[
-				"import { sdkMarker } from '@cline/shared';",
+				"import { sdkMarker } from '@hadyancode/shared';",
 				"export default {",
 				"  name: sdkMarker,",
 				"  manifest: { capabilities: ['tools'] },",
@@ -317,10 +317,10 @@ describe("plugin-sandbox", () => {
 		await writeFile(
 			join(dir, "plugin-host-dep.ts"),
 			[
-				"import { resolveClineDataDir } from '@cline/shared/storage';",
+				"import { resolveHadyanCodeDataDir } from '@hadyancode/shared/storage';",
 				"import YAML from 'yaml';",
 				"export default {",
-				"  name: YAML.stringify({ host: !!resolveClineDataDir() }).trim(),",
+				"  name: YAML.stringify({ host: !!resolveHadyanCodeDataDir() }).trim(),",
 				"  manifest: { capabilities: ['tools'] },",
 				"};",
 			].join("\n"),
@@ -330,7 +330,7 @@ describe("plugin-sandbox", () => {
 		await writeFile(
 			join(dir, "plugin-create-tool.ts"),
 			[
-				"import { createTool } from '@cline/agents';",
+				"import { createTool } from '@hadyancode/agents';",
 				"export default {",
 				"  name: 'sandbox-create-tool',",
 				"  manifest: { capabilities: ['tools'] },",
@@ -466,7 +466,7 @@ describe("plugin-sandbox", () => {
 			emitUpdate: () => {},
 			metadata: {
 				modelSupportsImages: true,
-				__clineInternalTelemetry: cyclicTelemetry,
+				__hadyancodeInternalTelemetry: cyclicTelemetry,
 			},
 		} as unknown as AgentToolContext);
 		expect(result).toEqual({ echoed: "ok" });
@@ -621,7 +621,7 @@ describe("plugin-sandbox", () => {
 		}
 	});
 
-	it("respects CLINE_PLUGIN_IMPORT_TIMEOUT_MS env var when options.importTimeoutMs is unset", async () => {
+	it("respects HADYANCODE_PLUGIN_IMPORT_TIMEOUT_MS env var when options.importTimeoutMs is unset", async () => {
 		const envDir = await mkdtemp(
 			join(tmpdir(), "core-plugin-sandbox-import-env-"),
 		);
@@ -644,7 +644,7 @@ describe("plugin-sandbox", () => {
 			// Set env override well below the 4000 ms hardcoded default.
 			// If the env var isn't read, this test would block for ~4 s and
 			// the per-test timeout (3000 ms below) would fail it.
-			vi.stubEnv("CLINE_PLUGIN_IMPORT_TIMEOUT_MS", "150");
+			vi.stubEnv("HADYANCODE_PLUGIN_IMPORT_TIMEOUT_MS", "150");
 			await expect(
 				loadSandboxedPlugins({ pluginPaths: [pluginPath] }),
 			).rejects.toThrow(/timed out/i);
@@ -678,7 +678,7 @@ describe("plugin-sandbox", () => {
 				"utf8",
 			);
 
-			vi.stubEnv(CLINE_PLUGIN_IDLE_TIMEOUT_MS_ENV, "1000");
+			vi.stubEnv(HADYANCODE_PLUGIN_IDLE_TIMEOUT_MS_ENV, "1000");
 			vi.useFakeTimers();
 			sandboxed = await loadSandboxedPlugins({
 				pluginPaths: [pluginPath],
@@ -773,7 +773,7 @@ describe("plugin-sandbox", () => {
 	});
 
 	it("ignores the npm wrapper platform package bootstrap when running from source", async () => {
-		const previousWrapperPath = process.env.CLINE_WRAPPER_PATH;
+		const previousWrapperPath = process.env.HADYANCODE_WRAPPER_PATH;
 		const wrapperRoot = await mkdtemp(
 			join(tmpdir(), "core-plugin-sandbox-wrapper-"),
 		);
@@ -782,7 +782,7 @@ describe("plugin-sandbox", () => {
 		const packageRoot = join(
 			wrapperRoot,
 			"node_modules",
-			"@cline",
+			"@hadyancode",
 			`cli-${platform}-${process.arch}`,
 		);
 		const wrapperBinDir = join(wrapperRoot, "bin");
@@ -791,7 +791,7 @@ describe("plugin-sandbox", () => {
 			"extensions",
 			"plugin-sandbox-bootstrap.js",
 		);
-		const wrapperPath = join(wrapperBinDir, "cline");
+		const wrapperPath = join(wrapperBinDir, "hadyancode");
 		const events: Array<{ name: string; payload?: unknown }> = [];
 
 		try {
@@ -801,7 +801,7 @@ describe("plugin-sandbox", () => {
 			await writeFile(
 				join(packageRoot, "package.json"),
 				JSON.stringify({
-					name: `@cline/cli-${platform}-${process.arch}`,
+					name: `@hadyancode/cli-${platform}-${process.arch}`,
 					version: "0.0.0-test",
 					type: "module",
 				}),
@@ -835,7 +835,7 @@ describe("plugin-sandbox", () => {
 				"utf8",
 			);
 
-			process.env.CLINE_WRAPPER_PATH = wrapperPath;
+			process.env.HADYANCODE_WRAPPER_PATH = wrapperPath;
 			vi.resetModules();
 			const { loadSandboxedPlugins: loadSandboxedPluginsFromWrapper } =
 				await import("./plugin-sandbox");
@@ -863,9 +863,9 @@ describe("plugin-sandbox", () => {
 			}
 		} finally {
 			if (previousWrapperPath === undefined) {
-				delete process.env.CLINE_WRAPPER_PATH;
+				delete process.env.HADYANCODE_WRAPPER_PATH;
 			} else {
-				process.env.CLINE_WRAPPER_PATH = previousWrapperPath;
+				process.env.HADYANCODE_WRAPPER_PATH = previousWrapperPath;
 			}
 			vi.resetModules();
 			await rm(wrapperRoot, { recursive: true, force: true });

@@ -1,25 +1,25 @@
 ---
 title: "CLI Reference"
-description: "Complete command reference for Cline CLI including all commands, flags, and configuration options."
+description: "Complete command reference for HadyanCode CLI including all commands, flags, and configuration options."
 ---
 
 ```bash
-cline --help           # Show all commands
-cline <command> --help # Show help for a specific command
+hadyancode --help           # Show all commands
+hadyancode <command> --help # Show help for a specific command
 ```
 
 ## Synopsis
 
 ```bash
-cline [options] [command] [prompt]
+hadyancode [options] [command] [prompt]
 ```
 
 ## Help Menu (Source of Truth)
 
 ```text
-Usage: cline [options] [command] [prompt]
+Usage: hadyancode [options] [command] [prompt]
 
-Cline CLI - AI coding assistant in your terminal
+HadyanCode CLI - AI coding assistant in your terminal
 
 Arguments:
   prompt                       Your prompt. Default to start in act mode with auto-approve enabled.
@@ -33,16 +33,16 @@ Options:
   -m, --model <model-id>       Model to use for the session with the selected provider
   -v, --verbose                Show verbose output
   -c, --cwd <path>             Working directory
-  --config <path>              Configuration directory (default: ~/.cline/data/settings)
-  --data-dir <path>            Use isolated local state at this directory path (default: ~/.cline)
+  --config <path>              Configuration directory (default: ~/.hadyancode/data/settings)
+  --data-dir <path>            Use isolated local state at this directory path (default: ~/.hadyancode)
   --thinking <level>           Set reasoning effort level between none|low|medium|high|xhigh (default: medium)
   --retries <count>            Maximum consecutive mistakes (retries) before halting
-  --hooks-dir <path>           Directory path to additional hooks for runtime hook injection (default: ~/.cline/hooks)
+  --hooks-dir <path>           Directory path to additional hooks for runtime hook injection (default: ~/.hadyancode/hooks)
   --acp                        Run in Agent Client Protocol (ACP) mode for editor integration
   -i, --tui                    Open the terminal user interface (TUI) for interactive sessions
   --id <session-id>            Resume an existing session by ID
   -k, --key <api-key>          API key override for this run
-  -P, --provider <id>          Provider id (default: cline)
+  -P, --provider <id>          Provider id (default: hadyancode)
   -s, --system <system-prompt> Override the default system prompt
   -z, --zen                    Start a session that runs in the background hub
   -h, --help                   display help for command
@@ -56,11 +56,11 @@ Commands:
   doctor                       Diagnose and fix configuration issues
   history|h [options]          List session history or manage saved sessions
   hook                         Handle a hook payload from stdin
-  plugin                       Manage Cline Plugins
+  plugin                       Manage HadyanCode Plugins
   schedule                     Manage scheduled tasks
   hub                          Manage the local hub daemon
   update [options]             Check for updates and install if available
-  version                      Show Cline CLI version number
+  version                      Show HadyanCode CLI version number
   kanban                       Launch the kanban app and exit
 ```
 
@@ -76,31 +76,31 @@ Commands:
 | `-m, --model <model-id>` | Model to use for the session with the selected provider |
 | `-v, --verbose` | Show verbose output |
 | `-c, --cwd <path>` | Working directory |
-| `--config <path>` | Configuration directory (default: `~/.cline/data/settings`) |
-| `--data-dir <path>` | Use isolated local state at this directory path (default: `~/.cline`) |
+| `--config <path>` | Configuration directory (default: `~/.hadyancode/data/settings`) |
+| `--data-dir <path>` | Use isolated local state at this directory path (default: `~/.hadyancode`) |
 | `--thinking <level>` | Set reasoning effort: `none\|low\|medium\|high\|xhigh` (default `medium`) |
 | `--retries <count>` | Maximum consecutive mistakes (retries) before halting |
-| `--hooks-dir <path>` | Directory path to additional hooks for runtime hook injection (default: `~/.cline/hooks`) |
+| `--hooks-dir <path>` | Directory path to additional hooks for runtime hook injection (default: `~/.hadyancode/hooks`) |
 | `--acp` | Run in Agent Client Protocol (ACP) mode for [editor integration](/usage/acp) |
 | `-i, --tui` | Open the terminal user interface (TUI) for interactive sessions |
 | `--id <session-id>` | Resume an existing session by ID |
 | `-k, --key <api-key>` | API key override for this run |
-| `-P, --provider <id>` | Provider id (default: `cline`) |
+| `-P, --provider <id>` | Provider id (default: `hadyancode`) |
 | `-s, --system <system-prompt>` | Override the default system prompt |
 | `-z, --zen` | Start a session that runs in the background hub |
 | `-h, --help` | Display help for command |
 
 ## Commands
 
-### `cline` (default)
+### `hadyancode` (default)
 
 Start a task or enter interactive mode.
 
 ```bash
-cline
-cline "your prompt here"
-cline "Run tests and fix failures"
-echo "prompt" | cline
+hadyancode
+hadyancode "your prompt here"
+hadyancode "Run tests and fix failures"
+echo "prompt" | hadyancode
 ```
 
 ### `auth [options] [provider]`
@@ -108,7 +108,7 @@ echo "prompt" | cline
 Configure authentication with an AI provider.
 
 ```bash
-cline auth
+hadyancode auth
 ```
 
 ### `config [options]`
@@ -116,7 +116,7 @@ cline auth
 Show current configuration.
 
 ```bash
-cline config
+hadyancode config
 ```
 
 ### `connect [options] [adapter]`
@@ -124,8 +124,8 @@ cline config
 Connect to messaging platforms. See [Connectors](/cli/connectors).
 
 ```bash
-cline connect
-cline connect [adapter]
+hadyancode connect
+hadyancode connect [adapter]
 ```
 
 ### `mcp`
@@ -133,7 +133,7 @@ cline connect [adapter]
 Manage MCP servers. See [MCP](/mcp/mcp-overview).
 
 ```bash
-cline mcp
+hadyancode mcp
 ```
 
 ### `dev`
@@ -141,7 +141,7 @@ cline mcp
 Developer tools and utilities.
 
 ```bash
-cline dev
+hadyancode dev
 ```
 
 ### `doctor`
@@ -149,7 +149,7 @@ cline dev
 Diagnose and fix configuration issues.
 
 ```bash
-cline doctor
+hadyancode doctor
 ```
 
 ### `history|h [options]`
@@ -157,8 +157,8 @@ cline doctor
 List session history or manage saved sessions.
 
 ```bash
-cline history
-cline h
+hadyancode history
+hadyancode h
 ```
 
 ### `hook`
@@ -166,16 +166,16 @@ cline h
 Handle a hook payload from stdin.
 
 ```bash
-cat payload.json | cline hook
+cat payload.json | hadyancode hook
 ```
 
 ### `plugin`
 
-Manage Cline plugins. Install plugins from file URLs, npm, git repositories, or local paths. See [Plugins](/customization/plugins) for full details and the plugin manifest format.
+Manage HadyanCode plugins. Install plugins from file URLs, npm, git repositories, or local paths. See [Plugins](/customization/plugins) for full details and the plugin manifest format.
 
 ```bash
-cline plugin install <source>  # Install a plugin
-cline plugin i <source>        # Shorthand alias
+hadyancode plugin install <source>  # Install a plugin
+hadyancode plugin i <source>        # Shorthand alias
 ```
 
 | Option | Description |
@@ -184,12 +184,12 @@ cline plugin i <source>        # Shorthand alias
 | `--git` | Treat source as a git repository |
 | `--force` | Replace an existing install for the same source |
 | `--json` | Output result as JSON |
-| `--cwd <path>` | Install to `<path>/.cline/plugins` instead of the global directory |
+| `--cwd <path>` | Install to `<path>/.hadyancode/plugins` instead of the global directory |
 
 Try it with the [TypeScript Navigation Plugin](https://github.com/cline/typescript-lsp-plugin):
 
 ```bash
-cline plugin install https://github.com/cline/typescript-lsp-plugin.git
+hadyancode plugin install https://github.com/cline/typescript-lsp-plugin.git
 ```
 
 ### `schedule`
@@ -197,7 +197,7 @@ cline plugin install https://github.com/cline/typescript-lsp-plugin.git
 Manage scheduled agents. See [Scheduling](/cli/scheduling).
 
 ```bash
-cline schedule
+hadyancode schedule
 ```
 
 ### `hub`
@@ -205,7 +205,7 @@ cline schedule
 Manage the local hub daemon.
 
 ```bash
-cline hub
+hadyancode hub
 ```
 
 ### `update [options]`
@@ -213,16 +213,16 @@ cline hub
 Check for updates and install if available.
 
 ```bash
-cline update
+hadyancode update
 ```
 
 ### `version`
 
-Show Cline CLI version number.
+Show HadyanCode CLI version number.
 
 ```bash
-cline version
-cline -V
+hadyancode version
+hadyancode -V
 ```
 
 ### `kanban`
@@ -230,29 +230,29 @@ cline -V
 Launch the kanban app and exit.
 
 ```bash
-cline kanban
+hadyancode kanban
 ```
 
 ## Environment Variables
 
 | Variable | Description |
 |----------|-------------|
-| `CLINE_DATA_DIR` | Custom configuration directory (replaces `~/.cline/data/`) |
-| `CLINE_HUB_ADDRESS` | Override hub address (default: `127.0.0.1:25463`) |
-| `CLINE_SESSION_BACKEND_MODE` | Force backend mode (`local`, `hub`, `remote`, `auto`) |
-| `CLINE_SANDBOX_DATA_DIR` | Sandbox session storage directory |
-| `CLINE_SANDBOX` | Enable sandbox mode |
-| `CLINE_HOOKS_DIR` | Additional hooks directory |
-| `CLINE_BUILD_ENV` | Set to `development` for debug features |
-| `CLINE_DEBUG_PORT_BASE` | Base port for Node.js inspector |
-| `CLINE_COMMAND_PERMISSIONS` | JSON policy restricting shell commands (see below) |
+| `HADYANCODE_DATA_DIR` | Custom configuration directory (replaces `~/.hadyancode/data/`) |
+| `HADYANCODE_HUB_ADDRESS` | Override hub address (default: `127.0.0.1:25463`) |
+| `HADYANCODE_SESSION_BACKEND_MODE` | Force backend mode (`local`, `hub`, `remote`, `auto`) |
+| `HADYANCODE_SANDBOX_DATA_DIR` | Sandbox session storage directory |
+| `HADYANCODE_SANDBOX` | Enable sandbox mode |
+| `HADYANCODE_HOOKS_DIR` | Additional hooks directory |
+| `HADYANCODE_BUILD_ENV` | Set to `development` for debug features |
+| `HADYANCODE_DEBUG_PORT_BASE` | Base port for Node.js inspector |
+| `HADYANCODE_COMMAND_PERMISSIONS` | JSON policy restricting shell commands (see below) |
 
-### CLINE_COMMAND_PERMISSIONS
+### HADYANCODE_COMMAND_PERMISSIONS
 
 Restrict which shell commands the agent can execute:
 
 ```bash
-export CLINE_COMMAND_PERMISSIONS='{"allow": ["npm *", "git *"], "deny": ["rm -rf *", "sudo *"]}'
+export HADYANCODE_COMMAND_PERMISSIONS='{"allow": ["npm *", "git *"], "deny": ["rm -rf *", "sudo *"]}'
 ```
 
 | Field | Type | Description |
@@ -282,7 +282,7 @@ When using `--json`, each message is a JSON object on its own line:
 ## Configuration Files
 
 ```
-~/.cline/
+~/.hadyancode/
   data/
     settings/
       providers.json             # API keys and provider config
@@ -293,9 +293,9 @@ When using `--json`, each message is a JSON object on its own line:
     logs/
       hub-daemon.log             # Hub logs
   plugins/                       # Global plugins
-    _installed/                  # Managed by `cline plugin install`
+    _installed/                  # Managed by `hadyancode plugin install`
 
-.cline/                          # Project root
+.hadyancode/                          # Project root
   rules/                         # Project rules
   skills/                        # Project skills
   hooks/                         # Lifecycle hooks

@@ -1,5 +1,5 @@
 export enum NEW_USER_TYPE {
-	CLINE_PASS = "cline-pass",
+	HADYANCODE_PASS = "hadyancode-pass",
 	FREE = "free",
 	POWER = "power",
 	BYOK = "byok",
@@ -14,15 +14,15 @@ type UserTypeSelection = {
 
 export const STEP_CONFIG = {
 	0: {
-		title: "How will you use Cline?",
+		title: "How will you use HadyanCode?",
 		description: "Select an option below to get started.",
 		buttons: [
 			{ text: "Continue", action: "next", variant: "default" },
-			{ text: "Login to Cline", action: "signin", variant: "secondary" },
+			{ text: "Login to HadyanCode", action: "signin", variant: "secondary" },
 		],
 	},
-	[NEW_USER_TYPE.CLINE_PASS]: {
-		title: "Select a ClinePass model",
+	[NEW_USER_TYPE.HADYANCODE_PASS]: {
+		title: "Select a HadyanCodePass model",
 		buttons: [
 			{ text: "Create my Account", action: "signup", variant: "default" },
 			{ text: "Back", action: "back", variant: "secondary" },
@@ -56,24 +56,24 @@ export const STEP_CONFIG = {
 	},
 } as const
 
-const CLINE_PASS_USER_TYPE_SELECTION: UserTypeSelection = {
-	title: "ClinePass",
+const HADYANCODE_PASS_USER_TYPE_SELECTION: UserTypeSelection = {
+	title: "HadyanCodePass",
 	description: "Low cost subscription plan for best open weights model.",
-	type: NEW_USER_TYPE.CLINE_PASS,
-	learnMoreUrl: "https://docs.cline.bot/getting-started/clinepass",
+	type: NEW_USER_TYPE.HADYANCODE_PASS,
+	learnMoreUrl: "https://docs.cline.bot/getting-started/hadyancodepass",
 }
 
 const BASE_USER_TYPE_SELECTIONS: UserTypeSelection[] = [
 	{ title: "Absolutely Free", description: "Get started at no cost", type: NEW_USER_TYPE.FREE },
 	{ title: "Frontier Model", description: "Claude, GPT Codex, Gemini, etc.", type: NEW_USER_TYPE.POWER },
-	{ title: "Bring my own API key", description: "Use Cline with your provider of choice", type: NEW_USER_TYPE.BYOK },
+	{ title: "Bring my own API key", description: "Use HadyanCode with your provider of choice", type: NEW_USER_TYPE.BYOK },
 ]
 
-/** Free leads (and is the default); ClinePass is inserted second when its models are available. */
-export function getUserTypeSelections(hasClinePassModels: boolean): UserTypeSelection[] {
-	if (!hasClinePassModels) {
+/** Free leads (and is the default); HadyanCodePass is inserted second when its models are available. */
+export function getUserTypeSelections(hasHadyanCodePassModels: boolean): UserTypeSelection[] {
+	if (!hasHadyanCodePassModels) {
 		return BASE_USER_TYPE_SELECTIONS
 	}
 	const [free, ...rest] = BASE_USER_TYPE_SELECTIONS
-	return [free, CLINE_PASS_USER_TYPE_SELECTION, ...rest]
+	return [free, HADYANCODE_PASS_USER_TYPE_SELECTION, ...rest]
 }

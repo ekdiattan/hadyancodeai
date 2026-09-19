@@ -4,7 +4,7 @@ import {
 	createGatewayApiHandler,
 	toGatewayRequestMessages,
 } from "./compat";
-import { ClineNotSubscribedError } from "./errors";
+import { HadyanCodeNotSubscribedError } from "./errors";
 import { DEFAULT_GATEWAY_MAX_OUTPUT_TOKENS } from "./gateway";
 import type { Message } from "./types";
 
@@ -175,7 +175,7 @@ describe("createGatewayApiHandler.getMessages", () => {
 		// `toGatewayRequestMessages` now forwards the raw `tool_result.content`
 		// unchanged. Downstream `formatMessagesForAiSdk` /
 		// `toAiSdkToolResultOutput` is responsible for any flattening or
-		// image-extraction; this layer only translates Cline's `Message[]`
+		// image-extraction; this layer only translates HadyanCode's `Message[]`
 		// shape into AI-SDK formatter parts.
 		expect(request.messages[1]).toMatchObject({
 			role: "user",
@@ -371,8 +371,8 @@ describe("createGatewayApiHandler.createMessage", () => {
 		});
 
 		const handler = createGatewayApiHandler({
-			providerId: "openrouter",
-			clientType: "openai-compatible",
+			providerId: "deepseek",
+			clientType: "deepseek",
 			modelId: "z-ai/glm-5.1",
 			apiKey: "test-key",
 			knownModels: {
@@ -411,8 +411,8 @@ describe("createGatewayApiHandler.createMessage", () => {
 		});
 
 		const handler = createGatewayApiHandler({
-			providerId: "openrouter",
-			clientType: "openai-compatible",
+			providerId: "deepseek",
+			clientType: "deepseek",
 			modelId: "reasoning-model",
 			apiKey: "test-key",
 			thinking: true,
@@ -441,8 +441,8 @@ describe("createGatewayApiHandler.createMessage", () => {
 		});
 
 		const handler = createGatewayApiHandler({
-			providerId: "openai-compatible",
-			clientType: "openai-compatible",
+			providerId: "deepseek",
+			clientType: "deepseek",
 			modelId: "custom-model",
 			apiKey: "test-key",
 			baseUrl: "https://example.com/v1",
@@ -471,8 +471,8 @@ describe("createGatewayApiHandler.createMessage", () => {
 		});
 
 		const handler = createGatewayApiHandler({
-			providerId: "openrouter",
-			clientType: "openai-compatible",
+			providerId: "deepseek",
+			clientType: "deepseek",
 			modelId: "small-output",
 			apiKey: "test-key",
 			maxOutputTokens: 16_000,
@@ -510,7 +510,7 @@ describe("createGatewayApiHandler.createMessage", () => {
 		});
 
 		const handler = createGatewayApiHandler({
-			providerId: "cerebras",
+			providerId: "deepseek",
 			modelId: "zai-glm-4.7",
 			apiKey: "test-key",
 		});
@@ -521,7 +521,7 @@ describe("createGatewayApiHandler.createMessage", () => {
 				role: "assistant",
 				content: [
 					{ type: "thinking", thinking: "private trace" },
-					{ type: "text", text: "Hello from Cline" },
+					{ type: "text", text: "Hello from HadyanCode" },
 				],
 			},
 			{
@@ -543,7 +543,7 @@ describe("createGatewayApiHandler.createMessage", () => {
 					content: [
 						expect.objectContaining({
 							type: "text",
-							text: "Hello from Cline",
+							text: "Hello from HadyanCode",
 						}),
 					],
 				}),
@@ -567,8 +567,8 @@ describe("createGatewayApiHandler.createMessage", () => {
 		) as unknown as typeof fetch;
 
 		const handler = createGatewayApiHandler({
-			providerId: "openai-compatible",
-			clientType: "openai-compatible",
+			providerId: "deepseek",
+			clientType: "deepseek",
 			modelId: "gpt-4.1",
 			apiKey: "test-key",
 			baseUrl: "https://example.openai.azure.com/openai/deployments/gpt-4.1",
@@ -610,8 +610,8 @@ describe("createGatewayApiHandler.createMessage", () => {
 		) as unknown as typeof fetch;
 
 		const handler = createGatewayApiHandler({
-			providerId: "openai-compatible",
-			clientType: "openai-compatible",
+			providerId: "deepseek",
+			clientType: "deepseek",
 			modelId: "gpt-4.1",
 			apiKey: "test-key",
 			baseUrl: "https://example.openai.azure.com/openai/v1",
@@ -639,7 +639,7 @@ describe("createGatewayApiHandler.createMessage", () => {
 		);
 	});
 
-	it("throws ClineNotSubscribedError for ClinePass required-plan 403 responses", async () => {
+	it("throws HadyanCodeNotSubscribedError for HadyanCodePass required-plan 403 responses", async () => {
 		streamTextSpy.mockReturnValue({
 			fullStream: (async function* () {
 				yield { type: "finish", finishReason: "stop" };
@@ -659,8 +659,8 @@ describe("createGatewayApiHandler.createMessage", () => {
 		) as unknown as typeof fetch;
 
 		const handler = createGatewayApiHandler({
-			providerId: "cline-pass",
-			clientType: "openai-compatible",
+			providerId: "hadyancode-pass",
+			clientType: "hadyancode-pass",
 			modelId: "premium-model",
 			apiKey: "test-key",
 			fetch: providerFetch,
@@ -680,7 +680,7 @@ describe("createGatewayApiHandler.createMessage", () => {
 			factoryConfig?.fetch?.("https://api.cline.bot/api/v1/chat/completions", {
 				method: "POST",
 			}),
-		).rejects.toBeInstanceOf(ClineNotSubscribedError);
+		).rejects.toBeInstanceOf(HadyanCodeNotSubscribedError);
 	});
 });
 

@@ -1,23 +1,23 @@
 // ---------------------------------------------------------------------------
-// cline history - CLI tests
+// hadyancode history - CLI tests
 //
 // Covers:
-//   - `cline history --limit X`  - pagination limit
-//   - `cline history --page N`   - page selection
-//   - `cline history --config`   - custom config directory
-//   - `cline history --help`     - help page
+//   - `hadyancode history --limit X`  - pagination limit
+//   - `hadyancode history --page N`   - page selection
+//   - `hadyancode history --config`   - custom config directory
+//   - `hadyancode history --help`     - help page
 // ---------------------------------------------------------------------------
 
 import { test } from "@microsoft/tui-test";
-import { CLINE_BIN, TERMINAL_WIDE } from "../helpers/constants.js";
-import { clineEnv } from "../helpers/env.js";
+import { HADYANCODE_BIN, TERMINAL_WIDE } from "../helpers/constants.js";
+import { hadyancodeEnv } from "../helpers/env.js";
 import { expectVisible } from "../helpers/terminal.js";
 
-test.describe("cline history --help", () => {
+test.describe("hadyancode history --help", () => {
 	test.use({
-		program: { file: CLINE_BIN, args: ["history", "--help"] },
+		program: { file: HADYANCODE_BIN, args: ["history", "--help"] },
 		...TERMINAL_WIDE,
-		env: clineEnv("default"),
+		env: hadyancodeEnv("default"),
 	});
 
 	test("shows history help page with all flags", async ({ terminal }) => {
@@ -25,11 +25,11 @@ test.describe("cline history --help", () => {
 	});
 });
 
-test.describe("cline history --limit", () => {
+test.describe("hadyancode history --limit", () => {
 	test.use({
-		program: { file: CLINE_BIN, args: ["history", "--limit", "1"] },
+		program: { file: HADYANCODE_BIN, args: ["history", "--limit", "1"] },
 		...TERMINAL_WIDE,
-		env: clineEnv("default"),
+		env: hadyancodeEnv("default"),
 	});
 
 	test("shows history limited to specified number of results", async ({
@@ -41,11 +41,11 @@ test.describe("cline history --limit", () => {
 	});
 });
 
-test.describe("cline history --page", () => {
+test.describe("hadyancode history --page", () => {
 	test.use({
-		program: { file: CLINE_BIN, args: ["history", "--page", "1"] },
+		program: { file: HADYANCODE_BIN, args: ["history", "--page", "1"] },
 		...TERMINAL_WIDE,
-		env: clineEnv("default"),
+		env: hadyancodeEnv("default"),
 	});
 
 	test("shows history for the specified page", async ({ terminal }) => {
@@ -53,11 +53,11 @@ test.describe("cline history --page", () => {
 	});
 });
 
-test.describe("cline history --config (default)", () => {
+test.describe("hadyancode history --config (default)", () => {
 	test.use({
-		program: { file: CLINE_BIN, args: ["history"] },
+		program: { file: HADYANCODE_BIN, args: ["history"] },
 		...TERMINAL_WIDE,
-		env: clineEnv("default"),
+		env: hadyancodeEnv("default"),
 	});
 
 	test("shows history for default config", async ({ terminal }) => {
@@ -66,14 +66,14 @@ test.describe("cline history --config (default)", () => {
 	});
 });
 
-test.describe("cline history --config (claude-sonnet-4.6)", () => {
+test.describe("hadyancode history --config (claude-sonnet-4.6)", () => {
 	test.use({
 		program: {
-			file: CLINE_BIN,
+			file: HADYANCODE_BIN,
 			args: ["history", "--config", "configs/claude-sonnet-4.6"],
 		},
 		...TERMINAL_WIDE,
-		env: clineEnv("claude-sonnet-4.6"),
+		env: hadyancodeEnv("claude-sonnet-4.6"),
 	});
 
 	test("shows different history for different config directory", async ({

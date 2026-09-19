@@ -1,14 +1,14 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from "axios"
 import { Controller } from "@/core/controller"
-import { CLINE_PASS_PROVIDER_ID } from "@/core/controller/models/handleClinePassProviderSelection"
-import { ClineAccountService } from "@/services/account/ClineAccountService"
-import { buildBasicClineHeaders } from "@/services/EnvUtils"
+import { HADYANCODE_PASS_PROVIDER_ID } from "@/core/controller/models/handleHadyanCodePassProviderSelection"
+import { HadyanCodeAccountService } from "@/services/account/HadyanCodeAccountService"
+import { buildBasicHadyanCodeHeaders } from "@/services/EnvUtils"
 import { getAxiosSettings } from "@/shared/net"
 import { Logger } from "@/shared/services/Logger"
 import { ConfiguredAPIKeys } from "@/shared/storage/state-keys"
-import { ClineEnv } from "../../../config"
+import { HadyanCodeEnv } from "../../../config"
 import { AuthService } from "../../../services/auth/AuthService"
-import { CLINE_API_ENDPOINT } from "../../../shared/cline/api"
+import { HADYANCODE_API_ENDPOINT } from "../../../shared/hadyancode/api"
 import { APIKeySchema, type APIKeySettings, RemoteConfig, RemoteConfigSchema } from "../../../shared/remote-config/schema"
 import { deleteRemoteConfigFromCache, readRemoteConfigFromCache, writeRemoteConfigToCache } from "../disk"
 import { applyRemoteConfig, clearRemoteConfig, isRemoteConfigEnabled } from "./utils"
@@ -31,7 +31,7 @@ function parseApiKeys(value: string): APIKeySettings {
 }
 
 /**
- * Helper function to make authenticated requests to the Cline API
+ * Helper function to make authenticated requests to the HadyanCode API
  * @param endpoint The API endpoint path (with {id} placeholder if needed)
  * @param organizationId The organization ID to replace in the endpoint
  * @returns The response data on success
@@ -43,19 +43,19 @@ async function makeAuthenticatedRequest<T>(endpoint: string, organizationId: str
 	// Get authentication token
 	const authToken = await authService.getAuthToken()
 	if (!authToken) {
-		throw new Error("No Cline account auth token found")
+		throw new Error("No HadyanCode account auth token found")
 	}
 
 	// Construct URL by replacing {id} placeholder with organizationId
 	const apiEndpoint = endpoint.replace("{id}", organizationId)
-	const url = new URL(apiEndpoint, ClineEnv.config().apiBaseUrl).toString()
+	const url = new URL(apiEndpoint, HadyanCodeEnv.config().apiBaseUrl).toString()
 
 	// Make authenticated request
 	const requestConfig: AxiosRequestConfig = {
 		headers: {
 			Authorization: `Bearer ${authToken}`,
 			"Content-Type": "application/json",
-			...(await buildBasicClineHeaders()),
+			...(await buildBasicHadyanCodeHeaders()),
 		},
 		...getAxiosSettings(),
 	}
@@ -101,7 +101,7 @@ async function fetchRemoteConfigForOrganization(organizationId: string): Promise
 	try {
 		// Fetch config data using helper
 		const configData = await makeAuthenticatedRequest<{ value: string; enabled: boolean }>(
-			CLINE_API_ENDPOINT.REMOTE_CONFIG,
+			HADYANCODE_API_ENDPOINT.REMOTE_CONFIG,
 			organizationId,
 		)
 
@@ -148,7 +148,10 @@ async function fetchRemoteConfigForOrganization(organizationId: string): Promise
 async function fetchApiKeysForOrganization(organizationId: string): Promise<APIKeySettings> {
 	try {
 		// Fetch API keys string using helper
-		const response = await makeAuthenticatedRequest<{ providerApiKeys: string }>(CLINE_API_ENDPOINT.API_KEYS, organizationId)
+		const response = await makeAuthenticatedRequest<{ providerApiKeys: string }>(
+			HADYANCODE_API_ENDPOINT.API_KEYS,
+			organizationId,
+		)
 
 		// Parse and return API keys
 		return parseApiKeys(response?.providerApiKeys)
@@ -159,7 +162,7 @@ async function fetchApiKeysForOrganization(organizationId: string): Promise<APIK
 }
 
 async function discoverRemoteConfigOrg(): Promise<{ organizationId: string; discoveredValue?: string } | undefined> {
-	const accountService = ClineAccountService.getInstance()
+	const accountService = HadyanCodeAccountService.getInstance()
 
 	const discovery = await accountService.fetchUserRemoteConfig()
 	if (!discovery) {
@@ -203,12 +206,12 @@ async function resolveRemoteConfig(organizationId: string, discoveredValue?: str
 	return fetchRemoteConfigForOrganization(organizationId)
 }
 
-function isClinePassSelected(controller: Controller): boolean {
+function isHadyanCodePassSelected(controller: Controller): boolean {
 	const apiConfiguration = controller.stateManager.getApiConfiguration()
 
 	return (
-		apiConfiguration.planModeApiProvider === CLINE_PASS_PROVIDER_ID ||
-		apiConfiguration.actModeApiProvider === CLINE_PASS_PROVIDER_ID
+		apiConfiguration.planModeApiProvider === HADYANCODE_PASS_PROVIDER_ID ||
+		apiConfiguration.actModeApiProvider === HADYANCODE_PASS_PROVIDER_ID
 	)
 }
 
@@ -223,7 +226,7 @@ function isClinePassSelected(controller: Controller): boolean {
 async function ensureUserInOrgWithRemoteConfig(controller: Controller): Promise<RemoteConfig | undefined> {
 	const authService = AuthService.getInstance()
 
-	if (isClinePassSelected(controller)) {
+	if (isHadyanCodePassSelected(controller)) {
 		clearRemoteConfig()
 		controller.postStateToWebview()
 		return undefined

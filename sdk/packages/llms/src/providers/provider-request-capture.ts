@@ -9,8 +9,8 @@ import {
 	writeFileSync,
 } from "node:fs";
 import { join, resolve } from "node:path";
-import type { GatewayStreamRequest } from "@cline/shared";
-import { estimateTokens } from "@cline/shared";
+import type { GatewayStreamRequest } from "@hadyancode/shared";
+import { estimateTokens } from "@hadyancode/shared";
 
 type CaptureMode = "off" | "summary" | "full";
 type CaptureStage = "ai_sdk_prompt" | "wire_request";
@@ -23,7 +23,7 @@ const cleanupDirs = new Set<string>();
 const attemptCounters = new Map<string, number>();
 
 function readCaptureMode(): CaptureMode {
-	const raw = process.env.CLINE_CAPTURE_PROVIDER_REQUEST?.trim().toLowerCase();
+	const raw = process.env.HADYANCODE_CAPTURE_PROVIDER_REQUEST?.trim().toLowerCase();
 	if (raw === "summary" || raw === "full") {
 		return raw;
 	}
@@ -31,26 +31,26 @@ function readCaptureMode(): CaptureMode {
 }
 
 function isWireCaptureEnabled(): boolean {
-	return process.env.CLINE_CAPTURE_WIRE?.trim().toLowerCase() === "true";
+	return process.env.HADYANCODE_CAPTURE_WIRE?.trim().toLowerCase() === "true";
 }
 
 function readMaxPreviewBytes(): number {
-	const parsed = Number(process.env.CLINE_CAPTURE_MAX_PREVIEW_BYTES);
+	const parsed = Number(process.env.HADYANCODE_CAPTURE_MAX_PREVIEW_BYTES);
 	return Number.isFinite(parsed) && parsed > 0
 		? Math.floor(parsed)
 		: DEFAULT_MAX_PREVIEW_BYTES;
 }
 
 function isCleanupEnabled(): boolean {
-	return process.env.CLINE_CAPTURE_CLEANUP?.trim().toLowerCase() !== "off";
+	return process.env.HADYANCODE_CAPTURE_CLEANUP?.trim().toLowerCase() !== "off";
 }
 
 function resolveCaptureDir(): string | undefined {
-	const explicit = process.env.CLINE_CAPTURE_DIR?.trim();
+	const explicit = process.env.HADYANCODE_CAPTURE_DIR?.trim();
 	if (explicit) {
 		return resolve(explicit);
 	}
-	const dataDir = process.env.CLINE_DATA_DIR?.trim();
+	const dataDir = process.env.HADYANCODE_DATA_DIR?.trim();
 	if (dataDir) {
 		return resolve(dataDir, "provider-request-captures");
 	}

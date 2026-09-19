@@ -5,9 +5,9 @@ import {
 	type StoredModelEntry,
 	syncStoredProviderRegistration,
 	writeModelsFileSync,
-} from "@cline/core"
-import { getGeneratedModelsForProvider, MODEL_COLLECTIONS_BY_PROVIDER_ID } from "@cline/llms"
-import { ModelCapabilitySchema } from "@cline/shared"
+} from "@hadyancode/core"
+import { getGeneratedModelsForProvider, MODEL_COLLECTIONS_BY_PROVIDER_ID } from "@hadyancode/llms"
+import { ModelCapabilitySchema } from "@hadyancode/shared"
 import { type ApiConfiguration, type ApiProvider, type ModelInfo, openAiModelInfoSafeDefaults } from "@shared/api"
 import { Logger } from "@shared/services/Logger"
 import { getProviderModelIdKey } from "@shared/storage/provider-keys"
@@ -79,7 +79,7 @@ const providerConfigStateKeys: Record<ProviderSettingsPatchKey, Partial<Record<s
 		"vercel-ai-gateway": "vercelAiGatewayApiKey",
 		wandb: "wandbApiKey",
 		oca: "ocaApiKey",
-		cline: "clineApiKey",
+		hadyancode: "hadyancodeApiKey",
 	},
 	baseUrl: {
 		anthropic: "anthropicBaseUrl",
@@ -106,7 +106,7 @@ const providerConfigStateKeys: Record<ProviderSettingsPatchKey, Partial<Record<s
 
 const modelInfoKeysByProvider: Partial<Record<string, ModelInfoKeys>> = {
 	openrouter: { plan: "planModeOpenRouterModelInfo", act: "actModeOpenRouterModelInfo" },
-	cline: { plan: "planModeClineModelInfo", act: "actModeClineModelInfo" },
+	hadyancode: { plan: "planModeHadyanCodeModelInfo", act: "actModeHadyanCodeModelInfo" },
 	openai: { plan: "planModeOpenAiModelInfo", act: "actModeOpenAiModelInfo" },
 	litellm: { plan: "planModeLiteLlmModelInfo", act: "actModeLiteLlmModelInfo" },
 	requesty: { plan: "planModeRequestyModelInfo", act: "actModeRequestyModelInfo" },
@@ -558,9 +558,9 @@ function writeStateFields(providerId: ProviderId, patch: ProviderConfigPatch): v
 		}
 	}
 
-	if (provider === "cline" && "auth" in patch) {
-		writeStateKey("clineApiKey", patch.auth?.accessToken)
-		writeStateKey("clineAccountId", patch.auth?.accountId)
+	if (provider === "hadyancode" && "auth" in patch) {
+		writeStateKey("hadyancodeApiKey", patch.auth?.accessToken)
+		writeStateKey("hadyancodeAccountId", patch.auth?.accountId)
 	}
 
 	// Mirror the Ollama context window to the legacy state key so older

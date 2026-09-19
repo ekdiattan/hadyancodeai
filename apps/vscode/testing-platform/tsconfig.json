@@ -17,8 +17,8 @@
 			"@generated/*": [
 				"../src/generated/*"
 			],
-			"@cline-grpc/*": [
-				"../src/generated/grpc-js/cline/*"
+			"@hadyancode-grpc/*": [
+				"../src/generated/grpc-js/hadyancode/*"
 			],
 			"@harness/*": [
 				"harness/*"

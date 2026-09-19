@@ -6,7 +6,7 @@ import type {
 	AgendaTaskRecord,
 	AgendaTaskRunRecord,
 	AgendaTaskUpdateInput,
-} from "@cline/shared";
+} from "@hadyancode/shared";
 
 /**
  * The single mutation boundary for agenda tasks. File reconciliation, Hub

@@ -2,17 +2,17 @@
  * Automation Event Plugin Example
  *
  * Shows how a plugin can declare normalized event types and emit events into
- * ClineCore automation without importing cron internals.
+ * HadyanCodeCore automation without importing cron internals.
  *
  * Local demo:
- *   cline plugin install https://github.com/cline/cline/blob/main/sdk/examples/plugins/automation-events.ts --cwd .
- *   mkdir -p .cline/cron/events
- *   cp examples/cron/events/local-plugin-event.event.md .cline/cron/events/local-plugin-event.event.md
- *   perl -0pi -e "s#/absolute/path/to/repo#$PWD#g" .cline/cron/events/local-plugin-event.event.md
- *   CLINE_LOCAL_EVENT_INTERVAL_MS=2000 cline -i "wait for the plugin event"
+ *   hadyancode plugin install https://github.com/cline/hadyancode/blob/main/sdk/examples/plugins/automation-events.ts --cwd .
+ *   mkdir -p .hadyancode/cron/events
+ *   cp examples/cron/events/local-plugin-event.event.md .hadyancode/cron/events/local-plugin-event.event.md
+ *   perl -0pi -e "s#/absolute/path/to/repo#$PWD#g" .hadyancode/cron/events/local-plugin-event.event.md
+ *   HADYANCODE_LOCAL_EVENT_INTERVAL_MS=2000 hadyancode -i "wait for the plugin event"
  */
 
-import type { AgentPlugin } from "@cline/core";
+import type { AgentPlugin } from "@hadyancode/core";
 
 const stopLocalEmitters = new Map<string, () => void>();
 
@@ -54,7 +54,7 @@ export const plugin: AgentPlugin = {
 			client: ctx.client?.name,
 		});
 
-		const intervalMs = Number(process.env.CLINE_LOCAL_EVENT_INTERVAL_MS ?? 0);
+		const intervalMs = Number(process.env.HADYANCODE_LOCAL_EVENT_INTERVAL_MS ?? 0);
 		if (!ctx.automation || !Number.isFinite(intervalMs) || intervalMs <= 0) {
 			return;
 		}

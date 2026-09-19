@@ -1,6 +1,6 @@
 import { existsSync } from "node:fs";
 import { isAbsolute, resolve as resolvePath } from "node:path";
-import { augmentNodeCommandForDebug, type ClineDebugRole } from "@cline/shared";
+import { augmentNodeCommandForDebug, type HadyanCodeDebugRole } from "@hadyancode/shared";
 
 export interface ResolveCliLaunchSpecOptions {
 	execPath?: string;
@@ -8,7 +8,7 @@ export interface ResolveCliLaunchSpecOptions {
 	execArgv?: string[];
 	cwd?: string;
 	env?: NodeJS.ProcessEnv;
-	debugRole?: ClineDebugRole;
+	debugRole?: HadyanCodeDebugRole;
 }
 
 export interface CliLaunchSpec {

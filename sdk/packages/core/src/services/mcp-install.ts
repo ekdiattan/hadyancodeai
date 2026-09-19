@@ -175,7 +175,7 @@ export function buildMcpInstallTransport(options: {
 		const [command, ...args] = targetArgs;
 		if (!command?.trim()) {
 			throw new Error(
-				"Stdio MCP install requires a command after the server name, for example: cline mcp install fs --yes -- npx -y @modelcontextprotocol/server-filesystem /tmp",
+				"Stdio MCP install requires a command after the server name, for example: hadyancode mcp install fs --yes -- npx -y @modelcontextprotocol/server-filesystem /tmp",
 			);
 		}
 		const stdioTransport = resolveNativeMcpTransport({

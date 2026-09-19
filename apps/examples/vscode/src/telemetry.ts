@@ -2,15 +2,15 @@ import * as os from "node:os";
 import {
 	type ConfiguredTelemetryHandle,
 	createConfiguredTelemetryHandle,
-} from "@cline/core";
+} from "@hadyancode/core";
 import {
-	createClineTelemetryServiceConfig,
-	createClineTelemetryServiceMetadata,
-} from "@cline/shared";
+	createHadyanCodeTelemetryServiceConfig,
+	createHadyanCodeTelemetryServiceMetadata,
+} from "@hadyancode/shared";
 
 export interface VscodeTelemetryOptions {
 	extensionVersion: string;
-	clineType: string;
+	hadyancodeType: string;
 	platform: string;
 	platformVersion: string;
 	osType?: string;
@@ -36,10 +36,10 @@ export type VscodeTelemetryHandle = ConfiguredTelemetryHandle;
 export function createVscodeTelemetry(
 	options: VscodeTelemetryOptions,
 ): VscodeTelemetryHandle {
-	const config = createClineTelemetryServiceConfig({
-		metadata: createClineTelemetryServiceMetadata({
+	const config = createHadyanCodeTelemetryServiceConfig({
+		metadata: createHadyanCodeTelemetryServiceMetadata({
 			extension_version: options.extensionVersion,
-			cline_type: options.clineType,
+			hadyancode_type: options.hadyancodeType,
 			platform: options.platform,
 			platform_version: options.platformVersion,
 			os_type: options.osType ?? os.platform(),

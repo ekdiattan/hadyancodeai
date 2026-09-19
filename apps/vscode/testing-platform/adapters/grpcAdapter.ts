@@ -1,31 +1,31 @@
-import { AccountServiceClient } from "@cline-grpc/account"
-import { BrowserServiceClient } from "@cline-grpc/browser"
-import { CheckpointsServiceClient } from "@cline-grpc/checkpoints"
-import { CommandsServiceClient } from "@cline-grpc/commands"
-import { FileServiceClient } from "@cline-grpc/file"
-import { McpServiceClient } from "@cline-grpc/mcp"
-import { ModelsServiceClient } from "@cline-grpc/models"
-import { SlashServiceClient } from "@cline-grpc/slash"
-import { StateServiceClient } from "@cline-grpc/state"
-import { TaskServiceClient } from "@cline-grpc/task"
-import { UiServiceClient } from "@cline-grpc/ui"
-import { WebServiceClient } from "@cline-grpc/web"
 import { credentials } from "@grpc/grpc-js"
+import { AccountServiceClient } from "@hadyancode-grpc/account"
+import { BrowserServiceClient } from "@hadyancode-grpc/browser"
+import { CheckpointsServiceClient } from "@hadyancode-grpc/checkpoints"
+import { CommandsServiceClient } from "@hadyancode-grpc/commands"
+import { FileServiceClient } from "@hadyancode-grpc/file"
+import { McpServiceClient } from "@hadyancode-grpc/mcp"
+import { ModelsServiceClient } from "@hadyancode-grpc/models"
+import { SlashServiceClient } from "@hadyancode-grpc/slash"
+import { StateServiceClient } from "@hadyancode-grpc/state"
+import { TaskServiceClient } from "@hadyancode-grpc/task"
+import { UiServiceClient } from "@hadyancode-grpc/ui"
+import { WebServiceClient } from "@hadyancode-grpc/web"
 import { promisify } from "util"
 
 const serviceRegistry = {
-	"cline.AccountService": AccountServiceClient,
-	"cline.BrowserService": BrowserServiceClient,
-	"cline.CheckpointsService": CheckpointsServiceClient,
-	"cline.CommandsService": CommandsServiceClient,
-	"cline.FileService": FileServiceClient,
-	"cline.McpService": McpServiceClient,
-	"cline.ModelsService": ModelsServiceClient,
-	"cline.SlashService": SlashServiceClient,
-	"cline.StateService": StateServiceClient,
-	"cline.TaskService": TaskServiceClient,
-	"cline.UiService": UiServiceClient,
-	"cline.WebService": WebServiceClient,
+	"hadyancode.AccountService": AccountServiceClient,
+	"hadyancode.BrowserService": BrowserServiceClient,
+	"hadyancode.CheckpointsService": CheckpointsServiceClient,
+	"hadyancode.CommandsService": CommandsServiceClient,
+	"hadyancode.FileService": FileServiceClient,
+	"hadyancode.McpService": McpServiceClient,
+	"hadyancode.ModelsService": ModelsServiceClient,
+	"hadyancode.SlashService": SlashServiceClient,
+	"hadyancode.StateService": StateServiceClient,
+	"hadyancode.TaskService": TaskServiceClient,
+	"hadyancode.UiService": UiServiceClient,
+	"hadyancode.WebService": WebServiceClient,
 } as const
 
 export type ServiceClients = {

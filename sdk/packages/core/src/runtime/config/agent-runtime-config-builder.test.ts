@@ -11,9 +11,9 @@ import type {
 	AgentModelEvent,
 	AgentTool,
 	ITelemetryService,
-} from "@cline/shared";
+} from "@hadyancode/shared";
 import { describe, expect, it, vi } from "vitest";
-import { version as clineCoreVersion } from "../../../package.json";
+import { version as hadyancodeCoreVersion } from "../../../package.json";
 import {
 	buildMessageModelInfo,
 	buildModelOptions,
@@ -198,16 +198,16 @@ describe("createAgentRuntimeConfig", () => {
 			agentConfig: makeAgentConfig({
 				distinctId: "user-123",
 				extensionContext: {
-					client: { name: "cline-cli", version: "3.0.38" },
+					client: { name: "hadyancode-cli", version: "3.0.38" },
 				},
 			}),
 			agentId: "a",
 			model: nullModel,
 		});
 		expect(runtimeConfig.distinctId).toBe("user-123");
-		expect(runtimeConfig.clientName).toBe("cline-cli");
+		expect(runtimeConfig.clientName).toBe("hadyancode-cli");
 		expect(runtimeConfig.clientVersion).toBe("3.0.38");
-		expect(runtimeConfig.clineCoreVersion).toBe(clineCoreVersion);
+		expect(runtimeConfig.hadyancodeCoreVersion).toBe(hadyancodeCoreVersion);
 	});
 
 	it("falls back to AgentConfig.sessionId when the input has none", () => {

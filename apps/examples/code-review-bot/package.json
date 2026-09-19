@@ -1,5 +1,5 @@
 {
-	"name": "@cline/example-code-review-bot",
+	"name": "@hadyancode/example-code-review-bot",
 	"version": "0.0.0",
 	"private": true,
 	"type": "module",
@@ -10,7 +10,7 @@
 		"start": "node dist/index.js"
 	},
 	"dependencies": {
-		"@cline/sdk": "workspace:*",
+		"@hadyancode/sdk": "workspace:*",
 		"zod": "^4.3.6"
 	},
 	"devDependencies": {

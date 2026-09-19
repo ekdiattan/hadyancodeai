@@ -1,5 +1,5 @@
 /**
- * AgentRuntime contract types (ported from clinee `@cline/shared`).
+ * AgentRuntime contract types (ported from hadyancodee `@hadyancode/shared`).
  *
  * These are the canonical type definitions consumed by `AgentRuntime`.
  *
@@ -484,12 +484,12 @@ export interface AgentRuntimeConfig {
 	 * This is intentionally separate from the host-owned session id.
 	 */
 	distinctId?: string;
-	/** Calling client surface, for example `cline-vscode` or `cline-sdk`. */
+	/** Calling client surface, for example `hadyancode-vscode` or `hadyancode-sdk`. */
 	clientName?: string;
 	/** Calling client version, such as the VS Code extension version. */
 	clientVersion?: string;
-	/** Version of the Cline Core SDK executing the runtime. */
-	clineCoreVersion?: string;
+	/** Version of the HadyanCode Core SDK executing the runtime. */
+	hadyancodeCoreVersion?: string;
 	/**
 	 * Core/hub runtime session identifier.
 	 *

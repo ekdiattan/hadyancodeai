@@ -2,14 +2,14 @@ import { spawn } from "node:child_process";
 import { existsSync } from "node:fs";
 import { basename, join, normalize } from "node:path";
 import process from "node:process";
-import { listActiveConnectors } from "@cline/core";
+import { listActiveConnectors } from "@hadyancode/core";
 import {
 	buildConnectorConnectArgs,
 	CONNECTOR_PLATFORMS,
 	listConnectorCatalog,
 	setConnectorCliLaunchSpec,
-	withResolvedClineBuildEnv,
-} from "@cline/shared";
+	withResolvedHadyanCodeBuildEnv,
+} from "@hadyancode/shared";
 import type { JsonRecord } from "./types";
 
 type ConnectorField = {
@@ -193,7 +193,7 @@ async function runCliConnectCommand(
 	const { launcher, childArgs } = buildCliConnectCommand(workspaceRoot, args);
 	const child = spawn(launcher, childArgs, {
 		cwd: workspaceRoot,
-		env: withResolvedClineBuildEnv(process.env),
+		env: withResolvedHadyanCodeBuildEnv(process.env),
 		stdio: ["ignore", "pipe", "pipe"],
 		windowsHide: true,
 	});

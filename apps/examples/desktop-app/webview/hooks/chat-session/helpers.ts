@@ -2,7 +2,7 @@ import {
 	createSessionId,
 	type GeneratedMedia,
 	isGeneratedMedia,
-} from "@cline/shared/browser";
+} from "@hadyancode/shared/browser";
 import type {
 	ChatMessage,
 	ChatSessionConfig,

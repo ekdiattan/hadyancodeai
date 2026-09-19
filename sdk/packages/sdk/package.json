@@ -1,10 +1,10 @@
 {
-	"name": "@cline/sdk",
-	"description": "Cline SDK - user-facing alias for @cline/core",
+	"name": "@hadyancode/sdk",
+	"description": "HadyanCode SDK - user-facing alias for @hadyancode/core",
 	"version": "0.0.82",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/cline/cline",
+		"url": "https://github.com/cline/hadyancode",
 		"directory": "sdk/packages/sdk"
 	},
 	"type": "module",
@@ -25,7 +25,7 @@
 		"typecheck": "bun tsc -p tsconfig.json --noEmit"
 	},
 	"dependencies": {
-		"@cline/core": "workspace:*"
+		"@hadyancode/core": "workspace:*"
 	},
 	"engines": {
 		"node": ">=22"

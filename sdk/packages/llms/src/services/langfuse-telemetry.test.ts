@@ -50,7 +50,7 @@ class MockNodeTracerProvider {
 	});
 }
 
-vi.mock("@cline/shared", () => ({
+vi.mock("@hadyancode/shared", () => ({
 	registerDisposable: registerDisposableSpy,
 }));
 
@@ -110,9 +110,9 @@ describe("langfuse telemetry", () => {
 		resetLangfuseTelemetryForTests();
 	});
 
-	it("enables telemetry for non-cline providers when langfuse config is available", async () => {
+	it("enables telemetry for non-hadyancode providers when langfuse config is available", async () => {
 		await expect(ensureLangfuseTelemetry("openrouter")).resolves.toBe(true);
-		await expect(ensureLangfuseTelemetry("cline")).resolves.toBe(true);
+		await expect(ensureLangfuseTelemetry("hadyancode")).resolves.toBe(true);
 
 		expect(registerDisposableSpy).toHaveBeenCalledTimes(1);
 		expect(addSpanProcessorSpy).toHaveBeenCalledTimes(1);

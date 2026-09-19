@@ -21,7 +21,7 @@ describe("CronWatcher", () => {
 	let materializer: CronMaterializer;
 
 	beforeEach(() => {
-		root = mkdtempSync(join(tmpdir(), "cline-watcher-"));
+		root = mkdtempSync(join(tmpdir(), "hadyancode-watcher-"));
 		cronDir = join(root, "cron-specs");
 		mkdirSync(cronDir, { recursive: true });
 		store = new SqliteCronStore({ dbPath: join(root, "cron.db") });

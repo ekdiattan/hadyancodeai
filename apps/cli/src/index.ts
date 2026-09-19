@@ -7,7 +7,7 @@ import {
 	disposeAll,
 	initVcr,
 	setConnectorCliLaunchSpec,
-} from "@cline/shared";
+} from "@hadyancode/shared";
 import { logCliProcessError } from "./logging/errors";
 import {
 	abortActiveRuntime,
@@ -18,8 +18,8 @@ import { resolveCliLaunchSpec } from "./utils/internal-launch";
 import { writeErr } from "./utils/output";
 
 // Initialize VCR before any HTTP requests are made.
-// Set CLINE_VCR=record|playback and CLINE_VCR_CASSETTE=<path> to enable.
-initVcr(process.env.CLINE_VCR);
+// Set HADYANCODE_VCR=record|playback and HADYANCODE_VCR_CASSETTE=<path> to enable.
+initVcr(process.env.HADYANCODE_VCR);
 
 if (!isMainThread) {
 	// Worker imports of the bundled CLI entrypoint should not start the CLI.
@@ -28,7 +28,7 @@ if (!isMainThread) {
 	// daemon-hosted session spawns do not inherit it and try to become daemons.
 	// The hub daemon owns its process-level abort handling. Installing the CLI's
 	// fatal rejection handler first would make expected abort rejections exit it.
-	void import("@cline/core/hub/daemon-entry");
+	void import("@hadyancode/core/hub/daemon-entry");
 } else {
 	// Same reasoning as the daemon sentinel above: consume the supervised-connector
 	// marker so the processes an agent session spawns cannot inherit it and mistake

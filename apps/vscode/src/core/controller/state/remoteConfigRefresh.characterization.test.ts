@@ -1,5 +1,5 @@
-import { Empty } from "@shared/proto/cline/common"
-import { UpdateSettingsRequest } from "@shared/proto/cline/state"
+import { Empty } from "@shared/proto/hadyancode/common"
+import { UpdateSettingsRequest } from "@shared/proto/hadyancode/state"
 import { describe, expect, it, vi } from "vitest"
 import { refreshRemoteConfig } from "./refreshRemoteConfig"
 import { updateSettings } from "./updateSettings"

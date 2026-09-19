@@ -41,23 +41,23 @@ function createCliEnv(
 
 	return {
 		HOME: homeDir,
-		CLINE_DATA_DIR: dataDir,
-		CLINE_DB_DATA_DIR: path.join(dataDir, "db"),
-		CLINE_SESSION_DATA_DIR: sessionDir,
-		CLINE_TEAM_DATA_DIR: teamDir,
-		CLINE_SESSION_BACKEND_MODE: "local",
-		CLINE_PROVIDER_SETTINGS_PATH: path.join(
+		HADYANCODE_DATA_DIR: dataDir,
+		HADYANCODE_DB_DATA_DIR: path.join(dataDir, "db"),
+		HADYANCODE_SESSION_DATA_DIR: sessionDir,
+		HADYANCODE_TEAM_DATA_DIR: teamDir,
+		HADYANCODE_SESSION_BACKEND_MODE: "local",
+		HADYANCODE_PROVIDER_SETTINGS_PATH: path.join(
 			dataDir,
 			"settings",
 			"providers.json",
 		),
-		CLINE_HOOKS_LOG_PATH: path.join(dataDir, "logs", "hooks.jsonl"),
-		CLINE_TELEMETRY_DISABLED: "1",
-		CLINE_NO_AUTO_UPDATE: "1",
-		// Without this, the ClinePass promo dialog renders over the chat view.
+		HADYANCODE_HOOKS_LOG_PATH: path.join(dataDir, "logs", "hooks.jsonl"),
+		HADYANCODE_TELEMETRY_DISABLED: "1",
+		HADYANCODE_NO_AUTO_UPDATE: "1",
+		// Without this, the HadyanCodePass promo dialog renders over the chat view.
 		// The stream-grepping interactive suite doesn't notice the overlay, but
 		// tuistory's screen snapshot reflects what the user actually sees.
-		CLINE_DISABLE_CLINE_PASS_NOTICE: "1",
+		HADYANCODE_DISABLE_HADYANCODE_PASS_NOTICE: "1",
 		// The parent vitest process sets CI/VITEST; clear them so the spawned
 		// CLI renders as a real interactive terminal.
 		CI: undefined,
@@ -199,7 +199,7 @@ describe("cli tuistory e2e", () => {
 		expect(await session.text()).not.toContain("←/→ switch tabs");
 	});
 
-	it("launches config view directly with `cline config`", async () => {
+	it("launches config view directly with `hadyancode config`", async () => {
 		const session = await launchCli(["config"]);
 		await session.waitForText("←/→ switch tabs", {
 			timeout: LAUNCH_TIMEOUT_MS,
@@ -209,13 +209,13 @@ describe("cli tuistory e2e", () => {
 		expect(screen).toContain("▸ Provider");
 	});
 
-	it("dismisses the ClinePass promo with any key and marks it as shown", async () => {
+	it("dismisses the HadyanCodePass promo with any key and marks it as shown", async () => {
 		// Re-enable the promo dialog that the shared env suppresses.
-		const env = createCliEnv({ CLINE_DISABLE_CLINE_PASS_NOTICE: undefined });
-		const dataDir = env.CLINE_DATA_DIR as string;
+		const env = createCliEnv({ HADYANCODE_DISABLE_HADYANCODE_PASS_NOTICE: undefined });
+		const dataDir = env.HADYANCODE_DATA_DIR as string;
 		const session = await launchCli([], env);
 
-		await session.waitForText("Try ClinePass", { timeout: LAUNCH_TIMEOUT_MS });
+		await session.waitForText("Try HadyanCodePass", { timeout: LAUNCH_TIMEOUT_MS });
 		await session.waitForText("Press Enter to open, any other key to close", {
 			timeout: UI_TIMEOUT_MS,
 		});
@@ -224,13 +224,13 @@ describe("cli tuistory e2e", () => {
 		// some terminals, notably on Windows).
 		await session.type("x");
 		await session.text({
-			waitFor: (text) => !text.includes("Try ClinePass"),
+			waitFor: (text) => !text.includes("Try HadyanCodePass"),
 			timeout: UI_TIMEOUT_MS,
 		});
 
 		const screen = await session.text();
 		expect(screen).toContain("What can I do for you?");
-		expect(screen).not.toContain("Open ClinePass");
+		expect(screen).not.toContain("Open HadyanCodePass");
 
 		// The "shown" marker is persisted once the dialog is dismissed so the
 		// promo doesn't reappear on the next launch.
@@ -238,7 +238,7 @@ describe("cli tuistory e2e", () => {
 		await session.waitIdle({ timeout: UI_TIMEOUT_MS });
 		expect(existsSync(markerPath)).toBe(true);
 		expect(readFileSync(markerPath, "utf8")).toContain(
-			'"cline-cli-cline-pass-intro": true',
+			'"hadyancode-cli-hadyancode-pass-intro": true',
 		);
 	});
 });

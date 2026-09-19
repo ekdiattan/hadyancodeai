@@ -4,7 +4,7 @@ import type {
 	FeatureFlagsContext,
 	FeatureFlagsSettings,
 	IFeatureFlagsProvider,
-} from "@cline/shared";
+} from "@hadyancode/shared";
 import { PostHog, type PostHogOptions } from "posthog-node";
 
 export interface PostHogFeatureFlagsProviderConfig {
@@ -16,7 +16,7 @@ export interface PostHogFeatureFlagsProviderOptions {
 	client: PostHog;
 }
 
-export function buildClinePostHogClient(
+export function buildHadyanCodePostHogClient(
 	apiKey: string,
 	options?: PostHogOptions | undefined,
 ): PostHog {

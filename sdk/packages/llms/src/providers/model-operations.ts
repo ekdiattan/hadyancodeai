@@ -6,45 +6,17 @@ import type {
 	ModelModalities,
 	ModelOperation,
 	ModelOperationMode,
-} from "@cline/shared";
+} from "@hadyancode/shared";
 import { modelRouteMatches } from "./model-facts";
-
-const IMAGE_LANGUAGE_OPERATION: GatewayModelOperationCapability = {
-	operation: "language",
-	outputModalities: ["text", "image"],
-};
-
-const IMAGE_GENERATION_OPERATION: GatewayModelOperationCapability = {
-	operation: "image-generation",
-	inputModalities: ["text", "image"],
-	outputModalities: ["image"],
-};
 
 interface BuiltinTranscriptionOperation {
 	transport: NonNullable<GatewayProviderMetadata["transcriptionTransport"]>;
 	modes: readonly ModelOperationMode[];
 }
 
-export const BUILTIN_TRANSCRIPTION_TRANSPORTS = {
-	"openai-native": {
-		transport: "openai-compatible",
-		modes: ["batch"],
-	},
-	"vercel-ai-gateway": {
-		transport: "vercel-ai-gateway",
-		modes: ["batch", "streaming"],
-	},
-	elevenlabs: { transport: "elevenlabs", modes: ["batch"] },
-	evroc: { transport: "openai-compatible", modes: ["batch"] },
-	groq: { transport: "openai-compatible", modes: ["batch"] },
-	mistral: { transport: "openai-compatible", modes: ["batch"] },
-	nearai: { transport: "openai-compatible", modes: ["batch"] },
-	"privatemode-ai": {
-		transport: "openai-compatible",
-		modes: ["batch"],
-	},
-	scaleway: { transport: "openai-compatible", modes: ["batch"] },
-} as const satisfies Readonly<Record<string, BuiltinTranscriptionOperation>>;
+export const BUILTIN_TRANSCRIPTION_TRANSPORTS = {} as const satisfies Readonly<
+	Record<string, BuiltinTranscriptionOperation>
+>;
 
 /**
  * Built-in transports that have an explicitly verified non-text operation.
@@ -56,18 +28,7 @@ export const BUILTIN_TRANSCRIPTION_TRANSPORTS = {
  */
 const BUILTIN_MEDIA_OPERATION_CAPABILITIES: Readonly<
 	Record<string, readonly GatewayModelOperationCapability[]>
-> = {
-	"openai-native": [IMAGE_LANGUAGE_OPERATION, IMAGE_GENERATION_OPERATION],
-	gemini: [IMAGE_LANGUAGE_OPERATION, IMAGE_GENERATION_OPERATION],
-	vertex: [IMAGE_LANGUAGE_OPERATION, IMAGE_GENERATION_OPERATION],
-	bedrock: [IMAGE_GENERATION_OPERATION],
-	openrouter: [IMAGE_LANGUAGE_OPERATION, IMAGE_GENERATION_OPERATION],
-	"vercel-ai-gateway": [IMAGE_LANGUAGE_OPERATION, IMAGE_GENERATION_OPERATION],
-	digitalocean: [IMAGE_GENERATION_OPERATION],
-	xai: [IMAGE_GENERATION_OPERATION],
-	cline: [IMAGE_LANGUAGE_OPERATION, IMAGE_GENERATION_OPERATION],
-	"cline-pass": [IMAGE_LANGUAGE_OPERATION, IMAGE_GENERATION_OPERATION],
-};
+> = {};
 
 /**
  * Executable operation declarations keyed by provider ID.

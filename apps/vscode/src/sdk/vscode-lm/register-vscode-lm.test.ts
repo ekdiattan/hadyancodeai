@@ -2,8 +2,8 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 
 const registerHandler = vi.fn()
 const registerProvider = vi.fn()
-vi.mock("@cline/llms", async (importOriginal) => ({
-	...(await importOriginal<typeof import("@cline/llms")>()),
+vi.mock("@hadyancode/llms", async (importOriginal) => ({
+	...(await importOriginal<typeof import("@hadyancode/llms")>()),
 	registerHandler,
 	registerProvider,
 }))

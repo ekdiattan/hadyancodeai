@@ -1,8 +1,8 @@
-import type { AgentEvent } from "@cline/core";
-import { getClineEnvironmentConfig } from "@cline/shared";
+import type { AgentEvent } from "@hadyancode/core";
+import { getHadyanCodeEnvironmentConfig } from "@hadyancode/shared";
 import type { Config } from "./types";
 
-const CLINE_RECOMMENDED_MODELS_TIMEOUT_MS = 5_000;
+const HADYANCODE_RECOMMENDED_MODELS_TIMEOUT_MS = 5_000;
 const freeModelIdsByBaseUrl = new Map<
 	string,
 	Promise<readonly string[] | undefined>
@@ -19,24 +19,24 @@ function modelIdsMatch(selectedModelId: string, freeModelId: string): boolean {
 	return selected === free;
 }
 
-function resolveClineRecommendedModelsUrl(baseUrl: string): string {
+function resolveHadyanCodeRecommendedModelsUrl(baseUrl: string): string {
 	const normalizedBaseUrl = baseUrl.trim().replace(/\/+$/, "");
 	const apiBaseUrl = normalizedBaseUrl.endsWith("/api/v1")
 		? normalizedBaseUrl.slice(0, -"/api/v1".length)
 		: normalizedBaseUrl;
-	return `${apiBaseUrl}/api/v1/ai/cline/recommended-models`;
+	return `${apiBaseUrl}/api/v1/ai/hadyancode/recommended-models`;
 }
 
-async function fetchClineFreeModelIds(
+async function fetchHadyanCodeFreeModelIds(
 	baseUrl: string,
 ): Promise<readonly string[] | undefined> {
 	const controller = new AbortController();
 	const timeout = setTimeout(
 		() => controller.abort(),
-		CLINE_RECOMMENDED_MODELS_TIMEOUT_MS,
+		HADYANCODE_RECOMMENDED_MODELS_TIMEOUT_MS,
 	);
 	try {
-		const response = await fetch(resolveClineRecommendedModelsUrl(baseUrl), {
+		const response = await fetch(resolveHadyanCodeRecommendedModelsUrl(baseUrl), {
 			signal: controller.signal,
 		});
 		if (!response.ok) return undefined;
@@ -57,11 +57,11 @@ async function fetchClineFreeModelIds(
 	}
 }
 
-function getClineFreeModelIds(baseUrl: string): Promise<readonly string[]> {
+function getHadyanCodeFreeModelIds(baseUrl: string): Promise<readonly string[]> {
 	const cacheKey = baseUrl.trim();
 	let cached = freeModelIdsByBaseUrl.get(cacheKey);
 	if (!cached) {
-		cached = fetchClineFreeModelIds(cacheKey).then((ids) => {
+		cached = fetchHadyanCodeFreeModelIds(cacheKey).then((ids) => {
 			if (!ids) freeModelIdsByBaseUrl.delete(cacheKey);
 			return ids;
 		});
@@ -70,18 +70,18 @@ function getClineFreeModelIds(baseUrl: string): Promise<readonly string[]> {
 	return cached.then((ids) => ids ?? []);
 }
 
-export async function shouldZeroClineFreeModelCost(
+export async function shouldZeroHadyanCodeFreeModelCost(
 	config: Pick<Config, "providerId" | "modelId" | "baseUrl">,
 ): Promise<boolean> {
-	// Free models are also selectable on ClinePass — they ride usage billing at $0
-	if (config.providerId !== "cline" && config.providerId !== "cline-pass")
+	// Free models are also selectable on HadyanCodePass — they ride usage billing at $0
+	if (config.providerId !== "hadyancode" && config.providerId !== "hadyancode-pass")
 		return false;
 	const modelId = normalizeModelId(config.modelId);
 	if (!modelId) return false;
 
 	const baseUrl =
-		config.baseUrl?.trim() || getClineEnvironmentConfig().apiBaseUrl;
-	const freeModelIds = await getClineFreeModelIds(baseUrl);
+		config.baseUrl?.trim() || getHadyanCodeEnvironmentConfig().apiBaseUrl;
+	const freeModelIds = await getHadyanCodeFreeModelIds(baseUrl);
 	return freeModelIds.some((freeModelId) =>
 		modelIdsMatch(modelId, freeModelId),
 	);
@@ -120,6 +120,6 @@ export function zeroCliAgentEventCost(
 	return next as unknown as AgentEvent;
 }
 
-export function clearClineFreeModelCostCache(): void {
+export function clearHadyanCodeFreeModelCostCache(): void {
 	freeModelIdsByBaseUrl.clear();
 }

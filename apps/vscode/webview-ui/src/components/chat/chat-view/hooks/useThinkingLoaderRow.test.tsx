@@ -1,4 +1,4 @@
-import type { ClineMessage, TurnState } from "@shared/ExtensionMessage"
+import type { HadyanCodeMessage, TurnState } from "@shared/ExtensionMessage"
 import { act, renderHook } from "@testing-library/react"
 import { renderToString } from "react-dom/server"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
@@ -9,7 +9,7 @@ import {
 	useThinkingLoaderRow,
 } from "./useThinkingLoaderRow"
 
-function say(ts: number, sayType: ClineMessage["say"], partial?: boolean, text = ""): ClineMessage {
+function say(ts: number, sayType: HadyanCodeMessage["say"], partial?: boolean, text = ""): HadyanCodeMessage {
 	return { ts, type: "say", say: sayType, text, partial }
 }
 
@@ -17,7 +17,7 @@ function streaming(seq = 1): TurnState {
 	return { phase: "streaming", seq }
 }
 
-function inputsFor(messages: ClineMessage[], turnState: TurnState | undefined): ThinkingLoaderInputs {
+function inputsFor(messages: HadyanCodeMessage[], turnState: TurnState | undefined): ThinkingLoaderInputs {
 	return {
 		turnState,
 		lastRawMessage: messages.at(-1),
@@ -57,7 +57,7 @@ describe("computeIsWaitingForResponse (turnState path)", () => {
 
 describe("computeIsWaitingForResponse (legacy path)", () => {
 	it("does not wait when the last raw message is an ask", () => {
-		const ask: ClineMessage = { ts: 1, type: "ask", ask: "followup", text: "?", partial: false }
+		const ask: HadyanCodeMessage = { ts: 1, type: "ask", ask: "followup", text: "?", partial: false }
 		expect(computeIsWaitingForResponse(inputsFor([ask], undefined))).toBe(false)
 	})
 
@@ -150,15 +150,15 @@ describe("useThinkingLoaderRow anti-flash debounce", () => {
 	})
 
 	it("keeps an already-visible loader shown when a tool group tail finalizes", () => {
-		const toolAsk = (partial: boolean): ClineMessage => ({
+		const toolAsk = (partial: boolean): HadyanCodeMessage => ({
 			ts: 2,
 			type: "ask",
 			ask: "tool",
 			text: JSON.stringify({ tool: "readFile", path: "a.ts" }),
 			partial,
 		})
-		const toolGroupInputs = (tail: ClineMessage): ThinkingLoaderInputs => {
-			const group = Object.assign([tail], { _isToolGroup: true }) as ClineMessage[]
+		const toolGroupInputs = (tail: HadyanCodeMessage): ThinkingLoaderInputs => {
+			const group = Object.assign([tail], { _isToolGroup: true }) as HadyanCodeMessage[]
 			return {
 				turnState: streaming(),
 				lastRawMessage: tail,

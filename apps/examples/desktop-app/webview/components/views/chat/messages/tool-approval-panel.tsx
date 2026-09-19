@@ -1,6 +1,6 @@
 "use client";
 
-import { AgentApprovalCard } from "@cline/ui";
+import { AgentApprovalCard } from "@hadyancode/ui";
 import { Clock3, ShieldAlert } from "lucide-react";
 
 export type ToolApprovalRequestItem = {

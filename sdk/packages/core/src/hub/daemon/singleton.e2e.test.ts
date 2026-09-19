@@ -79,11 +79,11 @@ function spawnFixture(
 			cwd: dataDir,
 			env: {
 				...process.env,
-				CLINE_BUILD_ENV: "development",
-				CLINE_DATA_DIR: dataDir,
-				CLINE_HUB_DISCOVERY_PATH: discoveryPath,
-				CLINE_HUB_TEST_PORT: "0",
-				CLINE_NO_INTERACTIVE: "1",
+				HADYANCODE_BUILD_ENV: "development",
+				HADYANCODE_DATA_DIR: dataDir,
+				HADYANCODE_HUB_DISCOVERY_PATH: discoveryPath,
+				HADYANCODE_HUB_TEST_PORT: "0",
+				HADYANCODE_NO_INTERACTIVE: "1",
 				NO_COLOR: "1",
 			},
 			stdio: ["ignore", "ignore", "pipe"],
@@ -155,7 +155,7 @@ async function startDaemon(existing?: {
 }): Promise<ReadyDaemon> {
 	const dataDir =
 		existing?.dataDir ??
-		(await mkdtemp(join(tmpdir(), "cline-hub-singleton-e2e-")));
+		(await mkdtemp(join(tmpdir(), "hadyancode-hub-singleton-e2e-")));
 	tempDirs.add(dataDir);
 	const discoveryPath =
 		existing?.discoveryPath ?? join(dataDir, "hub-discovery.json");

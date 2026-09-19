@@ -8,7 +8,7 @@ export function supportsReasoningEffortForModelId(modelId?: string, _allowShortO
 
 // Webview components must source provider models via
 // `useProviderModels(providerId)`, which talks to the extension over
-// gRPC and ultimately reads from `@cline/llms`. Do not add a static
+// gRPC and ultimately reads from `@hadyancode/llms`. Do not add a static
 // catalog here — it would silently bypass the SDK. If a new caller
 // needs model lists synchronously, derive them from the catalog hook
 // instead.
@@ -44,8 +44,8 @@ export function getModeSpecificFields(apiConfiguration: ApiConfiguration | undef
 			requestyModelId: undefined,
 			openAiModelId: undefined,
 			openRouterModelId: undefined,
-			clineModelId: undefined,
-			clinePassModelId: undefined,
+			hadyancodeModelId: undefined,
+			hadyancodePassModelId: undefined,
 			groqModelId: undefined,
 			basetenModelId: undefined,
 			huggingFaceModelId: undefined,
@@ -59,7 +59,7 @@ export function getModeSpecificFields(apiConfiguration: ApiConfiguration | undef
 			openAiModelInfo: undefined,
 			liteLlmModelInfo: undefined,
 			openRouterModelInfo: undefined,
-			clineModelInfo: undefined,
+			hadyancodeModelInfo: undefined,
 			requestyModelInfo: undefined,
 			groqModelInfo: undefined,
 			basetenModelInfo: undefined,
@@ -85,12 +85,14 @@ export function getModeSpecificFields(apiConfiguration: ApiConfiguration | undef
 	const openRouterModelInfo =
 		mode === "plan" ? apiConfiguration.planModeOpenRouterModelInfo : apiConfiguration.actModeOpenRouterModelInfo
 
-	const clineModelId = mode === "plan" ? apiConfiguration.planModeClineModelId : apiConfiguration.actModeClineModelId
-	const clineModelInfo = mode === "plan" ? apiConfiguration.planModeClineModelInfo : apiConfiguration.actModeClineModelInfo
-	const clinePassModelId =
-		mode === "plan" ? apiConfiguration.planModeClinePassModelId : apiConfiguration.actModeClinePassModelId
-	const clinePassModelInfo =
-		mode === "plan" ? apiConfiguration.planModeClinePassModelInfo : apiConfiguration.actModeClinePassModelInfo
+	const hadyancodeModelId =
+		mode === "plan" ? apiConfiguration.planModeHadyanCodeModelId : apiConfiguration.actModeHadyanCodeModelId
+	const hadyancodeModelInfo =
+		mode === "plan" ? apiConfiguration.planModeHadyanCodeModelInfo : apiConfiguration.actModeHadyanCodeModelInfo
+	const hadyancodePassModelId =
+		mode === "plan" ? apiConfiguration.planModeHadyanCodePassModelId : apiConfiguration.actModeHadyanCodePassModelId
+	const hadyancodePassModelInfo =
+		mode === "plan" ? apiConfiguration.planModeHadyanCodePassModelInfo : apiConfiguration.actModeHadyanCodePassModelInfo
 
 	return {
 		// Core fields
@@ -106,8 +108,8 @@ export function getModeSpecificFields(apiConfiguration: ApiConfiguration | undef
 		requestyModelId: mode === "plan" ? apiConfiguration.planModeRequestyModelId : apiConfiguration.actModeRequestyModelId,
 		openAiModelId: mode === "plan" ? apiConfiguration.planModeOpenAiModelId : apiConfiguration.actModeOpenAiModelId,
 		openRouterModelId,
-		clineModelId,
-		clinePassModelId,
+		hadyancodeModelId,
+		hadyancodePassModelId,
 		groqModelId: mode === "plan" ? apiConfiguration.planModeGroqModelId : apiConfiguration.actModeGroqModelId,
 		basetenModelId: mode === "plan" ? apiConfiguration.planModeBasetenModelId : apiConfiguration.actModeBasetenModelId,
 		huggingFaceModelId:
@@ -126,8 +128,8 @@ export function getModeSpecificFields(apiConfiguration: ApiConfiguration | undef
 		openAiModelInfo: mode === "plan" ? apiConfiguration.planModeOpenAiModelInfo : apiConfiguration.actModeOpenAiModelInfo,
 		liteLlmModelInfo: mode === "plan" ? apiConfiguration.planModeLiteLlmModelInfo : apiConfiguration.actModeLiteLlmModelInfo,
 		openRouterModelInfo,
-		clineModelInfo,
-		clinePassModelInfo,
+		hadyancodeModelInfo,
+		hadyancodePassModelInfo,
 		requestyModelInfo:
 			mode === "plan" ? apiConfiguration.planModeRequestyModelInfo : apiConfiguration.actModeRequestyModelInfo,
 		groqModelInfo: mode === "plan" ? apiConfiguration.planModeGroqModelInfo : apiConfiguration.actModeGroqModelInfo,
@@ -209,18 +211,18 @@ export async function syncModeConfigurations(
 			updates.actModeOpenRouterModelInfo = sourceFields.openRouterModelInfo
 			break
 
-		case "cline":
-			updates.planModeClineModelId = sourceFields.clineModelId
-			updates.actModeClineModelId = sourceFields.clineModelId
-			updates.planModeClineModelInfo = sourceFields.clineModelInfo
-			updates.actModeClineModelInfo = sourceFields.clineModelInfo
+		case "hadyancode":
+			updates.planModeHadyanCodeModelId = sourceFields.hadyancodeModelId
+			updates.actModeHadyanCodeModelId = sourceFields.hadyancodeModelId
+			updates.planModeHadyanCodeModelInfo = sourceFields.hadyancodeModelInfo
+			updates.actModeHadyanCodeModelInfo = sourceFields.hadyancodeModelInfo
 			break
 
-		case "cline-pass":
-			updates.planModeClinePassModelId = sourceFields.clinePassModelId
-			updates.actModeClinePassModelId = sourceFields.clinePassModelId
-			updates.planModeClinePassModelInfo = sourceFields.clinePassModelInfo
-			updates.actModeClinePassModelInfo = sourceFields.clinePassModelInfo
+		case "hadyancode-pass":
+			updates.planModeHadyanCodePassModelId = sourceFields.hadyancodePassModelId
+			updates.actModeHadyanCodePassModelId = sourceFields.hadyancodePassModelId
+			updates.planModeHadyanCodePassModelInfo = sourceFields.hadyancodePassModelInfo
+			updates.actModeHadyanCodePassModelInfo = sourceFields.hadyancodePassModelInfo
 			break
 
 		case "requesty":

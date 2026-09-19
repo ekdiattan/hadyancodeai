@@ -1,3 +1,3 @@
 // Core content types
-export type { ClineToolResponseContent } from "./content"
-export type { ClineMessageModelInfo } from "./metrics"
+export type { HadyanCodeToolResponseContent } from "./content"
+export type { HadyanCodeMessageModelInfo } from "./metrics"

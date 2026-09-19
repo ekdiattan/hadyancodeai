@@ -1,5 +1,5 @@
-import { Empty } from "@shared/proto/cline/common"
-import { TrackWorktreeViewOpenedRequest } from "@shared/proto/cline/worktree"
+import { Empty } from "@shared/proto/hadyancode/common"
+import { TrackWorktreeViewOpenedRequest } from "@shared/proto/hadyancode/worktree"
 import { telemetryService } from "@/services/telemetry"
 import { Controller } from ".."
 

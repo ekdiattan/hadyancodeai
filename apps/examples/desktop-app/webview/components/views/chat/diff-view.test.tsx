@@ -142,7 +142,7 @@ describe("DiffView file actions", () => {
 		await act(async () => {
 			root.render(
 				<DiffView
-					cwd="/Users/renee/cline"
+					cwd="/Users/renee/hadyancode"
 					fileDiffs={[FILE_DIFF]}
 					onClose={vi.fn()}
 				/>,
@@ -151,14 +151,14 @@ describe("DiffView file actions", () => {
 
 		await click(buttonWithLabel("Copy file path for docs/a.mdx"));
 
-		expect(writeText).toHaveBeenCalledWith("/Users/renee/cline/docs/a.mdx");
+		expect(writeText).toHaveBeenCalledWith("/Users/renee/hadyancode/docs/a.mdx");
 	});
 
 	it("opens the file in a chosen editor through the desktop backend", async () => {
 		await act(async () => {
 			root.render(
 				<DiffView
-					cwd="/Users/renee/cline"
+					cwd="/Users/renee/hadyancode"
 					fileDiffs={[FILE_DIFF]}
 					onClose={vi.fn()}
 				/>,
@@ -177,7 +177,7 @@ describe("DiffView file actions", () => {
 
 		expect(invokeMock).toHaveBeenCalledWith("open_file_in_editor", {
 			path: "docs/a.mdx",
-			cwd: "/Users/renee/cline",
+			cwd: "/Users/renee/hadyancode",
 			editor: "vscode",
 		});
 	});

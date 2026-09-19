@@ -1,9 +1,9 @@
-import { Agent } from "@cline/sdk";
+import { Agent } from "@hadyancode/sdk";
 
 const agent = new Agent({
-	providerId: "cline",
+	providerId: "hadyancode",
 	modelId: "anthropic/claude-sonnet-4.6",
-	apiKey: process.env.CLINE_API_KEY,
+	apiKey: process.env.HADYANCODE_API_KEY,
 	maxIterations: 1,
 });
 

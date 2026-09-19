@@ -2,10 +2,10 @@ import {
 	getFileIndex,
 	type ProviderSettings,
 	type UserInstructionConfigService,
-} from "@cline/core";
+} from "@hadyancode/core";
 import { byLengthAsc, Fzf, type FzfResultItem } from "fzf";
 import type { Config } from "../utils/types";
-import { formatClineCredits, loadClineAccountSnapshot } from "./cline-account";
+import { formatHadyanCodeCredits, loadHadyanCodeAccountSnapshot } from "./hadyancode-account";
 
 export interface InteractiveSlashCommand {
 	name: string;
@@ -167,19 +167,19 @@ export async function searchWorkspaceFilesForMention(input: {
 	return rankMentionPaths(index, input.query, limit);
 }
 
-export async function resolveClineWelcomeLine(input: {
+export async function resolveHadyanCodeWelcomeLine(input: {
 	config: Config;
-	clineApiBaseUrl?: string;
-	clineProviderSettings?: ProviderSettings;
+	hadyancodeApiBaseUrl?: string;
+	hadyancodeProviderSettings?: ProviderSettings;
 }): Promise<string | undefined> {
-	if (input.config.providerId !== "cline") {
+	if (input.config.providerId !== "hadyancode") {
 		return undefined;
 	}
 	try {
-		const snapshot = await loadClineAccountSnapshot(input);
+		const snapshot = await loadHadyanCodeAccountSnapshot(input);
 		const parts = [
 			snapshot.user.email,
-			`Credits: ${formatClineCredits(snapshot.displayedBalance)}`,
+			`Credits: ${formatHadyanCodeCredits(snapshot.displayedBalance)}`,
 		];
 		if (snapshot.activeOrganization?.name.trim()) {
 			parts.push(snapshot.activeOrganization.name);

@@ -12,10 +12,10 @@ tmp
 
 pnpm-lock.yaml
 
-.clineignore
-.cline/enterprise
-.cline/remote-config
-**/.cline/remote-config
+.hadyancodeignore
+.hadyancode/enterprise
+.hadyancode/remote-config
+**/.hadyancode/remote-config
 .venv
 .actrc
 CLAUDE.local.md
@@ -77,13 +77,13 @@ apps/vscode/webview-ui/src/**/*.js.map
 
 
 # SDK Session files / User data
-.cline/data
-.cline/tmp
+.hadyancode/data
+.hadyancode/tmp
 *.db
 *.db-shm
 *.db-wal
-.cline/**/managed.json
-.cline/**/bundle.json
+.hadyancode/**/managed.json
+.hadyancode/**/bundle.json
 apps/vscode/tsconfig.test.generated.json
 .next/dev/static
 **/src-tauri/target/debug/.fingerprint

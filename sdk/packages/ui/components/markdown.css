@@ -1,4 +1,4 @@
-:is(.markdown, .cline-markdown) {
+:is(.markdown, .hadyancode-markdown) {
 	min-width: 0;
 	max-width: 100%;
 	font-size: var(--text-sm);
@@ -7,43 +7,43 @@
 	overflow-wrap: anywhere;
 }
 
-:is(.markdown, .cline-markdown)
+:is(.markdown, .hadyancode-markdown)
 	:is([data-streamdown="code-block"], [data-streamdown="table-wrapper"]) {
 	max-width: 100%;
 }
 
-:is(.markdown, .cline-markdown) [data-streamdown="code-block"] {
+:is(.markdown, .hadyancode-markdown) [data-streamdown="code-block"] {
 	margin-block: 1rem;
 	border-radius: var(--radius-lg);
 }
 
-:is(.markdown, .cline-markdown) [data-streamdown="inline-code"] {
+:is(.markdown, .hadyancode-markdown) [data-streamdown="inline-code"] {
 	font-size: 0.9em;
 }
 
-:is(.markdown, .cline-markdown) [data-streamdown="code-block"] :is(pre, code) {
+:is(.markdown, .hadyancode-markdown) [data-streamdown="code-block"] :is(pre, code) {
 	white-space: pre;
 	overflow-wrap: normal;
 	word-break: normal;
 }
 
-:is(.markdown, .cline-markdown) [data-streamdown="table-wrapper"] {
+:is(.markdown, .hadyancode-markdown) [data-streamdown="table-wrapper"] {
 	margin-block: 1rem;
 	overflow-x: auto;
 	border: 1px solid var(--border);
 	border-radius: var(--radius-lg);
 }
 
-:is(.markdown, .cline-markdown) [data-streamdown="table"] {
+:is(.markdown, .hadyancode-markdown) [data-streamdown="table"] {
 	min-width: 100%;
 }
 
-:is(.markdown, .cline-markdown) [data-streamdown="image"] {
+:is(.markdown, .hadyancode-markdown) [data-streamdown="image"] {
 	background-color: white;
 	padding: 0.25rem;
 }
 
-:is(.markdown, .cline-markdown) [data-streamdown="blocked-image"] {
+:is(.markdown, .hadyancode-markdown) [data-streamdown="blocked-image"] {
 	display: inline-flex;
 	margin-block: 0.5rem;
 	padding: 0.25rem 0.5rem;
@@ -64,52 +64,52 @@
 
 /* Chat panes are narrow and the base text is --text-sm: tighten the rhythm
  * between top-level blocks from Streamdown's document-scale 1rem. */
-:is(.markdown, .cline-markdown) > :not(:last-child) {
+:is(.markdown, .hadyancode-markdown) > :not(:last-child) {
 	margin-block-end: 0.75rem;
 }
 
 /* Chat-scale heading ramp (defaults go up to text-3xl, huge next to 14px body). */
-:is(.markdown, .cline-markdown) :is(h1, h2, h3, h4, h5, h6) {
+:is(.markdown, .hadyancode-markdown) :is(h1, h2, h3, h4, h5, h6) {
 	margin-block: 1.25rem 0.5rem;
 	line-height: 1.35;
 }
 
-:is(.markdown, .cline-markdown) h1 {
+:is(.markdown, .hadyancode-markdown) h1 {
 	font-size: 1.25rem;
 }
 
-:is(.markdown, .cline-markdown) h2 {
+:is(.markdown, .hadyancode-markdown) h2 {
 	font-size: 1.125rem;
 }
 
-:is(.markdown, .cline-markdown) h3 {
+:is(.markdown, .hadyancode-markdown) h3 {
 	font-size: 1rem;
 }
 
-:is(.markdown, .cline-markdown) :is(h4, h5, h6) {
+:is(.markdown, .hadyancode-markdown) :is(h4, h5, h6) {
 	font-size: 0.875rem;
 }
 
-:is(.markdown, .cline-markdown) hr {
+:is(.markdown, .hadyancode-markdown) hr {
 	margin-block: 1rem;
 }
 
 /* Outside markers so wrapped list lines align with their first line, not the
  * bullet (Streamdown uses list-inside). */
-:is(.markdown, .cline-markdown) :is(ul, ol) {
+:is(.markdown, .hadyancode-markdown) :is(ul, ol) {
 	list-style-position: outside;
 	padding-inline-start: 1.375rem;
 }
 
-:is(.markdown, .cline-markdown) li {
+:is(.markdown, .hadyancode-markdown) li {
 	padding-block: 0.125rem;
 }
 
-:is(.markdown, .cline-markdown) li::marker {
+:is(.markdown, .hadyancode-markdown) li::marker {
 	color: var(--muted-foreground);
 }
 
-:is(.markdown, .cline-markdown) [data-streamdown="inline-code"] {
+:is(.markdown, .hadyancode-markdown) [data-streamdown="inline-code"] {
 	padding: 0.1em 0.35em;
 	font-size: 0.8125rem;
 }
@@ -120,18 +120,18 @@
  * single quiet block: no outer chrome, no language label, and the copy button
  * only appears while hovering the block.
  */
-:is(.markdown, .cline-markdown) [data-streamdown="code-block"] {
+:is(.markdown, .hadyancode-markdown) [data-streamdown="code-block"] {
 	padding: 0;
 	gap: 0;
 	border: none;
 	background: transparent;
 }
 
-:is(.markdown, .cline-markdown) [data-streamdown="code-block-header"] {
+:is(.markdown, .hadyancode-markdown) [data-streamdown="code-block-header"] {
 	display: none;
 }
 
-:is(.markdown, .cline-markdown) [data-streamdown="code-block-body"] {
+:is(.markdown, .hadyancode-markdown) [data-streamdown="code-block-body"] {
 	border-radius: 0.5rem;
 	background: var(--card);
 	padding: 0.625rem 0.75rem;
@@ -141,7 +141,7 @@
 
 /* The body's <pre> paints the Shiki theme background, which never quite
  * matches the app theme; let the body's --card background show instead. */
-:is(.markdown, .cline-markdown) [data-streamdown="code-block-body"] pre {
+:is(.markdown, .hadyancode-markdown) [data-streamdown="code-block-body"] pre {
 	background: transparent;
 }
 
@@ -153,7 +153,7 @@
  * is a no-op in the lineNumbers path, and empty lines keep their height
  * because Streamdown renders them as a lone "\n" child that white-space:
  * pre turns into a line box. */
-:is(.markdown, .cline-markdown)
+:is(.markdown, .hadyancode-markdown)
 	[data-streamdown="code-block-body"]
 	code
 	> span {
@@ -164,7 +164,7 @@
  * row; re-anchor it over the top-right of the code body and reveal on
  * hover/focus so it stops competing with the code. Stickiness is kept so the
  * copy button stays reachable inside long blocks. */
-:is(.markdown, .cline-markdown)
+:is(.markdown, .hadyancode-markdown)
 	[data-streamdown="code-block"]
 	> div:has(> [data-streamdown="code-block-actions"]) {
 	margin-block: 0 -2rem;
@@ -176,23 +176,23 @@
 /* While hidden the pill must not intercept clicks or text selection on the
  * code beneath it (it ships with pointer-events-auto). Keyboard focus is
  * unaffected by pointer-events, so tabbing still reveals it. */
-:is(.markdown, .cline-markdown) [data-streamdown="code-block-actions"] {
+:is(.markdown, .hadyancode-markdown) [data-streamdown="code-block-actions"] {
 	pointer-events: none;
 }
 
-:is(.markdown, .cline-markdown)
+:is(.markdown, .hadyancode-markdown)
 	[data-streamdown="code-block"]:hover
 	> div:has(> [data-streamdown="code-block-actions"]),
-:is(.markdown, .cline-markdown)
+:is(.markdown, .hadyancode-markdown)
 	[data-streamdown="code-block"]
 	> div:focus-within:has(> [data-streamdown="code-block-actions"]) {
 	opacity: 1;
 }
 
-:is(.markdown, .cline-markdown)
+:is(.markdown, .hadyancode-markdown)
 	[data-streamdown="code-block"]:hover
 	[data-streamdown="code-block-actions"],
-:is(.markdown, .cline-markdown)
+:is(.markdown, .hadyancode-markdown)
 	[data-streamdown="code-block"]
 	> div:focus-within
 	[data-streamdown="code-block-actions"] {
@@ -200,19 +200,19 @@
 }
 
 @media (hover: none) {
-	:is(.markdown, .cline-markdown)
+	:is(.markdown, .hadyancode-markdown)
 		[data-streamdown="code-block"]
 		> div:has(> [data-streamdown="code-block-actions"]) {
 		opacity: 1;
 	}
 
-	:is(.markdown, .cline-markdown) [data-streamdown="code-block-actions"] {
+	:is(.markdown, .hadyancode-markdown) [data-streamdown="code-block-actions"] {
 		pointer-events: auto;
 	}
 }
 
 /* Tables get the same single-box treatment as code blocks. */
-:is(.markdown, .cline-markdown) [data-streamdown="table-wrapper"] {
+:is(.markdown, .hadyancode-markdown) [data-streamdown="table-wrapper"] {
 	padding: 0;
 	gap: 0;
 	overflow: hidden;

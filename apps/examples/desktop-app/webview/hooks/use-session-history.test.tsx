@@ -28,7 +28,7 @@ function sessionRow(sessionId: string) {
 	return {
 		sessionId,
 		status: "completed",
-		provider: "cline",
+		provider: "hadyancode",
 		model: "glm-5.2",
 		cwd: "/workspace",
 		workspaceRoot: "/workspace",

@@ -24,8 +24,8 @@ import type {
 	AgentTool,
 	BasicLogger,
 	ITelemetryService,
-} from "@cline/shared";
-import { version as clineCoreVersion } from "../../../package.json";
+} from "@hadyancode/shared";
+import { version as hadyancodeCoreVersion } from "../../../package.json";
 
 /**
  * Inputs required to assemble an `AgentRuntimeConfig`. Distinct from
@@ -100,7 +100,7 @@ export function createAgentRuntimeConfig(
 		distinctId: agentConfig.distinctId,
 		clientName: agentConfig.extensionContext?.client?.name,
 		clientVersion: agentConfig.extensionContext?.client?.version,
-		clineCoreVersion,
+		hadyancodeCoreVersion,
 		sessionId: input.sessionId ?? agentConfig.sessionId,
 		agentId: input.agentId,
 		conversationId: input.conversationId,

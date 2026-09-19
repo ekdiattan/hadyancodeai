@@ -27,11 +27,11 @@ import {
 	resolveWorkflowsConfigSearchPaths,
 	uninstallMarketplaceEntry as uninstallCoreMarketplaceEntry,
 	uninstallPlugin as uninstallLocalPlugin,
-} from "@cline/core";
+} from "@hadyancode/core";
 import {
 	discoverPluginModulePaths,
-	resolveClineDir,
-} from "@cline/shared/storage";
+	resolveHadyanCodeDir,
+} from "@hadyancode/shared/storage";
 import { deleteMcpServer, readMcpServersResponse } from "./mcp";
 import type { JsonRecord } from "./types";
 
@@ -91,8 +91,8 @@ const MAX_OUTPUT_CHARS = 12_000;
 const INSTALL_COMMAND_TIMEOUT_MS = 120_000;
 const OFFICIAL_PLUGINS_REPO = "https://github.com/cline/plugins.git";
 const MARKETPLACE_CATALOG_URL =
-	process.env.CLINE_MARKETPLACE_CATALOG_URL?.trim() ||
-	"https://cline.github.io/marketplace/catalog.json";
+	process.env.HADYANCODE_MARKETPLACE_CATALOG_URL?.trim() ||
+	"https://hadyancode.github.io/marketplace/catalog.json";
 const SECRET_PATTERN =
 	/(api[_ -]?key|access[_ -]?token|refresh[_ -]?token|auth(?:orization)?[_ -]?token|token|secret|password|authorization|credential)/i;
 const SECRET_KEY_VALUE_PATTERN =
@@ -585,7 +585,7 @@ export function getOfficialPluginInstallPath(
 	if (!isOfficialPluginSlug(slug)) return undefined;
 	const sourceKey = `official:${OFFICIAL_PLUGINS_REPO}#plugins/${slug}`;
 	return join(
-		resolveClineDir(),
+		resolveHadyanCodeDir(),
 		"plugins",
 		"_installed",
 		"official",
@@ -663,7 +663,7 @@ function getSkillInstallCandidates(entry: MarketplaceInstallInput): string[] {
 
 function getGlobalSkillPaths(skillName: string): string[] {
 	return [
-		join(resolveClineDir(), "skills", skillName, "SKILL.md"),
+		join(resolveHadyanCodeDir(), "skills", skillName, "SKILL.md"),
 		join(resolveHomeDir(), ".agents", "skills", skillName, "SKILL.md"),
 	].filter((path, index, paths) => paths.indexOf(path) === index);
 }
@@ -674,7 +674,7 @@ function ensureGlobalSkillsDirWritable(): void {
 		mkdirSync(skillsDir, { recursive: true });
 		const probePath = join(
 			skillsDir,
-			`.cline-marketplace-write-test-${process.pid}-${Date.now()}`,
+			`.hadyancode-marketplace-write-test-${process.pid}-${Date.now()}`,
 		);
 		writeFileSync(probePath, "", { flag: "wx" });
 		unlinkSync(probePath);
@@ -786,7 +786,7 @@ async function installSkill(
 		...(entry.install.args ?? []),
 		"-g",
 		"-a",
-		"cline",
+		"hadyancode",
 		"-y",
 	]);
 	if (result.exitCode !== 0) {
@@ -801,14 +801,14 @@ async function installSkill(
 	}
 	if (!isGlobalSkillInstalled(entry)) {
 		throw new Error(
-			`Skill install completed, but ${entry.name ?? entry.id} was not found in Cline's global skills directories.`,
+			`Skill install completed, but ${entry.name ?? entry.id} was not found in HadyanCode's global skills directories.`,
 		);
 	}
 	return {
 		id: entry.id,
 		type: entry.type,
 		status: "installed",
-		message: `Installed ${entry.name ?? entry.id} globally for Cline.`,
+		message: `Installed ${entry.name ?? entry.id} globally for HadyanCode.`,
 		output,
 	};
 }
@@ -831,10 +831,10 @@ async function installPlugin(
 			message: `${entry.name ?? entry.id} is already installed.`,
 		};
 	}
-	// Install in-process instead of shelling out to a `cline` binary: the
+	// Install in-process instead of shelling out to a `hadyancode` binary: the
 	// packaged desktop app cannot assume a CLI install exists on the user's
 	// PATH (GUI apps inherit launchd's minimal PATH on macOS), which surfaced
-	// as 'Executable not found in $PATH: "cline"' in the marketplace UI.
+	// as 'Executable not found in $PATH: "hadyancode"' in the marketplace UI.
 	//
 	// force reclaims a leftover directory from a failed or interrupted
 	// install: without it the installer refuses to replace the existing path
@@ -872,7 +872,7 @@ export async function installMarketplaceEntry(
 	const spawnCommand = options.spawnCommand ?? defaultSpawnCommand;
 	if (entry.type === "mcp") {
 		// Register the server in-process; this only writes MCP settings, so
-		// there is no reason to depend on a `cline` binary being on PATH.
+		// there is no reason to depend on a `hadyancode` binary being on PATH.
 		const result = installMcpServer(
 			parseMcpInstallArgs(entry.install.args ?? []),
 		);

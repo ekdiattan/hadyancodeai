@@ -1,16 +1,16 @@
-import type { Boolean, EmptyRequest } from "@shared/proto/cline/common"
+import type { Boolean, EmptyRequest } from "@shared/proto/hadyancode/common"
 import { useCallback, useEffect } from "react"
 import AccountView from "./components/account/AccountView"
 import ChatView from "./components/chat/ChatView"
 import HistoryView from "./components/history/HistoryView"
 import MarketplaceView from "./components/marketplace/MarketplaceView"
 import McpView from "./components/mcp/configuration/McpConfigurationView"
-import { openClinePassSubscriptionIfPending } from "./components/onboarding/clinePassSubscribe"
+import { openHadyanCodePassSubscriptionIfPending } from "./components/onboarding/hadyancodePassSubscribe"
 import OnboardingView from "./components/onboarding/OnboardingView"
 import SettingsView from "./components/settings/SettingsView"
 import WorktreesView from "./components/worktrees/WorktreesView"
-import { useClineAuth } from "./context/ClineAuthContext"
 import { useExtensionState } from "./context/ExtensionStateContext"
+import { useHadyanCodeAuth } from "./context/HadyanCodeAuthContext"
 import { Providers } from "./Providers"
 import { UiServiceClient } from "./services/grpc-client"
 
@@ -40,7 +40,7 @@ const AppContent = () => {
 		hideAnnouncement,
 	} = useExtensionState()
 
-	const { clineUser, organizations, activeOrganization } = useClineAuth()
+	const { hadyancodeUser, organizations, activeOrganization } = useHadyanCodeAuth()
 
 	const showUpdateAnnouncementModal = useCallback(() => {
 		setShowAnnouncement(true)
@@ -60,13 +60,13 @@ const AppContent = () => {
 		showUpdateAnnouncementModal()
 	}, [didHydrateState, showWelcome, shouldShowAnnouncement, showAnnouncement, showUpdateAnnouncementModal])
 
-	// Open the ClinePass subscription page once auth completes. Lives here (not in OnboardingView)
-	// because handleAuthCallback unmounts onboarding before the clineUser update arrives.
+	// Open the HadyanCodePass subscription page once auth completes. Lives here (not in OnboardingView)
+	// because handleAuthCallback unmounts onboarding before the hadyancodeUser update arrives.
 	useEffect(() => {
-		if (clineUser?.uid) {
-			openClinePassSubscriptionIfPending(clineUser.appBaseUrl)
+		if (hadyancodeUser?.uid) {
+			openHadyanCodePassSubscriptionIfPending(hadyancodeUser.appBaseUrl)
 		}
-	}, [clineUser?.uid, clineUser?.appBaseUrl])
+	}, [hadyancodeUser?.uid, hadyancodeUser?.appBaseUrl])
 
 	if (!didHydrateState) {
 		return null
@@ -85,7 +85,7 @@ const AppContent = () => {
 			{showAccount && (
 				<AccountView
 					activeOrganization={activeOrganization}
-					clineUser={clineUser}
+					hadyancodeUser={hadyancodeUser}
 					onDone={hideAccount}
 					organizations={organizations}
 				/>

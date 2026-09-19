@@ -1,7 +1,7 @@
-// Replaces classic src/services/account/ClineAccountService.ts (see origin/main)
+// Replaces classic src/services/account/HadyanCodeAccountService.ts (see origin/main)
 //
 // SDK-backed account service. Handles credits, organizations, and user data
-// by making authenticated requests to the Cline API.
+// by making authenticated requests to the HadyanCode API.
 
 import type {
 	BalanceResponse,
@@ -11,17 +11,17 @@ import type {
 	UsageTransaction,
 	UserRemoteConfigDiscoveryResponse,
 	UserResponse,
-} from "@shared/ClineAccount"
+} from "@shared/HadyanCodeAccount"
 import axios, { type AxiosRequestConfig, type AxiosResponse } from "axios"
-import { ClineEnv } from "@/config"
-import { buildBasicClineHeaders } from "@/services/EnvUtils"
-import { CLINE_API_ENDPOINT } from "@/shared/cline/api"
+import { HadyanCodeEnv } from "@/config"
+import { buildBasicHadyanCodeHeaders } from "@/services/EnvUtils"
+import { HADYANCODE_API_ENDPOINT } from "@/shared/hadyancode/api"
 import { getAxiosSettings } from "@/shared/net"
 import { Logger } from "@/shared/services/Logger"
 import { AuthService } from "./auth-service"
 
-export class ClineAccountService {
-	private static instance: ClineAccountService
+export class HadyanCodeAccountService {
+	private static instance: HadyanCodeAccountService
 	private _authService: AuthService
 
 	constructor() {
@@ -29,24 +29,24 @@ export class ClineAccountService {
 	}
 
 	/**
-	 * Returns the singleton instance of ClineAccountService
+	 * Returns the singleton instance of HadyanCodeAccountService
 	 */
-	public static getInstance(): ClineAccountService {
-		if (!ClineAccountService.instance) {
-			ClineAccountService.instance = new ClineAccountService()
+	public static getInstance(): HadyanCodeAccountService {
+		if (!HadyanCodeAccountService.instance) {
+			HadyanCodeAccountService.instance = new HadyanCodeAccountService()
 		}
-		return ClineAccountService.instance
+		return HadyanCodeAccountService.instance
 	}
 
 	/**
-	 * Returns the base URL for the Cline API
+	 * Returns the base URL for the HadyanCode API
 	 */
 	get baseUrl(): string {
-		return ClineEnv.config().apiBaseUrl
+		return HadyanCodeEnv.config().apiBaseUrl
 	}
 
 	/**
-	 * Helper function to make authenticated requests to the Cline API.
+	 * Helper function to make authenticated requests to the HadyanCode API.
 	 * Uses the SDK-backed AuthService for token management.
 	 */
 	private async authenticatedRequest<T>(
@@ -56,16 +56,16 @@ export class ClineAccountService {
 	): Promise<T> {
 		const url = new URL(endpoint, this.baseUrl).toString()
 		// IMPORTANT: Prefixed with 'workos:' so backend can route verification to WorkOS provider
-		const clineAccountAuthToken = options?.authToken ?? (await this._authService.getAuthToken())
-		if (!clineAccountAuthToken) {
-			throw new Error("No Cline account auth token found")
+		const hadyancodeAccountAuthToken = options?.authToken ?? (await this._authService.getAuthToken())
+		if (!hadyancodeAccountAuthToken) {
+			throw new Error("No HadyanCode account auth token found")
 		}
 		const requestConfig: AxiosRequestConfig = {
 			...config,
 			headers: {
-				Authorization: `Bearer ${clineAccountAuthToken}`,
+				Authorization: `Bearer ${hadyancodeAccountAuthToken}`,
 				"Content-Type": "application/json",
-				...(await buildBasicClineHeaders()),
+				...(await buildBasicHadyanCodeHeaders()),
 				...config.headers,
 			},
 			...getAxiosSettings(),
@@ -157,7 +157,7 @@ export class ClineAccountService {
 	 */
 	async fetchMe(): Promise<UserResponse | undefined> {
 		try {
-			const data = await this.authenticatedRequest<UserResponse>(CLINE_API_ENDPOINT.USER_INFO)
+			const data = await this.authenticatedRequest<UserResponse>(HADYANCODE_API_ENDPOINT.USER_INFO)
 			return data
 		} catch (error) {
 			Logger.error("Failed to fetch user data (RPC):", error)
@@ -235,7 +235,7 @@ export class ClineAccountService {
 		}
 
 		return await this.authenticatedRequest<UserRemoteConfigDiscoveryResponse | null>(
-			CLINE_API_ENDPOINT.USER_REMOTE_CONFIG,
+			HADYANCODE_API_ENDPOINT.USER_REMOTE_CONFIG,
 			{},
 			{ allowNullData: true, authToken: token },
 		)
@@ -260,7 +260,7 @@ export class ClineAccountService {
 	 */
 	async switchAccount(organizationId?: string): Promise<void> {
 		try {
-			await this.authenticatedRequest<string>(CLINE_API_ENDPOINT.ACTIVE_ACCOUNT, {
+			await this.authenticatedRequest<string>(HADYANCODE_API_ENDPOINT.ACTIVE_ACCOUNT, {
 				method: "PUT",
 				headers: {
 					"Content-Type": "application/json",

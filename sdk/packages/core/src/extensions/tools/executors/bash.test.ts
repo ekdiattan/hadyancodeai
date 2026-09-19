@@ -11,7 +11,7 @@ import {
 } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
-import type { AgentToolContext } from "@cline/shared";
+import type { AgentToolContext } from "@hadyancode/shared";
 import { describe, expect, it } from "vitest";
 import {
 	CommandExitError,
@@ -207,7 +207,7 @@ describe("createShellExecutor", () => {
 		const result = await execution;
 		expect(result).toContain("Command is still running");
 		expect(result).toContain("started");
-		expect(result).toMatch(/cline-command-.*output\.log/);
+		expect(result).toMatch(/hadyancode-command-.*output\.log/);
 		const logPath = result.match(/Output will continue in (.+)]/)?.[1];
 		if (!logPath) throw new Error("Expected detached command log path");
 		const commandPid = result.match(/started:(\d+)/)?.[1];
@@ -269,8 +269,8 @@ describe("createShellExecutor", () => {
 		const tempDirectory = await mkdtemp(
 			join(tmpdir(), "detached-log-cleanup-"),
 		);
-		const staleDirectory = join(tempDirectory, "cline-command-stale");
-		const freshDirectory = join(tempDirectory, "cline-command-fresh");
+		const staleDirectory = join(tempDirectory, "hadyancode-command-stale");
+		const freshDirectory = join(tempDirectory, "hadyancode-command-fresh");
 		const unrelatedDirectory = join(tempDirectory, "other-command-log");
 		try {
 			const nowMs = Date.now();
@@ -310,8 +310,8 @@ describe("createShellExecutor", () => {
 		const tempDirectory = await mkdtemp(
 			join(tmpdir(), "detached-log-command-cleanup-"),
 		);
-		const liveDirectory = join(tempDirectory, "cline-command-live");
-		const completedDirectory = join(tempDirectory, "cline-command-completed");
+		const liveDirectory = join(tempDirectory, "hadyancode-command-live");
+		const completedDirectory = join(tempDirectory, "hadyancode-command-completed");
 		let liveCommandExists = true;
 		try {
 			await Promise.all([mkdir(liveDirectory), mkdir(completedDirectory)]);
@@ -369,7 +369,7 @@ describe("createShellExecutor", () => {
 		const tempDirectory = await mkdtemp(
 			join(tmpdir(), "detached-log-pid-reuse-"),
 		);
-		const reusedPidDirectory = join(tempDirectory, "cline-command-reused-pid");
+		const reusedPidDirectory = join(tempDirectory, "hadyancode-command-reused-pid");
 		try {
 			await mkdir(reusedPidDirectory);
 			await Promise.all([
@@ -408,7 +408,7 @@ describe("createShellExecutor", () => {
 		const tempDirectory = await mkdtemp(
 			join(tmpdir(), "detached-log-probe-recovery-"),
 		);
-		const directory = join(tempDirectory, "cline-command-probe-recovery");
+		const directory = join(tempDirectory, "hadyancode-command-probe-recovery");
 		let probeAvailable = false;
 		try {
 			await mkdir(directory);
@@ -460,7 +460,7 @@ describe("createShellExecutor", () => {
 		const tempDirectory = await mkdtemp(
 			join(tmpdir(), "detached-log-probe-timeout-"),
 		);
-		const directory = join(tempDirectory, "cline-command-probe-timeout");
+		const directory = join(tempDirectory, "hadyancode-command-probe-timeout");
 		let probeStatus: "unavailable" | "missing" = "unavailable";
 		const cleanupOptions = {
 			activeCommandPollIntervalMs: 60_000,
@@ -521,7 +521,7 @@ describe("createShellExecutor", () => {
 		const tempDirectory = await mkdtemp(
 			join(tmpdir(), "detached-log-probe-rejection-"),
 		);
-		const directory = join(tempDirectory, "cline-command-probe-rejection");
+		const directory = join(tempDirectory, "hadyancode-command-probe-rejection");
 		let probeAttempts = 0;
 		try {
 			await mkdir(directory);
@@ -567,7 +567,7 @@ describe("createShellExecutor", () => {
 		const tempDirectory = await mkdtemp(
 			join(tmpdir(), "detached-log-completion-race-"),
 		);
-		const directory = join(tempDirectory, "cline-command-completion-race");
+		const directory = join(tempDirectory, "hadyancode-command-completion-race");
 		const completedAtMs = Date.now() - 1_000;
 		let processProbeCount = 0;
 		try {

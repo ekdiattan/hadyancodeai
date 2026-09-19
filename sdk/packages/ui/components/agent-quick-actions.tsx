@@ -23,7 +23,7 @@ export function AgentQuickActions({
 	return (
 		<div
 			className={[
-				"cline-ui-agent-quick-actions w-full overflow-hidden rounded-cline-ui-xl border border-cline-ui-border/60 bg-cline-ui-background/95 px-2 shadow-sm",
+				"hadyancode-ui-agent-quick-actions w-full overflow-hidden rounded-hadyancode-ui-xl border border-hadyancode-ui-border/60 bg-hadyancode-ui-background/95 px-2 shadow-sm",
 				className,
 			]
 				.filter(Boolean)
@@ -31,23 +31,23 @@ export function AgentQuickActions({
 		>
 			{actions.map((action) => (
 				<button
-					className="cline-ui-agent-quick-actions__item flex w-full cursor-pointer items-center justify-between gap-5 rounded-none border-0 bg-transparent p-3 text-left text-inherit transition-[background-color] duration-150 ease-in-out not-last:border-b not-last:border-cline-ui-border/80 focus-visible:outline-none focus-visible:shadow-[inset_0_0_0_2px_var(--ring)] disabled:cursor-not-allowed disabled:opacity-50"
+					className="hadyancode-ui-agent-quick-actions__item flex w-full cursor-pointer items-center justify-between gap-5 rounded-none border-0 bg-transparent p-3 text-left text-inherit transition-[background-color] duration-150 ease-in-out not-last:border-b not-last:border-hadyancode-ui-border/80 focus-visible:outline-none focus-visible:shadow-[inset_0_0_0_2px_var(--ring)] disabled:cursor-not-allowed disabled:opacity-50"
 					disabled={disabled}
 					key={action.id}
 					onClick={() => onSelect(action)}
 					type="button"
 				>
-					<span className="cline-ui-agent-quick-actions__copy min-w-0">
-						<span className="cline-ui-agent-quick-actions__label block font-cline-ui-medium text-[0.9375rem] text-cline-ui-foreground">
+					<span className="hadyancode-ui-agent-quick-actions__copy min-w-0">
+						<span className="hadyancode-ui-agent-quick-actions__label block font-hadyancode-ui-medium text-[0.9375rem] text-hadyancode-ui-foreground">
 							{action.label}
 						</span>
-						<span className="cline-ui-agent-quick-actions__description mt-0.5 block overflow-hidden text-ellipsis whitespace-nowrap text-cline-ui-muted-foreground text-cline-ui-sm">
+						<span className="hadyancode-ui-agent-quick-actions__description mt-0.5 block overflow-hidden text-ellipsis whitespace-nowrap text-hadyancode-ui-muted-foreground text-hadyancode-ui-sm">
 							{action.description}
 						</span>
 					</span>
 					<span
 						aria-hidden="true"
-						className="cline-ui-agent-quick-actions__arrow flex size-7 shrink-0 items-center justify-center rounded-cline-ui-md bg-cline-ui-primary/10 text-cline-ui-primary transition-[background-color,color] duration-150 ease-in-out"
+						className="hadyancode-ui-agent-quick-actions__arrow flex size-7 shrink-0 items-center justify-center rounded-hadyancode-ui-md bg-hadyancode-ui-primary/10 text-hadyancode-ui-primary transition-[background-color,color] duration-150 ease-in-out"
 					>
 						<svg
 							aria-hidden="true"

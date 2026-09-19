@@ -1,7 +1,7 @@
-import type { ClineMessage } from "@shared/ExtensionMessage"
-import { EmptyRequest, StringRequest } from "@shared/proto/cline/common"
-import { AskResponseRequest, NewTaskRequest } from "@shared/proto/cline/task"
-import { IntentEvent } from "@shared/proto/cline/ui"
+import type { HadyanCodeMessage } from "@shared/ExtensionMessage"
+import { EmptyRequest, StringRequest } from "@shared/proto/hadyancode/common"
+import { AskResponseRequest, NewTaskRequest } from "@shared/proto/hadyancode/task"
+import { IntentEvent } from "@shared/proto/hadyancode/ui"
 import { useCallback, useRef } from "react"
 import { useExtensionState } from "@/context/ExtensionStateContext"
 import { SlashServiceClient, TaskServiceClient, UiServiceClient } from "@/services/grpc-client"
@@ -12,7 +12,7 @@ import type { ChatState, MessageHandlers } from "../types/chatTypes"
  * Custom hook for managing message handlers
  * Handles sending messages, button clicks, and task management
  */
-export function useMessageHandlers(messages: ClineMessage[], chatState: ChatState): MessageHandlers {
+export function useMessageHandlers(messages: HadyanCodeMessage[], chatState: ChatState): MessageHandlers {
 	const { backgroundCommandRunning, turnState } = useExtensionState()
 	const {
 		setInputValue,
@@ -26,7 +26,7 @@ export function useMessageHandlers(messages: ClineMessage[], chatState: ChatStat
 		setEnableButtons,
 		setPendingUserMessage,
 		setPendingResponse,
-		clineAsk,
+		hadyancodeAsk,
 		lastMessage,
 	} = chatState
 	const cancelInFlightRef = useRef(false)
@@ -50,7 +50,7 @@ export function useMessageHandlers(messages: ClineMessage[], chatState: ChatStat
 			// `/compact` (and its aliases `/smol` and `/newtask`) must run a real
 			// SDK manual compaction via the condense RPC — sending the literal
 			// text to the model would make it improvise a fake summary instead of
-			// compacting the context window (CLINE-2503). `/newtask` aliases
+			// compacting the context window (HADYANCODE-2503). `/newtask` aliases
 			// compaction because condensing achieves its goal (continue working
 			// with a fresh, summarized context) without the legacy new_task tool.
 			// With no active task there is nothing to compact, so fall through to
@@ -105,7 +105,7 @@ export function useMessageHandlers(messages: ClineMessage[], chatState: ChatStat
 					setSelectedFiles(files)
 					setEnableButtons(enableButtons)
 				}
-				const beginPendingResponse = (pendingMessage?: ClineMessage) => {
+				const beginPendingResponse = (pendingMessage?: HadyanCodeMessage) => {
 					const id = ++pendingResponseIdRef.current
 					// A follow-up submitted during an active stream is queued/steering feedback.
 					// The authoritative streaming UI is already current, so forcing a loader could
@@ -200,10 +200,10 @@ export function useMessageHandlers(messages: ClineMessage[], chatState: ChatStat
 						}),
 					)
 					messageSent = true
-				} else if (clineAsk) {
+				} else if (hadyancodeAsk) {
 					// For resume_task and resume_completed_task, use yesButtonClicked to match Resume button behavior
 					// This ensures Enter key and Resume button work identically
-					if (clineAsk === "resume_task" || clineAsk === "resume_completed_task") {
+					if (hadyancodeAsk === "resume_task" || hadyancodeAsk === "resume_completed_task") {
 						// Resuming a task opened from history rebuilds the SDK session before the
 						// extension echoes say:user_feedback, so without an optimistic bubble the
 						// user's message would not appear until the (slow) resume finishes — the
@@ -220,7 +220,7 @@ export function useMessageHandlers(messages: ClineMessage[], chatState: ChatStat
 						messageSent = true
 					} else {
 						// All other ask types use messageResponse
-						switch (clineAsk) {
+						switch (hadyancodeAsk) {
 							case "followup":
 							case "plan_mode_respond":
 							case "tool":
@@ -242,7 +242,7 @@ export function useMessageHandlers(messages: ClineMessage[], chatState: ChatStat
 								// option buttons, that resolver consumes the response before normal follow-up
 								// routing and immediately appends the real say:user_feedback row. If we also add
 								// an optimistic pending row here, the chat shows the same answer twice.
-								const showPendingMessage = clineAsk !== "followup" && turnState?.phase !== "streaming"
+								const showPendingMessage = hadyancodeAsk !== "followup" && turnState?.phase !== "streaming"
 
 								await sendAskResponseWithPendingState(
 									AskResponseRequest.create({
@@ -259,13 +259,13 @@ export function useMessageHandlers(messages: ClineMessage[], chatState: ChatStat
 						}
 					}
 				} else if (messages.length > 0) {
-					// No clineAsk set, but there is an existing conversation. Route this to the
+					// No hadyancodeAsk set, but there is an existing conversation. Route this to the
 					// active session as a follow-up when either:
 					//
 					//   1. The authoritative turnState says the conversation is continuable —
 					//      phases "completed" / "awaiting_followup" (the agent finished or is
 					//      waiting for the user) or "streaming" (interrupt with feedback). The SDK
-					//      does not emit a trailing ask:"completion_result", so clineAsk is
+					//      does not emit a trailing ask:"completion_result", so hadyancodeAsk is
 					//      undefined even when the user can keep talking; turnState is the source
 					//      of truth.
 					//   2. Legacy fallback (no turnState): the task looks actively running from the
@@ -308,7 +308,7 @@ export function useMessageHandlers(messages: ClineMessage[], chatState: ChatStat
 		},
 		[
 			messages,
-			clineAsk,
+			hadyancodeAsk,
 			turnState,
 			activeQuote,
 			setInputValue,
@@ -438,7 +438,7 @@ export function useMessageHandlers(messages: ClineMessage[], chatState: ChatStat
 					break
 
 				case "new_task":
-					if (clineAsk === "new_task") {
+					if (hadyancodeAsk === "new_task") {
 						await TaskServiceClient.newTask(
 							NewTaskRequest.create({
 								text: lastMessage?.text,
@@ -475,7 +475,7 @@ export function useMessageHandlers(messages: ClineMessage[], chatState: ChatStat
 				}
 
 				case "utility":
-					switch (clineAsk) {
+					switch (hadyancodeAsk) {
 						case "condense":
 							await SlashServiceClient.condense(StringRequest.create({ value: lastMessage?.text })).catch((err) =>
 								console.error(err),
@@ -495,7 +495,7 @@ export function useMessageHandlers(messages: ClineMessage[], chatState: ChatStat
 			}
 		},
 		[
-			clineAsk,
+			hadyancodeAsk,
 			lastMessage,
 			messages,
 			clearInputState,

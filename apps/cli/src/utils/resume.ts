@@ -1,8 +1,8 @@
-import type { ClineCore } from "@cline/core";
-import type { MessageWithMetadata } from "@cline/shared";
+import type { HadyanCodeCore } from "@hadyancode/core";
+import type { MessageWithMetadata } from "@hadyancode/shared";
 
 export async function loadInteractiveResumeMessages(
-	sessionManager: ClineCore,
+	sessionManager: HadyanCodeCore,
 	resumeSessionId?: string,
 ): Promise<MessageWithMetadata[] | undefined> {
 	const target = resumeSessionId?.trim();

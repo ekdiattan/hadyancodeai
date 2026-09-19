@@ -1,4 +1,4 @@
-import { Llms } from "@cline/core";
+import { Llms } from "@hadyancode/core";
 import type { ChoiceContext } from "@opentui-ui/dialog";
 import type { DialogActions } from "@opentui-ui/dialog/react";
 import { useCallback, useMemo } from "react";

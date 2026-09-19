@@ -7,7 +7,7 @@ import {
 	TASK_PROVIDER_STREAM_FAILED_EVENT,
 	TASK_PROVIDER_STREAM_STARTED_EVENT,
 	captureTaskLifecycleEvent as captureSharedTaskLifecycleEvent,
-} from "@cline/shared";
+} from "@hadyancode/shared";
 import { describe, expect, test, vi } from "vitest";
 import {
 	CORE_TELEMETRY_EVENTS,
@@ -831,7 +831,7 @@ describe("identifyAccount", () => {
 		identifyAccount(stub.telemetry, {
 			id: "usr-123",
 			email: "test@example.com",
-			provider: "cline",
+			provider: "hadyancode",
 		});
 		expect(vi.mocked(stub.telemetry.setDistinctId)).toHaveBeenCalledWith(
 			"usr-123",
@@ -843,7 +843,7 @@ describe("identifyAccount", () => {
 				user_id: "usr-123",
 				account_id: "usr-123",
 				account_email: "test@example.com",
-				provider: "cline",
+				provider: "hadyancode",
 			}),
 		);
 	});
@@ -853,7 +853,7 @@ describe("identifyAccount", () => {
 		identifyAccount(stub.telemetry, {
 			id: "usr-456",
 			email: "alice@example.com",
-			provider: "cline",
+			provider: "hadyancode",
 			organizationId: "org-1",
 			organizationName: "Acme",
 			memberId: "member-9",
@@ -873,7 +873,7 @@ describe("identifyAccount", () => {
 
 	test("user_id and account_id are set to the same value", () => {
 		const stub = createTelemetryStub();
-		identifyAccount(stub.telemetry, { id: "usr-789", provider: "cline" });
+		identifyAccount(stub.telemetry, { id: "usr-789", provider: "hadyancode" });
 		const call = vi.mocked(stub.telemetry.updateCommonProperties).mock
 			.calls[0]?.[0] as Record<string, unknown> | undefined;
 		expect(call?.user_id).toBe("usr-789");
@@ -885,7 +885,7 @@ describe("identifyAccount", () => {
 		const stub = createTelemetryStub();
 		identifyAccount(stub.telemetry, {
 			email: "anon@example.com",
-			provider: "cline",
+			provider: "hadyancode",
 		});
 		expect(stub.telemetry.setDistinctId).not.toHaveBeenCalled();
 	});
@@ -906,7 +906,7 @@ describe("identifyAccount", () => {
 
 	test("no-ops when telemetry is undefined", () => {
 		expect(() =>
-			identifyAccount(undefined, { id: "usr-123", provider: "cline" }),
+			identifyAccount(undefined, { id: "usr-123", provider: "hadyancode" }),
 		).not.toThrow();
 	});
 });

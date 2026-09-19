@@ -1,7 +1,7 @@
 import { mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { FEATURE_FLAGS, type IFeatureFlagsProvider } from "@cline/shared";
+import { FEATURE_FLAGS, type IFeatureFlagsProvider } from "@hadyancode/shared";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { FeatureFlagsService } from "./FeatureFlagsService";
 
@@ -111,7 +111,7 @@ describe("FeatureFlagsService", () => {
 		vi.useFakeTimers();
 		vi.setSystemTime(new Date("2026-06-10T10:00:00Z"));
 		const cacheFilePath = join(
-			mkdtempSync(join(tmpdir(), "cline-feature-flags-")),
+			mkdtempSync(join(tmpdir(), "hadyancode-feature-flags-")),
 			"feature-flags.json",
 		);
 		writeFileSync(
@@ -142,7 +142,7 @@ describe("FeatureFlagsService", () => {
 		vi.useFakeTimers();
 		vi.setSystemTime(new Date("2026-06-10T10:00:00Z"));
 		const cacheFilePath = join(
-			mkdtempSync(join(tmpdir(), "cline-feature-flags-")),
+			mkdtempSync(join(tmpdir(), "hadyancode-feature-flags-")),
 			"nested",
 			"feature-flags.json",
 		);

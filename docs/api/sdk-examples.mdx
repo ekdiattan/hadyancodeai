@@ -1,10 +1,10 @@
 ---
 title: "Code Examples"
 sidebarTitle: "Code Examples"
-description: "Use the Cline API from Python, Node.js, curl, the Cline CLI, and the VS Code extension."
+description: "Use the HadyanCode API from Python, Node.js, curl, the HadyanCode CLI, and the VS Code extension."
 ---
 
-The Cline API is OpenAI-compatible, so any library or tool that works with OpenAI also works with the Cline API. Just change the base URL and API key.
+The HadyanCode API is OpenAI-compatible, so any library or tool that works with OpenAI also works with the HadyanCode API. Just change the base URL and API key.
 
 ## curl
 
@@ -12,7 +12,7 @@ The Cline API is OpenAI-compatible, so any library or tool that works with OpenA
 
 ```bash
 curl -X POST https://api.cline.bot/api/v1/chat/completions \
-  -H "Authorization: Bearer $CLINE_API_KEY" \
+  -H "Authorization: Bearer $HADYANCODE_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
     "model": "anthropic/claude-sonnet-4-6",
@@ -25,7 +25,7 @@ curl -X POST https://api.cline.bot/api/v1/chat/completions \
 
 ```bash
 curl -X POST https://api.cline.bot/api/v1/chat/completions \
-  -H "Authorization: Bearer $CLINE_API_KEY" \
+  -H "Authorization: Bearer $HADYANCODE_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
     "model": "anthropic/claude-sonnet-4-6",
@@ -38,7 +38,7 @@ curl -X POST https://api.cline.bot/api/v1/chat/completions \
 
 ### OpenAI SDK
 
-The [OpenAI Python SDK](https://github.com/openai/openai-python) works with the Cline API by setting `base_url`:
+The [OpenAI Python SDK](https://github.com/openai/openai-python) works with the HadyanCode API by setting `base_url`:
 
 ```python
 from openai import OpenAI
@@ -149,7 +149,7 @@ print(data["choices"][0]["message"]["content"])
 
 ### OpenAI SDK
 
-The [OpenAI Node.js SDK](https://github.com/openai/openai-node) works with the Cline API by setting `baseURL`:
+The [OpenAI Node.js SDK](https://github.com/openai/openai-node) works with the HadyanCode API by setting `baseURL`:
 
 ```typescript
 import OpenAI from "openai"
@@ -212,50 +212,50 @@ const data = await response.json()
 console.log(data.choices[0].message.content)
 ```
 
-## Cline CLI
+## HadyanCode CLI
 
-The [Cline CLI](/cli/cli-reference) is the fastest way to use the Cline API from your terminal. It handles authentication, streaming, and tool execution for you.
+The [HadyanCode CLI](/cli/cli-reference) is the fastest way to use the HadyanCode API from your terminal. It handles authentication, streaming, and tool execution for you.
 
 ### Setup
 
 ```bash
 # Install
-npm install -g @anthropic-ai/cline
+npm install -g @anthropic-ai/hadyancode
 
-# Authenticate with a Cline API key
-cline auth -p cline -k "YOUR_API_KEY" -m anthropic/claude-sonnet-4-6
+# Authenticate with a HadyanCode API key
+hadyancode auth -p hadyancode -k "YOUR_API_KEY" -m anthropic/claude-sonnet-4-6
 ```
 
 ### Run Tasks
 
 ```bash
 # Simple prompt
-cline "Explain what a REST API is."
+hadyancode "Explain what a REST API is."
 
 # Pipe input
-cat README.md | cline "Summarize this document."
+cat README.md | hadyancode "Summarize this document."
 
 # Use a specific model
-cline -m google/gemini-2.5-pro "Analyze this codebase."
+hadyancode -m google/gemini-2.5-pro "Analyze this codebase."
 
 # YOLO mode for automation
-cline -y "Run tests and fix failures."
+hadyancode -y "Run tests and fix failures."
 ```
 
 See the [CLI Reference](/cli/cli-reference) for all commands and options.
 
 ## VS Code / JetBrains
 
-The Cline extension handles the API integration for you:
+The HadyanCode extension handles the API integration for you:
 
-1. Open the Cline panel in your editor
-2. Select **Cline** as the provider in the model picker
-3. Sign in with your Cline account
-4. Start chatting or give Cline a task
+1. Open the HadyanCode panel in your editor
+2. Select **HadyanCode** as the provider in the model picker
+3. Sign in with your HadyanCode account
+4. Start chatting or give HadyanCode a task
 
 Your API key is managed automatically. No manual configuration needed.
 
-For setup instructions, see [Installing Cline](/getting-started/installing-cline) and [Authorizing with Cline](/getting-started/authorizing-with-cline).
+For setup instructions, see [Installing HadyanCode](/getting-started/installing-hadyancode) and [Authorizing with HadyanCode](/getting-started/authorizing-with-hadyancode).
 
 ## Related
 
@@ -270,6 +270,6 @@ For setup instructions, see [Installing Cline](/getting-started/installing-cline
     Browse available models.
   </Card>
   <Card title="CLI Reference" icon="terminal" href="/cli/cli-reference">
-    Complete Cline CLI command reference.
+    Complete HadyanCode CLI command reference.
   </Card>
 </CardGroup>

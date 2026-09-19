@@ -41,8 +41,8 @@
  *      logger instead (which stays on the user's machine).
  *
  * CLI usage:
- *   cline plugin install https://github.com/cline/cline/blob/main/sdk/examples/plugins/telemetry.ts --cwd .
- *   cline -i "Roll a die a few times and tell me your best roll."
+ *   hadyancode plugin install https://github.com/cline/hadyancode/blob/main/sdk/examples/plugins/telemetry.ts --cwd .
+ *   hadyancode -i "Roll a die a few times and tell me your best roll."
  */
 
 import {
@@ -50,7 +50,7 @@ import {
 	type BasicLogger,
 	createTool,
 	type ITelemetryService,
-} from "@cline/core";
+} from "@hadyancode/core";
 
 // ---------------------------------------------------------------------------
 // Plugin-level state

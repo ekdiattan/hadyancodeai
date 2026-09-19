@@ -12,9 +12,9 @@ import { join } from "node:path";
 import {
 	discoverPluginModulePaths,
 	resolvePluginConfigSearchPaths,
-	setClineDir,
+	setHadyanCodeDir,
 	setHomeDir,
-} from "@cline/shared/storage";
+} from "@hadyancode/shared/storage";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
 	installPlugin,
@@ -31,8 +31,8 @@ describe("plugin install service", () => {
 	let home = "";
 	let workspace = "";
 	let originalHome: string | undefined;
-	let originalClineDir: string | undefined;
-	let originalClineDataDir: string | undefined;
+	let originalHadyanCodeDir: string | undefined;
+	let originalHadyanCodeDataDir: string | undefined;
 	let originalMcpSettingsPath: string | undefined;
 
 	beforeEach(() => {
@@ -40,19 +40,19 @@ describe("plugin install service", () => {
 		home = join(root, "home");
 		workspace = join(root, "workspace");
 		originalHome = process.env.HOME;
-		originalClineDir = process.env.CLINE_DIR;
-		originalClineDataDir = process.env.CLINE_DATA_DIR;
-		originalMcpSettingsPath = process.env.CLINE_MCP_SETTINGS_PATH;
+		originalHadyanCodeDir = process.env.HADYANCODE_DIR;
+		originalHadyanCodeDataDir = process.env.HADYANCODE_DATA_DIR;
+		originalMcpSettingsPath = process.env.HADYANCODE_MCP_SETTINGS_PATH;
 		process.env.HOME = home;
-		process.env.CLINE_DIR = join(home, ".cline");
-		process.env.CLINE_DATA_DIR = join(home, ".cline", "data");
-		process.env.CLINE_MCP_SETTINGS_PATH = join(
+		process.env.HADYANCODE_DIR = join(home, ".hadyancode");
+		process.env.HADYANCODE_DATA_DIR = join(home, ".hadyancode", "data");
+		process.env.HADYANCODE_MCP_SETTINGS_PATH = join(
 			home,
-			".cline",
-			"cline_mcp_settings.json",
+			".hadyancode",
+			"hadyancode_mcp_settings.json",
 		);
 		setHomeDir(home);
-		setClineDir(process.env.CLINE_DIR);
+		setHadyanCodeDir(process.env.HADYANCODE_DIR);
 	});
 
 	afterEach(() => {
@@ -62,20 +62,20 @@ describe("plugin install service", () => {
 		} else {
 			process.env.HOME = originalHome;
 		}
-		if (originalClineDir === undefined) {
-			delete process.env.CLINE_DIR;
+		if (originalHadyanCodeDir === undefined) {
+			delete process.env.HADYANCODE_DIR;
 		} else {
-			process.env.CLINE_DIR = originalClineDir;
+			process.env.HADYANCODE_DIR = originalHadyanCodeDir;
 		}
-		if (originalClineDataDir === undefined) {
-			delete process.env.CLINE_DATA_DIR;
+		if (originalHadyanCodeDataDir === undefined) {
+			delete process.env.HADYANCODE_DATA_DIR;
 		} else {
-			process.env.CLINE_DATA_DIR = originalClineDataDir;
+			process.env.HADYANCODE_DATA_DIR = originalHadyanCodeDataDir;
 		}
 		if (originalMcpSettingsPath === undefined) {
-			delete process.env.CLINE_MCP_SETTINGS_PATH;
+			delete process.env.HADYANCODE_MCP_SETTINGS_PATH;
 		} else {
-			process.env.CLINE_MCP_SETTINGS_PATH = originalMcpSettingsPath;
+			process.env.HADYANCODE_MCP_SETTINGS_PATH = originalMcpSettingsPath;
 		}
 		rmSync(root, { recursive: true, force: true });
 	});
@@ -97,7 +97,7 @@ describe("plugin install service", () => {
 		}
 		runGitCommand(repo, ["init"]);
 		runGitCommand(repo, ["config", "user.email", "test@example.com"]);
-		runGitCommand(repo, ["config", "user.name", "Cline Test"]);
+		runGitCommand(repo, ["config", "user.name", "HadyanCode Test"]);
 		runGitCommand(repo, ["add", "."]);
 		runGitCommand(repo, ["commit", "-m", "seed plugins"]);
 		return repo;
@@ -135,10 +135,10 @@ describe("plugin install service", () => {
 
 		const result = await installPlugin({ source });
 
-		expect(result.installPath).toContain(join(home, ".cline", "plugins"));
+		expect(result.installPath).toContain(join(home, ".hadyancode", "plugins"));
 		expect(result.entryPaths).toHaveLength(1);
 		expect(existsSync(result.entryPaths[0] ?? "")).toBe(true);
-		expect(discoverPluginModulePaths(join(home, ".cline", "plugins"))).toEqual(
+		expect(discoverPluginModulePaths(join(home, ".hadyancode", "plugins"))).toEqual(
 			result.entryPaths,
 		);
 	});
@@ -160,14 +160,14 @@ describe("plugin install service", () => {
 
 		expect(fetchMock).toHaveBeenCalledTimes(1);
 		expect(result.installPath).toContain(
-			join(workspace, ".cline", "plugins", "_installed", "remote"),
+			join(workspace, ".hadyancode", "plugins", "_installed", "remote"),
 		);
 		expect(result.entryPaths).toHaveLength(1);
 		expect(readFileSync(result.entryPaths[0] ?? "", "utf8")).toContain(
 			"remote-weather",
 		);
 		expect(
-			discoverPluginModulePaths(join(workspace, ".cline", "plugins")),
+			discoverPluginModulePaths(join(workspace, ".hadyancode", "plugins")),
 		).toEqual(result.entryPaths);
 	});
 
@@ -190,7 +190,7 @@ describe("plugin install service", () => {
 		});
 
 		expect(result.installPath).toContain(
-			join(workspace, ".cline", "plugins", "_installed", "official"),
+			join(workspace, ".hadyancode", "plugins", "_installed", "official"),
 		);
 		expect(result.entryPaths).toHaveLength(1);
 		expect(readFileSync(result.entryPaths[0] ?? "", "utf8")).toContain(
@@ -205,7 +205,7 @@ describe("plugin install service", () => {
 			existsSync(join(result.installPath, "package", "other-plugin")),
 		).toBe(false);
 		expect(resolvePluginConfigSearchPaths(workspace)[0]).toBe(
-			join(workspace, ".cline", "plugins"),
+			join(workspace, ".hadyancode", "plugins"),
 		);
 	});
 
@@ -240,7 +240,7 @@ export default {
 			}),
 		]);
 		const settings = JSON.parse(
-			readFileSync(process.env.CLINE_MCP_SETTINGS_PATH ?? "", "utf8"),
+			readFileSync(process.env.HADYANCODE_MCP_SETTINGS_PATH ?? "", "utf8"),
 		) as {
 			mcpServers?: Record<
 				string,

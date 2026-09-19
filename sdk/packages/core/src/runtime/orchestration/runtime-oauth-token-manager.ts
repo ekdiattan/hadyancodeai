@@ -1,4 +1,4 @@
-import type { ITelemetryService } from "@cline/shared";
+import type { ITelemetryService } from "@hadyancode/shared";
 import { hashSecret, sdkDebug } from "../../logging/early-logger";
 import {
 	getProviderAuthHandler,

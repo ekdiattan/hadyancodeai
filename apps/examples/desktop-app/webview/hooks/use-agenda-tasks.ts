@@ -6,7 +6,7 @@ import type {
 	AgendaTaskRecord,
 	AgendaTaskStatus,
 	HubTaskCreateInput,
-} from "@cline/shared";
+} from "@hadyancode/shared";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { desktopClient } from "@/lib/desktop-client";
 

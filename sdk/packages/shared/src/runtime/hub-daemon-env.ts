@@ -1,8 +1,8 @@
-export const CLINE_RUN_AS_HUB_DAEMON_ENV = "CLINE_RUN_AS_HUB_DAEMON";
-export const CLINE_CONNECTOR_CLI_LAUNCH_ENV = "CLINE_CONNECTOR_CLI_LAUNCH";
-export const CLINE_CONNECTOR_STARTING_INSTANCE_ENV =
-	"CLINE_CONNECTOR_STARTING_INSTANCE";
-export const CLINE_CONNECTOR_SUPERVISED_ENV = "CLINE_CONNECTOR_SUPERVISED";
+export const HADYANCODE_RUN_AS_HUB_DAEMON_ENV = "HADYANCODE_RUN_AS_HUB_DAEMON";
+export const HADYANCODE_CONNECTOR_CLI_LAUNCH_ENV = "HADYANCODE_CONNECTOR_CLI_LAUNCH";
+export const HADYANCODE_CONNECTOR_STARTING_INSTANCE_ENV =
+	"HADYANCODE_CONNECTOR_STARTING_INSTANCE";
+export const HADYANCODE_CONNECTOR_SUPERVISED_ENV = "HADYANCODE_CONNECTOR_SUPERVISED";
 
 export interface ConnectorCliLaunchSpec {
 	launcher: string;
@@ -30,8 +30,8 @@ let claimedHubDaemonProcess: boolean | undefined;
  * process a session spawns - agent shell commands, MCP servers, hooks, plugin
  * sandboxes - inherits its environment. An inherited sentinel makes each of
  * those try to become a hub daemon instead of running the command, and they die
- * on EADDRINUSE against the real hub. Observed as every `cline` invocation from
- * a Slack connector agent failing, `cline --help` included, because the
+ * on EADDRINUSE against the real hub. Observed as every `hadyancode` invocation from
+ * a Slack connector agent failing, `hadyancode --help` included, because the
  * personality is chosen before any argument parsing.
  *
  * Call this once from an entrypoint, in place of {@link isHubDaemonProcess}.
@@ -41,8 +41,8 @@ let claimedHubDaemonProcess: boolean | undefined;
 export function claimHubDaemonProcess(
 	env: Record<string, string | undefined> = process.env,
 ): boolean {
-	claimedHubDaemonProcess = env[CLINE_RUN_AS_HUB_DAEMON_ENV] === "1";
-	delete env[CLINE_RUN_AS_HUB_DAEMON_ENV];
+	claimedHubDaemonProcess = env[HADYANCODE_RUN_AS_HUB_DAEMON_ENV] === "1";
+	delete env[HADYANCODE_RUN_AS_HUB_DAEMON_ENV];
 	return claimedHubDaemonProcess;
 }
 
@@ -58,10 +58,10 @@ export function isHubDaemonProcess(
 	env?: Record<string, string | undefined>,
 ): boolean {
 	if (env) {
-		return env[CLINE_RUN_AS_HUB_DAEMON_ENV] === "1";
+		return env[HADYANCODE_RUN_AS_HUB_DAEMON_ENV] === "1";
 	}
 	return (
-		claimedHubDaemonProcess ?? process.env[CLINE_RUN_AS_HUB_DAEMON_ENV] === "1"
+		claimedHubDaemonProcess ?? process.env[HADYANCODE_RUN_AS_HUB_DAEMON_ENV] === "1"
 	);
 }
 
@@ -69,7 +69,7 @@ export function setConnectorCliLaunchSpec(
 	spec: ConnectorCliLaunchSpec,
 	env: Record<string, string | undefined> = process.env,
 ): void {
-	env[CLINE_CONNECTOR_CLI_LAUNCH_ENV] = JSON.stringify(spec);
+	env[HADYANCODE_CONNECTOR_CLI_LAUNCH_ENV] = JSON.stringify(spec);
 }
 
 /** Latched result of {@link claimSupervisedConnectorProcess}. */
@@ -80,7 +80,7 @@ let claimedSupervisedConnectorProcess: boolean | undefined;
  *
  * Same hazard as {@link claimHubDaemonProcess}: a supervised connector hosts
  * agent sessions, and everything they spawn — shell commands, MCP servers, hooks
- * — inherits its environment. An inherited marker makes a nested `cline connect`
+ * — inherits its environment. An inherited marker makes a nested `hadyancode connect`
  * think it is the process the hub is tracking, so it runs the connector in the
  * foreground of that shell command instead of handing it to the hub.
  *
@@ -92,8 +92,8 @@ export function claimSupervisedConnectorProcess(
 	env: Record<string, string | undefined> = process.env,
 ): boolean {
 	claimedSupervisedConnectorProcess =
-		env[CLINE_CONNECTOR_SUPERVISED_ENV] === "1";
-	delete env[CLINE_CONNECTOR_SUPERVISED_ENV];
+		env[HADYANCODE_CONNECTOR_SUPERVISED_ENV] === "1";
+	delete env[HADYANCODE_CONNECTOR_SUPERVISED_ENV];
 	return claimedSupervisedConnectorProcess;
 }
 
@@ -114,11 +114,11 @@ export function isSupervisedConnectorProcess(
 	env?: Record<string, string | undefined>,
 ): boolean {
 	if (env) {
-		return env[CLINE_CONNECTOR_SUPERVISED_ENV] === "1";
+		return env[HADYANCODE_CONNECTOR_SUPERVISED_ENV] === "1";
 	}
 	return (
 		claimedSupervisedConnectorProcess ??
-		process.env[CLINE_CONNECTOR_SUPERVISED_ENV] === "1"
+		process.env[HADYANCODE_CONNECTOR_SUPERVISED_ENV] === "1"
 	);
 }
 
@@ -137,13 +137,13 @@ export function setStartingConnectorInstance(
 	ref: ConnectorInstanceRef,
 	env: Record<string, string | undefined> = process.env,
 ): void {
-	env[CLINE_CONNECTOR_STARTING_INSTANCE_ENV] = JSON.stringify(ref);
+	env[HADYANCODE_CONNECTOR_STARTING_INSTANCE_ENV] = JSON.stringify(ref);
 }
 
 export function readStartingConnectorInstance(
 	env: Record<string, string | undefined> = process.env,
 ): ConnectorInstanceRef | undefined {
-	const raw = env[CLINE_CONNECTOR_STARTING_INSTANCE_ENV];
+	const raw = env[HADYANCODE_CONNECTOR_STARTING_INSTANCE_ENV];
 	if (!raw) {
 		return undefined;
 	}
@@ -166,7 +166,7 @@ export function readStartingConnectorInstance(
 export function readConnectorCliLaunchSpec(
 	env: Record<string, string | undefined> = process.env,
 ): ConnectorCliLaunchSpec | undefined {
-	const raw = env[CLINE_CONNECTOR_CLI_LAUNCH_ENV];
+	const raw = env[HADYANCODE_CONNECTOR_CLI_LAUNCH_ENV];
 	if (!raw) {
 		return undefined;
 	}

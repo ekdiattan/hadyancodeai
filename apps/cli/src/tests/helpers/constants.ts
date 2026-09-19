@@ -8,18 +8,18 @@
 import fs from "node:fs";
 import path from "node:path";
 
-function resolveClineBin(): string {
+function resolveHadyanCodeBin(): string {
 	const localBin = path.resolve(process.cwd(), "..", "..", "dist", "index.js");
 	if (fs.existsSync(localBin)) {
 		return localBin;
 	}
 
 	throw new Error(
-		"Unable to resolve cline binary. Run bun -F @cline/cli build",
+		"Unable to resolve hadyancode binary. Run bun -F @hadyancode/cli build",
 	);
 }
 
-export const CLINE_BIN = resolveClineBin();
+export const HADYANCODE_BIN = resolveHadyanCodeBin();
 
 // Standard terminal dimensions used across test suites
 export const TERMINAL_WIDE = { columns: 120, rows: 50 } as const;

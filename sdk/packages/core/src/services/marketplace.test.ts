@@ -2,7 +2,7 @@ import { existsSync, mkdtempSync, readFileSync, rmSync } from "node:fs";
 import { mkdir, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { setClineDir, setHomeDir } from "@cline/shared/storage";
+import { setHadyanCodeDir, setHomeDir } from "@hadyancode/shared/storage";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { uninstallMarketplaceEntry } from "./marketplace";
 
@@ -10,17 +10,17 @@ describe("marketplace service", () => {
 	let root = "";
 	let home = "";
 	let originalHome: string | undefined;
-	let originalClineDir: string | undefined;
+	let originalHadyanCodeDir: string | undefined;
 
 	beforeEach(() => {
 		root = mkdtempSync(join(tmpdir(), "core-marketplace-"));
 		home = join(root, "home");
 		originalHome = process.env.HOME;
-		originalClineDir = process.env.CLINE_DIR;
+		originalHadyanCodeDir = process.env.HADYANCODE_DIR;
 		process.env.HOME = home;
-		process.env.CLINE_DIR = join(home, ".cline");
+		process.env.HADYANCODE_DIR = join(home, ".hadyancode");
 		setHomeDir(home);
-		setClineDir(process.env.CLINE_DIR);
+		setHadyanCodeDir(process.env.HADYANCODE_DIR);
 	});
 
 	afterEach(() => {
@@ -29,16 +29,16 @@ describe("marketplace service", () => {
 		} else {
 			process.env.HOME = originalHome;
 		}
-		if (originalClineDir === undefined) {
-			delete process.env.CLINE_DIR;
+		if (originalHadyanCodeDir === undefined) {
+			delete process.env.HADYANCODE_DIR;
 		} else {
-			process.env.CLINE_DIR = originalClineDir;
+			process.env.HADYANCODE_DIR = originalHadyanCodeDir;
 		}
 		rmSync(root, { recursive: true, force: true });
 	});
 
 	it("uninstalls marketplace MCP servers from settings by default", async () => {
-		const settingsPath = join(root, "cline_mcp_settings.json");
+		const settingsPath = join(root, "hadyancode_mcp_settings.json");
 		await writeFile(
 			settingsPath,
 			JSON.stringify(
@@ -121,13 +121,13 @@ describe("marketplace service", () => {
 	});
 
 	it("cleans up remaining marketplace skill directories after skills CLI remove succeeds", async () => {
-		const clineSkillDir = join(
-			process.env.CLINE_DIR ?? "",
+		const hadyancodeSkillDir = join(
+			process.env.HADYANCODE_DIR ?? "",
 			"skills",
 			"review-team",
 		);
-		await mkdir(clineSkillDir, { recursive: true });
-		await writeFile(join(clineSkillDir, "SKILL.md"), "# Review Team", "utf8");
+		await mkdir(hadyancodeSkillDir, { recursive: true });
+		await writeFile(join(hadyancodeSkillDir, "SKILL.md"), "# Review Team", "utf8");
 
 		const result = await uninstallMarketplaceEntry(
 			{
@@ -146,14 +146,14 @@ describe("marketplace service", () => {
 		);
 
 		expect(result.status).toBe("uninstalled");
-		expect(result.output).toContain(`Removed: ${clineSkillDir}`);
-		expect(existsSync(clineSkillDir)).toBe(false);
+		expect(result.output).toContain(`Removed: ${hadyancodeSkillDir}`);
+		expect(existsSync(hadyancodeSkillDir)).toBe(false);
 	});
 
 	it("uninstalls official marketplace plugins by marketplace slug", async () => {
 		const installPath = join(
 			home,
-			".cline",
+			".hadyancode",
 			"plugins",
 			"_installed",
 			"official",

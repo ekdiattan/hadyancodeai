@@ -14,18 +14,18 @@ import {
 	type AgentPlugin,
 	type AgentToolContext,
 	createTool,
-} from "@cline/core";
+} from "@hadyancode/core";
 
 /**
  * Background Terminal Plugin Example
  *
  * Starts shell commands in detached background processes, stores stdout/stderr
- * under Cline's data directory, and optionally steers a completion summary back
+ * under HadyanCode's data directory, and optionally steers a completion summary back
  * into the current session when the command exits.
  *
  * CLI usage:
- *   cline plugin install https://github.com/cline/cline/blob/main/sdk/examples/plugins/background-terminal.ts --cwd .
- *   cline -i "Start the dev server in the background and keep working"
+ *   hadyancode plugin install https://github.com/cline/hadyancode/blob/main/sdk/examples/plugins/background-terminal.ts --cwd .
+ *   hadyancode -i "Start the dev server in the background and keep working"
  */
 
 type JobStatus = "running" | "completed" | "failed";
@@ -48,18 +48,18 @@ type JobRecord = {
 	metaPath: string;
 };
 
-interface ClinePluginHost {
+interface HadyanCodePluginHost {
 	emitEvent?: (name: string, payload?: unknown) => void;
 }
 
 declare global {
-	var __clinePluginHost: ClinePluginHost | undefined;
+	var __hadyancodePluginHost: HadyanCodePluginHost | undefined;
 }
 
 const DEFAULT_SHELL = process.env.SHELL || "/bin/zsh";
-const CLINE_DATA_DIR =
-	process.env.CLINE_DATA_DIR || join(homedir(), ".cline", "data");
-const JOBS_DIR = join(CLINE_DATA_DIR, "plugins", "background-shell", "jobs");
+const HADYANCODE_DATA_DIR =
+	process.env.HADYANCODE_DATA_DIR || join(homedir(), ".hadyancode", "data");
+const JOBS_DIR = join(HADYANCODE_DATA_DIR, "plugins", "background-shell", "jobs");
 let sessionDefaultCwd = process.cwd();
 let setupSessionId: string | undefined;
 
@@ -168,7 +168,7 @@ function emitSteer(sessionId: string | undefined, prompt: string) {
 	if (!sessionId || !prompt.trim()) {
 		return;
 	}
-	globalThis.__clinePluginHost?.emitEvent?.("steer_message", {
+	globalThis.__hadyancodePluginHost?.emitEvent?.("steer_message", {
 		sessionId,
 		prompt,
 	});

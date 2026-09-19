@@ -1,7 +1,7 @@
 import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { installMcpServer } from "@cline/core";
+import { installMcpServer } from "@hadyancode/core";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
 	buildMcpInstallDefaults,
@@ -10,8 +10,8 @@ import {
 	runMcpUninstallCommand,
 } from "./mcp";
 
-vi.mock("@cline/core", async (importOriginal) => {
-	const actual = await importOriginal<typeof import("@cline/core")>();
+vi.mock("@hadyancode/core", async (importOriginal) => {
+	const actual = await importOriginal<typeof import("@hadyancode/core")>();
 	return {
 		...actual,
 		installMcpServer: vi.fn((options) => {
@@ -209,7 +209,7 @@ describe("mcp install command", () => {
 		expect(code).toBe(1);
 		expect(runWizard).not.toHaveBeenCalled();
 		expect(writeErr).toHaveBeenCalledWith(
-			"cline mcp install opens the MCP wizard and requires a TTY. Pass --yes to install noninteractively.",
+			"hadyancode mcp install opens the MCP wizard and requires a TTY. Pass --yes to install noninteractively.",
 		);
 	});
 
@@ -224,7 +224,7 @@ describe("mcp install command", () => {
 
 		expect(code).toBe(1);
 		expect(writeErr).toHaveBeenCalledWith(
-			"cline mcp install opens the MCP wizard and requires a TTY. Pass --yes to install noninteractively.",
+			"hadyancode mcp install opens the MCP wizard and requires a TTY. Pass --yes to install noninteractively.",
 		);
 	});
 
@@ -299,7 +299,7 @@ describe("mcp uninstall command", () => {
 	});
 
 	function writeSettings(): string {
-		const settingsPath = join(root, "cline_mcp_settings.json");
+		const settingsPath = join(root, "hadyancode_mcp_settings.json");
 		writeFileSync(
 			settingsPath,
 			JSON.stringify(

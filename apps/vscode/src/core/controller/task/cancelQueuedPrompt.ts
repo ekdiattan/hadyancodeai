@@ -1,4 +1,4 @@
-import { Empty, type StringRequest } from "@shared/proto/cline/common"
+import { Empty, type StringRequest } from "@shared/proto/hadyancode/common"
 import { Logger } from "@/shared/services/Logger"
 import { Controller } from ".."
 

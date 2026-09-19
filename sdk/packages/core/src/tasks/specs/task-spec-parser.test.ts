@@ -23,7 +23,7 @@ afterEach(() => {
 describe("parseAgendaTaskSpec", () => {
 	it("parses canonical frontmatter and derives workspace scope", () => {
 		const result = parseAgendaTaskSpec({
-			specPath: join(WORKSPACE_ROOT, ".cline", "tasks", "check-pr.task.md"),
+			specPath: join(WORKSPACE_ROOT, ".hadyancode", "tasks", "check-pr.task.md"),
 			scope: "workspace",
 			workspaceRoot: WORKSPACE_ROOT,
 			raw: `---
@@ -139,7 +139,7 @@ Read it.
 		});
 
 		const traversal = parseAgendaTaskSpec({
-			specPath: join(WORKSPACE_ROOT, ".cline", "tasks", "task.task.md"),
+			specPath: join(WORKSPACE_ROOT, ".hadyancode", "tasks", "task.task.md"),
 			scope: "workspace",
 			workspaceRoot: WORKSPACE_ROOT,
 			raw: `---
@@ -160,12 +160,12 @@ Read it.
 
 describe("AgendaTaskSpecFileStore", () => {
 	it("atomically writes and reads a canonical task spec", () => {
-		const root = mkdtempSync(join(tmpdir(), "cline-task-specs-"));
+		const root = mkdtempSync(join(tmpdir(), "hadyancode-task-specs-"));
 		roots.push(root);
 		const store = new AgendaTaskSpecFileStore({
 			scope: "workspace",
 			workspaceRoot: root,
-			taskSpecsDir: join(root, ".cline", "tasks"),
+			taskSpecsDir: join(root, ".hadyancode", "tasks"),
 		});
 
 		const written = store.writeSpec({
@@ -195,7 +195,7 @@ describe("AgendaTaskSpecFileStore", () => {
 	});
 
 	it("does not allow paths outside its managed directory", () => {
-		const root = mkdtempSync(join(tmpdir(), "cline-task-specs-"));
+		const root = mkdtempSync(join(tmpdir(), "hadyancode-task-specs-"));
 		roots.push(root);
 		const store = new AgendaTaskSpecFileStore({
 			scope: "global",
@@ -208,7 +208,7 @@ describe("AgendaTaskSpecFileStore", () => {
 	});
 
 	it("refuses create collisions and stale conditional updates", () => {
-		const root = mkdtempSync(join(tmpdir(), "cline-task-specs-"));
+		const root = mkdtempSync(join(tmpdir(), "hadyancode-task-specs-"));
 		roots.push(root);
 		const store = new AgendaTaskSpecFileStore({
 			scope: "global",
@@ -253,11 +253,11 @@ describe("AgendaTaskSpecFileStore", () => {
 	});
 
 	it("rejects a workspace task directory that escapes through a symlink", () => {
-		const root = mkdtempSync(join(tmpdir(), "cline-task-specs-"));
-		const outside = mkdtempSync(join(tmpdir(), "cline-task-specs-outside-"));
+		const root = mkdtempSync(join(tmpdir(), "hadyancode-task-specs-"));
+		const outside = mkdtempSync(join(tmpdir(), "hadyancode-task-specs-outside-"));
 		roots.push(root, outside);
-		mkdirSync(join(root, ".cline"));
-		symlinkSync(outside, join(root, ".cline", "tasks"), "dir");
+		mkdirSync(join(root, ".hadyancode"));
+		symlinkSync(outside, join(root, ".hadyancode", "tasks"), "dir");
 		const store = new AgendaTaskSpecFileStore({
 			scope: "workspace",
 			workspaceRoot: root,

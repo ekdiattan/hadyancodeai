@@ -1,7 +1,7 @@
-import { isChatWorkspacePath } from "@cline/shared/browser";
+import { isChatWorkspacePath } from "@hadyancode/shared/browser";
 
 export const WORKSPACE_SELECTION_STORAGE_KEY =
-	"cline.code.workspace-selection.v1";
+	"hadyancode.code.workspace-selection.v1";
 
 export type WorkspaceSelectionStorage = {
 	lastWorkspace: string;
@@ -109,8 +109,8 @@ function isRegisteredHomeOrDesktop(normalized: string): boolean {
 }
 
 /**
- * Sessions can run anywhere (Cline-internal worktrees and plugin installs
- * under `.cline`, or a shell's default cwd like the home or Desktop
+ * Sessions can run anywhere (HadyanCode-internal worktrees and plugin installs
+ * under `.hadyancode`, or a shell's default cwd like the home or Desktop
  * directory), but those locations are not projects to offer in the
  * workspace catalog. The active workspace root is registered separately,
  * so an explicitly opened directory still shows while selected.
@@ -123,7 +123,7 @@ export function isExcludedWorkspacePath(path: string): boolean {
 	if (isChatWorkspacePath(normalized)) {
 		return true;
 	}
-	if (normalized.split(/[\\/]/).includes(".cline")) {
+	if (normalized.split(/[\\/]/).includes(".hadyancode")) {
 		return true;
 	}
 	return (

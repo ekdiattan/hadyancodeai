@@ -22,7 +22,7 @@ import type { Controller } from "@/core/controller"
 import { updateAutoApprovalSettings } from "@/core/controller/state/updateAutoApprovalSettings"
 import { StateManager } from "@/core/storage/StateManager"
 import { DEFAULT_AUTO_APPROVAL_SETTINGS } from "@/shared/AutoApprovalSettings"
-import { AutoApprovalSettingsRequest } from "@/shared/proto/cline/state"
+import { AutoApprovalSettingsRequest } from "@/shared/proto/hadyancode/state"
 import { createStorageContext } from "@/shared/storage/storage-context"
 import { SdkTaskControlCoordinator, type SdkTaskControlCoordinatorOptions } from "./sdk-task-control-coordinator"
 import type { TaskProxy } from "./task-proxy"
@@ -32,7 +32,7 @@ vi.mock("@/services/logging/distinctId", () => ({
 }))
 
 describe("auto-approve settings after New Task (#13260)", () => {
-	let clineDir: string
+	let hadyancodeDir: string
 	let stateManager: StateManager
 	let task: TaskProxy | undefined
 	// What the webview last received via subscribeToState. It only accepts
@@ -91,8 +91,8 @@ describe("auto-approve settings after New Task (#13260)", () => {
 	}
 
 	beforeAll(async () => {
-		clineDir = await fs.mkdtemp(path.join(os.tmpdir(), "cline-13260-regression-"))
-		await StateManager.initialize(createStorageContext({ clineDir, workspacePath: clineDir }))
+		hadyancodeDir = await fs.mkdtemp(path.join(os.tmpdir(), "hadyancode-13260-regression-"))
+		await StateManager.initialize(createStorageContext({ hadyancodeDir, workspacePath: hadyancodeDir }))
 		stateManager = StateManager.get()
 	})
 
@@ -106,7 +106,7 @@ describe("auto-approve settings after New Task (#13260)", () => {
 	afterAll(async () => {
 		await StateManager.get().flushPendingState()
 		await StateManager.get().reInitialize()
-		await fs.rm(clineDir, { recursive: true, force: true })
+		await fs.rm(hadyancodeDir, { recursive: true, force: true })
 	})
 
 	it("keeps checkboxes working after a mid-task toggle followed by New Task", async () => {

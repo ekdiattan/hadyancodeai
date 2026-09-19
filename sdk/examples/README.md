@@ -1,10 +1,10 @@
-# Cline SDK Examples
+# HadyanCode SDK Examples
 
-Learn how to build with the Cline SDK through practical, runnable examples.
+Learn how to build with the HadyanCode SDK through practical, runnable examples.
 
 ## 📁 Plugin, Hook, and Automation Examples
 
-Plugins extend the CLI and SDK with custom capabilities. Install local files, GitHub file URLs, package directories, git repos, and npm packages with `cline plugin install`:
+Plugins extend the CLI and SDK with custom capabilities. Install local files, GitHub file URLs, package directories, git repos, and npm packages with `hadyancode plugin install`:
 
 ### [`./plugins/`](./plugins/)
 
@@ -12,7 +12,7 @@ Plugins extend the CLI and SDK with custom capabilities. Install local files, Gi
 
 - Register custom tools
 - Hook into agent lifecycle events
-- Export a reusable plugin module for `.cline/plugins`
+- Export a reusable plugin module for `.hadyancode/plugins`
 
 Examples include:
 - `weather-metrics.ts` - Weather query tool
@@ -22,8 +22,8 @@ Examples include:
 - `background-terminal.ts` - Background shell jobs with setup and job logging
 
 ```bash
-cline plugin install https://github.com/cline/cline/blob/main/sdk/examples/plugins/weather-metrics.ts
-cline -i "What's the weather like in Tokyo and Paris?"
+hadyancode plugin install https://github.com/cline/hadyancode/blob/main/sdk/examples/plugins/weather-metrics.ts
+hadyancode -i "What's the weather like in Tokyo and Paris?"
 ```
 
 Plugin setup receives a host logger through the second `setup` argument. Use
@@ -64,15 +64,15 @@ TypeScript LSP plugin that gives the agent a `goto_definition` tool powered by t
 - Zero extra dependencies -- resolves `typescript` from the target project
 
 ```bash
-cline plugin install https://github.com/cline/cline/blob/main/sdk/examples/plugins/typescript-lsp/index.ts
-cline -i "Find where createTool is defined"
+hadyancode plugin install https://github.com/cline/hadyancode/blob/main/sdk/examples/plugins/typescript-lsp/index.ts
+hadyancode -i "Find where createTool is defined"
 ```
 
 ### [`./plugins/agents-squad/`](./plugins/agents-squad)
 
 **Portable subagent plugin** that adds background agent orchestration tools to the CLI and SDK:
 
-- Export a reusable plugin module for `.cline/plugins`
+- Export a reusable plugin module for `.hadyancode/plugins`
 - Start background subagents from the main session
 - Load bundled or custom agent presets and skills
 - Log setup, subagent starts, and follow-ups through `ctx.logger`
@@ -87,8 +87,8 @@ Skills available:
 - API design, code review, debugging, documentation, migration, refactoring, test generation
 
 ```bash
-cline plugin install ./examples/plugins/agents-squad
-cline -i "Use subagents to inspect this repository and report back."
+hadyancode plugin install ./examples/plugins/agents-squad
+hadyancode -i "Use subagents to inspect this repository and report back."
 ```
 
 Once loaded, the agent can call tools like `start_subagent`, `message_subagent`, `get_subagent`, `list_agent_presets`, `list_skills`, and the handoff tools.
@@ -97,7 +97,7 @@ Once loaded, the agent can call tools like `start_subagent`, `message_subagent`,
 
 ### [`./cron/`](./cron)
 
-**Example file-based and event-driven automation specs** for global `~/.cline/cron/`:
+**Example file-based and event-driven automation specs** for global `~/.hadyancode/cron/`:
 
 Recurring jobs for continuous quality:
 - **changelog-generator** — Auto-generate CHANGELOG from commits
@@ -115,10 +115,10 @@ Event-driven jobs for PR workflows:
 - **pr-test-coverage** — Analyze coverage impact of changes
 
 ```bash
-mkdir -p ~/.cline/cron
-cp examples/cron/changelog-generator.cron.md ~/.cline/cron/
-mkdir -p ~/.cline/cron/events
-cp examples/cron/events/pr-changelog-check.event.md ~/.cline/cron/events/
+mkdir -p ~/.hadyancode/cron
+cp examples/cron/changelog-generator.cron.md ~/.hadyancode/cron/
+mkdir -p ~/.hadyancode/cron/events
+cp examples/cron/events/pr-changelog-check.event.md ~/.hadyancode/cron/events/
 ```
 
 See [cron/README.md](./cron/README.md) for full descriptions and usage patterns.
@@ -133,24 +133,24 @@ See [cron/README.md](./cron/README.md) for full descriptions and usage patterns.
 - Inject contextual information
 - Track lifecycle events (TaskStart, TaskComplete, SessionShutdown)
 
-Hooks live in `.cline/hooks/` and are named after the event they handle (PreToolUse, PostToolUse, TaskStart, etc.):
+Hooks live in `.hadyancode/hooks/` and are named after the event they handle (PreToolUse, PostToolUse, TaskStart, etc.):
 
 ```bash
-mkdir -p ~/.cline/hooks
+mkdir -p ~/.hadyancode/hooks
 
 # Bash hook
-cp examples/hooks/PreToolUse.sh ~/.cline/hooks/
-chmod +x ~/.cline/hooks/PreToolUse.sh
+cp examples/hooks/PreToolUse.sh ~/.hadyancode/hooks/
+chmod +x ~/.hadyancode/hooks/PreToolUse.sh
 
 # Or Python
-cp examples/hooks/PreToolUse.py ~/.cline/hooks/PreToolUse.py
-chmod +x ~/.cline/hooks/PreToolUse.py
+cp examples/hooks/PreToolUse.py ~/.hadyancode/hooks/PreToolUse.py
+chmod +x ~/.hadyancode/hooks/PreToolUse.py
 
 # Or TypeScript (runs via bun)
-cp examples/hooks/PreToolUse.ts ~/.cline/hooks/PreToolUse.ts
-chmod +x ~/.cline/hooks/PreToolUse.ts
+cp examples/hooks/PreToolUse.ts ~/.hadyancode/hooks/PreToolUse.ts
+chmod +x ~/.hadyancode/hooks/PreToolUse.ts
 
-cline -i "do something"  # Hooks will execute automatically
+hadyancode -i "do something"  # Hooks will execute automatically
 ```
 
 ## 🚀 Quick Start
@@ -158,16 +158,16 @@ cline -i "do something"  # Hooks will execute automatically
 To use the SDK in your own Node app (outside this monorepo), start with:
 
 ```bash
-npm add @cline/core
+npm add @hadyancode/core
 ```
 
-Add `@cline/agents` or `@cline/llms` only if you intentionally want lower-level control. For RPC client helpers, prefer importing from `@cline/core` when you want the app-facing SDK surface.
+Add `@hadyancode/agents` or `@hadyancode/llms` only if you intentionally want lower-level control. For RPC client helpers, prefer importing from `@hadyancode/core` when you want the app-facing SDK surface.
 
 Current SDK layering:
 
-- `@cline/core` owns config discovery/watchers, runtime plugin loading, and the context pipeline
+- `@hadyancode/core` owns config discovery/watchers, runtime plugin loading, and the context pipeline
 - context compaction is core-owned and runs through turn preparation before model calls
-- most app integrations should stay on the `@cline/core` surface unless they intentionally need lower-level agent or model control
+- most app integrations should stay on the `@hadyancode/core` surface unless they intentionally need lower-level agent or model control
 
 ## 📚 Learning Path
 
@@ -185,7 +185,7 @@ Current SDK layering:
 
 ## 📖 Documentation
 
-- [Cline SDK README](../packages/README.md)
+- [HadyanCode SDK README](../packages/README.md)
 - [Architecture Guide](../ARCHITECTURE.md)
 - [Individual Package Docs](../packages/)
 

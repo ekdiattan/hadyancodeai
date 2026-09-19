@@ -20,9 +20,9 @@ type StoreRecord = {
 
 const records = new Map<string, StoreRecord>();
 
-vi.mock("@cline/core", async () => {
+vi.mock("@hadyancode/core", async () => {
 	const actual =
-		await vi.importActual<typeof import("@cline/core")>("@cline/core");
+		await vi.importActual<typeof import("@hadyancode/core")>("@hadyancode/core");
 	return {
 		...actual,
 		SqliteSessionStore: class {

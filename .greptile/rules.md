@@ -19,7 +19,7 @@ OpenTelemetryAdapter → OpenTelemetryProvider    ← OTLP transport
 OTLP endpoint (collector or vendor)
 ```
 
-The SDK does **not** depend on the original `cline/cline` repo for telemetry. The two have
+The SDK does **not** depend on the original `hadyancode/hadyancode` repo for telemetry. The two have
 parallel-but-independent stacks; this `.greptile/` config covers only the SDK.
 
 ## The Single Source of Truth
@@ -65,14 +65,14 @@ Emission ownership:
   emitter in `prepareLocalRuntimeBootstrap`. Hosts must NOT re-emit these.
 - `workspace.path_resolved`: emitted from default tool executors **only when**
   `WorkspaceManager` exposes more than one root.
-- `task.*`: emitted by core session lifecycle code in `sdk/packages/core/src/cline-core/` and
+- `task.*`: emitted by core session lifecycle code in `sdk/packages/core/src/hadyancode-core/` and
   `sdk/packages/core/src/runtime/`. Hosts must not duplicate this emission.
 
 ## `task.completed` Semantics
 
 `task.completed` marks the moment the **assistant declared the task done**, not the moment
 the SDK session record was finalized. The local runtime emits it when it observes a successful
-`submit_and_exit` tool call (the SDK analog of original Cline's `attempt_completion`). For
+`submit_and_exit` tool call (the SDK analog of original HadyanCode's `attempt_completion`). For
 non-interactive runs that finish without invoking the explicit completion tool,
 `shutdownSession` emits it as a fallback with `source: "shutdown"`.
 
@@ -81,16 +81,16 @@ Each session is guaranteed at most one `task.completed` emission. The `source` f
 
 ## CLI Directory-Ordering Rule
 
-The CLI accepts `--config <dir>`. The CLI **must** apply `setClineDir(...)` and
-`setHomeDir(...)` from `@cline/shared/storage` **before** calling
+The CLI accepts `--config <dir>`. The CLI **must** apply `setHadyanCodeDir(...)` and
+`setHomeDir(...)` from `@hadyancode/shared/storage` **before** calling
 `captureCliExtensionActivated()`. Otherwise the telemetry singleton's persisted distinct-id
-and any other on-disk telemetry state lands under `~/.cline` instead of the user's chosen
+and any other on-disk telemetry state lands under `~/.hadyancode` instead of the user's chosen
 config dir.
 
 The canonical pattern is in `apps/cli/src/main.ts`:
 
 ```ts
-if (configDir) setClineDir(configDir);
+if (configDir) setHadyanCodeDir(configDir);
 setHomeDir(homedir());
 captureCliExtensionActivated();   // <-- after dir overrides
 ```
@@ -101,7 +101,7 @@ The detached hub daemon (`sdk/packages/core/src/hub/daemon/entry.ts`) hosts the
 `LocalRuntimeHost` that emits `task.conversation_turn` and `task.tokens` for every
 hub-backed session, so the daemon must own its own `ITelemetryService`. It builds one via
 `createHubDaemonTelemetry()` (`sdk/packages/core/src/hub/daemon/telemetry.ts`), which
-identifies from the cached cline account (re-resolved periodically, since the daemon often
+identifies from the cached hadyancode account (re-resolved periodically, since the daemon often
 starts before login) and flushes on every shutdown path, including startup failure.
 
 Flag changes that remove this wiring, construct runtime hosts inside the daemon without
@@ -120,7 +120,7 @@ events using the typed helpers:
 | Token error | `captureAuthFailed(provider, errorMessage)` | In the catch block |
 | Token invalidation | `captureAuthLoggedOut(provider, reason)` | On invalid_grant or explicit logout |
 
-Cross-reference `sdk/packages/core/src/auth/cline.ts` and `sdk/packages/core/src/auth/codex.ts` as
+Cross-reference `sdk/packages/core/src/auth/hadyancode.ts` and `sdk/packages/core/src/auth/codex.ts` as
 canonical examples of all four phases.
 
 ## Single Telemetry Service Per Host

@@ -3,7 +3,7 @@ import {
 	getGeneratedModelsForProvider,
 	getGeneratedProviderModels,
 } from "./catalog.generated-access";
-import { normalizeClineRecommendedProviderModels } from "./catalog-cline-recommended";
+import { normalizeHadyanCodeRecommendedProviderModels } from "./catalog-hadyancode-recommended";
 import {
 	fetchLiveProviderModels,
 	fetchModelsDevProviderModels,
@@ -419,14 +419,14 @@ describe("models-dev-catalog", () => {
 		expect(providerModels.greenpt).not.toHaveProperty("green-s");
 	});
 
-	it("normalizes Cline recommended clinePass models as a generated provider source", () => {
-		const result = normalizeClineRecommendedProviderModels(
+	it("normalizes HadyanCode recommended hadyancodePass models as a generated provider source", () => {
+		const result = normalizeHadyanCodeRecommendedProviderModels(
 			{
-				clinePass: [
+				hadyancodePass: [
 					{
 						id: "base-model",
-						name: "ClinePass Base Model",
-						description: "Included in ClinePass",
+						name: "HadyanCodePass Base Model",
+						description: "Included in HadyanCodePass",
 					},
 					{
 						id: "custom-model",
@@ -453,11 +453,11 @@ describe("models-dev-catalog", () => {
 			},
 		);
 
-		expect(result["cline-pass"]).toEqual({
+		expect(result["hadyancode-pass"]).toEqual({
 			"base-model": {
 				id: "base-model",
 				name: "OpenRouter Base Model",
-				description: "Included in ClinePass",
+				description: "Included in HadyanCodePass",
 				contextWindow: 200_000,
 				maxInputTokens: 180_000,
 				maxTokens: 16_384,
@@ -482,12 +482,12 @@ describe("models-dev-catalog", () => {
 		});
 	});
 
-	it("matches Cline recommended clinePass models against OpenRouter model slugs", () => {
-		const result = normalizeClineRecommendedProviderModels(
+	it("matches HadyanCode recommended hadyancodePass models against OpenRouter model slugs", () => {
+		const result = normalizeHadyanCodeRecommendedProviderModels(
 			{
-				clinePass: [
+				hadyancodePass: [
 					{
-						id: "cline-pass/glm-5.2",
+						id: "hadyancode-pass/glm-5.2",
 					},
 				],
 			},
@@ -504,8 +504,8 @@ describe("models-dev-catalog", () => {
 			},
 		);
 
-		expect(result["cline-pass"]?.["cline-pass/glm-5.2"]).toMatchObject({
-			id: "cline-pass/glm-5.2",
+		expect(result["hadyancode-pass"]?.["hadyancode-pass/glm-5.2"]).toMatchObject({
+			id: "hadyancode-pass/glm-5.2",
 			name: "GLM 5.2",
 			contextWindow: 256_000,
 			maxInputTokens: 200_000,
@@ -514,18 +514,18 @@ describe("models-dev-catalog", () => {
 		});
 	});
 
-	it("returns no ClinePass models when clinePass is empty or missing", () => {
-		expect(normalizeClineRecommendedProviderModels({}, {})).toEqual({});
+	it("returns no HadyanCodePass models when hadyancodePass is empty or missing", () => {
+		expect(normalizeHadyanCodeRecommendedProviderModels({}, {})).toEqual({});
 		expect(
-			normalizeClineRecommendedProviderModels({ clinePass: [] }, {}),
+			normalizeHadyanCodeRecommendedProviderModels({ hadyancodePass: [] }, {}),
 		).toEqual({});
 	});
 
-	it("includes Cline free models alongside ClinePass models", () => {
-		const result = normalizeClineRecommendedProviderModels(
+	it("includes HadyanCode free models alongside HadyanCodePass models", () => {
+		const result = normalizeHadyanCodeRecommendedProviderModels(
 			{
-				clinePass: [{ id: "cline-pass/glm-5.1", name: "glm-5.1" }],
-				free: [{ id: "cline-free/kat-coder-pro", name: "kat-coder-pro" }],
+				hadyancodePass: [{ id: "hadyancode-pass/glm-5.1", name: "glm-5.1" }],
+				free: [{ id: "hadyancode-free/kat-coder-pro", name: "kat-coder-pro" }],
 			},
 			{
 				"kwaipilot/kat-coder-pro": {
@@ -540,42 +540,42 @@ describe("models-dev-catalog", () => {
 			},
 		);
 
-		const models = result["cline-pass"] ?? {};
-		// ClinePass models stay first so the provider default remains a pass model
+		const models = result["hadyancode-pass"] ?? {};
+		// HadyanCodePass models stay first so the provider default remains a pass model
 		expect(Object.keys(models)).toEqual([
-			"cline-pass/glm-5.1",
-			"cline-free/kat-coder-pro",
+			"hadyancode-pass/glm-5.1",
+			"hadyancode-free/kat-coder-pro",
 		]);
-		expect(models["cline-free/kat-coder-pro"]).toMatchObject({
-			id: "cline-free/kat-coder-pro",
+		expect(models["hadyancode-free/kat-coder-pro"]).toMatchObject({
+			id: "hadyancode-free/kat-coder-pro",
 			name: "KAT Coder Pro (free)",
 			contextWindow: 256_000,
 			maxInputTokens: 200_000,
 			// free models are billed at $0 regardless of catalog pricing
 			pricing: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 },
 		});
-		expect(result.cline?.["cline-free/kat-coder-pro"]).toMatchObject({
-			id: "cline-free/kat-coder-pro",
+		expect(result.hadyancode?.["hadyancode-free/kat-coder-pro"]).toMatchObject({
+			id: "hadyancode-free/kat-coder-pro",
 			name: "KAT Coder Pro (free)",
 			pricing: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 },
 		});
-		expect(models["cline-free/kat-coder-pro"]).not.toBe(
-			result.cline?.["cline-free/kat-coder-pro"],
+		expect(models["hadyancode-free/kat-coder-pro"]).not.toBe(
+			result.hadyancode?.["hadyancode-free/kat-coder-pro"],
 		);
 	});
 
-	it("labels a Cline free model when its name matches a ClinePass model", () => {
-		const result = normalizeClineRecommendedProviderModels(
+	it("labels a HadyanCode free model when its name matches a HadyanCodePass model", () => {
+		const result = normalizeHadyanCodeRecommendedProviderModels(
 			{
-				clinePass: [
+				hadyancodePass: [
 					{
-						id: "cline-pass/deepseek-v4-flash",
+						id: "hadyancode-pass/deepseek-v4-flash",
 						name: "DeepSeek V4 Flash",
 					},
 				],
 				free: [
 					{
-						id: "cline-free/deepseek-v4-flash",
+						id: "hadyancode-free/deepseek-v4-flash",
 						name: "DeepSeek V4 Flash",
 					},
 				],
@@ -583,22 +583,22 @@ describe("models-dev-catalog", () => {
 			{},
 		);
 
-		expect(result["cline-pass"]?.["cline-pass/deepseek-v4-flash"]?.name).toBe(
+		expect(result["hadyancode-pass"]?.["hadyancode-pass/deepseek-v4-flash"]?.name).toBe(
 			"DeepSeek V4 Flash",
 		);
-		expect(result["cline-pass"]?.["cline-free/deepseek-v4-flash"]?.name).toBe(
+		expect(result["hadyancode-pass"]?.["hadyancode-free/deepseek-v4-flash"]?.name).toBe(
 			"DeepSeek V4 Flash (free)",
 		);
-		expect(result.cline?.["cline-free/deepseek-v4-flash"]?.name).toBe(
+		expect(result.hadyancode?.["hadyancode-free/deepseek-v4-flash"]?.name).toBe(
 			"DeepSeek V4 Flash (free)",
 		);
 	});
 
-	it("resolves free-model capabilities by slug and preserves free-only Cline catalog payloads", () => {
-		const suffixed = normalizeClineRecommendedProviderModels(
+	it("resolves free-model capabilities by slug and preserves free-only HadyanCode catalog payloads", () => {
+		const suffixed = normalizeHadyanCodeRecommendedProviderModels(
 			{
-				clinePass: [{ id: "cline-pass/glm-5.1" }],
-				free: [{ id: "cline-free/trinity-large-preview:free" }],
+				hadyancodePass: [{ id: "hadyancode-pass/glm-5.1" }],
+				free: [{ id: "hadyancode-free/trinity-large-preview:free" }],
 			},
 			{
 				"arcee-ai/trinity-large-preview:free": {
@@ -613,31 +613,31 @@ describe("models-dev-catalog", () => {
 			},
 		);
 		expect(
-			suffixed["cline-pass"]?.["cline-free/trinity-large-preview:free"],
+			suffixed["hadyancode-pass"]?.["hadyancode-free/trinity-large-preview:free"],
 		).toMatchObject({
 			name: "Trinity Large Preview (free)",
 			contextWindow: 512_000,
 		});
 		expect(
-			suffixed.cline?.["cline-free/trinity-large-preview:free"],
+			suffixed.hadyancode?.["hadyancode-free/trinity-large-preview:free"],
 		).toMatchObject({
 			name: "Trinity Large Preview (free)",
 			contextWindow: 512_000,
 		});
 
-		// free bucket alone updates the Cline provider catalog but does not rotate
-		// ClinePass away from its bundled subscription list/default.
-		const freeOnly = normalizeClineRecommendedProviderModels(
-			{ free: [{ id: "cline-free/kat-coder-pro" }] },
+		// free bucket alone updates the HadyanCode provider catalog but does not rotate
+		// HadyanCodePass away from its bundled subscription list/default.
+		const freeOnly = normalizeHadyanCodeRecommendedProviderModels(
+			{ free: [{ id: "hadyancode-free/kat-coder-pro" }] },
 			{},
 		);
-		expect(freeOnly.cline?.["cline-free/kat-coder-pro"]).toBeDefined();
-		expect(freeOnly["cline-pass"]).toBeUndefined();
+		expect(freeOnly.hadyancode?.["hadyancode-free/kat-coder-pro"]).toBeDefined();
+		expect(freeOnly["hadyancode-pass"]).toBeUndefined();
 	});
 
-	it("normalizes cline-free ids from the free endpoint bucket", () => {
-		const result = normalizeClineRecommendedProviderModels(
-			{ free: [{ id: "cline-free/k2-think" }] },
+	it("normalizes hadyancode-free ids from the free endpoint bucket", () => {
+		const result = normalizeHadyanCodeRecommendedProviderModels(
+			{ free: [{ id: "hadyancode-free/k2-think" }] },
 			{
 				"moonshotai/k2-think": {
 					id: "moonshotai/k2-think",
@@ -652,9 +652,9 @@ describe("models-dev-catalog", () => {
 		);
 
 		expect(result).toEqual({
-			cline: {
-				"cline-free/k2-think": expect.objectContaining({
-					id: "cline-free/k2-think",
+			hadyancode: {
+				"hadyancode-free/k2-think": expect.objectContaining({
+					id: "hadyancode-free/k2-think",
 					name: "K2 Think (free)",
 					contextWindow: 1_000_000,
 					pricing: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 },
@@ -666,8 +666,8 @@ describe("models-dev-catalog", () => {
 	it("resolves OpenRouter display names for free models with full catalog ids", () => {
 		// The recommended-models endpoint sends slug-like names (e.g.
 		// "deepseek-v4-flash"); the overlay must keep the OpenRouter display
-		// name so merged cline/cline-pass catalogs don't show raw ids.
-		const result = normalizeClineRecommendedProviderModels(
+		// name so merged hadyancode/hadyancode-pass catalogs don't show raw ids.
+		const result = normalizeHadyanCodeRecommendedProviderModels(
 			{
 				free: [
 					{ id: "deepseek/deepseek-v4-flash", name: "deepseek-v4-flash" },
@@ -697,16 +697,16 @@ describe("models-dev-catalog", () => {
 			},
 		);
 
-		expect(result.cline?.["deepseek/deepseek-v4-flash"]).toMatchObject({
+		expect(result.hadyancode?.["deepseek/deepseek-v4-flash"]).toMatchObject({
 			id: "deepseek/deepseek-v4-flash",
 			name: "DeepSeek V4 Flash",
 			pricing: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 },
 		});
-		expect(result.cline?.["poolside/laguna-s-2.1:free"]?.name).toBe(
+		expect(result.hadyancode?.["poolside/laguna-s-2.1:free"]?.name).toBe(
 			"Laguna S 2.1 (free)",
 		);
 		// Without a catalog match, fall back to the endpoint-provided name.
-		expect(result.cline?.["unknown/mystery-model"]?.name).toBe("mystery-model");
+		expect(result.hadyancode?.["unknown/mystery-model"]?.name).toBe("mystery-model");
 	});
 
 	it("uses input limits as the model request context window", () => {
@@ -1014,7 +1014,7 @@ describe("models-dev-catalog", () => {
 		expect(result["openai-native"]).toHaveProperty("gpt-live");
 	});
 
-	it("fetches live models from models.dev and Cline recommended clinePass models", async () => {
+	it("fetches live models from models.dev and HadyanCode recommended hadyancodePass models", async () => {
 		const fetcher = vi.fn(async (url: string) => {
 			if (url === "https://models.dev/api.json") {
 				return {
@@ -1039,9 +1039,9 @@ describe("models-dev-catalog", () => {
 			return {
 				ok: true,
 				json: async () => ({
-					clinePass: [
+					hadyancodePass: [
 						{
-							id: "cline-pass/live-base-model",
+							id: "hadyancode-pass/live-base-model",
 							name: "vendor/live-base-model",
 						},
 					],
@@ -1056,11 +1056,11 @@ describe("models-dev-catalog", () => {
 
 		expect(fetcher).toHaveBeenCalledWith("https://models.dev/api.json");
 		expect(fetcher).toHaveBeenCalledWith(
-			"https://api.cline.bot/api/v1/ai/cline/recommended-models",
+			"https://api.cline.bot/api/v1/ai/hadyancode/recommended-models",
 		);
 		expect(result.openrouter).toHaveProperty("vendor/live-base-model");
-		expect(result["cline-pass"]?.["cline-pass/live-base-model"]).toMatchObject({
-			id: "cline-pass/live-base-model",
+		expect(result["hadyancode-pass"]?.["hadyancode-pass/live-base-model"]).toMatchObject({
+			id: "hadyancode-pass/live-base-model",
 			name: "Live Base Model",
 			contextWindow: 256_000,
 			maxInputTokens: 200_000,
@@ -1069,7 +1069,7 @@ describe("models-dev-catalog", () => {
 		});
 	});
 
-	it("keeps models.dev live models when Cline recommended models fail", async () => {
+	it("keeps models.dev live models when HadyanCode recommended models fail", async () => {
 		const fetcher = vi.fn(async (url: string) => {
 			if (url === "https://models.dev/api.json") {
 				return {
@@ -1094,10 +1094,10 @@ describe("models-dev-catalog", () => {
 		);
 
 		expect(result["openai-native"]?.["gpt-live"]?.name).toBe("GPT Live");
-		expect(result["cline-pass"]).toBeUndefined();
+		expect(result["hadyancode-pass"]).toBeUndefined();
 	});
 
-	it("keeps Cline recommended clinePass models when models.dev fails", async () => {
+	it("keeps HadyanCode recommended hadyancodePass models when models.dev fails", async () => {
 		const fetcher = vi.fn(async (url: string) => {
 			if (url === "https://models.dev/api.json") {
 				return { ok: false, status: 503 };
@@ -1106,9 +1106,9 @@ describe("models-dev-catalog", () => {
 			return {
 				ok: true,
 				json: async () => ({
-					clinePass: [
+					hadyancodePass: [
 						{
-							id: "cline-pass/live-default-model",
+							id: "hadyancode-pass/live-default-model",
 							name: "Live Default Model",
 						},
 					],
@@ -1123,9 +1123,9 @@ describe("models-dev-catalog", () => {
 
 		expect(result["openai-native"]).toBeUndefined();
 		expect(
-			result["cline-pass"]?.["cline-pass/live-default-model"],
+			result["hadyancode-pass"]?.["hadyancode-pass/live-default-model"],
 		).toMatchObject({
-			id: "cline-pass/live-default-model",
+			id: "hadyancode-pass/live-default-model",
 			name: "Live Default Model",
 			contextWindow: 128_000,
 			maxInputTokens: 128_000,

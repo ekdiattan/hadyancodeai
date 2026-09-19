@@ -1,4 +1,4 @@
-import { GeneratedMediaSchema } from "@cline/shared/browser";
+import { GeneratedMediaSchema } from "@hadyancode/shared/browser";
 import { z } from "zod";
 
 export const ChatSessionConfigSchema = z.object({

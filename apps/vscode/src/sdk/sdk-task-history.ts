@@ -1,10 +1,10 @@
 import { existsSync } from "node:fs"
 import path from "node:path"
-import type { ClineCoreListHistoryOptions, SessionHistoryRecord } from "@cline/core"
-import type { MessageWithMetadata as SdkMessage } from "@cline/llms"
-import { formatDisplayUserInput, parseUserInputMode } from "@cline/shared"
-import { resolveSessionDataDir } from "@cline/shared/storage"
-import type { ClineMessage } from "@shared/ExtensionMessage"
+import type { HadyanCodeCoreListHistoryOptions, SessionHistoryRecord } from "@hadyancode/core"
+import type { MessageWithMetadata as SdkMessage } from "@hadyancode/llms"
+import { formatDisplayUserInput, parseUserInputMode } from "@hadyancode/shared"
+import { resolveSessionDataDir } from "@hadyancode/shared/storage"
+import type { HadyanCodeMessage } from "@shared/ExtensionMessage"
 import type { HistoryItem } from "@shared/HistoryItem"
 import getFolderSize from "get-folder-size"
 import type { McpHub } from "@/services/mcp/McpHub"
@@ -17,7 +17,7 @@ import {
 	mergeLegacyUiMessagesWithResumedSdkMessages,
 } from "./legacy-task-handling"
 import type { MessageIdMinter } from "./message-id-minter"
-import { sdkMessagesToClineMessages } from "./message-translator"
+import { sdkMessagesToHadyanCodeMessages } from "./message-translator"
 import type { SdkSessionLifecycle } from "./sdk-session-lifecycle"
 import type { VscodeSessionHost } from "./vscode-session-host"
 
@@ -34,7 +34,7 @@ export interface SdkTaskHistoryOptions {
 	sessions: SdkSessionLifecycle
 	/**
 	 * VS Code's legacy global storage root. Pre-SDK VS Code tasks lived here under
-	 * state/taskHistory.json and tasks/<id>/ instead of ~/.cline/data.
+	 * state/taskHistory.json and tasks/<id>/ instead of ~/.hadyancode/data.
 	 */
 	legacyExtensionStorageDir?: string
 	/**
@@ -45,7 +45,7 @@ export interface SdkTaskHistoryOptions {
 	telemetry?: TelemetryService
 }
 
-type SdkTaskHistoryListOptions = ClineCoreListHistoryOptions & {
+type SdkTaskHistoryListOptions = HadyanCodeCoreListHistoryOptions & {
 	offset?: number
 }
 
@@ -398,7 +398,7 @@ export class SdkTaskHistory {
 			return result
 		}
 
-		const hostOptions: ClineCoreListHistoryOptions = { ...options }
+		const hostOptions: HadyanCodeCoreListHistoryOptions = { ...options }
 		delete (hostOptions as { offset?: number }).offset
 
 		const sdkHistory = await this.withHistoryHost((host) =>
@@ -449,7 +449,7 @@ export class SdkTaskHistory {
 		return this.withHistoryHost((host) => host.get(taskId) as Promise<SessionHistoryRecord | undefined>)
 	}
 
-	async getClineMessages(taskId: string): Promise<ClineMessage[]> {
+	async getHadyanCodeMessages(taskId: string): Promise<HadyanCodeMessage[]> {
 		const sdkRecord = await this.getSdkRecord(taskId)
 		const legacyTask = this.findLegacyTask(taskId)
 		if (!sdkRecord && legacyTask) {
@@ -457,7 +457,7 @@ export class SdkTaskHistory {
 		}
 
 		const sdkMessages = await this.withHistoryHost((host) => host.readMessages(taskId) as Promise<SdkMessage[]>)
-		const clineMessages = sdkMessagesToClineMessages(
+		const hadyancodeMessages = sdkMessagesToHadyanCodeMessages(
 			sanitizeSdkUserMessagesForDisplay(sdkMessages),
 			this.options.getMinter?.(),
 			{
@@ -477,9 +477,9 @@ export class SdkTaskHistory {
 			},
 		)
 		if (sdkRecord && legacyTask) {
-			return mergeLegacyUiMessagesWithResumedSdkMessages(readUiMessages(taskId, legacyTask.dataDir), clineMessages)
+			return mergeLegacyUiMessagesWithResumedSdkMessages(readUiMessages(taskId, legacyTask.dataDir), hadyancodeMessages)
 		}
-		return clineMessages
+		return hadyancodeMessages
 	}
 
 	/**

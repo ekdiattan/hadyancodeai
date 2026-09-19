@@ -48,8 +48,8 @@ export class OpenTelemetryAdapter implements ITelemetryAdapter {
 		this.metadata = { ...options.metadata };
 		this.meterProvider = options.meterProvider;
 		this.loggerProvider = options.loggerProvider;
-		this.meter = options.meterProvider?.getMeter("cline") ?? null;
-		this.logger = options.loggerProvider?.getLogger("cline") ?? null;
+		this.meter = options.meterProvider?.getMeter("hadyancode") ?? null;
+		this.logger = options.loggerProvider?.getLogger("hadyancode") ?? null;
 		this.enabled = options.enabled ?? true;
 		this.distinctId = options.distinctId;
 		this.commonProperties = options.commonProperties

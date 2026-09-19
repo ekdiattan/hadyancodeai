@@ -28,11 +28,11 @@ const {
 	),
 	mockResolveProductionHubOwnerContext: vi.fn(() => ({
 		ownerId: "production",
-		discoveryPath: "/tmp/cline-data/locks/hub/production.json",
+		discoveryPath: "/tmp/hadyancode-data/locks/hub/production.json",
 	})),
 	mockResolveSharedHubOwnerContext: vi.fn(() => ({
 		ownerId: "shared",
-		discoveryPath: "/tmp/cline-data/locks/hub/owners/shared.json",
+		discoveryPath: "/tmp/hadyancode-data/locks/hub/owners/shared.json",
 	})),
 	mockReconnectDaemonConnectors: vi.fn(async () => []),
 	mockStartHubWebSocketServer: vi.fn(
@@ -72,16 +72,16 @@ const {
 	};
 });
 
-vi.mock("@cline/shared", async (importOriginal) => {
-	const actual = await importOriginal<typeof import("@cline/shared")>();
+vi.mock("@hadyancode/shared", async (importOriginal) => {
+	const actual = await importOriginal<typeof import("@hadyancode/shared")>();
 	return {
 		...actual,
 		initVcr: mockInitVcr,
-		resolveClineBuildEnv: () => "production",
+		resolveHadyanCodeBuildEnv: () => "production",
 	};
 });
 
-vi.mock("@cline/agents", () => ({
+vi.mock("@hadyancode/agents", () => ({
 	AgentRuntimeAbortError: class AgentRuntimeAbortError extends Error {},
 }));
 
@@ -148,7 +148,7 @@ describe("hub daemon entry", () => {
 	});
 
 	it("starts the daemon with cron options for the daemon workspace root", async () => {
-		const cwd = mkdtempSync(join(tmpdir(), "cline-hub-entry-test-"));
+		const cwd = mkdtempSync(join(tmpdir(), "hadyancode-hub-entry-test-"));
 		tempDirs.push(cwd);
 		process.argv = [
 			"node",
@@ -185,7 +185,7 @@ describe("hub daemon entry", () => {
 	});
 
 	it("does not signal readiness before the WebSocket server is listening", async () => {
-		const cwd = mkdtempSync(join(tmpdir(), "cline-hub-entry-test-"));
+		const cwd = mkdtempSync(join(tmpdir(), "hadyancode-hub-entry-test-"));
 		tempDirs.push(cwd);
 		process.argv = ["node", "entry.js", "--cwd", cwd];
 		vi.spyOn(process, "on").mockImplementation(() => process);
@@ -215,7 +215,7 @@ describe("hub daemon entry", () => {
 	});
 
 	it("does not become ready or reconnect connectors after an early HTTP shutdown", async () => {
-		const cwd = mkdtempSync(join(tmpdir(), "cline-hub-entry-test-"));
+		const cwd = mkdtempSync(join(tmpdir(), "hadyancode-hub-entry-test-"));
 		tempDirs.push(cwd);
 		process.argv = ["node", "entry.js", "--cwd", cwd];
 		vi.spyOn(process, "on").mockImplementation(() => process);
@@ -244,7 +244,7 @@ describe("hub daemon entry", () => {
 	it("forces exit when startup hangs after an early shutdown request", async () => {
 		vi.useFakeTimers();
 		try {
-			const cwd = mkdtempSync(join(tmpdir(), "cline-hub-entry-test-"));
+			const cwd = mkdtempSync(join(tmpdir(), "hadyancode-hub-entry-test-"));
 			tempDirs.push(cwd);
 			process.argv = ["node", "entry.js", "--cwd", cwd];
 			const handlers = new Map<string, (value?: unknown) => void>();
@@ -276,7 +276,7 @@ describe("hub daemon entry", () => {
 	});
 
 	it("ignores abort-family unhandled rejections instead of shutting down", async () => {
-		const cwd = mkdtempSync(join(tmpdir(), "cline-hub-entry-test-"));
+		const cwd = mkdtempSync(join(tmpdir(), "hadyancode-hub-entry-test-"));
 		tempDirs.push(cwd);
 		process.argv = ["node", "entry.js", "--cwd", cwd];
 		const handlers = new Map<string, (reason: unknown) => void>();
@@ -300,7 +300,7 @@ describe("hub daemon entry", () => {
 		// Cancelling a turn can leave provider fetches rejecting on floating
 		// promises after the run settled. None of these may kill the daemon —
 		// it hosts every resident session.
-		const { AgentRuntimeAbortError } = await import("@cline/agents");
+		const { AgentRuntimeAbortError } = await import("@hadyancode/agents");
 		onUnhandledRejection?.(new AgentRuntimeAbortError("run aborted"));
 		const domAbort = new Error("This operation was aborted");
 		domAbort.name = "AbortError";
@@ -319,7 +319,7 @@ describe("hub daemon entry", () => {
 	});
 
 	it("routes HTTP and signal shutdown through one cleanup", async () => {
-		const cwd = mkdtempSync(join(tmpdir(), "cline-hub-entry-test-"));
+		const cwd = mkdtempSync(join(tmpdir(), "hadyancode-hub-entry-test-"));
 		tempDirs.push(cwd);
 		process.argv = ["node", "entry.js", "--cwd", cwd];
 		const handlers = new Map<string, (value?: unknown) => void>();
@@ -356,7 +356,7 @@ describe("hub daemon entry", () => {
 	});
 
 	it("lets a fatal error upgrade an in-progress graceful shutdown", async () => {
-		const cwd = mkdtempSync(join(tmpdir(), "cline-hub-entry-test-"));
+		const cwd = mkdtempSync(join(tmpdir(), "hadyancode-hub-entry-test-"));
 		tempDirs.push(cwd);
 		process.argv = ["node", "entry.js", "--cwd", cwd];
 		const handlers = new Map<string, (value?: unknown) => void>();
@@ -399,7 +399,7 @@ describe("hub daemon entry", () => {
 	});
 
 	it("keeps telemetry active until runtime teardown settles", async () => {
-		const cwd = mkdtempSync(join(tmpdir(), "cline-hub-entry-test-"));
+		const cwd = mkdtempSync(join(tmpdir(), "hadyancode-hub-entry-test-"));
 		tempDirs.push(cwd);
 		process.argv = ["node", "entry.js", "--cwd", cwd];
 		vi.spyOn(process, "on").mockImplementation(() => process);
@@ -438,7 +438,7 @@ describe("hub daemon entry", () => {
 	it("forces process exit when daemon cleanup stalls", async () => {
 		vi.useFakeTimers();
 		try {
-			const cwd = mkdtempSync(join(tmpdir(), "cline-hub-entry-test-"));
+			const cwd = mkdtempSync(join(tmpdir(), "hadyancode-hub-entry-test-"));
 			tempDirs.push(cwd);
 			process.argv = ["node", "entry.js", "--cwd", cwd];
 			vi.spyOn(process, "on").mockImplementation(() => process);
@@ -471,7 +471,7 @@ describe("hub daemon entry", () => {
 	});
 
 	it("disposes telemetry and exits when server startup fails", async () => {
-		const cwd = mkdtempSync(join(tmpdir(), "cline-hub-entry-test-"));
+		const cwd = mkdtempSync(join(tmpdir(), "hadyancode-hub-entry-test-"));
 		tempDirs.push(cwd);
 		process.argv = ["node", "entry.js", "--cwd", cwd];
 		vi.spyOn(process, "on").mockImplementation(() => process);

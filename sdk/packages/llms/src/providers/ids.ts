@@ -8,65 +8,15 @@
 import { GENERATED_PROVIDER_IDS } from "./provider-ids.generated";
 
 export enum BUILT_IN_PROVIDER {
-	// First-party
+	// Claude
 	ANTHROPIC = "anthropic",
 	CLAUDE_CODE = "claude-code",
-	CLINE = "cline",
-	CLINE_PASS = "cline-pass",
-	ELEVENLABS = "elevenlabs",
-	// OpenAI variants
-	OPENAI_COMPATIBLE = "openai-compatible",
-	OPENAI_NATIVE = "openai-native",
-	OPENAI_CODEX = "openai-codex",
-	OPENAI_CODEX_CLI = "openai-codex-cli",
-	// CLI / Subscription-based providers
-	OPENCODE = "opencode",
-	// Cloud providers
-	BEDROCK = "bedrock",
-	VERTEX = "vertex",
-	GEMINI = "gemini",
-	// Local/self-hosted
-	OLLAMA = "ollama",
-	LMSTUDIO = "lmstudio",
-	// OpenAI-compatible
+	// DeepSeek
 	DEEPSEEK = "deepseek",
-	XAI = "xai",
-	TOGETHER = "together",
-	FIREWORKS = "fireworks",
-	GROQ = "groq",
-	POOLSIDE = "poolside",
-	CEREBRAS = "cerebras",
-	SAMBANOVA = "sambanova",
-	NEBIUS = "nebius",
-	BASETEN = "baseten",
-	REQUESTY = "requesty",
-	LITELLM = "litellm",
-	HUGGINGFACE = "huggingface",
-	VERCEL_AI_GATEWAY = "vercel-ai-gateway",
-	V0 = "v0",
-	AIHUBMIX = "aihubmix",
-	HICAP = "hicap",
-	NOUS_RESEARCH = "nousResearch",
-	HUAWEI_CLOUD_MAAS = "huawei-cloud-maas",
-	WANDB = "wandb",
-	XIAOMI = "xiaomi",
-	TENCENT_TOKENHUB = "tencent-tokenhub",
-	KILO = "kilo",
-	ZAI = "zai",
-	ZAI_CODING_PLAN = "zai-coding-plan",
-	// Regional/specialized
-	QWEN = "qwen",
-	QWEN_CODE = "qwen-code",
-	DOUBAO = "doubao",
-	MISTRAL = "mistral",
-	MOONSHOT = "moonshot",
-	ASKSAGE = "asksage",
-	MINIMAX = "minimax",
-	DIFY = "dify",
-	OCA = "oca",
-	SAPAICORE = "sapaicore",
-	// Aggregators
-	OPENROUTER = "openrouter",
+	// First-party HadyanCode gateway (OpenRouter-backed) and its subscription tier.
+	// Both are restricted to Claude + DeepSeek by ./first-party-models.
+	HADYANCODE = "hadyancode",
+	HADYANCODE_PASS = "hadyancode-pass",
 }
 
 /**
@@ -79,11 +29,7 @@ export type GeneratedBuiltInProviderId =
 
 export type BuiltInProviderId = BUILT_IN_PROVIDER | GeneratedBuiltInProviderId;
 
-export const PROVIDER_ID_ALIASES: Record<string, BuiltInProviderId> = {
-	openai: BUILT_IN_PROVIDER.OPENAI_COMPATIBLE,
-	togetherai: BUILT_IN_PROVIDER.TOGETHER,
-	"sap-ai-core": BUILT_IN_PROVIDER.SAPAICORE,
-};
+export const PROVIDER_ID_ALIASES: Record<string, BuiltInProviderId> = {};
 
 export const BUILT_IN_PROVIDER_IDS = [
 	...new Set([...Object.values(BUILT_IN_PROVIDER), ...GENERATED_PROVIDER_IDS]),

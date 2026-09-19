@@ -30,7 +30,7 @@ describe("selectSessionTools", () => {
 			selectSessionTools(tools, "act", "cli").map(({ name }) => name),
 		).toEqual(["read_files"]);
 		expect(
-			selectSessionTools(tools, "act", "cline-cli-zen").map(({ name }) => name),
+			selectSessionTools(tools, "act", "hadyancode-cli-zen").map(({ name }) => name),
 		).toEqual(["read_files"]);
 		expect(
 			selectSessionTools(tools, "act", "vscode").map(({ name }) => name),

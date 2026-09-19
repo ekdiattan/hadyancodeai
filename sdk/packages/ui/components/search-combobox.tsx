@@ -70,7 +70,7 @@ function highlightMatch(label: string, query: string): ReactNode {
 	return (
 		<>
 			{label.slice(0, index)}
-			<span className="cline-ui-search-combobox__match font-cline-ui-semibold text-cline-ui-foreground">
+			<span className="hadyancode-ui-search-combobox__match font-hadyancode-ui-semibold text-hadyancode-ui-foreground">
 				{label.slice(index, index + normalized.length)}
 			</span>
 			{label.slice(index + normalized.length)}
@@ -227,11 +227,11 @@ export function SearchCombobox({
 			<button
 				aria-selected={isSelected}
 				className={[
-					"cline-ui-search-combobox__option flex w-full cursor-pointer items-center gap-2 rounded-cline-ui-md border-0 px-2 py-1.5 text-left text-cline-ui-foreground",
+					"hadyancode-ui-search-combobox__option flex w-full cursor-pointer items-center gap-2 rounded-hadyancode-ui-md border-0 px-2 py-1.5 text-left text-hadyancode-ui-foreground",
 					isSelected
-						? "bg-cline-ui-accent"
+						? "bg-hadyancode-ui-accent"
 						: isActive
-							? "bg-cline-ui-surface-hover"
+							? "bg-hadyancode-ui-surface-hover"
 							: "bg-transparent",
 				].join(" ")}
 				data-active={isActive || undefined}
@@ -250,19 +250,19 @@ export function SearchCombobox({
 				type="button"
 			>
 				{option.icon}
-				<span className="cline-ui-search-combobox__option-copy flex min-w-0 flex-1 flex-col text-cline-ui-sm">
+				<span className="hadyancode-ui-search-combobox__option-copy flex min-w-0 flex-1 flex-col text-hadyancode-ui-sm">
 					<span className="flex min-w-0 items-center gap-1.5">
 						<span className="truncate">
 							{highlightMatch(option.label, search)}
 						</span>
 						{option.badge ? (
-							<span className="cline-ui-search-combobox__badge inline-flex shrink-0 items-center rounded-cline-ui-sm bg-cline-ui-surface-hover px-1 py-px font-cline-ui-medium text-[0.625rem] text-cline-ui-muted-foreground uppercase tracking-wide">
+							<span className="hadyancode-ui-search-combobox__badge inline-flex shrink-0 items-center rounded-hadyancode-ui-sm bg-hadyancode-ui-surface-hover px-1 py-px font-hadyancode-ui-medium text-[0.625rem] text-hadyancode-ui-muted-foreground uppercase tracking-wide">
 								{option.badge}
 							</span>
 						) : null}
 					</span>
 					{option.description ? (
-						<small className="truncate text-[0.625rem] text-cline-ui-muted-foreground">
+						<small className="truncate text-[0.625rem] text-hadyancode-ui-muted-foreground">
 							{option.description}
 						</small>
 					) : null}
@@ -270,7 +270,7 @@ export function SearchCombobox({
 				{isSelected ? (
 					<svg
 						aria-hidden="true"
-						className="cline-ui-search-combobox__check size-3 shrink-0"
+						className="hadyancode-ui-search-combobox__check size-3 shrink-0"
 						fill="none"
 						stroke="currentColor"
 						strokeLinecap="round"
@@ -295,12 +295,12 @@ export function SearchCombobox({
 					rows.push(
 						<div
 							className={[
-								"cline-ui-search-combobox__section px-2 pb-1 text-cline-ui-muted-foreground",
+								"hadyancode-ui-search-combobox__section px-2 pb-1 text-hadyancode-ui-muted-foreground",
 								index === 0 ? "pt-1" : "pt-2.5",
 							].join(" ")}
 							key={`section-${option.section}`}
 						>
-							<div className="font-cline-ui-medium text-[0.625rem] uppercase tracking-wider">
+							<div className="font-hadyancode-ui-medium text-[0.625rem] uppercase tracking-wider">
 								{section.label}
 							</div>
 							{section.description ? (
@@ -318,7 +318,7 @@ export function SearchCombobox({
 
 	return (
 		<div
-			className="cline-ui-search-combobox relative min-w-0"
+			className="hadyancode-ui-search-combobox relative min-w-0"
 			ref={containerRef}
 		>
 			<button
@@ -327,7 +327,7 @@ export function SearchCombobox({
 				aria-haspopup="dialog"
 				aria-label={`${ariaLabel}: ${displayedValue}`}
 				className={[
-					"cline-ui-search-combobox__trigger inline-flex min-w-0 cursor-pointer items-center gap-1 rounded-cline-ui-md border-0 bg-transparent px-2 py-1 text-cline-ui-sm font-cline-ui-medium text-cline-ui-foreground ease-[ease] [&:hover:not(:disabled)]:bg-cline-ui-surface-hover focus-visible:outline-2 focus-visible:outline-cline-ui-ring focus-visible:outline-offset-0 disabled:cursor-not-allowed disabled:opacity-50 motion-reduce:transition-none",
+					"hadyancode-ui-search-combobox__trigger inline-flex min-w-0 cursor-pointer items-center gap-1 rounded-hadyancode-ui-md border-0 bg-transparent px-2 py-1 text-hadyancode-ui-sm font-hadyancode-ui-medium text-hadyancode-ui-foreground ease-[ease] [&:hover:not(:disabled)]:bg-hadyancode-ui-surface-hover focus-visible:outline-2 focus-visible:outline-hadyancode-ui-ring focus-visible:outline-offset-0 disabled:cursor-not-allowed disabled:opacity-50 motion-reduce:transition-none",
 					className,
 				]
 					.filter(Boolean)
@@ -339,12 +339,12 @@ export function SearchCombobox({
 				type="button"
 			>
 				{selected?.icon}
-				<span className="cline-ui-search-combobox__value min-w-0 truncate">
+				<span className="hadyancode-ui-search-combobox__value min-w-0 truncate">
 					{displayedValue}
 				</span>
 				<svg
 					aria-hidden="true"
-					className="cline-ui-search-combobox__chevron size-2.5 shrink-0 text-cline-ui-muted-foreground"
+					className="hadyancode-ui-search-combobox__chevron size-2.5 shrink-0 text-hadyancode-ui-muted-foreground"
 					fill="none"
 					stroke="currentColor"
 					strokeLinecap="round"
@@ -360,19 +360,19 @@ export function SearchCombobox({
 				<div
 					aria-label={`Search ${ariaLabel.toLowerCase()}`}
 					className={[
-						"cline-ui-search-combobox__panel absolute z-50 overflow-hidden rounded-cline-ui-lg border border-cline-ui-border bg-cline-ui-popover shadow-xl",
-						`cline-ui-search-combobox__panel--${align}`,
-						`cline-ui-search-combobox__panel--${placement}`,
+						"hadyancode-ui-search-combobox__panel absolute z-50 overflow-hidden rounded-hadyancode-ui-lg border border-hadyancode-ui-border bg-hadyancode-ui-popover shadow-xl",
+						`hadyancode-ui-search-combobox__panel--${align}`,
+						`hadyancode-ui-search-combobox__panel--${placement}`,
 						align === "start" ? "left-0" : "right-0",
 						placement === "top" ? "bottom-full mb-2" : "top-full mt-2",
 					].join(" ")}
 					role="dialog"
 					style={{ width: panelWidth, maxWidth: "calc(100vw - 1.5rem)" }}
 				>
-					<div className="cline-ui-search-combobox__search-row flex items-center gap-2 border-cline-ui-border border-b px-3">
+					<div className="hadyancode-ui-search-combobox__search-row flex items-center gap-2 border-hadyancode-ui-border border-b px-3">
 						<svg
 							aria-hidden="true"
-							className="cline-ui-search-combobox__search-icon size-3 shrink-0 text-cline-ui-muted-foreground"
+							className="hadyancode-ui-search-combobox__search-icon size-3 shrink-0 text-hadyancode-ui-muted-foreground"
 							fill="none"
 							stroke="currentColor"
 							strokeLinecap="round"
@@ -392,7 +392,7 @@ export function SearchCombobox({
 							aria-label={searchPlaceholder}
 							// biome-ignore lint/a11y/noAutofocus: opening the picker focuses search
 							autoFocus
-							className="cline-ui-search-combobox__search h-8 w-full border-0 bg-transparent p-0 text-cline-ui-sm text-cline-ui-foreground outline-0 placeholder:text-cline-ui-muted-foreground"
+							className="hadyancode-ui-search-combobox__search h-8 w-full border-0 bg-transparent p-0 text-hadyancode-ui-sm text-hadyancode-ui-foreground outline-0 placeholder:text-hadyancode-ui-muted-foreground"
 							onChange={(event) => {
 								scrollModeRef.current = "nearest";
 								setSearch(event.target.value);
@@ -404,16 +404,16 @@ export function SearchCombobox({
 						/>
 					</div>
 					<div
-						className="cline-ui-search-combobox__options flex max-h-64 flex-col overflow-y-auto overscroll-contain p-1.5"
+						className="hadyancode-ui-search-combobox__options flex max-h-64 flex-col overflow-y-auto overscroll-contain p-1.5"
 						id={listboxId}
 						role="listbox"
 					>
 						{loading ? (
-							<div className="cline-ui-search-combobox__empty p-2 text-cline-ui-sm text-cline-ui-muted-foreground">
+							<div className="hadyancode-ui-search-combobox__empty p-2 text-hadyancode-ui-sm text-hadyancode-ui-muted-foreground">
 								{loadingText}
 							</div>
 						) : filtered.length === 0 ? (
-							<div className="cline-ui-search-combobox__empty p-2 text-cline-ui-sm text-cline-ui-muted-foreground">
+							<div className="hadyancode-ui-search-combobox__empty p-2 text-hadyancode-ui-sm text-hadyancode-ui-muted-foreground">
 								{emptyText}
 							</div>
 						) : (

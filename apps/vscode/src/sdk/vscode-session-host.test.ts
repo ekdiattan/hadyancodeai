@@ -1,15 +1,15 @@
-import type { ClineCoreStartInput, ITelemetryService } from "@cline/core"
+import type { HadyanCodeCoreStartInput, ITelemetryService } from "@hadyancode/core"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
-const mockClineCoreCreate = vi.hoisted(() => vi.fn())
+const mockHadyanCodeCoreCreate = vi.hoisted(() => vi.fn())
 const mockCreateVscodeExtraTools = vi.hoisted(() => vi.fn(async () => []))
 
-vi.mock("@cline/core", async () => {
-	const actual = await vi.importActual<typeof import("@cline/core")>("@cline/core")
+vi.mock("@hadyancode/core", async () => {
+	const actual = await vi.importActual<typeof import("@hadyancode/core")>("@hadyancode/core")
 	return {
 		...actual,
-		ClineCore: {
-			create: mockClineCoreCreate,
+		HadyanCodeCore: {
+			create: mockHadyanCodeCoreCreate,
 		},
 	}
 })
@@ -34,12 +34,12 @@ import { VscodeSessionHost } from "./vscode-session-host"
 
 describe("VscodeSessionHost telemetry wiring", () => {
 	beforeEach(() => {
-		mockClineCoreCreate.mockReset()
-		mockClineCoreCreate.mockResolvedValue({ runtimeAddress: undefined })
+		mockHadyanCodeCoreCreate.mockReset()
+		mockHadyanCodeCoreCreate.mockResolvedValue({ runtimeAddress: undefined })
 		mockCreateVscodeExtraTools.mockReset().mockResolvedValue([])
 	})
 
-	it("passes shared telemetry to ClineCore.create", async () => {
+	it("passes shared telemetry to HadyanCodeCore.create", async () => {
 		const telemetry = makeTelemetry()
 
 		await VscodeSessionHost.create({
@@ -48,7 +48,7 @@ describe("VscodeSessionHost telemetry wiring", () => {
 			telemetry,
 		})
 
-		expect(mockClineCoreCreate).toHaveBeenCalledWith(expect.objectContaining({ telemetry }))
+		expect(mockHadyanCodeCoreCreate).toHaveBeenCalledWith(expect.objectContaining({ telemetry }))
 	})
 
 	it("injects shared telemetry into CoreSessionConfig when remote config did not provide one", async () => {
@@ -59,7 +59,7 @@ describe("VscodeSessionHost telemetry wiring", () => {
 			telemetry,
 		})
 
-		const prepare = mockClineCoreCreate.mock.calls[0][0].prepare
+		const prepare = mockHadyanCodeCoreCreate.mock.calls[0][0].prepare
 		const bootstrap = await prepare()
 		const prepared = await bootstrap.applyToStartSessionInput({
 			source: undefined,
@@ -82,7 +82,7 @@ describe("VscodeSessionHost telemetry wiring", () => {
 			telemetry,
 			getRemoteConfigIntegration: () =>
 				({
-					applyToStartSessionInput: (input: ClineCoreStartInput) => ({
+					applyToStartSessionInput: (input: HadyanCodeCoreStartInput) => ({
 						...input,
 						config: {
 							...input.config,
@@ -92,7 +92,7 @@ describe("VscodeSessionHost telemetry wiring", () => {
 				}) as never,
 		})
 
-		const prepare = mockClineCoreCreate.mock.calls[0][0].prepare
+		const prepare = mockHadyanCodeCoreCreate.mock.calls[0][0].prepare
 		const bootstrap = await prepare()
 		const prepared = await bootstrap.applyToStartSessionInput({
 			source: undefined,
@@ -115,7 +115,7 @@ describe("VscodeSessionHost telemetry wiring", () => {
 			applyPatchExecutor,
 		})
 
-		const capabilities = mockClineCoreCreate.mock.calls[0][0].capabilities
+		const capabilities = mockHadyanCodeCoreCreate.mock.calls[0][0].capabilities
 		expect(capabilities.toolExecutors.editor).toBe(editorExecutor)
 		expect(capabilities.toolExecutors.applyPatch).toBe(applyPatchExecutor)
 	})
@@ -126,7 +126,7 @@ describe("VscodeSessionHost telemetry wiring", () => {
 			mcpHub: {} as any,
 		})
 
-		const capabilities = mockClineCoreCreate.mock.calls[0][0].capabilities
+		const capabilities = mockHadyanCodeCoreCreate.mock.calls[0][0].capabilities
 		expect(capabilities.toolExecutors).toBeUndefined()
 	})
 
@@ -135,7 +135,7 @@ describe("VscodeSessionHost telemetry wiring", () => {
 		const beforeStartSession = vi.fn(async () => {
 			events.push("ready")
 		})
-		const applyToStartSessionInput = vi.fn(async (input: ClineCoreStartInput) => {
+		const applyToStartSessionInput = vi.fn(async (input: HadyanCodeCoreStartInput) => {
 			events.push("apply")
 			return input
 		})
@@ -150,7 +150,7 @@ describe("VscodeSessionHost telemetry wiring", () => {
 				}) as never,
 		})
 
-		const prepare = mockClineCoreCreate.mock.calls[0][0].prepare
+		const prepare = mockHadyanCodeCoreCreate.mock.calls[0][0].prepare
 		const bootstrap = await prepare()
 		await bootstrap.applyToStartSessionInput({ config: { cwd: "/workspace" } })
 
@@ -159,7 +159,7 @@ describe("VscodeSessionHost telemetry wiring", () => {
 
 	it("applies remote config before appending VS Code extra tools", async () => {
 		mockCreateVscodeExtraTools.mockResolvedValueOnce([{ name: "vscode-tool" }] as never)
-		const applyToStartSessionInput = vi.fn(async (input: ClineCoreStartInput) => ({
+		const applyToStartSessionInput = vi.fn(async (input: HadyanCodeCoreStartInput) => ({
 			...input,
 			config: {
 				...input.config,
@@ -177,7 +177,7 @@ describe("VscodeSessionHost telemetry wiring", () => {
 				}) as never,
 		})
 
-		const prepare = mockClineCoreCreate.mock.calls[0][0].prepare
+		const prepare = mockHadyanCodeCoreCreate.mock.calls[0][0].prepare
 		const bootstrap = await prepare()
 		const result = await bootstrap.applyToStartSessionInput({ config: { cwd: "/workspace" } })
 
@@ -195,7 +195,7 @@ describe("VscodeSessionHost telemetry wiring", () => {
 	it("runs the session gate and remote-config integration on a checkpoint restore with a replacement session", async () => {
 		const events: string[] = []
 		const innerRestore = vi.fn(async (_input: unknown) => ({ checkpoint: {} }))
-		mockClineCoreCreate.mockResolvedValue({ runtimeAddress: undefined, restore: innerRestore })
+		mockHadyanCodeCoreCreate.mockResolvedValue({ runtimeAddress: undefined, restore: innerRestore })
 		const host = await VscodeSessionHost.create({
 			// biome-ignore lint/suspicious/noExplicitAny: focused host unit test
 			mcpHub: {} as any,
@@ -204,7 +204,7 @@ describe("VscodeSessionHost telemetry wiring", () => {
 			},
 			getRemoteConfigIntegration: () =>
 				({
-					applyToStartSessionInput: (input: ClineCoreStartInput) => {
+					applyToStartSessionInput: (input: HadyanCodeCoreStartInput) => {
 						events.push("integration")
 						return input
 					},
@@ -217,17 +217,17 @@ describe("VscodeSessionHost telemetry wiring", () => {
 			start: { config: { cwd: "/workspace", extraTools: [] } } as never,
 		})
 
-		// The gate must resolve before the integration is read; ClineCore.restore
+		// The gate must resolve before the integration is read; HadyanCodeCore.restore
 		// does not run the prepare hook, so the host must apply it itself.
 		expect(events).toEqual(["gate", "integration"])
-		const restoredInput = innerRestore.mock.calls[0][0] as { start: ClineCoreStartInput }
+		const restoredInput = innerRestore.mock.calls[0][0] as { start: HadyanCodeCoreStartInput }
 		expect(restoredInput.start.source).toBe("vscode")
 	})
 
 	it("does not gate a workspace-only restore that starts no replacement session", async () => {
 		const innerRestore = vi.fn(async () => ({ checkpoint: {} }))
 		const beforeStartSession = vi.fn()
-		mockClineCoreCreate.mockResolvedValue({ runtimeAddress: undefined, restore: innerRestore })
+		mockHadyanCodeCoreCreate.mockResolvedValue({ runtimeAddress: undefined, restore: innerRestore })
 		const host = await VscodeSessionHost.create({
 			// biome-ignore lint/suspicious/noExplicitAny: focused host unit test
 			mcpHub: {} as any,

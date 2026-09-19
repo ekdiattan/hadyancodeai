@@ -7,8 +7,8 @@ import type {
 	SessionLineage,
 	SessionManifest,
 	ToolPolicy,
-} from "@cline/core";
-import type { Message } from "@cline/shared";
+} from "@hadyancode/core";
+import type { Message } from "@hadyancode/shared";
 
 export type CliOutputMode = "text" | "json";
 export type CliAgentMode = AgentMode;

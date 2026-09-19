@@ -1,10 +1,10 @@
 import { Logger } from "@/shared/services/Logger"
-import { ClineError } from "./ClineError"
 import { ErrorProviderFactory } from "./ErrorProviderFactory"
+import { HadyanCodeError } from "./HadyanCodeError"
 import { IErrorProvider } from "./providers/IErrorProvider"
 
 /**
- * ErrorService handles error logging and tracking for the Cline extension
+ * ErrorService handles error logging and tracking for the HadyanCode extension
  * Uses an abstracted error provider to support multiple error tracking backends
  * Respects user privacy settings and VSCode's global telemetry configuration
  */
@@ -40,11 +40,11 @@ export class ErrorService {
 		this.provider = provider
 	}
 
-	captureException(error: Error | ClineError, properties?: Record<string, unknown>) {
+	captureException(error: Error | HadyanCodeError, properties?: Record<string, unknown>) {
 		return this.provider.captureException(error, properties)
 	}
 
-	public logException(error: Error | ClineError, properties?: Record<string, unknown>): void {
+	public logException(error: Error | HadyanCodeError, properties?: Record<string, unknown>): void {
 		this.provider.logException(error, properties)
 		Logger.error("[ErrorService] Logging exception", JSON.stringify(error))
 	}
@@ -57,8 +57,8 @@ export class ErrorService {
 		this.provider.logMessage(message, level, properties)
 	}
 
-	public toClineError(rawError: unknown, modelId?: string, providerId?: string): ClineError {
-		const transformed = ClineError.transform(rawError, modelId, providerId)
+	public toHadyanCodeError(rawError: unknown, modelId?: string, providerId?: string): HadyanCodeError {
+		const transformed = HadyanCodeError.transform(rawError, modelId, providerId)
 		this.logException(transformed, { modelId, providerId })
 		return transformed
 	}

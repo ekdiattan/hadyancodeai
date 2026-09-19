@@ -1,4 +1,4 @@
-import type { ClineMessage } from "@shared/ExtensionMessage"
+import type { HadyanCodeMessage } from "@shared/ExtensionMessage"
 import { describe, expect, it } from "vitest"
 import type { PendingResponse } from "../types/chatTypes"
 import { isPendingResponseUnconfirmed, withPendingUserMessage } from "./pendingResponse"
@@ -29,21 +29,21 @@ describe("isPendingResponseUnconfirmed", () => {
 
 describe("withPendingUserMessage", () => {
 	it("provides an immediate task row before the backend transcript exists", () => {
-		const task: ClineMessage = { ts: 10, type: "say", say: "task", text: "new task", partial: false }
+		const task: HadyanCodeMessage = { ts: 10, type: "say", say: "task", text: "new task", partial: false }
 
 		expect(withPendingUserMessage([], { afterTs: 0, message: task })).toEqual([task])
 	})
 
 	it("replaces the optimistic task with its backend confirmation without duplication", () => {
-		const optimistic: ClineMessage = { ts: 10, type: "say", say: "task", text: "new task", partial: false }
-		const confirmed: ClineMessage = { ...optimistic, ts: 11 }
+		const optimistic: HadyanCodeMessage = { ts: 10, type: "say", say: "task", text: "new task", partial: false }
+		const confirmed: HadyanCodeMessage = { ...optimistic, ts: 11 }
 
 		expect(withPendingUserMessage([confirmed], { afterTs: 0, message: optimistic })).toEqual([confirmed])
 	})
 
 	it("keeps a follow-up bubble until the matching backend message arrives", () => {
-		const task: ClineMessage = { ts: 1, type: "say", say: "task", text: "task" }
-		const followup: ClineMessage = { ts: 3, type: "say", say: "user_feedback", text: "more" }
+		const task: HadyanCodeMessage = { ts: 1, type: "say", say: "task", text: "task" }
+		const followup: HadyanCodeMessage = { ts: 3, type: "say", say: "user_feedback", text: "more" }
 
 		expect(withPendingUserMessage([task], { afterTs: 1, message: followup })).toEqual([task, followup])
 	})

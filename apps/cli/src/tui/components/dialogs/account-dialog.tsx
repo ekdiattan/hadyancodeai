@@ -1,13 +1,13 @@
 // @jsxImportSource @opentui/react
-import type { ClineAccountOrganization } from "@cline/core";
+import type { HadyanCodeAccountOrganization } from "@hadyancode/core";
 import type { ChoiceContext } from "@opentui-ui/dialog";
 import { useDialogKeyboard } from "@opentui-ui/dialog/react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
-	type ClineAccountSnapshot,
-	formatClineCredits,
-	isClineAccountAuthErrorMessage,
-} from "../../cline-account";
+	type HadyanCodeAccountSnapshot,
+	formatHadyanCodeCredits,
+	isHadyanCodeAccountAuthErrorMessage,
+} from "../../hadyancode-account";
 import { useDialogPalette } from "../../hooks/use-theme";
 
 export type AccountDialogAction =
@@ -20,7 +20,7 @@ type AccountView = "overview" | "organizations";
 
 type AccountState =
 	| { status: "loading"; message: string }
-	| { status: "loaded"; snapshot: ClineAccountSnapshot }
+	| { status: "loaded"; snapshot: HadyanCodeAccountSnapshot }
 	| { status: "unauthenticated"; message: string }
 	| { status: "error"; message: string };
 
@@ -48,7 +48,7 @@ const LOADED_ACTIONS: AccountAction[] = [
 	{
 		id: "change-model",
 		label: "Change model",
-		description: "Open the Cline model selector",
+		description: "Open the HadyanCode model selector",
 		enabled: true,
 	},
 	{
@@ -69,7 +69,7 @@ const UNAUTHENTICATED_ACTIONS: AccountAction[] = [
 	{
 		id: "login",
 		label: "Sign in or create account",
-		description: "Use Cline OAuth",
+		description: "Use HadyanCode OAuth",
 		enabled: true,
 	},
 	{
@@ -99,7 +99,7 @@ function formatDate(dateStr: string): string {
 	});
 }
 
-function userInitial(snapshot: ClineAccountSnapshot): string {
+function userInitial(snapshot: HadyanCodeAccountSnapshot): string {
 	const candidate =
 		snapshot.user.displayName?.trim() || snapshot.user.email?.trim() || "?";
 	return candidate.charAt(0).toUpperCase();
@@ -202,7 +202,7 @@ function OrganizationRow(props: {
 	);
 }
 
-function accountActions(snapshot: ClineAccountSnapshot): AccountAction[] {
+function accountActions(snapshot: HadyanCodeAccountSnapshot): AccountAction[] {
 	return LOADED_ACTIONS.map((action) => {
 		if (action.id !== "change-account") {
 			return action;
@@ -216,14 +216,14 @@ function accountActions(snapshot: ClineAccountSnapshot): AccountAction[] {
 	});
 }
 
-function organizationDescription(org: ClineAccountOrganization): string {
+function organizationDescription(org: HadyanCodeAccountOrganization): string {
 	const roles = org.roles.length > 0 ? org.roles.join(", ") : "member";
 	return roles;
 }
 
 export function AccountDialogContent(
 	props: ChoiceContext<AccountDialogAction> & {
-		loadAccount: () => Promise<ClineAccountSnapshot>;
+		loadAccount: () => Promise<HadyanCodeAccountSnapshot>;
 		switchAccount: (organizationId?: string | null) => Promise<void>;
 		onAccountChange?: () => Promise<void>;
 	},
@@ -260,7 +260,7 @@ export function AccountDialogContent(
 			const message = error instanceof Error ? error.message : String(error);
 			if (generation.current === currentGeneration) {
 				setState({
-					status: isClineAccountAuthErrorMessage(message)
+					status: isHadyanCodeAccountAuthErrorMessage(message)
 						? "unauthenticated"
 						: "error",
 					message,
@@ -427,7 +427,7 @@ export function AccountDialogContent(
 	if (state.status === "loading") {
 		return (
 			<box flexDirection="column" paddingX={1} gap={1}>
-				<text fg={palette.act}>Cline Account</text>
+				<text fg={palette.act}>HadyanCode Account</text>
 				<text fg="gray">{state.message}</text>
 				<text fg="gray">Esc to close</text>
 			</box>
@@ -437,7 +437,7 @@ export function AccountDialogContent(
 	if (state.status === "error") {
 		return (
 			<box flexDirection="column" paddingX={1} gap={1}>
-				<text fg={palette.act}>Cline Account</text>
+				<text fg={palette.act}>HadyanCode Account</text>
 				<text fg="red">{state.message}</text>
 				<text fg="gray">Esc to close</text>
 			</box>
@@ -447,8 +447,8 @@ export function AccountDialogContent(
 	if (state.status === "unauthenticated") {
 		return (
 			<box flexDirection="column" paddingX={1} gap={1}>
-				<text fg={palette.act}>Cline Account</text>
-				<text>Sign in or create a Cline account.</text>
+				<text fg={palette.act}>HadyanCode Account</text>
+				<text>Sign in or create a HadyanCode account.</text>
 				<text fg="gray">
 					Get access to the latest models with regular free promos and
 					discounts.
@@ -501,12 +501,12 @@ export function AccountDialogContent(
 	const displayName =
 		loaded.user.displayName?.trim() ||
 		loaded.user.email?.trim() ||
-		"Cline user";
+		"HadyanCode user";
 	const activeAccount = loaded.activeOrganization?.name ?? "Personal account";
 
 	return (
 		<box flexDirection="column" paddingX={1} gap={1}>
-			<text fg={palette.act}>Cline Account</text>
+			<text fg={palette.act}>HadyanCode Account</text>
 
 			<box flexDirection="row" gap={2}>
 				<box
@@ -534,12 +534,12 @@ export function AccountDialogContent(
 				<AccountField label="Active account" value={activeAccount} />
 				<AccountField
 					label="Credits"
-					value={formatClineCredits(loaded.displayedBalance)}
+					value={formatHadyanCodeCredits(loaded.displayedBalance)}
 				/>
 				{loaded.activeOrganization && (
 					<AccountField
 						label="Personal"
-						value={formatClineCredits(loaded.balance.balance)}
+						value={formatHadyanCodeCredits(loaded.balance.balance)}
 					/>
 				)}
 				<AccountField

@@ -1,7 +1,7 @@
 import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { installPlugin } from "@cline/core";
+import { installPlugin } from "@hadyancode/core";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
 	getOfficialPluginInstallPath,
@@ -10,10 +10,10 @@ import {
 } from "./marketplace";
 import type { JsonRecord } from "./types";
 
-// Marketplace plugin installs run in-process through @cline/core (spawning a
-// `cline` binary fails with 'Executable not found in $PATH: "cline"' in the
+// Marketplace plugin installs run in-process through @hadyancode/core (spawning a
+// `hadyancode` binary fails with 'Executable not found in $PATH: "hadyancode"' in the
 // packaged app). Stub only installPlugin; everything else stays real.
-vi.mock(import("@cline/core"), async (importOriginal) => ({
+vi.mock(import("@hadyancode/core"), async (importOriginal) => ({
 	...(await importOriginal()),
 	installPlugin: vi.fn(),
 }));
@@ -26,13 +26,13 @@ const GOAL_ENTRY = {
 	install: { args: ["goal"] },
 };
 
-let tempClineDir: string;
-let previousClineDir: string | undefined;
+let tempHadyanCodeDir: string;
+let previousHadyanCodeDir: string | undefined;
 
 beforeEach(async () => {
-	tempClineDir = await mkdtemp(join(tmpdir(), "desktop-marketplace-"));
-	previousClineDir = process.env.CLINE_DIR;
-	process.env.CLINE_DIR = tempClineDir;
+	tempHadyanCodeDir = await mkdtemp(join(tmpdir(), "desktop-marketplace-"));
+	previousHadyanCodeDir = process.env.HADYANCODE_DIR;
+	process.env.HADYANCODE_DIR = tempHadyanCodeDir;
 	installPluginMock.mockReset().mockImplementation(async (options) => ({
 		source: options.source,
 		installPath: goalInstallDir(),
@@ -43,12 +43,12 @@ beforeEach(async () => {
 });
 
 afterEach(async () => {
-	if (previousClineDir === undefined) {
-		delete process.env.CLINE_DIR;
+	if (previousHadyanCodeDir === undefined) {
+		delete process.env.HADYANCODE_DIR;
 	} else {
-		process.env.CLINE_DIR = previousClineDir;
+		process.env.HADYANCODE_DIR = previousHadyanCodeDir;
 	}
-	await rm(tempClineDir, { recursive: true, force: true });
+	await rm(tempHadyanCodeDir, { recursive: true, force: true });
 });
 
 function goalInstallDir(): string {
@@ -60,7 +60,7 @@ function goalInstallDir(): string {
 }
 
 describe("official plugin install detection", () => {
-	it("installs plugins in-process through @cline/core", async () => {
+	it("installs plugins in-process through @hadyancode/core", async () => {
 		const result = await installMarketplaceEntry({ entry: GOAL_ENTRY });
 
 		expect(result).toMatchObject({
@@ -113,7 +113,7 @@ describe("official plugin install detection", () => {
 			JSON.stringify({
 				name: "goal",
 				private: true,
-				cline: { plugins: [{ paths: ["./package/index.ts"] }] },
+				hadyancode: { plugins: [{ paths: ["./package/index.ts"] }] },
 			}),
 		);
 		await writeFile(
@@ -131,9 +131,9 @@ describe("official plugin install detection", () => {
 	});
 
 	it("registers MCP servers in-process, honoring the -- args separator", async () => {
-		const settingsPath = join(tempClineDir, "cline_mcp_settings.json");
-		const previousSettingsPath = process.env.CLINE_MCP_SETTINGS_PATH;
-		process.env.CLINE_MCP_SETTINGS_PATH = settingsPath;
+		const settingsPath = join(tempHadyanCodeDir, "hadyancode_mcp_settings.json");
+		const previousSettingsPath = process.env.HADYANCODE_MCP_SETTINGS_PATH;
+		process.env.HADYANCODE_MCP_SETTINGS_PATH = settingsPath;
 		try {
 			const result = await installMarketplaceEntry({
 				entry: {
@@ -160,9 +160,9 @@ describe("official plugin install detection", () => {
 			});
 		} finally {
 			if (previousSettingsPath === undefined) {
-				delete process.env.CLINE_MCP_SETTINGS_PATH;
+				delete process.env.HADYANCODE_MCP_SETTINGS_PATH;
 			} else {
-				process.env.CLINE_MCP_SETTINGS_PATH = previousSettingsPath;
+				process.env.HADYANCODE_MCP_SETTINGS_PATH = previousSettingsPath;
 			}
 		}
 	});
@@ -188,7 +188,7 @@ describe("official plugin install detection", () => {
 		expect(populated.installedKeys).toEqual(["plugin:goal"]);
 	});
 
-	it("does not match portable Agent Plugins to Cline marketplace entries", () => {
+	it("does not match portable Agent Plugins to HadyanCode marketplace entries", () => {
 		const result = listMarketplaceInstalledEntries({ entries: [GOAL_ENTRY] }, {
 			plugins: [
 				{

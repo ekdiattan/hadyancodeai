@@ -1,4 +1,4 @@
-import type { SessionStatusTone } from "@cline/ui";
+import type { SessionStatusTone } from "@hadyancode/ui";
 
 /**
  * Session status presentation shared by every surface that renders a status

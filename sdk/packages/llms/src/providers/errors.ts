@@ -1,164 +1,164 @@
-import { getClineEnvironmentConfig } from "@cline/shared";
+import { getHadyanCodeEnvironmentConfig } from "@hadyancode/shared";
 
-export const CLINE_NOT_SUBSCRIBED_RESPONSE_MESSAGE =
+export const HADYANCODE_NOT_SUBSCRIBED_RESPONSE_MESSAGE =
 	"the user is not subscribed to required model plan";
-const CLINE_NOT_SUBSCRIBED_FORMATTED_MESSAGE_PREFIX =
-	"no access to clinepass subscription models yet. subscribe to clinepass";
-export const CLINE_ORG_INDIVIDUAL_INFERENCE_SUBSCRIPTION_RESPONSE_MESSAGE =
+const HADYANCODE_NOT_SUBSCRIBED_FORMATTED_MESSAGE_PREFIX =
+	"no access to hadyancodepass subscription models yet. subscribe to hadyancodepass";
+export const HADYANCODE_ORG_INDIVIDUAL_INFERENCE_SUBSCRIPTION_RESPONSE_MESSAGE =
 	"organization accounts cannot use individual model inference subscriptions";
 
-const CLINE_PASS_LIMIT_PREFIX = "you have reached your";
-const CLINE_PASS_LIMIT_MARKER = "clinepass limit";
-const CLINE_PASS_LIMIT_SUFFIX = "please try again later.";
-const CLINE_FREE_MODEL_LIMIT_MARKER = "free limit reached on model";
-const CLINE_FREE_MODEL_LIMIT_RETRY_MARKER = "try again in ";
-const CLINE_MODEL_NOT_FOUND_MARKER = "model not found";
+const HADYANCODE_PASS_LIMIT_PREFIX = "you have reached your";
+const HADYANCODE_PASS_LIMIT_MARKER = "hadyancodepass limit";
+const HADYANCODE_PASS_LIMIT_SUFFIX = "please try again later.";
+const HADYANCODE_FREE_MODEL_LIMIT_MARKER = "free limit reached on model";
+const HADYANCODE_FREE_MODEL_LIMIT_RETRY_MARKER = "try again in ";
+const HADYANCODE_MODEL_NOT_FOUND_MARKER = "model not found";
 
-function findClinePassLimitMessageBounds(
+function findHadyanCodePassLimitMessageBounds(
 	text: string,
 ): { start: number; end: number } | undefined {
 	const normalized = text.toLowerCase();
-	const start = normalized.indexOf(CLINE_PASS_LIMIT_PREFIX);
+	const start = normalized.indexOf(HADYANCODE_PASS_LIMIT_PREFIX);
 	if (start === -1) {
 		return undefined;
 	}
 
-	const suffixStart = normalized.indexOf(CLINE_PASS_LIMIT_SUFFIX, start);
+	const suffixStart = normalized.indexOf(HADYANCODE_PASS_LIMIT_SUFFIX, start);
 	if (suffixStart === -1) {
 		return undefined;
 	}
 
-	const end = suffixStart + CLINE_PASS_LIMIT_SUFFIX.length;
-	if (!normalized.slice(start, end).includes(CLINE_PASS_LIMIT_MARKER)) {
+	const end = suffixStart + HADYANCODE_PASS_LIMIT_SUFFIX.length;
+	if (!normalized.slice(start, end).includes(HADYANCODE_PASS_LIMIT_MARKER)) {
 		return undefined;
 	}
 
 	return { start, end };
 }
 
-export function getClinePassSubscriptionUrl(): string {
+export function getHadyanCodePassSubscriptionUrl(): string {
 	return `${new URL(
 		"/dashboard/subscription?personal=true",
-		getClineEnvironmentConfig().appBaseUrl,
+		getHadyanCodeEnvironmentConfig().appBaseUrl,
 	).toString()}`;
 }
 
-export function getClineNotSubscribedMessage(): string {
-	return `No access to ClinePass subscription models yet. Subscribe to ClinePass, the low cost open weights model coding plan: ${getClinePassSubscriptionUrl()}`;
+export function getHadyanCodeNotSubscribedMessage(): string {
+	return `No access to HadyanCodePass subscription models yet. Subscribe to HadyanCodePass, the low cost open weights model coding plan: ${getHadyanCodePassSubscriptionUrl()}`;
 }
 
-export class ClineNotSubscribedError extends Error {
+export class HadyanCodeNotSubscribedError extends Error {
 	public readonly providerId?: string;
 
 	constructor(providerId?: string) {
-		super(getClineNotSubscribedMessage());
-		this.name = "ClineNotSubscribedError";
+		super(getHadyanCodeNotSubscribedMessage());
+		this.name = "HadyanCodeNotSubscribedError";
 		this.providerId = providerId;
 	}
 }
 
-export function getClineOrgIndividualInferenceSubscriptionMessage(): string {
-	return "Organization accounts cannot use ClinePass subscriptions. Go to /account -> change account to switch to your personal account for ClinePass";
+export function getHadyanCodeOrgIndividualInferenceSubscriptionMessage(): string {
+	return "Organization accounts cannot use HadyanCodePass subscriptions. Go to /account -> change account to switch to your personal account for HadyanCodePass";
 }
 
-export class ClineOrgIndividualInferenceSubscriptionError extends Error {
+export class HadyanCodeOrgIndividualInferenceSubscriptionError extends Error {
 	public readonly providerId?: string;
 
 	constructor(providerId?: string) {
-		super(getClineOrgIndividualInferenceSubscriptionMessage());
-		this.name = "ClineOrgIndividualInferenceSubscriptionError";
+		super(getHadyanCodeOrgIndividualInferenceSubscriptionMessage());
+		this.name = "HadyanCodeOrgIndividualInferenceSubscriptionError";
 		this.providerId = providerId;
 	}
 }
 
-export class ClinePassLimitError extends Error {
+export class HadyanCodePassLimitError extends Error {
 	public readonly providerId?: string;
 
 	constructor(message: string, providerId?: string) {
 		super(message);
-		this.name = "ClinePassLimitError";
+		this.name = "HadyanCodePassLimitError";
 		this.providerId = providerId;
 	}
 }
 
-export class ClineFreeModelLimitError extends Error {
+export class HadyanCodeFreeModelLimitError extends Error {
 	public readonly providerId?: string;
 
 	constructor(message: string, providerId?: string) {
 		super(message);
-		this.name = "ClineFreeModelLimitError";
+		this.name = "HadyanCodeFreeModelLimitError";
 		this.providerId = providerId;
 	}
 }
 
-export function isClineNotSubscribedError(
+export function isHadyanCodeNotSubscribedError(
 	error: unknown,
-): error is ClineNotSubscribedError {
-	return error instanceof ClineNotSubscribedError;
+): error is HadyanCodeNotSubscribedError {
+	return error instanceof HadyanCodeNotSubscribedError;
 }
 
-export function isClineOrgIndividualInferenceSubscriptionError(
+export function isHadyanCodeOrgIndividualInferenceSubscriptionError(
 	error: unknown,
-): error is ClineOrgIndividualInferenceSubscriptionError {
-	return error instanceof ClineOrgIndividualInferenceSubscriptionError;
+): error is HadyanCodeOrgIndividualInferenceSubscriptionError {
+	return error instanceof HadyanCodeOrgIndividualInferenceSubscriptionError;
 }
 
-export function isClinePassLimitError(
+export function isHadyanCodePassLimitError(
 	error: unknown,
-): error is ClinePassLimitError {
-	return error instanceof ClinePassLimitError;
+): error is HadyanCodePassLimitError {
+	return error instanceof HadyanCodePassLimitError;
 }
 
-export function isClineFreeModelLimitError(
+export function isHadyanCodeFreeModelLimitError(
 	error: unknown,
-): error is ClineFreeModelLimitError {
-	return error instanceof ClineFreeModelLimitError;
+): error is HadyanCodeFreeModelLimitError {
+	return error instanceof HadyanCodeFreeModelLimitError;
 }
 
-export function isClineNotSubscribedMessage(text: string): boolean {
+export function isHadyanCodeNotSubscribedMessage(text: string): boolean {
 	const normalized = text.trim().toLowerCase();
 	return (
-		normalized.includes(CLINE_NOT_SUBSCRIBED_RESPONSE_MESSAGE) ||
-		normalized.includes(CLINE_NOT_SUBSCRIBED_FORMATTED_MESSAGE_PREFIX)
+		normalized.includes(HADYANCODE_NOT_SUBSCRIBED_RESPONSE_MESSAGE) ||
+		normalized.includes(HADYANCODE_NOT_SUBSCRIBED_FORMATTED_MESSAGE_PREFIX)
 	);
 }
 
-export function isClineOrgIndividualInferenceSubscriptionMessage(
+export function isHadyanCodeOrgIndividualInferenceSubscriptionMessage(
 	text: string,
 ): boolean {
 	return text
 		.toLowerCase()
-		.includes(CLINE_ORG_INDIVIDUAL_INFERENCE_SUBSCRIPTION_RESPONSE_MESSAGE);
+		.includes(HADYANCODE_ORG_INDIVIDUAL_INFERENCE_SUBSCRIPTION_RESPONSE_MESSAGE);
 }
 
-export function isClinePassLimitMessage(text: string): boolean {
-	return findClinePassLimitMessageBounds(text) !== undefined;
+export function isHadyanCodePassLimitMessage(text: string): boolean {
+	return findHadyanCodePassLimitMessageBounds(text) !== undefined;
 }
 
-export function extractClinePassLimitMessage(text: string): string | undefined {
-	const bounds = findClinePassLimitMessageBounds(text);
+export function extractHadyanCodePassLimitMessage(text: string): string | undefined {
+	const bounds = findHadyanCodePassLimitMessageBounds(text);
 	return bounds ? text.slice(bounds.start, bounds.end) : undefined;
 }
 
-export function isClineFreeModelLimitMessage(text: string): boolean {
-	return text.toLowerCase().includes(CLINE_FREE_MODEL_LIMIT_MARKER);
+export function isHadyanCodeFreeModelLimitMessage(text: string): boolean {
+	return text.toLowerCase().includes(HADYANCODE_FREE_MODEL_LIMIT_MARKER);
 }
 
-export function isClineModelNotFoundMessage(text: string): boolean {
-	return text.toLowerCase().includes(CLINE_MODEL_NOT_FOUND_MARKER);
+export function isHadyanCodeModelNotFoundMessage(text: string): boolean {
+	return text.toLowerCase().includes(HADYANCODE_MODEL_NOT_FOUND_MARKER);
 }
 
-export function extractClineFreeModelLimitResetTime(
+export function extractHadyanCodeFreeModelLimitResetTime(
 	text: string,
 ): string | undefined {
 	const message = text.toLowerCase();
-	const resetStart = message.indexOf(CLINE_FREE_MODEL_LIMIT_RETRY_MARKER);
+	const resetStart = message.indexOf(HADYANCODE_FREE_MODEL_LIMIT_RETRY_MARKER);
 	if (resetStart === -1) {
 		return undefined;
 	}
 
 	const resetTime = message
-		.slice(resetStart + CLINE_FREE_MODEL_LIMIT_RETRY_MARKER.length)
+		.slice(resetStart + HADYANCODE_FREE_MODEL_LIMIT_RETRY_MARKER.length)
 		.trim();
 	return resetTime || undefined;
 }

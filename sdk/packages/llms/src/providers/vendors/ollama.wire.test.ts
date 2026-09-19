@@ -22,7 +22,7 @@ import type {
 import type {
 	GatewayProviderContext,
 	GatewayResolvedProviderConfig,
-} from "@cline/shared";
+} from "@hadyancode/shared";
 import { describe, expect, it } from "vitest";
 import { createOllamaProviderModule } from "./ollama";
 

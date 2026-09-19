@@ -8,7 +8,7 @@ import type {
 	GatewayProviderRegistration,
 	GatewayResolvedModel,
 	GatewayResolvedProviderConfig,
-} from "@cline/shared";
+} from "@hadyancode/shared";
 
 interface ProviderRecord {
 	manifest: GatewayProviderManifest;

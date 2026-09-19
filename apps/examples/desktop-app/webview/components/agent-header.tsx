@@ -1,6 +1,6 @@
 "use client";
 
-import { SessionStatus } from "@cline/ui";
+import { SessionStatus } from "@hadyancode/ui";
 import {
 	AlertCircle,
 	Bot,
@@ -132,7 +132,7 @@ function AgentHeaderImpl({
 					showLabel={false}
 					style={
 						{
-							"--cline-ui-session-status-color": statusColor,
+							"--hadyancode-ui-session-status-color": statusColor,
 						} as CSSProperties
 					}
 					tone={statusTone}

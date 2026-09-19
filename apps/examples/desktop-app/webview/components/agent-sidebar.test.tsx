@@ -33,7 +33,7 @@ function makeThread(project: string, index: number): SessionThread {
 		codebase: project,
 		workspacePath: `/projects/${project}`,
 		time: `${index}m`,
-		provider: "cline",
+		provider: "hadyancode",
 		model: "test-model",
 		status: "completed",
 		isScheduled: false,
@@ -133,7 +133,7 @@ const signedInUser = {
 		{
 			active: true,
 			memberId: "member-1",
-			name: "Cline Bot Inc",
+			name: "HadyanCode Bot Inc",
 			organizationId: "org-1",
 			roles: ["admin"],
 		},
@@ -144,7 +144,7 @@ beforeEach(() => {
 	Object.assign(globalThis, { IS_REACT_ACT_ENVIRONMENT: true });
 	window.localStorage.clear();
 	invoke.mockReset();
-	invoke.mockRejectedValue(new Error("No Cline account auth token found"));
+	invoke.mockRejectedValue(new Error("No HadyanCode account auth token found"));
 	desktopMocks.subscribe.mockReset();
 	desktopMocks.subscribe.mockImplementation(() => () => undefined);
 	desktopMocks.subscribeTransportState.mockReset();
@@ -691,7 +691,7 @@ describe("AgentSidebar session organization", () => {
 
 	it("builds the hover overview with branch and secondary metadata last", () => {
 		const thread = {
-			...makeThread("cline", 5),
+			...makeThread("hadyancode", 5),
 			gitBranch: "bee/session-overview",
 			inputTokens: 3_000_000,
 			outputTokens: 9_000,
@@ -699,14 +699,14 @@ describe("AgentSidebar session organization", () => {
 		};
 
 		expect(getSessionOverviewItems(thread)).toEqual([
-			["Workspace", "cline", "/projects/cline"],
+			["Workspace", "hadyancode", "/projects/hadyancode"],
 			["Branch", "bee/session-overview"],
-			["Provider", "cline"],
+			["Provider", "hadyancode"],
 			["Model", "test-model"],
 			["Tokens", "3009k"],
 			["Cost", "$3.06"],
 		]);
-		expect(getSessionOverviewItems(makeThread("cline", 5))).not.toContainEqual([
+		expect(getSessionOverviewItems(makeThread("hadyancode", 5))).not.toContainEqual([
 			"Branch",
 			expect.anything(),
 		]);
@@ -717,7 +717,7 @@ describe("AgentSidebar session organization", () => {
 		// this is; the row itself only says "Run N".
 		expect(
 			getSessionOverviewItems({
-				...makeThread("cline", 6),
+				...makeThread("hadyancode", 6),
 				isScheduled: true,
 				scheduleName: "Daily date report",
 				scheduleRunNumber: 6,
@@ -829,9 +829,9 @@ describe("AgentSidebar session organization", () => {
 
 		await vi.waitFor(() => {
 			expect(container.textContent).toContain("Beatrix");
-			expect(container.textContent).toContain("Cline Bot Inc");
+			expect(container.textContent).toContain("HadyanCode Bot Inc");
 		});
-		expect(container.textContent).not.toContain("Cline Desktop");
+		expect(container.textContent).not.toContain("HadyanCode Desktop");
 		expect(container.textContent).not.toContain("Local");
 		const accountButton = container.querySelector(
 			'[aria-label="Account settings"]',
@@ -844,7 +844,7 @@ describe("AgentSidebar session organization", () => {
 		].find((element) => element.textContent === "Beatrix");
 		const organizationName = [
 			...(accountButton?.querySelectorAll("span") ?? []),
-		].find((element) => element.textContent === "Cline Bot Inc");
+		].find((element) => element.textContent === "HadyanCode Bot Inc");
 		expect(accountName?.nextElementSibling).toBe(organizationName);
 		expect(accountName?.parentElement?.className).toContain("flex-col");
 	});
@@ -940,7 +940,7 @@ describe("AgentSidebar session organization", () => {
 					},
 				};
 			}
-			throw new Error("No Cline account auth token found");
+			throw new Error("No HadyanCode account auth token found");
 		});
 
 		await act(async () => {
@@ -961,7 +961,7 @@ describe("AgentSidebar session organization", () => {
 			);
 		});
 
-		const logoButton = container.querySelector('[aria-label="Cline home"]');
+		const logoButton = container.querySelector('[aria-label="HadyanCode home"]');
 		expect(logoButton).not.toBeNull();
 		expect(document.body.textContent).not.toContain("Version 1.2.3");
 
@@ -969,7 +969,7 @@ describe("AgentSidebar session organization", () => {
 
 		await vi.waitFor(() => {
 			expect(document.body.textContent).toContain("Version 1.2.3");
-			expect(document.body.textContent).toContain("Cline Hub @25463");
+			expect(document.body.textContent).toContain("HadyanCode Hub @25463");
 			expect(document.body.textContent).not.toContain(
 				"ws://127.0.0.1:25463/hub",
 			);
@@ -1009,12 +1009,12 @@ describe("AgentSidebar session organization", () => {
 			);
 		});
 
-		const logoButton = container.querySelector('[aria-label="Cline home"]');
+		const logoButton = container.querySelector('[aria-label="HadyanCode home"]');
 		expect(logoButton).not.toBeNull();
 		await hover(logoButton as Element);
 
 		await vi.waitFor(() => {
-			expect(document.body.textContent).toContain("Cline Hub @25463");
+			expect(document.body.textContent).toContain("HadyanCode Hub @25463");
 			expect(document.body.textContent).toContain(
 				"Hub connection closed (code=1006)",
 			);
@@ -1049,7 +1049,7 @@ describe("AgentSidebar session organization", () => {
 
 		const titleBar = container.querySelector("[data-tauri-drag-region]");
 		expect(titleBar).not.toBeNull();
-		expect(titleBar?.textContent).not.toContain("Cline");
+		expect(titleBar?.textContent).not.toContain("HadyanCode");
 
 		await click(
 			container.querySelector('[aria-label="Previous page"]') as Element,
@@ -1080,7 +1080,7 @@ describe("AgentSidebar session organization", () => {
 			);
 		});
 
-		const logo = container.querySelector('[aria-label="Cline home"]');
+		const logo = container.querySelector('[aria-label="HadyanCode home"]');
 		const actionsNav = container.querySelector(
 			'[aria-label="Sidebar actions"]',
 		);
@@ -1237,7 +1237,7 @@ describe("AgentSidebar session organization", () => {
 		expect(document.querySelector('[data-slot="command-input"]')).toBeNull();
 	});
 
-	it("uses only the Cline logo for home in the collapsed sidebar", async () => {
+	it("uses only the HadyanCode logo for home in the collapsed sidebar", async () => {
 		await act(async () => {
 			root.render(
 				<AccountProvider>
@@ -1256,7 +1256,7 @@ describe("AgentSidebar session organization", () => {
 			);
 		});
 
-		expect(container.querySelector('[aria-label="Cline home"]')).not.toBeNull();
+		expect(container.querySelector('[aria-label="HadyanCode home"]')).not.toBeNull();
 		expect(
 			container.querySelector('[aria-label="Sidebar actions"]'),
 		).toBeNull();
@@ -1295,7 +1295,7 @@ describe("AgentSidebar session organization", () => {
 			container.querySelector('[aria-label="Settings sections"]'),
 		).not.toBeNull();
 		const leftAlignedButtons = [
-			"Cline home",
+			"HadyanCode home",
 			"General",
 			"Account",
 			"Expand sidebar",

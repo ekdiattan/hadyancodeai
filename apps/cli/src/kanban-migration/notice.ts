@@ -1,10 +1,10 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
-import { resolveClineDataDir } from "@cline/shared/storage";
+import { resolveHadyanCodeDataDir } from "@hadyancode/shared/storage";
 
-const NOTICE_ID = "cline-cli-cline-pass-intro";
-const FORCE_NOTICE_ENV = "CLINE_FORCE_CLINE_PASS_NOTICE";
-const DISABLE_NOTICE_ENV = "CLINE_DISABLE_CLINE_PASS_NOTICE";
+const NOTICE_ID = "hadyancode-cli-hadyancode-pass-intro";
+const FORCE_NOTICE_ENV = "HADYANCODE_FORCE_HADYANCODE_PASS_NOTICE";
+const DISABLE_NOTICE_ENV = "HADYANCODE_DISABLE_HADYANCODE_PASS_NOTICE";
 
 export interface CliMigrationNotice {
 	id: string;
@@ -57,23 +57,23 @@ function isForceNoticeEnabled(env: NodeJS.ProcessEnv): boolean {
 	return env[FORCE_NOTICE_ENV]?.trim() === "1";
 }
 
-export function shouldSuppressClineCliMigrationNoticeForActiveProvider(
+export function shouldSuppressHadyanCodeCliMigrationNoticeForActiveProvider(
 	activeProviderId: string | undefined,
 	env: NodeJS.ProcessEnv = process.env,
 ): boolean {
 	return (
-		activeProviderId?.trim() === "cline-pass" && !isForceNoticeEnabled(env)
+		activeProviderId?.trim() === "hadyancode-pass" && !isForceNoticeEnabled(env)
 	);
 }
 
 export function resolveCliNoticeStatePath(
-	dataDir = resolveClineDataDir(),
+	dataDir = resolveHadyanCodeDataDir(),
 ): string {
 	return join(dataDir, "settings", "cli-notices.json");
 }
 
-export function getClineCliMigrationNotice(
-	dataDir = resolveClineDataDir(),
+export function getHadyanCodeCliMigrationNotice(
+	dataDir = resolveHadyanCodeDataDir(),
 	env: NodeJS.ProcessEnv = process.env,
 	options: CliMigrationNoticeOptions = {},
 ): CliMigrationNotice | undefined {
@@ -85,7 +85,7 @@ export function getClineCliMigrationNotice(
 		return undefined;
 	}
 	if (
-		shouldSuppressClineCliMigrationNoticeForActiveProvider(
+		shouldSuppressHadyanCodeCliMigrationNoticeForActiveProvider(
 			options.activeProviderId,
 			env,
 		)
@@ -97,12 +97,12 @@ export function getClineCliMigrationNotice(
 	}
 	return {
 		id: NOTICE_ID,
-		title: "Try ClinePass",
+		title: "Try HadyanCodePass",
 	};
 }
 
-export function markClineCliMigrationNoticeShown(
-	dataDir = resolveClineDataDir(),
+export function markHadyanCodeCliMigrationNoticeShown(
+	dataDir = resolveHadyanCodeDataDir(),
 ): void {
 	const noticePath = resolveCliNoticeStatePath(dataDir);
 	const noticeState = readNoticeState(noticePath);

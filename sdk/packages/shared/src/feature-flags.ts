@@ -1,6 +1,6 @@
 export const FeatureFlag = {
-	/** Enables ClinePass provider/model list exposure in supported clients. */
-	CLINE_PASS: "ext-cline-pass",
+	/** Enables HadyanCodePass provider/model list exposure in supported clients. */
+	HADYANCODE_PASS: "ext-hadyancode-pass",
 	/** Shows the GitHub integration step in the desktop app */
 	CODE_ONBOARDING_GITHUB: "code-onboarding-github",
 } as const;
@@ -26,7 +26,7 @@ export type FeatureFlagsAndPayloads = {
 export interface FeatureFlagsContext {
 	/** Stable SDK/client/user identifier used by providers that evaluate per identity. */
 	distinctId?: string;
-	/** Authenticated Cline account/user ID, when available. */
+	/** Authenticated HadyanCode account/user ID, when available. */
 	userId?: string | null;
 	/** Optional SDK consumer name, e.g. `my-production-app`. */
 	clientName?: string;
@@ -63,7 +63,7 @@ export interface IFeatureFlagsProvider {
 export const FeatureFlagDefaultValue: Partial<
 	Record<FeatureFlag, FeatureFlagPayload | undefined>
 > = {
-	[FeatureFlag.CLINE_PASS]: false,
+	[FeatureFlag.HADYANCODE_PASS]: false,
 	[FeatureFlag.CODE_ONBOARDING_GITHUB]: false,
 };
 

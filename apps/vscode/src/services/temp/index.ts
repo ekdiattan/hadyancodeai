@@ -1,1 +1,1 @@
-export { ClineTempManager } from "./ClineTempManager"
+export { HadyanCodeTempManager } from "./HadyanCodeTempManager"

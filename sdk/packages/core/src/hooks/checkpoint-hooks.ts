@@ -3,11 +3,11 @@ import { mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { promisify } from "node:util";
-import type { AgentHooks, BasicLogger } from "@cline/shared";
+import type { AgentHooks, BasicLogger } from "@hadyancode/shared";
 import { countUserRunMessages } from "../session/user-run-messages";
 
 const execFile = promisify(execFileCallback);
-const CHECKPOINT_STASH_MESSAGE_PREFIX = "cline checkpoint session=";
+const CHECKPOINT_STASH_MESSAGE_PREFIX = "hadyancode checkpoint session=";
 
 export function isCheckpointStashMessage(message: string): boolean {
 	return message.includes(CHECKPOINT_STASH_MESSAGE_PREFIX);
@@ -126,7 +126,7 @@ async function createUntrackedParentCommit(
 	if (untrackedFiles.length === 0) {
 		return undefined;
 	}
-	const tempDir = await mkdtemp(join(tmpdir(), "cline-checkpoint-"));
+	const tempDir = await mkdtemp(join(tmpdir(), "hadyancode-checkpoint-"));
 	const indexFile = join(tempDir, "index");
 	const pathspecFile = join(tempDir, "pathspec");
 	try {
@@ -148,7 +148,7 @@ async function createUntrackedParentCommit(
 			"commit-tree",
 			tree,
 			"-m",
-			"untracked files on cline checkpoint",
+			"untracked files on hadyancode checkpoint",
 		]);
 		return commit || undefined;
 	} finally {
@@ -222,7 +222,7 @@ async function createWorktreeStashCommit(
 			"-p",
 			head,
 			"-m",
-			"index on cline checkpoint",
+			"index on hadyancode checkpoint",
 		])
 	).stdout;
 	if (!indexParent) {
@@ -247,7 +247,7 @@ async function createWorktreeStashCommit(
 }
 
 /**
- * Deletes all private git refs under refs/cline/checkpoints/{sessionId}/ that
+ * Deletes all private git refs under refs/hadyancode/checkpoints/{sessionId}/ that
  * were created by the checkpoint system to keep stash objects reachable.
  * Errors are swallowed - if the cwd is not a git repo or the refs don't exist,
  * the delete is a no-op.
@@ -257,7 +257,7 @@ export async function deleteCheckpointRefs(
 	sessionId: string,
 ): Promise<void> {
 	if (!cwd) return;
-	const prefix = `refs/cline/checkpoints/${sessionId}/`;
+	const prefix = `refs/hadyancode/checkpoints/${sessionId}/`;
 	try {
 		const { stdout } = await runGit(cwd, [
 			"for-each-ref",
@@ -283,7 +283,7 @@ export async function retainCheckpointRefs(
 		checkpoints.map((entry) =>
 			runGit(cwd, [
 				"update-ref",
-				`refs/cline/checkpoints/${sessionId}/${entry.runCount}`,
+				`refs/hadyancode/checkpoints/${sessionId}/${entry.runCount}`,
 				entry.ref,
 			]),
 		),
@@ -400,7 +400,7 @@ export function createCheckpointHooks(
 		// ref path keeps the object reachable (GC-safe) without surfacing
 		// it to the user.  The raw SHA already works with `git stash apply`
 		// on the restore path, so no restore-side changes are needed.
-		const privateRef = `refs/cline/checkpoints/${options.sessionId}/${runCount}`;
+		const privateRef = `refs/hadyancode/checkpoints/${options.sessionId}/${runCount}`;
 		try {
 			await runGit(options.cwd, ["update-ref", privateRef, ref]);
 		} catch (error) {

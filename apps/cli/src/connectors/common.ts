@@ -12,22 +12,22 @@ import {
 	writeFileSync,
 } from "node:fs";
 import { join } from "node:path";
-import type { HubSessionClient, HubSessionRow } from "@cline/core";
+import type { HubSessionClient, HubSessionRow } from "@hadyancode/core";
 import {
 	ensureParentDir,
 	getProcessStartToken,
-	resolveClineDataDir,
-} from "@cline/core";
+	resolveHadyanCodeDataDir,
+} from "@hadyancode/core";
 import {
-	CLINE_RUN_AS_HUB_DAEMON_ENV,
-	withResolvedClineBuildEnv,
-} from "@cline/shared";
+	HADYANCODE_RUN_AS_HUB_DAEMON_ENV,
+	withResolvedHadyanCodeBuildEnv,
+} from "@hadyancode/shared";
 import { createCliLoggerAdapter } from "../logging/adapter";
 import { logSpawnedProcess } from "../logging/process";
 import { resolveCliLaunchSpec } from "../utils/internal-launch";
 
-export const CLINE_CONNECTOR_DETACHED_CHILD_ENV =
-	"CLINE_CONNECTOR_DETACHED_CHILD";
+export const HADYANCODE_CONNECTOR_DETACHED_CHILD_ENV =
+	"HADYANCODE_CONNECTOR_DETACHED_CHILD";
 
 /**
  * Internal success from a detached connect when an instance is already running.
@@ -162,11 +162,11 @@ function buildDetachedConnectorEnv(
 	env: NodeJS.ProcessEnv = process.env,
 ): NodeJS.ProcessEnv {
 	const childEnv = {
-		...withResolvedClineBuildEnv(env),
+		...withResolvedHadyanCodeBuildEnv(env),
 		[childEnvKey]: "1",
-		[CLINE_CONNECTOR_DETACHED_CHILD_ENV]: "1",
+		[HADYANCODE_CONNECTOR_DETACHED_CHILD_ENV]: "1",
 	};
-	delete childEnv[CLINE_RUN_AS_HUB_DAEMON_ENV];
+	delete childEnv[HADYANCODE_RUN_AS_HUB_DAEMON_ENV];
 	return childEnv;
 }
 
@@ -177,7 +177,7 @@ export function resolveConnectorDebugLogPath(
 	const safeAdapter = adapterName.replace(/[^a-zA-Z0-9._-]+/g, "_");
 	const safeKey = instanceKey.replace(/[^a-zA-Z0-9._-]+/g, "_");
 	return join(
-		resolveClineDataDir(),
+		resolveHadyanCodeDataDir(),
 		"logs",
 		"connectors",
 		safeAdapter,
@@ -334,7 +334,7 @@ export function writeJsonFile(path: string, value: unknown): void {
 /**
  * Atomically claim a connector state path for this process.
  *
- * Uses O_EXCL so two concurrent `cline connect` launches cannot both observe
+ * Uses O_EXCL so two concurrent `hadyancode connect` launches cannot both observe
  * "no running instance" and both proceed. Returns undefined when another live
  * connector already owns the path (or a concurrent claim won the race).
  */

@@ -9,9 +9,10 @@ import {
 	resolveGeneratedProviderIdForModelsDevKey,
 } from "../providers/provider-keys";
 import {
-	fetchClineRecommendedModelsPayload,
-	normalizeClineRecommendedProviderModels,
-} from "./catalog-cline-recommended";
+	fetchHadyanCodeRecommendedModelsPayload,
+	normalizeHadyanCodeRecommendedProviderModels,
+} from "./catalog-hadyancode-recommended";
+import { stripNonReasoningModelSupport } from "./model-filters";
 import {
 	resolveCatalogModelOperation,
 	resolveCatalogModelOperationModes,
@@ -134,25 +135,14 @@ function supportedAiSdkProviderFamily(
 	];
 }
 
-function usesSupportedAiSdkProvider(
-	provider: ModelsDevProviderPayload,
-): boolean {
-	return supportedAiSdkProviderFamily(provider) !== undefined;
-}
-
 function selectedTargetProviderId(
 	sourceProviderKey: string,
-	source: ModelsDevProviderPayload,
 ): string | undefined {
-	const mappedProviderId =
-		resolveGeneratedProviderIdForModelsDevKey(sourceProviderKey);
-	if (mappedProviderId) {
-		return mappedProviderId;
-	}
-	if (usesSupportedAiSdkProvider(source)) {
-		return source.id || sourceProviderKey;
-	}
-	return undefined;
+	// Only providers explicitly mapped in ./providers/provider-keys.ts are
+	// materialised. Falling back to any models.dev provider that happens to use a
+	// supported AI SDK package would re-introduce the hundreds of providers this
+	// build deliberately dropped.
+	return resolveGeneratedProviderIdForModelsDevKey(sourceProviderKey);
 }
 
 function getSelectedModelsDevProviders(
@@ -164,10 +154,7 @@ function getSelectedModelsDevProviders(
 	for (const [sourceProviderKey, source] of Object.entries(payload).sort(
 		([a], [b]) => a.localeCompare(b),
 	)) {
-		const targetProviderId = selectedTargetProviderId(
-			sourceProviderKey,
-			source,
-		);
+		const targetProviderId = selectedTargetProviderId(sourceProviderKey);
 		if (
 			!targetProviderId ||
 			MODELS_DEV_BLOCKED_PROVIDER_IDS.has(targetProviderId) ||
@@ -176,9 +163,7 @@ function getSelectedModelsDevProviders(
 			continue;
 		}
 
-		const isCurrentBuiltinProvider =
-			MODELS_DEV_CURRENT_BUILTIN_PROVIDER_KEYS.has(sourceProviderKey);
-		if (!isCurrentBuiltinProvider && !usesSupportedAiSdkProvider(source)) {
+		if (!MODELS_DEV_CURRENT_BUILTIN_PROVIDER_KEYS.has(sourceProviderKey)) {
 			continue;
 		}
 
@@ -396,7 +381,9 @@ export function normalizeModelsDevProviderModels(
 		}
 
 		if (Object.keys(models).length > 0) {
-			providerModels[targetProviderId] = sortModelsByReleaseDate(models);
+			providerModels[targetProviderId] = sortModelsByReleaseDate(
+				stripNonReasoningModelSupport(models),
+			);
 		}
 	}
 
@@ -517,21 +504,21 @@ export async function fetchLiveProviderModels(
 	fetcher: typeof fetch = fetch,
 ): Promise<Record<string, Record<string, ModelInfo>>> {
 	const emptyProviderModels: Record<string, Record<string, ModelInfo>> = {};
-	const [providerModels, clineRecommendedPayload] = await Promise.all([
+	const [providerModels, hadyancodeRecommendedPayload] = await Promise.all([
 		fetchModelsDevProviderModels(modelsDevUrl, fetcher).catch(
 			() => emptyProviderModels,
 		),
-		fetchClineRecommendedModelsPayload(fetcher).catch(() => undefined),
+		fetchHadyanCodeRecommendedModelsPayload(fetcher).catch(() => undefined),
 	]);
-	const clineRecommended = clineRecommendedPayload
-		? normalizeClineRecommendedProviderModels(
-				clineRecommendedPayload,
+	const hadyancodeRecommended = hadyancodeRecommendedPayload
+		? normalizeHadyanCodeRecommendedProviderModels(
+				hadyancodeRecommendedPayload,
 				providerModels.openrouter ?? {},
 			)
 		: {};
 
 	return {
 		...providerModels,
-		...clineRecommended,
+		...hadyancodeRecommended,
 	};
 }

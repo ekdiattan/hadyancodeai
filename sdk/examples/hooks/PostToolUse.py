@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-Cline Hook: PostToolUse (Python)
+HadyanCode Hook: PostToolUse (Python)
 Logs tool results after execution and enriches with environment context.
-Copy to ~/.cline/hooks/PostToolUse.py and chmod +x
+Copy to ~/.hadyancode/hooks/PostToolUse.py and chmod +x
 """
 
 import sys

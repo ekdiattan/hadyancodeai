@@ -69,7 +69,7 @@ class FakeProvider implements ITelemetryProvider {
 function createTelemetryService(provider: FakeProvider, overrides: Partial<TelemetryMetadata> = {}): TelemetryService {
 	return new TelemetryService([provider], {
 		extension_version: "test",
-		cline_type: "cline-unit-tests",
+		hadyancode_type: "hadyancode-unit-tests",
 		platform: "test-platform",
 		platform_version: "1.0.0",
 		os_type: "darwin",
@@ -340,13 +340,13 @@ describe("TelemetryService metrics", () => {
 		const provider = new FakeProvider()
 		const service = createTelemetryService(provider)
 
-		service.captureGrpcResponseSize(123456, "cline.StateService", "subscribeToState")
+		service.captureGrpcResponseSize(123456, "hadyancode.StateService", "subscribeToState")
 
 		assert.strictEqual(provider.histograms.length, 1)
 		const entry = provider.histograms[0]
 		assert.strictEqual(entry.name, TelemetryService.METRICS.GRPC.RESPONSE_SIZE_BYTES)
 		assert.strictEqual(entry.value, 123456)
-		assert.strictEqual(entry.attributes.service, "cline.StateService")
+		assert.strictEqual(entry.attributes.service, "hadyancode.StateService")
 		assert.strictEqual(entry.attributes.method, "subscribeToState")
 		assert.strictEqual(entry.description, "Size of gRPC response messages in bytes")
 		// Should not have request_id when not provided
@@ -357,7 +357,7 @@ describe("TelemetryService metrics", () => {
 		const provider = new FakeProvider()
 		const service = createTelemetryService(provider)
 
-		service.captureGrpcResponseSize(5000, "cline.StateService", "subscribeToState", "req-42")
+		service.captureGrpcResponseSize(5000, "hadyancode.StateService", "subscribeToState", "req-42")
 
 		assert.strictEqual(provider.histograms.length, 1)
 		const entry = provider.histograms[0]
@@ -368,7 +368,7 @@ describe("TelemetryService metrics", () => {
 		const provider = new FakeProvider()
 		const service = createTelemetryService(provider)
 
-		service.captureGrpcResponseSize(1000, "cline.StateService", "subscribeToState")
+		service.captureGrpcResponseSize(1000, "hadyancode.StateService", "subscribeToState")
 
 		const entry = provider.histograms[0]
 		assert.strictEqual(entry.attributes.extension_version, "test")

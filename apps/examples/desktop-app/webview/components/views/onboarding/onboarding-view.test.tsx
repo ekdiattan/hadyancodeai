@@ -63,7 +63,7 @@ describe("sortProvidersForApiKeySetup", () => {
 	it("drops OAuth-managed providers and ranks popular ones first", () => {
 		const sorted = sortProvidersForApiKeySetup([
 			makeProvider({ id: "zai", name: "Z AI" }),
-			makeProvider({ id: "cline", name: "Cline" }),
+			makeProvider({ id: "hadyancode", name: "HadyanCode" }),
 			makeProvider({ id: "openai-codex", name: "ChatGPT" }),
 			makeProvider({ id: "openrouter", name: "OpenRouter" }),
 			makeProvider({ id: "anthropic", name: "Anthropic" }),
@@ -137,8 +137,8 @@ describe("OnboardingView", () => {
 		// AccountProvider fetches the account on mount; unresolved auth means
 		// the signed-out variant of the connect step renders.
 		invoke.mockImplementation(async (command: string) => {
-			if (command === "cline_account") {
-				throw new Error("No Cline account auth token found");
+			if (command === "hadyancode_account") {
+				throw new Error("No HadyanCode account auth token found");
 			}
 			if (command === "list_provider_catalog") {
 				return {
@@ -214,11 +214,11 @@ describe("OnboardingView", () => {
 			buttonByText("Get started").click();
 		});
 
-		// Cline is selected by default. The inactive API-key card is inert so its
+		// HadyanCode is selected by default. The inactive API-key card is inert so its
 		// controls cannot receive pointer or keyboard input through the overlay.
-		expect(container.textContent).toContain("Set up Cline");
-		const clineOption = container.querySelector(
-			'[data-onboarding-option="cline"]',
+		expect(container.textContent).toContain("Set up HadyanCode");
+		const hadyancodeOption = container.querySelector(
+			'[data-onboarding-option="hadyancode"]',
 		);
 		const apiKeyOption = container.querySelector(
 			'[data-onboarding-option="api-key"]',
@@ -226,7 +226,7 @@ describe("OnboardingView", () => {
 		const recommendedBadge = Array.from(
 			container.querySelectorAll<HTMLElement>('[data-slot="badge"]'),
 		).find((badge) => badge.textContent === "Recommended");
-		expect(clineOption?.getAttribute("data-selected")).toBe("true");
+		expect(hadyancodeOption?.getAttribute("data-selected")).toBe("true");
 		expect(apiKeyOption?.getAttribute("data-selected")).toBe("false");
 		expect(recommendedBadge).not.toBeNull();
 		// Preserve the appearance of the desktop-local Badge after decoupling
@@ -242,7 +242,7 @@ describe("OnboardingView", () => {
 			expect(recommendedBadge?.className).toContain(className);
 		}
 		expect(
-			clineOption
+			hadyancodeOption
 				?.querySelector("[data-onboarding-option-content]")
 				?.hasAttribute("inert"),
 		).toBe(false);
@@ -269,8 +269,8 @@ describe("OnboardingView", () => {
 			buttonByText("Get started").click();
 		});
 
-		const clineOption = container.querySelector(
-			'[data-onboarding-option="cline"]',
+		const hadyancodeOption = container.querySelector(
+			'[data-onboarding-option="hadyancode"]',
 		);
 		const apiKeyOption = container.querySelector(
 			'[data-onboarding-option="api-key"]',
@@ -289,10 +289,10 @@ describe("OnboardingView", () => {
 
 		// Selecting a card moves both the visual state and the accessibility
 		// boundary, expands its form, and focuses the first usable control.
-		expect(clineOption?.getAttribute("data-selected")).toBe("false");
+		expect(hadyancodeOption?.getAttribute("data-selected")).toBe("false");
 		expect(apiKeyOption?.getAttribute("data-selected")).toBe("true");
 		expect(
-			clineOption
+			hadyancodeOption
 				?.querySelector("[data-onboarding-option-content]")
 				?.hasAttribute("inert"),
 		).toBe(true);
@@ -307,16 +307,16 @@ describe("OnboardingView", () => {
 			container.querySelector('button[aria-label="Use your own API key"]'),
 		).toBeNull();
 
-		const clineCardAction = container.querySelector<HTMLButtonElement>(
-			'button[aria-label="Sign in with Cline"]',
+		const hadyancodeCardAction = container.querySelector<HTMLButtonElement>(
+			'button[aria-label="Sign in with HadyanCode"]',
 		);
-		expect(clineCardAction).not.toBeNull();
+		expect(hadyancodeCardAction).not.toBeNull();
 		await act(async () => {
-			clineCardAction?.click();
+			hadyancodeCardAction?.click();
 		});
 		// Switching back performs the inverse transition and restores focus to
-		// the primary Cline action.
-		expect(clineOption?.getAttribute("data-selected")).toBe("true");
+		// the primary HadyanCode action.
+		expect(hadyancodeOption?.getAttribute("data-selected")).toBe("true");
 		expect(apiKeyOption?.getAttribute("data-selected")).toBe("false");
 		expect(apiKeyForm?.getAttribute("aria-hidden")).toBe("true");
 		expect(document.activeElement?.textContent?.trim()).toBe("Sign in");
@@ -325,7 +325,7 @@ describe("OnboardingView", () => {
 		).not.toBeNull();
 	});
 
-	it("keeps the Cline API key form chevron static while toggling the panel", async () => {
+	it("keeps the HadyanCode API key form chevron static while toggling the panel", async () => {
 		await render();
 		await act(async () => {
 			buttonByText("Get started").click();
@@ -333,13 +333,13 @@ describe("OnboardingView", () => {
 
 		// The design uses the chevron as a disclosure affordance without rotating
 		// it; aria-expanded and panel visibility carry the actual state.
-		const trigger = buttonByText("Use a Cline API key");
+		const trigger = buttonByText("Use a HadyanCode API key");
 		const chevron = trigger.querySelector("svg");
 		const chevronClassName = chevron?.getAttribute("class");
-		const panel = container.querySelector("#onboarding-cline-key-form");
+		const panel = container.querySelector("#onboarding-hadyancode-key-form");
 
 		expect(trigger.getAttribute("aria-controls")).toBe(
-			"onboarding-cline-key-form",
+			"onboarding-hadyancode-key-form",
 		);
 		expect(trigger.getAttribute("aria-expanded")).toBe("false");
 		expect(chevronClassName).toBeTruthy();
@@ -373,14 +373,14 @@ describe("OnboardingView", () => {
 		expect(onComplete).toHaveBeenCalledTimes(1);
 	});
 
-	it("records Cline as the provider when a signed-in user continues", async () => {
+	it("records HadyanCode as the provider when a signed-in user continues", async () => {
 		// Simulate replaying onboarding after previously using another provider.
 		window.localStorage.setItem(
 			MODEL_SELECTION_STORAGE_KEY,
 			JSON.stringify({ lastProvider: "anthropic", lastModelByProvider: {} }),
 		);
 		invoke.mockImplementation(async (command: string) => {
-			if (command === "cline_account") {
+			if (command === "hadyancode_account") {
 				return { email: "dev@example.com", displayName: "Dev" };
 			}
 			if (command === "list_provider_catalog") {
@@ -400,7 +400,7 @@ describe("OnboardingView", () => {
 		await act(async () => {
 			buttonByText("Continue").click();
 		});
-		// Connecting a Cline account routes through the GitHub integration step.
+		// Connecting a HadyanCode account routes through the GitHub integration step.
 		expect(container.textContent).toContain("Connect GitHub");
 		await act(async () => {
 			buttonByText("Skip for now").click();
@@ -420,15 +420,15 @@ describe("OnboardingView", () => {
 			parseModelSelectionStorage(
 				window.localStorage.getItem(MODEL_SELECTION_STORAGE_KEY),
 			).lastProvider,
-		).toBe("cline");
+		).toBe("hadyancode");
 	});
 
 	it("skips the GitHub step silently when the integration is already connected", async () => {
 		invoke.mockImplementation(async (command: string) => {
-			if (command === "cline_account") {
+			if (command === "hadyancode_account") {
 				return { email: "dev@example.com", displayName: "Dev" };
 			}
-			if (command === "cline_integrations") {
+			if (command === "hadyancode_integrations") {
 				return [{ provider: "github" }];
 			}
 			if (command === "list_provider_catalog") {
@@ -452,7 +452,7 @@ describe("OnboardingView", () => {
 
 	it("bypasses the GitHub step when the rollout flag is off", async () => {
 		invoke.mockImplementation(async (command: string) => {
-			if (command === "cline_account") {
+			if (command === "hadyancode_account") {
 				return { email: "dev@example.com", displayName: "Dev" };
 			}
 			if (command === "list_provider_catalog") {
@@ -485,8 +485,8 @@ describe("OnboardingView", () => {
 			if (command === "run_provider_oauth_login") {
 				return await new Promise(() => undefined);
 			}
-			if (command === "cline_account") {
-				throw new Error("No Cline account auth token found");
+			if (command === "hadyancode_account") {
+				throw new Error("No HadyanCode account auth token found");
 			}
 			if (command === "list_provider_catalog") {
 				return { providers: [makeProvider()], settingsPath: "/tmp/p.json" };
@@ -506,30 +506,30 @@ describe("OnboardingView", () => {
 		// Cancelling must also stop the backend browser round-trip so a
 		// later-completed authorization can never persist credentials.
 		expect(invoke).toHaveBeenCalledWith("cancel_provider_oauth_login", {
-			provider: "cline",
+			provider: "hadyancode",
 		});
 	});
 
-	it("connects with a Cline API key when OAuth sign-in is not used", async () => {
+	it("connects with a HadyanCode API key when OAuth sign-in is not used", async () => {
 		const onComplete = await render();
 		await act(async () => {
 			buttonByText("Get started").click();
 		});
 
 		await act(async () => {
-			buttonByText("Use a Cline API key").click();
+			buttonByText("Use a HadyanCode API key").click();
 		});
 		const keyInput = container.querySelector<HTMLInputElement>(
-			'input[aria-label="Cline API key"]',
+			'input[aria-label="HadyanCode API key"]',
 		);
 		expect(keyInput).not.toBeNull();
 
 		invoke.mockClear();
 		invoke.mockImplementation(async (command: string) => {
 			if (command === "save_provider_settings") {
-				return { providerId: "cline", enabled: true };
+				return { providerId: "hadyancode", enabled: true };
 			}
-			if (command === "cline_account") {
+			if (command === "hadyancode_account") {
 				return { email: "dev@example.com", displayName: "Dev" };
 			}
 			return {};
@@ -540,7 +540,7 @@ describe("OnboardingView", () => {
 				window.HTMLInputElement.prototype,
 				"value",
 			)?.set;
-			setter?.call(keyInput, "cline_key_123");
+			setter?.call(keyInput, "hadyancode_key_123");
 			keyInput?.dispatchEvent(new Event("input", { bubbles: true }));
 		});
 		await act(async () => {
@@ -548,21 +548,21 @@ describe("OnboardingView", () => {
 		});
 
 		expect(invoke).toHaveBeenCalledWith("save_provider_settings", {
-			provider: "cline",
+			provider: "hadyancode",
 			enabled: true,
-			api_key: "cline_key_123",
+			api_key: "hadyancode_key_123",
 		});
 		expect(container.textContent).toContain("Connect GitHub");
 		await act(async () => {
 			buttonByText("Skip for now").click();
 		});
 		expect(container.textContent).toContain("You're all set");
-		expect(container.textContent).toContain("Your Cline account is connected");
+		expect(container.textContent).toContain("Your HadyanCode account is connected");
 		expect(
 			parseModelSelectionStorage(
 				window.localStorage.getItem(MODEL_SELECTION_STORAGE_KEY),
 			).lastProvider,
-		).toBe("cline");
+		).toBe("hadyancode");
 
 		await act(async () => {
 			buttonByText("Start building").click();
@@ -570,16 +570,16 @@ describe("OnboardingView", () => {
 		expect(onComplete).toHaveBeenCalledTimes(1);
 	});
 
-	it("rejects an invalid Cline API key and rolls back the saved key", async () => {
+	it("rejects an invalid HadyanCode API key and rolls back the saved key", async () => {
 		await render();
 		await act(async () => {
 			buttonByText("Get started").click();
 		});
 		await act(async () => {
-			buttonByText("Use a Cline API key").click();
+			buttonByText("Use a HadyanCode API key").click();
 		});
 		const keyInput = container.querySelector<HTMLInputElement>(
-			'input[aria-label="Cline API key"]',
+			'input[aria-label="HadyanCode API key"]',
 		);
 
 		const savedKeys: Array<string | undefined> = [];
@@ -588,10 +588,10 @@ describe("OnboardingView", () => {
 			async (command: string, args?: Record<string, unknown>) => {
 				if (command === "save_provider_settings") {
 					savedKeys.push(args?.api_key as string | undefined);
-					return { providerId: "cline", enabled: true };
+					return { providerId: "hadyancode", enabled: true };
 				}
-				if (command === "cline_account") {
-					throw new Error("Cline account request failed with status 401");
+				if (command === "hadyancode_account") {
+					throw new Error("HadyanCode account request failed with status 401");
 				}
 				return {};
 			},
@@ -617,7 +617,7 @@ describe("OnboardingView", () => {
 		expect(savedKeys).toEqual(["bad_key", ""]);
 	});
 
-	it("keeps Cline sign-in available while API-key setup is expanded", async () => {
+	it("keeps HadyanCode sign-in available while API-key setup is expanded", async () => {
 		const onComplete = await render();
 		await act(async () => {
 			buttonByText("Get started").click();
@@ -634,20 +634,20 @@ describe("OnboardingView", () => {
 		expect(container.textContent).toContain("Choose a provider");
 
 		// Expanding bring-your-own-key changes the selected card, but the user can
-		// still switch back and finish through the Cline OAuth path.
+		// still switch back and finish through the HadyanCode OAuth path.
 		await act(async () => {
 			container
 				.querySelector<HTMLButtonElement>(
-					'button[aria-label="Sign in with Cline"]',
+					'button[aria-label="Sign in with HadyanCode"]',
 				)
 				?.click();
 		});
 		invoke.mockImplementation(async (command: string) => {
 			if (command === "run_provider_oauth_login") {
-				return { provider: "cline", accessToken: "token" };
+				return { provider: "hadyancode", accessToken: "token" };
 			}
-			if (command === "cline_account") {
-				throw new Error("No Cline account auth token found");
+			if (command === "hadyancode_account") {
+				throw new Error("No HadyanCode account auth token found");
 			}
 			return {};
 		});
@@ -655,7 +655,7 @@ describe("OnboardingView", () => {
 			buttonByText("Sign in").click();
 		});
 		expect(invoke).toHaveBeenCalledWith("run_provider_oauth_login", {
-			provider: "cline",
+			provider: "hadyancode",
 		});
 		expect(container.textContent).toContain("Connect GitHub");
 		await act(async () => {
@@ -666,7 +666,7 @@ describe("OnboardingView", () => {
 			parseModelSelectionStorage(
 				window.localStorage.getItem(MODEL_SELECTION_STORAGE_KEY),
 			).lastProvider,
-		).toBe("cline");
+		).toBe("hadyancode");
 
 		await act(async () => {
 			buttonByText("Start building").click();

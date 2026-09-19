@@ -1,5 +1,5 @@
-import { UserOrganization, UserOrganizationsResponse } from "@shared/proto/cline/account"
-import type { EmptyRequest } from "@shared/proto/cline/common"
+import { UserOrganization, UserOrganizationsResponse } from "@shared/proto/hadyancode/account"
+import type { EmptyRequest } from "@shared/proto/hadyancode/common"
 import type { Controller } from "../index"
 
 /**

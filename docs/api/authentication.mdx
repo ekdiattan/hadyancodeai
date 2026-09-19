@@ -1,10 +1,10 @@
 ---
 title: "Authentication"
 sidebarTitle: "Authentication"
-description: "How to authenticate with the Cline API using API keys or account tokens."
+description: "How to authenticate with the HadyanCode API using API keys or account tokens."
 ---
 
-Every request to the Cline API requires authentication via a Bearer token in the `Authorization` header.
+Every request to the HadyanCode API requires authentication via a Bearer token in the `Authorization` header.
 
 ## Authentication Methods
 
@@ -13,7 +13,7 @@ There are two ways to authenticate:
 | Method | Use case | How to get it |
 |--------|----------|---------------|
 | **API key** | Direct API calls, scripts, CI/CD | Create at [app.cline.bot](https://app.cline.bot) Settings > API Keys |
-| **Account auth token** | Cline extension and CLI | Generated automatically when you sign in |
+| **Account auth token** | HadyanCode extension and CLI | Generated automatically when you sign in |
 
 Both methods use the same header format:
 
@@ -57,19 +57,19 @@ curl -X DELETE https://api.cline.bot/api/v1/api-keys/KEY_ID \
 
 ## Account Auth Tokens
 
-When you sign in to the Cline extension (VS Code, JetBrains) or CLI, an account auth token is generated and managed automatically. You do not need to handle these tokens manually.
+When you sign in to the HadyanCode extension (VS Code, JetBrains) or CLI, an account auth token is generated and managed automatically. You do not need to handle these tokens manually.
 
-The Cline CLI uses these tokens when you authenticate via:
+The HadyanCode CLI uses these tokens when you authenticate via:
 
 ```bash
 # Interactive sign-in
-cline auth
+hadyancode auth
 
 # Or quick setup with an API key
-cline auth -p cline -k "YOUR_API_KEY" -m anthropic/claude-sonnet-4-6
+hadyancode auth -p hadyancode -k "YOUR_API_KEY" -m anthropic/claude-sonnet-4-6
 ```
 
-See the [CLI Reference](/cli/cli-reference#cline-auth) for all auth options.
+See the [CLI Reference](/cli/cli-reference#hadyancode-auth) for all auth options.
 
 ## Security Best Practices
 
@@ -89,11 +89,11 @@ See the [CLI Reference](/cli/cli-reference#cline-auth) for all auth options.
 
 ```bash
 # Set the key
-export CLINE_API_KEY="your_api_key_here"
+export HADYANCODE_API_KEY="your_api_key_here"
 
 # Use it in requests
 curl -X POST https://api.cline.bot/api/v1/chat/completions \
-  -H "Authorization: Bearer $CLINE_API_KEY" \
+  -H "Authorization: Bearer $HADYANCODE_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{"model": "anthropic/claude-sonnet-4-6", "messages": [{"role": "user", "content": "Hello"}]}'
 ```
@@ -102,7 +102,7 @@ curl -X POST https://api.cline.bot/api/v1/chat/completions \
 
 ```bash
 # .env (add to .gitignore)
-CLINE_API_KEY=your_api_key_here
+HADYANCODE_API_KEY=your_api_key_here
 ```
 
 ```python
@@ -111,19 +111,19 @@ from openai import OpenAI
 
 client = OpenAI(
     base_url="https://api.cline.bot/api/v1",
-    api_key=os.environ["CLINE_API_KEY"],
+    api_key=os.environ["HADYANCODE_API_KEY"],
 )
 ```
 
 ## Custom Headers
 
-The Cline API accepts optional headers for tracking and identification:
+The HadyanCode API accepts optional headers for tracking and identification:
 
 | Header | Description |
 |--------|-------------|
 | `HTTP-Referer` | Your application's URL. Helps with usage tracking. |
 | `X-Title` | Your application's name. Appears in usage logs. |
-| `X-Task-ID` | A unique task identifier. Used internally by the Cline extension. |
+| `X-Task-ID` | A unique task identifier. Used internally by the HadyanCode extension. |
 
 ## Related
 

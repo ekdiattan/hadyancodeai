@@ -1,4 +1,4 @@
-import { isClineProvider } from "@cline/shared";
+import { isHadyanCodeProvider } from "@hadyancode/shared";
 import { OLLAMA_DEFAULT_CONTEXT_WINDOW } from "../builtins";
 import {
 	getModelReasoningControls,
@@ -197,11 +197,11 @@ const genericProviderFanoutRule: ProviderOptionRule = {
 				}),
 };
 
-const clineGatewayReasoningRule: ProviderOptionRule = {
-	id: "provider.cline.reasoning",
+const hadyancodeGatewayReasoningRule: ProviderOptionRule = {
+	id: "provider.hadyancode.reasoning",
 	phase: "provider-reasoning",
-	description: "Cline gateway accepts the shared gateway reasoning shape.",
-	applies: (input) => isClineProvider(input.request.providerId),
+	description: "HadyanCode gateway accepts the shared gateway reasoning shape.",
+	applies: (input) => isHadyanCodeProvider(input.request.providerId),
 	build: (input) =>
 		buildReasoningPatchForProvider(
 			input,
@@ -223,13 +223,13 @@ const openRouterReasoningRule: ProviderOptionRule = {
 		),
 };
 
-const clineMiniMaxM3GatewayReasoningRule: ProviderOptionRule = {
-	id: "provider.cline.minimax-m3.gateway-reasoning",
+const hadyancodeMiniMaxM3GatewayReasoningRule: ProviderOptionRule = {
+	id: "provider.hadyancode.minimax-m3.gateway-reasoning",
 	phase: "provider-reasoning",
 	description:
-		"Cline-routed MiniMax M3 keeps the gateway reasoning shape instead of leaking generic thinking.",
+		"HadyanCode-routed MiniMax M3 keeps the gateway reasoning shape instead of leaking generic thinking.",
 	applies: (input) =>
-		isClineProvider(input.request.providerId) && isMiniMaxM3(input),
+		isHadyanCodeProvider(input.request.providerId) && isMiniMaxM3(input),
 	suppresses: { genericThinking: true },
 	build: () => undefined,
 };
@@ -359,13 +359,13 @@ const geminiThinkingRule: ProviderOptionRule = {
 	},
 };
 
-const clineReasoningDisabledThinkingRule: ProviderOptionRule = {
-	id: "provider.cline.disable-thinking",
+const hadyancodeReasoningDisabledThinkingRule: ProviderOptionRule = {
+	id: "provider.hadyancode.disable-thinking",
 	phase: "provider",
 	description:
-		"Cline-routed non-Kimi-K2.6 Moonshot Kimi models use thinking.type=disabled when reasoning is disabled.",
+		"HadyanCode-routed non-Kimi-K2.6 Moonshot Kimi models use thinking.type=disabled when reasoning is disabled.",
 	applies: (input) =>
-		isClineProvider(input.request.providerId) &&
+		isHadyanCodeProvider(input.request.providerId) &&
 		isMoonshotKimiModel(input) &&
 		input.request.reasoning?.enabled === false &&
 		!isKimiK26Family(input),
@@ -398,21 +398,26 @@ const deepSeekThinkingRule: ProviderOptionRule = {
 	id: "family.deepseek.thinking",
 	phase: "model-family",
 	description:
-		"DeepSeek models use thinking.type only for explicit reasoning enabled/disabled.",
+		"DeepSeek runs without a thinking mode: an explicit reasoning request is answered with thinking.type=disabled.",
 	applies: (input) =>
 		input.request.providerId !== "openrouter" &&
 		isDeepSeekModelOrProviderDefault(input) &&
 		input.target !== "ollama",
 	suppresses: { genericThinking: true },
 	build: (input) => {
-		const thinkingType = resolveFamilyThinkingType(input, undefined);
-		return thinkingType
-			? buildThinkingPatch({
+		// The catalog strips reasoning support from DeepSeek models
+		// (see ../../catalog/model-filters.ts), so a stored or explicit
+		// reasoning config must never turn extended thinking on. Only an explicit
+		// request emits a wire value, and that value is always `disabled`; unset
+		// reasoning keeps emitting nothing.
+		const requested = resolveFamilyThinkingType(input, undefined);
+		return requested === undefined
+			? undefined
+			: buildThinkingPatch({
 					providerId: input.request.providerId,
 					providerOptionsKey: input.providerOptionsKey,
-					thinkingType,
-				})
-			: undefined;
+					thinkingType: "disabled",
+				});
 	},
 };
 
@@ -514,14 +519,14 @@ export const PROVIDER_OPTION_RULES: ReadonlyArray<ProviderOptionRule> = [
 	openAiAdapterRule,
 	openAiCodexRule,
 	genericProviderFanoutRule,
-	clineGatewayReasoningRule,
+	hadyancodeGatewayReasoningRule,
 	openRouterReasoningRule,
-	clineMiniMaxM3GatewayReasoningRule,
+	hadyancodeMiniMaxM3GatewayReasoningRule,
 	vercelReasoningRule,
 	directMoonshotReasoningRule,
 	fireworksReasoningRule,
 	geminiThinkingRule,
-	clineReasoningDisabledThinkingRule,
+	hadyancodeReasoningDisabledThinkingRule,
 	kimiK26ThinkingRule,
 	deepSeekThinkingRule,
 	ollamaNativeOptionsRule,

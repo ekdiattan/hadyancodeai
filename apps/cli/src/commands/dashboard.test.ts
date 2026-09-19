@@ -6,21 +6,21 @@ import { runDashboardCommand, waitForProcessShutdown } from "./dashboard";
 
 const ENV_KEYS = [
 	"WORKSPACE_ROOT",
-	"CLINE_DIR",
-	"CLINE_SANDBOX",
-	"CLINE_SANDBOX_DATA_DIR",
-	"CLINE_DATA_DIR",
-	"CLINE_DB_DATA_DIR",
-	"CLINE_SESSION_DATA_DIR",
-	"CLINE_TEAM_DATA_DIR",
-	"CLINE_PROVIDER_SETTINGS_PATH",
-	"CLINE_HOOKS_LOG_PATH",
+	"HADYANCODE_DIR",
+	"HADYANCODE_SANDBOX",
+	"HADYANCODE_SANDBOX_DATA_DIR",
+	"HADYANCODE_DATA_DIR",
+	"HADYANCODE_DB_DATA_DIR",
+	"HADYANCODE_SESSION_DATA_DIR",
+	"HADYANCODE_TEAM_DATA_DIR",
+	"HADYANCODE_PROVIDER_SETTINGS_PATH",
+	"HADYANCODE_HOOKS_LOG_PATH",
 	"HOST",
-	"CLINE_HUB_DASHBOARD_PORT",
+	"HADYANCODE_HUB_DASHBOARD_PORT",
 	"PUBLIC_URL",
 	"ROOM_SECRET",
-	"CLINE_HUB_WEBVIEW_DIST_DIR",
-	"CLINE_WRAPPER_PATH",
+	"HADYANCODE_HUB_WEBVIEW_DIST_DIR",
+	"HADYANCODE_WRAPPER_PATH",
 ] as const;
 
 const originalEnv = Object.fromEntries(
@@ -47,8 +47,8 @@ describe("runDashboardCommand", () => {
 		let observedEnv:
 			| {
 					workspaceRoot: string | undefined;
-					clineDir: string | undefined;
-					clineDataDir: string | undefined;
+					hadyancodeDir: string | undefined;
+					hadyancodeDataDir: string | undefined;
 					providerSettingsPath: string | undefined;
 					host: string | undefined;
 					port: string | undefined;
@@ -57,14 +57,14 @@ describe("runDashboardCommand", () => {
 					webviewDistDir: string | undefined;
 			  }
 			| undefined;
-		const webviewDistDir = mkdtempSync(join(tmpdir(), "cline-webview-dist-"));
+		const webviewDistDir = mkdtempSync(join(tmpdir(), "hadyancode-webview-dist-"));
 		mkdirSync(webviewDistDir, { recursive: true });
-		process.env.CLINE_HUB_WEBVIEW_DIST_DIR = webviewDistDir;
+		process.env.HADYANCODE_HUB_WEBVIEW_DIST_DIR = webviewDistDir;
 
 		const exitCode = await runDashboardCommand({
-			configDir: "/tmp/cline-config",
+			configDir: "/tmp/hadyancode-config",
 			cwd: "sdk",
-			dataDir: ".cline-dashboard-data",
+			dataDir: ".hadyancode-dashboard-data",
 			host: "127.0.0.1",
 			port: "9090",
 			publicUrl: "http://127.0.0.1:9090",
@@ -76,14 +76,14 @@ describe("runDashboardCommand", () => {
 			startServer: async () => {
 				observedEnv = {
 					workspaceRoot: process.env.WORKSPACE_ROOT,
-					clineDir: process.env.CLINE_DIR,
-					clineDataDir: process.env.CLINE_DATA_DIR,
-					providerSettingsPath: process.env.CLINE_PROVIDER_SETTINGS_PATH,
+					hadyancodeDir: process.env.HADYANCODE_DIR,
+					hadyancodeDataDir: process.env.HADYANCODE_DATA_DIR,
+					providerSettingsPath: process.env.HADYANCODE_PROVIDER_SETTINGS_PATH,
 					host: process.env.HOST,
-					port: process.env.CLINE_HUB_DASHBOARD_PORT,
+					port: process.env.HADYANCODE_HUB_DASHBOARD_PORT,
 					publicUrl: process.env.PUBLIC_URL,
 					roomSecret: process.env.ROOM_SECRET,
-					webviewDistDir: process.env.CLINE_HUB_WEBVIEW_DIST_DIR,
+					webviewDistDir: process.env.HADYANCODE_HUB_WEBVIEW_DIST_DIR,
 				};
 				return {
 					listenUrl: "http://127.0.0.1:9090/",
@@ -104,10 +104,10 @@ describe("runDashboardCommand", () => {
 		expect(exitCode).toBe(0);
 		expect(observedEnv).toEqual({
 			workspaceRoot: resolve("sdk"),
-			clineDir: "/tmp/cline-config",
-			clineDataDir: resolve("sdk", ".cline-dashboard-data"),
+			hadyancodeDir: "/tmp/hadyancode-config",
+			hadyancodeDataDir: resolve("sdk", ".hadyancode-dashboard-data"),
 			providerSettingsPath: join(
-				resolve("sdk", ".cline-dashboard-data"),
+				resolve("sdk", ".hadyancode-dashboard-data"),
 				"settings",
 				"providers.json",
 			),
@@ -119,11 +119,11 @@ describe("runDashboardCommand", () => {
 		});
 		expect(opened).toEqual(["http://127.0.0.1:9090/?roomSecret=secret"]);
 		expect(stop).toHaveBeenCalledTimes(1);
-		expect(output.join("\n")).toContain("Cline dashboard listening at");
+		expect(output.join("\n")).toContain("HadyanCode dashboard listening at");
 		expect(output.join("\n")).toContain("ws://127.0.0.1:25463/hub");
 		expect(errors).toEqual([]);
 		expect(process.env.WORKSPACE_ROOT).toBe(originalEnv.WORKSPACE_ROOT);
-		expect(process.env.CLINE_HUB_WEBVIEW_DIST_DIR).toBe(webviewDistDir);
+		expect(process.env.HADYANCODE_HUB_WEBVIEW_DIST_DIR).toBe(webviewDistDir);
 	});
 
 	it("honors --no-open behavior", async () => {
@@ -150,23 +150,23 @@ describe("runDashboardCommand", () => {
 	});
 
 	it("finds webview assets from the published wrapper package layout", async () => {
-		const root = mkdtempSync(join(tmpdir(), "cline-wrapper-layout-"));
-		const wrapperPath = join(root, "node_modules", "cline", "bin", "cline");
+		const root = mkdtempSync(join(tmpdir(), "hadyancode-wrapper-layout-"));
+		const wrapperPath = join(root, "node_modules", "hadyancode", "bin", "hadyancode");
 		const platformName = platform() === "win32" ? "windows" : platform();
 		const webviewDistDir = join(
 			root,
 			"node_modules",
-			"cline",
+			"hadyancode",
 			"node_modules",
-			"@cline",
+			"@hadyancode",
 			`cli-${platformName}-${arch()}`,
-			"cline-hub",
+			"hadyancode-hub",
 			"webview",
 		);
 		mkdirSync(join(wrapperPath, ".."), { recursive: true });
 		mkdirSync(webviewDistDir, { recursive: true });
-		process.env.CLINE_WRAPPER_PATH = wrapperPath;
-		delete process.env.CLINE_HUB_WEBVIEW_DIST_DIR;
+		process.env.HADYANCODE_WRAPPER_PATH = wrapperPath;
+		delete process.env.HADYANCODE_HUB_WEBVIEW_DIST_DIR;
 		let observedWebviewDistDir: string | undefined;
 
 		const exitCode = await runDashboardCommand({
@@ -176,7 +176,7 @@ describe("runDashboardCommand", () => {
 				writeErr: () => {},
 			},
 			startServer: async () => {
-				observedWebviewDistDir = process.env.CLINE_HUB_WEBVIEW_DIST_DIR;
+				observedWebviewDistDir = process.env.HADYANCODE_HUB_WEBVIEW_DIST_DIR;
 				return {
 					listenUrl: "http://127.0.0.1:8787/",
 					publicUrl: "http://127.0.0.1:8787",

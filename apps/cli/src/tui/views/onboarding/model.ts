@@ -2,7 +2,7 @@ import type {
 	ChatModelModalities,
 	ModelModality,
 	ModelOperation,
-} from "@cline/shared";
+} from "@hadyancode/shared";
 import { isChatProviderModel } from "../../../utils/chat-models";
 import { isOpenAICodexCliProvider } from "../../../utils/codex-cli";
 import { isOAuthProvider } from "../../../utils/provider-auth";
@@ -14,8 +14,8 @@ export type OnboardingStep =
 	| "byo_provider"
 	| "byo_apikey"
 	| "codex_cli_setup"
-	| "cline_pass_subscription"
-	| "cline_model"
+	| "hadyancode_pass_subscription"
+	| "hadyancode_model"
 	| "model_picker"
 	| "custom_model_id"
 	| "thinking_level"
@@ -47,27 +47,27 @@ export interface MenuOption {
 	icon: string;
 }
 
-export type ClinePassSubscriptionAction =
+export type HadyanCodePassSubscriptionAction =
 	| "subscribe"
 	| "refresh"
 	| "skip"
 	| "back";
 
-export interface ClinePassSubscriptionOption {
-	value: ClinePassSubscriptionAction;
+export interface HadyanCodePassSubscriptionOption {
+	value: HadyanCodePassSubscriptionAction;
 	label: string;
 }
 
 export const MAIN_MENU: MenuOption[] = [
 	{
-		label: "Sign in with Cline",
-		value: "cline",
+		label: "Sign in with HadyanCode",
+		value: "hadyancode",
 		detail: "Latest models with regular free promos",
 		icon: "\u263a",
 	},
 	{
-		label: "Sign in with ClinePass",
-		value: "cline-pass",
+		label: "Sign in with HadyanCodePass",
+		value: "hadyancode-pass",
 		detail: "Low cost subscription for everyone",
 		icon: "\u2726",
 	},
@@ -86,17 +86,17 @@ export const MAIN_MENU: MenuOption[] = [
 ];
 
 export function getMainMenuOptions(options?: {
-	isClinePassEnabled?: boolean;
+	isHadyanCodePassEnabled?: boolean;
 }): MenuOption[] {
 	return MAIN_MENU.filter(
-		(option) => option.value !== "cline-pass" || options?.isClinePassEnabled,
+		(option) => option.value !== "hadyancode-pass" || options?.isHadyanCodePassEnabled,
 	);
 }
 
-export const CLINE_PASS_SUBSCRIPTION_OPTIONS: ClinePassSubscriptionOption[] = [
+export const HADYANCODE_PASS_SUBSCRIPTION_OPTIONS: HadyanCodePassSubscriptionOption[] = [
 	{
 		value: "subscribe",
-		label: "Subscribe to ClinePass",
+		label: "Subscribe to HadyanCodePass",
 	},
 	{
 		value: "refresh",
@@ -137,7 +137,7 @@ export interface ModelEntry {
 	supportsReasoning: boolean;
 }
 
-export type ClinePassSubscriptionStatus =
+export type HadyanCodePassSubscriptionStatus =
 	| "loading"
 	| "subscribed"
 	| "unsubscribed"
@@ -212,11 +212,11 @@ export function toModelEntriesFromKnownModels(
 }
 
 export function getOAuthProviderLabel(providerId: string): string {
-	if (providerId === "cline-pass") {
-		return "ClinePass";
+	if (providerId === "hadyancode-pass") {
+		return "HadyanCodePass";
 	}
-	if (providerId === "cline") {
-		return "Cline";
+	if (providerId === "hadyancode") {
+		return "HadyanCode";
 	}
 	if (providerId === "openai-codex") {
 		return "ChatGPT";
@@ -224,7 +224,7 @@ export function getOAuthProviderLabel(providerId: string): string {
 	return providerId;
 }
 
-export function shouldUseFeaturedClineModelPicker(providerId: string): boolean {
-	// ClinePass uses the featured picker too, with Subscribed/Free sections
-	return providerId === "cline" || providerId === "cline-pass";
+export function shouldUseFeaturedHadyanCodeModelPicker(providerId: string): boolean {
+	// HadyanCodePass uses the featured picker too, with Subscribed/Free sections
+	return providerId === "hadyancode" || providerId === "hadyancode-pass";
 }

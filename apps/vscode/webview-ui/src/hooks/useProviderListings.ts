@@ -1,5 +1,5 @@
-import { Empty } from "@shared/proto/cline/common"
-import type { ProviderListing } from "@shared/proto/cline/models"
+import { Empty } from "@shared/proto/hadyancode/common"
+import type { ProviderListing } from "@shared/proto/hadyancode/models"
 import { useCallback, useEffect, useState } from "react"
 import { ModelsServiceClient } from "@/services/grpc-client"
 

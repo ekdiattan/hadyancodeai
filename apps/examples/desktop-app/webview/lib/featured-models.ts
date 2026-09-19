@@ -1,6 +1,6 @@
 "use client";
 
-import type { SearchComboboxOption, SearchComboboxSection } from "@cline/ui";
+import type { SearchComboboxOption, SearchComboboxSection } from "@hadyancode/ui";
 import type {
 	ProviderModel,
 	ProviderModelFeaturedTier,
@@ -13,8 +13,8 @@ export type ModelPickerData = {
 
 // Section copy mirrors the CLI's featured picker so the products read the same.
 const FREE_SECTION_DESCRIPTION = "Try with limited usage at no cost";
-const CLINE_PASS_FREE_SECTION_DESCRIPTION =
-	"Try with limited usage, separate from ClinePass quota";
+const HADYANCODE_PASS_FREE_SECTION_DESCRIPTION =
+	"Try with limited usage, separate from HadyanCodePass quota";
 
 function displayName(model: ProviderModel): string {
 	return model.name?.trim() || model.id;
@@ -50,9 +50,9 @@ function tierOptions(
 
 /**
  * Builds the sectioned model picker for a provider from the tier data the SDK
- * stamps onto `ProviderModel.featured` (see @cline/core's
- * applyClineFeaturedModels). The `cline` provider gets Recommended / Free /
- * All models; `cline-pass` gets Subscribed / Free only — its offer is exactly
+ * stamps onto `ProviderModel.featured` (see @hadyancode/core's
+ * applyHadyanCodeFeaturedModels). The `hadyancode` provider gets Recommended / Free /
+ * All models; `hadyancode-pass` gets Subscribed / Free only — its offer is exactly
  * those tiers, and stale catalog leftovers must not be advertised (the full
  * catalog only returns when the subscribed tier is empty, so a subscriber is
  * never limited to free models offline). Every other provider renders its
@@ -62,7 +62,7 @@ export function buildModelPickerData(
 	providerId: string,
 	models: ProviderModel[],
 ): ModelPickerData {
-	if (providerId === "cline") {
+	if (providerId === "hadyancode") {
 		const recommended = tierOptions(
 			models,
 			"recommended",
@@ -95,7 +95,7 @@ export function buildModelPickerData(
 		};
 	}
 
-	if (providerId === "cline-pass") {
+	if (providerId === "hadyancode-pass") {
 		const subscribed = tierOptions(models, "subscribed", "subscribed");
 		const free = tierOptions(models, "free", "free", () => "Free");
 		if (subscribed.length === 0 && free.length === 0) {
@@ -117,7 +117,7 @@ export function buildModelPickerData(
 			sections: [
 				{ id: "subscribed", label: "Subscribed" },
 				{
-					description: CLINE_PASS_FREE_SECTION_DESCRIPTION,
+					description: HADYANCODE_PASS_FREE_SECTION_DESCRIPTION,
 					id: "free",
 					label: "Free",
 				},

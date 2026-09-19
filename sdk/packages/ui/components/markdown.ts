@@ -11,12 +11,12 @@ import type { CodeHighlighterPlugin, ControlsConfig } from "streamdown";
  * wrapper (link policy, image policy, extra plugins) and pass these in:
  *
  *   <Streamdown
- *     className="cline-markdown"
+ *     className="hadyancode-markdown"
  *     controls={agentMarkdownControls}
  *     plugins={{ code: markdownCodeHighlighter }}
  *   >
  *
- * Pair with `@cline/ui/components/markdown.css` for the matching visual
+ * Pair with `@hadyancode/ui/components/markdown.css` for the matching visual
  * treatment (single quiet code blocks with a hover copy control, chat-scale
  * headings, table cards).
  *

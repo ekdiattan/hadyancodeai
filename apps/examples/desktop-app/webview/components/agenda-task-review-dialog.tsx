@@ -1,6 +1,6 @@
 "use client";
 
-import type { AgendaTaskRecord } from "@cline/shared";
+import type { AgendaTaskRecord } from "@hadyancode/shared";
 import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -74,7 +74,7 @@ export function AgendaTaskReviewDialog({
 									value={
 										task.modelSelection
 											? `${task.modelSelection.providerId}/${task.modelSelection.modelId ?? "default"}`
-											: "Cline default"
+											: "HadyanCode default"
 									}
 								/>
 								{task.cwd ? (

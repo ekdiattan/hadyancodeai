@@ -1,10 +1,10 @@
 {
-	"name": "@cline/shared",
+	"name": "@hadyancode/shared",
 	"version": "0.0.82",
-	"description": "Shared utilities, types, and schemas for Cline packages",
+	"description": "Shared utilities, types, and schemas for HadyanCode packages",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/cline/cline",
+		"url": "https://github.com/cline/hadyancode",
 		"directory": "sdk/packages/shared"
 	},
 	"type": "module",

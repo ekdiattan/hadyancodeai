@@ -7,7 +7,7 @@ import {
 } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { loadSqliteDb } from "@cline/shared/db";
+import { loadSqliteDb } from "@hadyancode/shared/db";
 import { afterEach, describe, expect, it } from "vitest";
 import { CoreSessionService } from "../../session/services/session-service";
 import { SqliteSessionStore } from "../storage/sqlite-session-store";
@@ -787,11 +787,11 @@ describe("sanitizeImportedMessages", () => {
 // ---------------------------------------------------------------------------
 
 describe("SessionImportService", () => {
-	it("imports a discovered session into a listable completed Cline session", async () => {
+	it("imports a discovered session into a listable completed HadyanCode session", async () => {
 		const projectsDir = tempDir("cc-import-");
 		writeClaudeCodeFixture(projectsDir);
-		const dbDir = tempDir("cline-db-");
-		const artifactsDir = tempDir("cline-sessions-");
+		const dbDir = tempDir("hadyancode-db-");
+		const artifactsDir = tempDir("hadyancode-sessions-");
 
 		const store = sessionStore(dbDir);
 		const sessions = new CoreSessionService(store, {
@@ -856,8 +856,8 @@ describe("SessionImportService", () => {
 	it("stamps the resume provider/model on the row and keeps the source in metadata", async () => {
 		const projectsDir = tempDir("cc-import-");
 		writeClaudeCodeFixture(projectsDir);
-		const dbDir = tempDir("cline-db-");
-		const artifactsDir = tempDir("cline-sessions-");
+		const dbDir = tempDir("hadyancode-db-");
+		const artifactsDir = tempDir("hadyancode-sessions-");
 		const store = sessionStore(dbDir);
 		const sessions = new CoreSessionService(store, {
 			sessionArtifactsDir: artifactsDir,
@@ -869,12 +869,12 @@ describe("SessionImportService", () => {
 		const [result] = await importer.importMany(
 			[{ tool: "claude-code", sourceId: "abc" }],
 			undefined,
-			{ provider: "cline", model: "anthropic/claude-sonnet-5" },
+			{ provider: "hadyancode", model: "anthropic/claude-sonnet-5" },
 		);
 		expect(result.ok).toBe(true);
 		const row = store.get(result.sessionId as string);
 		// Opening the session resumes on the row's provider/model.
-		expect(row?.provider).toBe("cline");
+		expect(row?.provider).toBe("hadyancode");
 		expect(row?.model).toBe("anthropic/claude-sonnet-5");
 		const importedFrom = (
 			row?.metadata as Record<string, Record<string, unknown>>
@@ -894,17 +894,17 @@ describe("SessionImportService", () => {
 		// A half-specified target is ignored rather than mixing provider and
 		// model from different worlds. (Fresh store: the same source is never
 		// imported twice into one store.)
-		const partialStore = sessionStore(tempDir("cline-db-"));
+		const partialStore = sessionStore(tempDir("hadyancode-db-"));
 		const partialImporter = new SessionImportService(
 			new CoreSessionService(partialStore, {
-				sessionArtifactsDir: tempDir("cline-sessions-"),
+				sessionArtifactsDir: tempDir("hadyancode-sessions-"),
 			}),
 			[new ClaudeCodeImportAdapter({ projectsDir })],
 		);
 		const [partial] = await partialImporter.importMany(
 			[{ tool: "claude-code", sourceId: "abc" }],
 			undefined,
-			{ provider: "cline" },
+			{ provider: "hadyancode" },
 		);
 		expect(partialStore.get(partial.sessionId as string)?.provider).toBe(
 			"anthropic",
@@ -914,8 +914,8 @@ describe("SessionImportService", () => {
 	it("rolls back a half-written session when a later write fails", async () => {
 		const projectsDir = tempDir("cc-import-");
 		writeClaudeCodeFixture(projectsDir);
-		const dbDir = tempDir("cline-db-");
-		const artifactsDir = tempDir("cline-sessions-");
+		const dbDir = tempDir("hadyancode-db-");
+		const artifactsDir = tempDir("hadyancode-sessions-");
 		const store = sessionStore(dbDir);
 		const sessions = new CoreSessionService(store, {
 			sessionArtifactsDir: artifactsDir,
@@ -954,9 +954,9 @@ describe("SessionImportService", () => {
 	it("rolls back a session whose creation fails after the row is written", async () => {
 		const projectsDir = tempDir("cc-import-");
 		writeClaudeCodeFixture(projectsDir);
-		const store = sessionStore(tempDir("cline-db-"));
+		const store = sessionStore(tempDir("hadyancode-db-"));
 		const sessions = new CoreSessionService(store, {
-			sessionArtifactsDir: tempDir("cline-sessions-"),
+			sessionArtifactsDir: tempDir("hadyancode-sessions-"),
 		});
 		// createRootSessionWithArtifacts upserts the row, then writes the
 		// messages file and manifest; simulate the file write failing.
@@ -991,9 +991,9 @@ describe("SessionImportService", () => {
 	it("coalesces overlapping imports of the same source into one session", async () => {
 		const projectsDir = tempDir("cc-import-");
 		writeClaudeCodeFixture(projectsDir);
-		const store = sessionStore(tempDir("cline-db-"));
+		const store = sessionStore(tempDir("hadyancode-db-"));
 		const sessions = new CoreSessionService(store, {
-			sessionArtifactsDir: tempDir("cline-sessions-"),
+			sessionArtifactsDir: tempDir("hadyancode-sessions-"),
 		});
 		// Two separate services, as two import_sessions requests would build,
 		// each snapshotting an empty set of existing imports.
@@ -1016,9 +1016,9 @@ describe("SessionImportService", () => {
 	it("never marks a session as imported unless every write succeeded", async () => {
 		const projectsDir = tempDir("cc-import-");
 		writeClaudeCodeFixture(projectsDir);
-		const store = sessionStore(tempDir("cline-db-"));
+		const store = sessionStore(tempDir("hadyancode-db-"));
 		const sessions = new CoreSessionService(store, {
-			sessionArtifactsDir: tempDir("cline-sessions-"),
+			sessionArtifactsDir: tempDir("hadyancode-sessions-"),
 		});
 		// Worst case: the messages write fails AND the rollback delete fails,
 		// so a row survives. It must not carry the importedFrom marker.
@@ -1051,8 +1051,8 @@ describe("SessionImportService", () => {
 	it("never duplicates a source session that was already imported", async () => {
 		const projectsDir = tempDir("cc-import-");
 		writeClaudeCodeFixture(projectsDir);
-		const dbDir = tempDir("cline-db-");
-		const artifactsDir = tempDir("cline-sessions-");
+		const dbDir = tempDir("hadyancode-db-");
+		const artifactsDir = tempDir("hadyancode-sessions-");
 		const store = sessionStore(dbDir);
 		const sessions = new CoreSessionService(store, {
 			sessionArtifactsDir: artifactsDir,

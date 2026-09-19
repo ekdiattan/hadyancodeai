@@ -1,4 +1,4 @@
-import { StringRequest } from "@shared/proto/cline/common"
+import { StringRequest } from "@shared/proto/hadyancode/common"
 import { VSCodeButton } from "@vscode/webview-ui-toolkit/react"
 import debounce from "debounce"
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from "react"
@@ -85,7 +85,7 @@ const ContextWindow: React.FC<ContextWindowProgressProps> = ({
 		e.stopPropagation()
 		// Trigger a real SDK manual compaction rather than sending the literal
 		// text "/compact" to the model (which it would treat as a normal prompt
-		// and improvise a fake summary — CLINE-2503). The condense RPC runs the
+		// and improvise a fake summary — HADYANCODE-2503). The condense RPC runs the
 		// same SDK compaction effect as the CLI's `/compact` command.
 		SlashServiceClient.condense(StringRequest.create({ value: "compact" })).catch((err) =>
 			console.error("Failed to compact task:", err),

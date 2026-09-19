@@ -1,4 +1,4 @@
-import { ApiFormat, ResolveModelInfoResponse } from "@shared/proto/cline/models"
+import { ApiFormat, ResolveModelInfoResponse } from "@shared/proto/hadyancode/models"
 import { act, renderHook, waitFor } from "@testing-library/react"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { useExtensionState } from "@/context/ExtensionStateContext"
@@ -85,33 +85,33 @@ describe("useNormalizedApiConfiguration", () => {
 		expect(mockResolveProviderModels).not.toHaveBeenCalled()
 	})
 
-	it("uses Cline-specific model fields instead of stale generic or OpenRouter fields", async () => {
+	it("uses HadyanCode-specific model fields instead of stale generic or OpenRouter fields", async () => {
 		setApiConfiguration({
-			actModeApiProvider: "cline",
+			actModeApiProvider: "hadyancode",
 			actModeApiModelId: "openai/gpt-5.4",
 			actModeOpenRouterModelId: "anthropic/claude-sonnet-4.5",
-			actModeClineModelId: "anthropic/claude-sonnet-4.6",
+			actModeHadyanCodeModelId: "anthropic/claude-sonnet-4.6",
 		})
-		mockResolveModelInfo.mockResolvedValue(modelInfoResponse("cline", "anthropic/claude-sonnet-4.6"))
+		mockResolveModelInfo.mockResolvedValue(modelInfoResponse("hadyancode", "anthropic/claude-sonnet-4.6"))
 
 		const { result } = renderHook(() => useNormalizedApiConfiguration("act"))
 
 		await waitFor(() => expect(result.current.selectedModelId).toBe("anthropic/claude-sonnet-4.6"))
-		expect(mockResolveModelInfo).toHaveBeenCalledWith({ providerId: "cline", modelId: "anthropic/claude-sonnet-4.6" })
+		expect(mockResolveModelInfo).toHaveBeenCalledWith({ providerId: "hadyancode", modelId: "anthropic/claude-sonnet-4.6" })
 	})
 
-	it("asks the backend for the Cline default when no Cline-specific model is selected", async () => {
+	it("asks the backend for the HadyanCode default when no HadyanCode-specific model is selected", async () => {
 		setApiConfiguration({
-			actModeApiProvider: "cline",
+			actModeApiProvider: "hadyancode",
 			actModeApiModelId: "openai/gpt-5.4",
 			actModeOpenRouterModelId: "anthropic/claude-sonnet-4.5",
 		})
-		mockResolveModelInfo.mockResolvedValue(modelInfoResponse("cline", "anthropic/claude-sonnet-4.6"))
+		mockResolveModelInfo.mockResolvedValue(modelInfoResponse("hadyancode", "anthropic/claude-sonnet-4.6"))
 
 		const { result } = renderHook(() => useNormalizedApiConfiguration("act"))
 
 		await waitFor(() => expect(result.current.selectedModelId).toBe("anthropic/claude-sonnet-4.6"))
-		expect(mockResolveModelInfo).toHaveBeenCalledWith({ providerId: "cline", modelId: undefined })
+		expect(mockResolveModelInfo).toHaveBeenCalledWith({ providerId: "hadyancode", modelId: undefined })
 	})
 
 	it("resolves static SDK-backed providers through the model-info RPC", async () => {

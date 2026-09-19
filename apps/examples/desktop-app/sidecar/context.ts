@@ -5,7 +5,7 @@ import { dirname } from "node:path";
 import {
 	type AgentToolContext,
 	type BasicLogger,
-	ClineCore,
+	HadyanCodeCore,
 	type CoreSessionEvent,
 	ensureCompatibleLocalHubUrl,
 	type ITelemetryService,
@@ -14,12 +14,12 @@ import {
 	setHomeDirIfUnset,
 	type ToolApprovalRequest,
 	type ToolApprovalResult,
-} from "@cline/core";
+} from "@hadyancode/core";
 import {
 	type AgentEvent,
 	HUB_CLIENT_TOOL_APPROVAL_CAPABILITY,
 	isGeneratedMedia,
-} from "@cline/shared";
+} from "@hadyancode/shared";
 import {
 	discardAllTrackedAttachments,
 	flushConsumedAttachments,
@@ -127,7 +127,7 @@ export function syncSidecarApprovalReadiness(
 							{
 								name: HUB_CLIENT_TOOL_APPROVAL_CAPABILITY,
 								description:
-									"Cline Code has a live user surface for tool review.",
+									"HadyanCode Code has a live user surface for tool review.",
 							},
 						]
 					: [],
@@ -1029,8 +1029,8 @@ export async function initializeSessionManager(
 	ctx: SidecarContext,
 ): Promise<void> {
 	setHomeDirIfUnset(homedir());
-	const sessionManager = await ClineCore.create({
-		clientName: "cline-code",
+	const sessionManager = await HadyanCodeCore.create({
+		clientName: "hadyancode-code",
 		backendMode: "hub",
 		capabilities: createSidecarRuntimeCapabilities(ctx),
 		logger: ctx.logger,
@@ -1044,7 +1044,7 @@ export async function initializeSessionManager(
 			workspaceRoot: ctx.workspaceRoot,
 			cwd: ctx.workspaceRoot,
 			clientType: "code-sidecar",
-			displayName: "Cline Desktop sidecar",
+			displayName: "HadyanCode Desktop sidecar",
 		},
 	});
 
@@ -1086,13 +1086,13 @@ export async function ensureSharedHubClient(
 				cwd: ctx.workspaceRoot,
 			}));
 		if (!url) {
-			throw new Error("Unable to start or connect to the shared Cline Hub.");
+			throw new Error("Unable to start or connect to the shared HadyanCode Hub.");
 		}
 
 		const client = new NodeHubClient({
 			url,
 			clientType: "code-sidecar-observer",
-			displayName: "Cline Desktop observer",
+			displayName: "HadyanCode Desktop observer",
 			workspaceRoot: ctx.workspaceRoot,
 			cwd: ctx.workspaceRoot,
 		});

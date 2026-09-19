@@ -344,7 +344,7 @@ describe("hub server startup", () => {
 	});
 
 	it("releases the listener when discovery publication fails", async () => {
-		const root = await mkdtemp(join(tmpdir(), "cline-hub-publish-test-"));
+		const root = await mkdtemp(join(tmpdir(), "hadyancode-hub-publish-test-"));
 		const discoveryPath = join(root, "discovery.json");
 		// A directory at the destination makes atomic file replacement fail.
 		await mkdir(discoveryPath);
@@ -457,8 +457,8 @@ describe("hub server startup", () => {
 
 	it("does not reuse managed discovery from an older build", async () => {
 		const owner = createInMemoryHubOwnerContext("hub-server-test-stale-build");
-		vi.stubEnv("CLINE_HUB_BUILD_ID", "old-build");
-		vi.stubEnv("CLINE_HUB_BUILD_EPOCH_MS", "1000");
+		vi.stubEnv("HADYANCODE_HUB_BUILD_ID", "old-build");
+		vi.stubEnv("HADYANCODE_HUB_BUILD_EPOCH_MS", "1000");
 		try {
 			const stale = await startHubWebSocketServer({
 				owner,
@@ -469,8 +469,8 @@ describe("hub server startup", () => {
 			});
 			servers.add(stale);
 
-			vi.stubEnv("CLINE_HUB_BUILD_ID", "new-build");
-			vi.stubEnv("CLINE_HUB_BUILD_EPOCH_MS", "2000");
+			vi.stubEnv("HADYANCODE_HUB_BUILD_ID", "new-build");
+			vi.stubEnv("HADYANCODE_HUB_BUILD_EPOCH_MS", "2000");
 			const result = await ensureHubWebSocketServer({
 				owner,
 				host: "127.0.0.1",
@@ -497,7 +497,7 @@ describe("hub server startup", () => {
 	 */
 	it("reuses managed discovery from a build it cannot order itself against", async () => {
 		const owner = createInMemoryHubOwnerContext("hub-server-test-unordered");
-		vi.stubEnv("CLINE_HUB_BUILD_ID", "other-build");
+		vi.stubEnv("HADYANCODE_HUB_BUILD_ID", "other-build");
 		try {
 			const other = await startHubWebSocketServer({
 				owner,
@@ -508,7 +508,7 @@ describe("hub server startup", () => {
 			});
 			servers.add(other);
 
-			vi.stubEnv("CLINE_HUB_BUILD_ID", "current-build");
+			vi.stubEnv("HADYANCODE_HUB_BUILD_ID", "current-build");
 			const result = await ensureHubWebSocketServer({
 				owner,
 				host: "127.0.0.1",
@@ -528,8 +528,8 @@ describe("hub server startup", () => {
 
 	it("reuses managed discovery from a newer build instead of starting a rival", async () => {
 		const owner = createInMemoryHubOwnerContext("hub-server-test-newer-build");
-		vi.stubEnv("CLINE_HUB_BUILD_ID", "newer-build");
-		vi.stubEnv("CLINE_HUB_BUILD_EPOCH_MS", "2000");
+		vi.stubEnv("HADYANCODE_HUB_BUILD_ID", "newer-build");
+		vi.stubEnv("HADYANCODE_HUB_BUILD_EPOCH_MS", "2000");
 		try {
 			const newer = await startHubWebSocketServer({
 				owner,
@@ -540,8 +540,8 @@ describe("hub server startup", () => {
 			});
 			servers.add(newer);
 
-			vi.stubEnv("CLINE_HUB_BUILD_ID", "current-build");
-			vi.stubEnv("CLINE_HUB_BUILD_EPOCH_MS", "1000");
+			vi.stubEnv("HADYANCODE_HUB_BUILD_ID", "current-build");
+			vi.stubEnv("HADYANCODE_HUB_BUILD_EPOCH_MS", "1000");
 			const result = await ensureHubWebSocketServer({
 				owner,
 				host: "127.0.0.1",
@@ -738,7 +738,7 @@ describe("hub server startup", () => {
 					"Host: 127.0.0.1",
 					"Connection: Upgrade",
 					"Upgrade: websocket",
-					`Sec-WebSocket-Protocol: cline-hub-auth.${authToken}`,
+					`Sec-WebSocket-Protocol: hadyancode-hub-auth.${authToken}`,
 					"Sec-WebSocket-Version: 13",
 					"Sec-WebSocket-Key: dGhlIHNhbXBsZSBub25jZQ==",
 					"",

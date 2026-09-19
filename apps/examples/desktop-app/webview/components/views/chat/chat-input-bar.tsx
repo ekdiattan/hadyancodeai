@@ -1,10 +1,10 @@
 "use client";
 
 import {
-	CLINE_DEFAULT_MODEL_ID,
+	HADYANCODE_DEFAULT_MODEL_ID,
 	formatDisplayUserInput,
-} from "@cline/shared/browser";
-import { AgentPromptQueue, SearchCombobox } from "@cline/ui";
+} from "@hadyancode/shared/browser";
+import { AgentPromptQueue, SearchCombobox } from "@hadyancode/ui";
 import { ArrowUp, Brain, CircleStop, Cpu, Paperclip, X } from "lucide-react";
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
@@ -125,7 +125,7 @@ export function buildUserInstructionSlashCommands(
 }
 
 const FALLBACK_PROVIDER_MODELS: Record<string, string[]> = {
-	cline: [CLINE_DEFAULT_MODEL_ID],
+	hadyancode: [HADYANCODE_DEFAULT_MODEL_ID],
 	anthropic: ["claude-sonnet-4-6"],
 	"openai-native": ["gpt-5.5"],
 	openrouter: ["anthropic/claude-sonnet-4.6"],
@@ -133,7 +133,7 @@ const FALLBACK_PROVIDER_MODELS: Record<string, string[]> = {
 };
 
 const FALLBACK_PROVIDER_REASONING_MODELS: Record<string, string[]> = {
-	cline: [CLINE_DEFAULT_MODEL_ID],
+	hadyancode: [HADYANCODE_DEFAULT_MODEL_ID],
 	anthropic: ["claude-sonnet-4-6"],
 	"openai-native": ["gpt-5.5"],
 	openrouter: ["anthropic/claude-sonnet-4.6"],
@@ -779,7 +779,7 @@ function ChatInputBarImpl({
 				variant: "destructive",
 				title: "Speech input failed",
 				description: isMicrophoneError
-					? "Check the microphone permission for Cline and try again."
+					? "Check the microphone permission for HadyanCode and try again."
 					: message,
 			});
 		},
@@ -1594,7 +1594,7 @@ const ModelSelector = memo(function ModelSelector({
 		[resolvedProvider, visibleProviderModels],
 	);
 	// Sectioned picker data: display names plus the Recommended/Free tiers the
-	// SDK stamps onto cline/cline-pass models (ProviderModel.featured).
+	// SDK stamps onto hadyancode/hadyancode-pass models (ProviderModel.featured).
 	const pickerDataForProvider = useCallback(
 		(providerId: string): ModelPickerData => {
 			const detailsById = new Map(
@@ -1648,7 +1648,7 @@ const ModelSelector = memo(function ModelSelector({
 		rememberedLastProvider,
 		resolvedProvider,
 	]);
-	// The picker can intentionally hide catalog models (the ClinePass offer
+	// The picker can intentionally hide catalog models (the HadyanCodePass offer
 	// is exactly its subscribed/free tiers), but the active model must stay
 	// visible and selectable — e.g. a hydrated session configured with a
 	// model outside the current offer. Surface it under its own section
@@ -1882,7 +1882,7 @@ const ModelSelector = memo(function ModelSelector({
 			const providerModelIds = visibleProviderModels[value] ?? [];
 			// Validate against the target provider's visible picker options,
 			// not its full catalog: a remembered model the picker hides (e.g.
-			// outside the ClinePass offer) must not become the selection.
+			// outside the HadyanCodePass offer) must not become the selection.
 			const providerOptionIds = new Set(
 				pickerDataForProvider(value).options.map((option) => option.value),
 			);
@@ -2007,7 +2007,7 @@ const ModelSelector = memo(function ModelSelector({
 			) : null}
 
 			<div className="flex min-w-0 items-center gap-0.5 max-[560px]:hidden">
-				{/* Wide enough for the longest built-in provider names ("Cline
+				{/* Wide enough for the longest built-in provider names ("HadyanCode
 				    Usage-Billing", "OpenAI ChatGPT Subscription") untruncated. */}
 				{renderProviderSelect("max-w-56")}
 				<div className="bg-border-2 h-4 w-[0.1rem]" />

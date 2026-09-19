@@ -1,4 +1,4 @@
-import type * as LlmsProviders from "@cline/llms";
+import type * as LlmsProviders from "@hadyancode/llms";
 import type {
 	CheckpointEntry,
 	CheckpointMetadata,

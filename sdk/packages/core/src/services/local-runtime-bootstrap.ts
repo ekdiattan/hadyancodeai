@@ -1,4 +1,4 @@
-import { resolveProviderRequestHeaders } from "@cline/llms";
+import { resolveProviderRequestHeaders } from "@hadyancode/llms";
 import type {
 	AgentConfig,
 	AgentEvent,
@@ -12,8 +12,8 @@ import type {
 	ToolApprovalRequest,
 	ToolApprovalResult,
 	WorkspaceInfo,
-} from "@cline/shared";
-import { hasRuntimeConfigExtension } from "@cline/shared";
+} from "@hadyancode/shared";
+import { hasRuntimeConfigExtension } from "@hadyancode/shared";
 import { version as corePackageVersion } from "../../package.json";
 import {
 	type AgentPluginPackageDiagnostic,
@@ -115,7 +115,7 @@ function logAgentPluginDiagnostics(
 }
 
 /**
- * Recover client identity from the Cline request headers baked into the
+ * Recover client identity from the HadyanCode request headers baked into the
  * session config. Hub-backed sessions do not transport `extensionContext`
  * (it is local-only), but the hub client resolves `X-CLIENT-TYPE` /
  * `X-CLIENT-VERSION` headers before `session.create`, so the daemon can

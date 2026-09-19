@@ -2,11 +2,11 @@ import { DEFAULT_AUTO_APPROVAL_SETTINGS } from "@shared/AutoApprovalSettings"
 import { DEFAULT_BROWSER_SETTINGS } from "@shared/BrowserSettings"
 import { DEFAULT_PLATFORM, type ExtensionState } from "@shared/ExtensionMessage"
 import { DEFAULT_MCP_DISPLAY_MODE } from "@shared/McpDisplayMode"
-import type { UserInfo } from "@shared/proto/cline/account"
-import { EmptyRequest } from "@shared/proto/cline/common"
-import type { OpenRouterCompatibleModelInfo, ProviderModelsResponse } from "@shared/proto/cline/models"
-import { OnboardingModelGroup, type TerminalProfile } from "@shared/proto/cline/state"
-import { convertProtoToClineMessage } from "@shared/proto-conversions/cline-message"
+import type { UserInfo } from "@shared/proto/hadyancode/account"
+import { EmptyRequest } from "@shared/proto/hadyancode/common"
+import type { OpenRouterCompatibleModelInfo, ProviderModelsResponse } from "@shared/proto/hadyancode/models"
+import { OnboardingModelGroup, type TerminalProfile } from "@shared/proto/hadyancode/state"
+import { convertProtoToHadyanCodeMessage } from "@shared/proto-conversions/hadyancode-message"
 import { convertProtoMcpServersToMcpServers } from "@shared/proto-conversions/mcp/mcp-server-conversion"
 import { fromProtobufModels } from "@shared/proto-conversions/models/typeConversion"
 import type React from "react"
@@ -86,8 +86,8 @@ export interface ExtensionStateContextType extends ExtensionState {
 	setGroqModels: (value: Record<string, ModelInfo>) => void
 	setBasetenModels: (value: Record<string, ModelInfo>) => void
 	setHuggingFaceModels: (value: Record<string, ModelInfo>) => void
-	setGlobalClineRulesToggles: (toggles: Record<string, boolean>) => void
-	setLocalClineRulesToggles: (toggles: Record<string, boolean>) => void
+	setGlobalHadyanCodeRulesToggles: (toggles: Record<string, boolean>) => void
+	setLocalHadyanCodeRulesToggles: (toggles: Record<string, boolean>) => void
 	setLocalCursorRulesToggles: (toggles: Record<string, boolean>) => void
 	setLocalWindsurfRulesToggles: (toggles: Record<string, boolean>) => void
 	setLocalAgentsRulesToggles: (toggles: Record<string, boolean>) => void
@@ -267,7 +267,7 @@ export const ExtensionStateContextProvider: React.FC<{
 
 	const [state, setState] = useState<ExtensionState>({
 		version: "",
-		clineMessages: [],
+		hadyancodeMessages: [],
 		queuedPrompts: [],
 		taskHistory: [],
 		shouldShowAnnouncement: false,
@@ -282,8 +282,8 @@ export const ExtensionStateContextProvider: React.FC<{
 		planActSeparateModelsSetting: true,
 		enableCheckpointsSetting: true,
 		mcpDisplayMode: DEFAULT_MCP_DISPLAY_MODE,
-		globalClineRulesToggles: {},
-		localClineRulesToggles: {},
+		globalHadyanCodeRulesToggles: {},
+		localHadyanCodeRulesToggles: {},
 		localCursorRulesToggles: {},
 		localWindsurfRulesToggles: {},
 		localAgentsRulesToggles: {},
@@ -436,7 +436,7 @@ export const ExtensionStateContextProvider: React.FC<{
 		}
 	}, [])
 	const mcpServersSubscriptionRef = useRef<(() => void) | null>(null)
-	// Convergent-replica state for clineMessages. The partial-message stream and the full state
+	// Convergent-replica state for hadyancodeMessages. The partial-message stream and the full state
 	// snapshots both feed this reducer so the transcript converges correctly regardless of
 	// arrival order, duplication, or loss. See messageReducer.ts.
 	const replicaRef = useRef<ReplicaState>(createReplicaState())
@@ -461,12 +461,12 @@ export const ExtensionStateContextProvider: React.FC<{
 							// state defaults to epoch 0 / version 0, which merges.
 							replicaRef.current = reducerApplyStateSnapshot(
 								replicaRef.current,
-								stateData.clineMessages ?? [],
+								stateData.hadyancodeMessages ?? [],
 								stateData.epoch ?? 0,
 								stateData.stateVersion ?? 0,
 								stateData.turnState,
 							)
-							stateData.clineMessages = replicaRef.current.messages
+							stateData.hadyancodeMessages = replicaRef.current.messages
 							// Use the seq-gated turnState from the replica, NOT the raw snapshot's, so a
 							// late/stale snapshot carrying an older phase (e.g. "idle") cannot revert a
 							// newer phase (e.g. "streaming") and hide the Cancel button. Falls back to
@@ -629,7 +629,7 @@ export const ExtensionStateContextProvider: React.FC<{
 						return
 					}
 
-					const partialMessage = convertProtoToClineMessage(protoMessage)
+					const partialMessage = convertProtoToHadyanCodeMessage(protoMessage)
 					setState((prevState) => {
 						// Route through the convergent-replica reducer: merge by ts keeping the
 						// higher seq, fence stale epochs, never let an out-of-order or duplicate
@@ -641,7 +641,7 @@ export const ExtensionStateContextProvider: React.FC<{
 							// Stale/ignored — no change.
 							return prevState
 						}
-						return { ...prevState, clineMessages: replicaRef.current.messages }
+						return { ...prevState, hadyancodeMessages: replicaRef.current.messages }
 					})
 				} catch (error) {
 					console.error("Failed to process partial message:", error, protoMessage)
@@ -899,8 +899,8 @@ export const ExtensionStateContextProvider: React.FC<{
 		showAccount,
 		showWorktrees,
 		showAnnouncement,
-		globalClineRulesToggles: state.globalClineRulesToggles || {},
-		localClineRulesToggles: state.localClineRulesToggles || {},
+		globalHadyanCodeRulesToggles: state.globalHadyanCodeRulesToggles || {},
+		localHadyanCodeRulesToggles: state.localHadyanCodeRulesToggles || {},
 		localCursorRulesToggles: state.localCursorRulesToggles || {},
 		localWindsurfRulesToggles: state.localWindsurfRulesToggles || {},
 		localAgentsRulesToggles: state.localAgentsRulesToggles || {},
@@ -945,15 +945,15 @@ export const ExtensionStateContextProvider: React.FC<{
 		setShowMarketplace,
 		setShowMcp,
 		closeMcpView,
-		setGlobalClineRulesToggles: (toggles) =>
+		setGlobalHadyanCodeRulesToggles: (toggles) =>
 			setState((prevState) => ({
 				...prevState,
-				globalClineRulesToggles: toggles,
+				globalHadyanCodeRulesToggles: toggles,
 			})),
-		setLocalClineRulesToggles: (toggles) =>
+		setLocalHadyanCodeRulesToggles: (toggles) =>
 			setState((prevState) => ({
 				...prevState,
-				localClineRulesToggles: toggles,
+				localHadyanCodeRulesToggles: toggles,
 			})),
 		setLocalCursorRulesToggles: (toggles) =>
 			setState((prevState) => ({

@@ -1,5 +1,5 @@
-import type { ModelModalities, ModelOperation, ModelOperationMode } from "@cline/shared"
-import { ApiFormat } from "./proto/cline/models"
+import type { ModelModalities, ModelOperation, ModelOperationMode } from "@hadyancode/shared"
+import { ApiFormat } from "./proto/hadyancode/models"
 import type { ApiHandlerSettings } from "./storage/state-keys"
 
 export type ApiProvider =
@@ -22,8 +22,8 @@ export type ApiProvider =
 	| "doubao"
 	| "mistral"
 	| "vscode-lm"
-	| "cline"
-	| "cline-pass"
+	| "hadyancode"
+	| "hadyancode-pass"
 	| "litellm"
 	| "moonshot"
 	| "nebius"
@@ -53,7 +53,7 @@ export type ApiProvider =
 	| "tencent-tokenhub"
 	| "chutes"
 
-export const DEFAULT_API_PROVIDER = "openrouter" as ApiProvider
+export const DEFAULT_API_PROVIDER = "hadyancode" as ApiProvider
 
 export interface ApiHandlerOptions extends Partial<ApiHandlerSettings> {
 	ulid?: string // Used to identify the task in API requests
@@ -161,8 +161,11 @@ export const openRouterDefaultModelInfo: ModelInfo = {
 		"Claude Sonnet 4.5 is an Anthropic model for coding, agentic search, and AI agent workflows. It supports planning and implementation tasks across the software development lifecycle.\n\nRead more in the [blog post here](https://www.anthropic.com/claude/sonnet)",
 }
 
-export const clinePassDefaultModelId = "cline-pass/glm-5.2"
-export const clinePassModelInfoSaneDefaults: ModelInfo = {
+// First-party policy: HadyanCodePass is restricted to Claude + DeepSeek, so the
+// placeholder must be an id the policy allows (see @hadyancode/llms
+// HADYANCODE_GATEWAY_MODEL_VENDORS).
+export const hadyancodePassDefaultModelId = "deepseek/deepseek-v4-flash"
+export const hadyancodePassModelInfoSaneDefaults: ModelInfo = {
 	maxTokens: 8_192,
 	contextWindow: 128_000,
 	supportsImages: false,
@@ -189,8 +192,8 @@ export function buildModelInfoNameMap(models: Record<string, ModelInfo>): Record
 	return nameMap
 }
 
-export function resolveClinePassModelInfo(modelId: string, modelInfoByName?: Record<string, ModelInfo>): ModelInfo {
-	return modelInfoByName?.[getModelSlug(modelId)] ?? clinePassModelInfoSaneDefaults
+export function resolveHadyanCodePassModelInfo(modelId: string, modelInfoByName?: Record<string, ModelInfo>): ModelInfo {
+	return modelInfoByName?.[getModelSlug(modelId)] ?? hadyancodePassModelInfoSaneDefaults
 }
 
 export const openAiModelInfoSafeDefaults: OpenAiCompatibleModelInfo = {
@@ -207,7 +210,7 @@ export const openAiModelInfoSafeDefaults: OpenAiCompatibleModelInfo = {
 // Uses OAuth authentication via ChatGPT, routes to chatgpt.com/backend-api/codex/responses
 // Subscription-based pricing (all costs are $0).
 //
-// The Codex catalog and default model id are sourced from the `@cline/llms`
+// The Codex catalog and default model id are sourced from the `@hadyancode/llms`
 // SDK.
 // Azure OpenAI
 // https://learn.microsoft.com/en-us/azure/ai-services/openai/api-version-deprecation

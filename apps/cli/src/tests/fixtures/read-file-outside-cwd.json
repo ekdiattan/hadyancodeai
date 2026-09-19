@@ -39,8 +39,8 @@
 						"payload": null
 					}
 				},
-				"cline-recommended-models-upstream": {
-					"key": "cline-recommended-models-upstream",
+				"hadyancode-recommended-models-upstream": {
+					"key": "hadyancode-recommended-models-upstream",
 					"enabled": true,
 					"variant": null,
 					"reason": {
@@ -164,7 +164,7 @@
 		"status": 200,
 		"response": {
 			"data": {
-				"value": "{\"version\":\"v1\",\"telemetryEnabled\":true,\"yoloModeAllowed\":true,\"mcpMarketplaceEnabled\":true,\"providerSettings\":{},\"openTelemetryEnabled\":false,\"openTelemetryOtlpInsecure\":false,\"enterpriseTelemetry\":{\"promptUploading\":{\"enabled\":true,\"type\":\"s3_access_keys\",\"s3AccessSettings\":{\"bucket\":\"cline-tasks\",\"accessKeyId\":\"REDACTED\",\"secretAccessKey\":\"REDACTED\",\"region\":\"us-west-2\"}}}}",
+				"value": "{\"version\":\"v1\",\"telemetryEnabled\":true,\"yoloModeAllowed\":true,\"mcpMarketplaceEnabled\":true,\"providerSettings\":{},\"openTelemetryEnabled\":false,\"openTelemetryOtlpInsecure\":false,\"enterpriseTelemetry\":{\"promptUploading\":{\"enabled\":true,\"type\":\"s3_access_keys\",\"s3AccessSettings\":{\"bucket\":\"hadyancode-tasks\",\"accessKeyId\":\"REDACTED\",\"secretAccessKey\":\"REDACTED\",\"region\":\"us-west-2\"}}}}",
 				"enabled": true
 			},
 			"success": true
@@ -180,7 +180,7 @@
 		"status": 200,
 		"response": {
 			"data": {
-				"value": "{\"version\":\"v1\",\"telemetryEnabled\":true,\"yoloModeAllowed\":true,\"mcpMarketplaceEnabled\":true,\"providerSettings\":{},\"openTelemetryEnabled\":false,\"openTelemetryOtlpInsecure\":false,\"enterpriseTelemetry\":{\"promptUploading\":{\"enabled\":true,\"type\":\"s3_access_keys\",\"s3AccessSettings\":{\"bucket\":\"cline-tasks\",\"accessKeyId\":\"REDACTED\",\"secretAccessKey\":\"REDACTED\",\"region\":\"us-west-2\"}}}}",
+				"value": "{\"version\":\"v1\",\"telemetryEnabled\":true,\"yoloModeAllowed\":true,\"mcpMarketplaceEnabled\":true,\"providerSettings\":{},\"openTelemetryEnabled\":false,\"openTelemetryOtlpInsecure\":false,\"enterpriseTelemetry\":{\"promptUploading\":{\"enabled\":true,\"type\":\"s3_access_keys\",\"s3AccessSettings\":{\"bucket\":\"hadyancode-tasks\",\"accessKeyId\":\"REDACTED\",\"secretAccessKey\":\"REDACTED\",\"region\":\"us-west-2\"}}}}",
 				"enabled": true
 			},
 			"success": true
@@ -191,7 +191,7 @@
 	{
 		"scope": "https://s3.us-west-2.amazonaws.com",
 		"method": "PUT",
-		"path": "/cline-tasks/tasks/usr-test/taskid/api_conversation_history.json",
+		"path": "/hadyancode-tasks/tasks/usr-test/taskid/api_conversation_history.json",
 		"status": 200,
 		"response": "",
 		"responseIsBinary": false
@@ -208,7 +208,7 @@
 	{
 		"scope": "https://s3.us-west-2.amazonaws.com",
 		"method": "PUT",
-		"path": "/cline-tasks/tasks/usr-test/taskid/api_conversation_history.json",
+		"path": "/hadyancode-tasks/tasks/usr-test/taskid/api_conversation_history.json",
 		"status": 200,
 		"response": "",
 		"responseIsBinary": false
@@ -216,7 +216,7 @@
 	{
 		"scope": "https://s3.us-west-2.amazonaws.com",
 		"method": "PUT",
-		"path": "/cline-tasks/tasks/usr-test/taskid/api_conversation_history.json",
+		"path": "/hadyancode-tasks/tasks/usr-test/taskid/api_conversation_history.json",
 		"status": 200,
 		"response": "",
 		"responseIsBinary": false
@@ -233,7 +233,7 @@
 	{
 		"scope": "https://s3.us-west-2.amazonaws.com",
 		"method": "PUT",
-		"path": "/cline-tasks/tasks/usr-test/taskid/api_conversation_history.json",
+		"path": "/hadyancode-tasks/tasks/usr-test/taskid/api_conversation_history.json",
 		"status": 200,
 		"response": "",
 		"responseIsBinary": false

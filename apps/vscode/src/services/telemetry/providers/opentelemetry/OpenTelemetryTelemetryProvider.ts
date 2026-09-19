@@ -8,7 +8,7 @@ import { getErrorLevelFromString } from "@/services/error"
 import { getDistinctId, setDistinctId } from "@/services/logging/distinctId"
 import { Setting } from "@/shared/proto/index.host"
 import { Logger } from "@/shared/services/Logger"
-import type { ClineAccountUserInfo } from "../../../auth/AuthService"
+import type { HadyanCodeAccountUserInfo } from "../../../auth/AuthService"
 import type { ITelemetryProvider, TelemetryProperties, TelemetrySettings } from "../ITelemetryProvider"
 
 /**
@@ -47,12 +47,12 @@ export class OpenTelemetryTelemetryProvider implements ITelemetryProvider {
 		}
 
 		if (meterProvider) {
-			this.meter = meterProvider.getMeter("cline")
+			this.meter = meterProvider.getMeter("hadyancode")
 			this.meterProvider = meterProvider
 		}
 
 		if (loggerProvider) {
-			this.logger = loggerProvider.getLogger("cline")
+			this.logger = loggerProvider.getLogger("hadyancode")
 			this.loggerProvider = loggerProvider
 		}
 
@@ -136,7 +136,7 @@ export class OpenTelemetryTelemetryProvider implements ITelemetryProvider {
 		}
 	}
 
-	public identifyUser(userInfo: ClineAccountUserInfo, properties: TelemetryProperties = {}): void {
+	public identifyUser(userInfo: HadyanCodeAccountUserInfo, properties: TelemetryProperties = {}): void {
 		if (!this.isEnabled() || !userInfo) {
 			return
 		}
@@ -171,7 +171,10 @@ export class OpenTelemetryTelemetryProvider implements ITelemetryProvider {
 	 * Build a flat record of user and organization attributes for use as
 	 * OpenTelemetry log/event attributes.
 	 */
-	private buildUserAttributes(userInfo: ClineAccountUserInfo, properties: TelemetryProperties = {}): Record<string, string> {
+	private buildUserAttributes(
+		userInfo: HadyanCodeAccountUserInfo,
+		properties: TelemetryProperties = {},
+	): Record<string, string> {
 		const activeOrg = userInfo.organizations?.find((org) => org.active)
 
 		return {

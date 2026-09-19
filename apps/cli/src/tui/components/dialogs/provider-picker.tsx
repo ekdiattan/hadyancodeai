@@ -1,5 +1,5 @@
 import {
-	completeClineDeviceAuth,
+	completeHadyanCodeDeviceAuth,
 	getProviderConfigFields,
 	isOAuthProvider,
 	loginLocalProvider,
@@ -8,9 +8,9 @@ import {
 	ProviderSettingsManager,
 	saveLocalProviderOAuthCredentials,
 	saveLocalProviderSettings,
-	startClineDeviceAuth,
-} from "@cline/core";
-import { getClineEnvironmentConfig } from "@cline/shared";
+	startHadyanCodeDeviceAuth,
+} from "@hadyancode/core";
+import { getHadyanCodeEnvironmentConfig } from "@hadyancode/shared";
 import type { ChoiceContext } from "@opentui-ui/dialog";
 import { useDialogKeyboard } from "@opentui-ui/dialog/react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -38,7 +38,7 @@ import {
 	type SearchableItem,
 } from "../searchable-list";
 import {
-	buildClinePassSubscriptionPageUrl,
+	buildHadyanCodePassSubscriptionPageUrl,
 	resolveOAuthWaitKeyAction,
 	saveManualProviderApiKey,
 } from "./provider-picker-helpers";
@@ -336,7 +336,7 @@ export function UseExistingOrReconfigureContent(
 	);
 }
 
-function ClinePassBrowserPageContent(
+function HadyanCodePassBrowserPageContent(
 	props: ChoiceContext<boolean> & {
 		providerName: string;
 		pageLabel: string;
@@ -396,19 +396,19 @@ function ClinePassBrowserPageContent(
 	);
 }
 
-export function ClinePassSubscriptionContent(
+export function HadyanCodePassSubscriptionContent(
 	props: ChoiceContext<boolean> & {
 		providerName: string;
 	},
 ) {
 	const subscriptionUrl = useMemo(
 		() =>
-			buildClinePassSubscriptionPageUrl(getClineEnvironmentConfig().appBaseUrl),
+			buildHadyanCodePassSubscriptionPageUrl(getHadyanCodeEnvironmentConfig().appBaseUrl),
 		[],
 	);
 
 	return (
-		<ClinePassBrowserPageContent
+		<HadyanCodePassBrowserPageContent
 			{...props}
 			pageLabel="Subscription page"
 			url={subscriptionUrl}
@@ -756,7 +756,7 @@ export function OAuthLoginContent(
 	} = props;
 	const palette = useDialogPalette();
 	const [mode, setMode] = useState<"browser" | "device">(
-		providerId === "cline" ? "device" : "browser",
+		providerId === "hadyancode" ? "device" : "browser",
 	);
 	const [status, setStatus] = useState("Opening browser...");
 	const [authUrl, setAuthUrl] = useState("");
@@ -796,9 +796,9 @@ export function OAuthLoginContent(
 		const manager = new ProviderSettingsManager();
 		const existing = manager.getProviderSettings(providerId);
 		const apiBaseUrl =
-			existing?.baseUrl?.trim() || getClineEnvironmentConfig().apiBaseUrl;
+			existing?.baseUrl?.trim() || getHadyanCodeEnvironmentConfig().apiBaseUrl;
 
-		startClineDeviceAuth()
+		startHadyanCodeDeviceAuth()
 			.then((result) => {
 				if (!isActiveAuthAttempt(attempt)) return;
 				setDeviceUserCode(result.userCode);
@@ -806,7 +806,7 @@ export function OAuthLoginContent(
 					result.verificationUriComplete || result.verificationUri,
 				);
 
-				completeClineDeviceAuth({
+				completeHadyanCodeDeviceAuth({
 					deviceCode: result.deviceCode,
 					expiresInSeconds: result.expiresInSeconds,
 					pollIntervalSeconds: result.pollIntervalSeconds,
@@ -842,7 +842,7 @@ export function OAuthLoginContent(
 
 	// biome-ignore lint/correctness/useExhaustiveDependencies: run once on mount
 	useEffect(() => {
-		if (providerId === "cline") {
+		if (providerId === "hadyancode") {
 			startDeviceAuthCodeFlow();
 			return cancelAuthAttempt;
 		}
@@ -1002,7 +1002,7 @@ export function OAuthApiKeyInputContent(
 			</text>
 
 			<text fg="gray">
-				Use an API key from your Cline dashboard instead of OAuth login. This
+				Use an API key from your HadyanCode dashboard instead of OAuth login. This
 				replaces any saved login tokens.
 			</text>
 

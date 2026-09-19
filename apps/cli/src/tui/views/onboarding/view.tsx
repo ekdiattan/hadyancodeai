@@ -1,12 +1,12 @@
-import type { ProviderSettingsManager } from "@cline/core";
+import type { ProviderSettingsManager } from "@hadyancode/core";
 import { useTerminalDimensions } from "@opentui/react";
 import { useMouseTracker } from "../../components/tracked-robot";
 import { HOME_VIEW_MAX_WIDTH } from "../../types";
 import { useOnboardingController } from "./controller";
 import { getOAuthProviderLabel, type OnboardingResult } from "./model";
 import {
-	OnboardingClineModelScreen,
-	OnboardingClinePassSubscriptionScreen,
+	OnboardingHadyanCodeModelScreen,
+	OnboardingHadyanCodePassSubscriptionScreen,
 	OnboardingCodexCliScreen,
 	OnboardingCustomModelIdScreen,
 	OnboardingDeviceCodeScreen,
@@ -108,11 +108,11 @@ export function OnboardingView(props: OnboardingViewProps) {
 		);
 	}
 
-	if (state.step === "cline_model") {
+	if (state.step === "hadyancode_model") {
 		return (
-			<OnboardingClineModelScreen
-				clineEntries={state.clineEntries}
-				clineModelSelected={state.clineModelSelected}
+			<OnboardingHadyanCodeModelScreen
+				hadyancodeEntries={state.hadyancodeEntries}
+				hadyancodeModelSelected={state.hadyancodeModelSelected}
 				compact={compact}
 				contentWidth={contentWidth}
 				mouse={mouse}
@@ -121,20 +121,20 @@ export function OnboardingView(props: OnboardingViewProps) {
 		);
 	}
 
-	if (state.step === "cline_pass_subscription") {
+	if (state.step === "hadyancode_pass_subscription") {
 		return (
-			<OnboardingClinePassSubscriptionScreen
+			<OnboardingHadyanCodePassSubscriptionScreen
 				compact={compact}
 				contentWidth={contentWidth}
-				currentPlanName={state.clinePassCurrentPlanName}
-				error={state.clinePassSubscriptionError}
+				currentPlanName={state.hadyancodePassCurrentPlanName}
+				error={state.hadyancodePassSubscriptionError}
 				mouse={mouse}
-				openStatus={state.clinePassSubscriptionOpenStatus}
-				options={state.clinePassSubscriptionOptions}
-				planFeatures={state.clinePassPlanFeatures}
-				selected={state.clinePassSubscriptionSelected}
-				status={state.clinePassSubscriptionStatus}
-				subscriptionUrl={state.clinePassSubscriptionUrl}
+				openStatus={state.hadyancodePassSubscriptionOpenStatus}
+				options={state.hadyancodePassSubscriptionOptions}
+				planFeatures={state.hadyancodePassPlanFeatures}
+				selected={state.hadyancodePassSubscriptionSelected}
+				status={state.hadyancodePassSubscriptionStatus}
+				subscriptionUrl={state.hadyancodePassSubscriptionUrl}
 			/>
 		);
 	}

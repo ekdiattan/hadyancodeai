@@ -4,12 +4,12 @@ import type {
 	HubReplyEnvelope,
 	JsonValue,
 	ToolApprovalRequest,
-} from "@cline/shared";
+} from "@hadyancode/shared";
 import {
 	createSessionId,
 	parseRuntimeConfigExtensions,
 	ReasoningEffortSchema,
-} from "@cline/shared";
+} from "@hadyancode/shared";
 import {
 	isCoreBuiltinToolAvailable,
 	resolveToolClientType,

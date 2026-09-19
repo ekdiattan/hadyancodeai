@@ -1,13 +1,13 @@
 import { describe, expect, it } from "vitest";
 import {
-	ClineNotSubscribedError,
-	ClineOrgIndividualInferenceSubscriptionError,
-	ClinePassLimitError,
-	getClineNotSubscribedMessage,
-	getClineOrgIndividualInferenceSubscriptionMessage,
-	isClineNotSubscribedMessage,
-	isClineOrgIndividualInferenceSubscriptionMessage,
-	isClinePassLimitMessage,
+	HadyanCodeNotSubscribedError,
+	HadyanCodeOrgIndividualInferenceSubscriptionError,
+	HadyanCodePassLimitError,
+	getHadyanCodeNotSubscribedMessage,
+	getHadyanCodeOrgIndividualInferenceSubscriptionMessage,
+	isHadyanCodeNotSubscribedMessage,
+	isHadyanCodeOrgIndividualInferenceSubscriptionMessage,
+	isHadyanCodePassLimitMessage,
 } from "./errors";
 import { extractErrorMessage } from "./format";
 
@@ -108,16 +108,16 @@ describe("extractErrorMessage", () => {
 	});
 });
 
-describe("ClineNotSubscribedError", () => {
+describe("HadyanCodeNotSubscribedError", () => {
 	it("uses the user-facing subscription message", () => {
-		expect(new ClineNotSubscribedError("cline-pass").message).toBe(
-			getClineNotSubscribedMessage(),
+		expect(new HadyanCodeNotSubscribedError("hadyancode-pass").message).toBe(
+			getHadyanCodeNotSubscribedMessage(),
 		);
 	});
 
-	it("detects the ClinePass required-plan message", () => {
+	it("detects the HadyanCodePass required-plan message", () => {
 		expect(
-			isClineNotSubscribedMessage(
+			isHadyanCodeNotSubscribedMessage(
 				JSON.stringify({
 					error: {
 						message: "the user is not subscribed to required model plan",
@@ -125,30 +125,30 @@ describe("ClineNotSubscribedError", () => {
 				}),
 			),
 		).toBe(true);
-		expect(isClineNotSubscribedMessage("different forbidden error")).toBe(
+		expect(isHadyanCodeNotSubscribedMessage("different forbidden error")).toBe(
 			false,
 		);
 	});
 
-	it("detects the formatted ClinePass subscription message regardless of URL", () => {
+	it("detects the formatted HadyanCodePass subscription message regardless of URL", () => {
 		expect(
-			isClineNotSubscribedMessage(
-				"No access to ClinePass subscription models yet. Subscribe to ClinePass, the low cost open weights model coding plan:",
+			isHadyanCodeNotSubscribedMessage(
+				"No access to HadyanCodePass subscription models yet. Subscribe to HadyanCodePass, the low cost open weights model coding plan:",
 			),
 		).toBe(true);
 	});
 });
 
-describe("ClineOrgIndividualInferenceSubscriptionError", () => {
+describe("HadyanCodeOrgIndividualInferenceSubscriptionError", () => {
 	it("uses the user-facing organization account message", () => {
 		expect(
-			new ClineOrgIndividualInferenceSubscriptionError("cline").message,
-		).toBe(getClineOrgIndividualInferenceSubscriptionMessage());
+			new HadyanCodeOrgIndividualInferenceSubscriptionError("hadyancode").message,
+		).toBe(getHadyanCodeOrgIndividualInferenceSubscriptionMessage());
 	});
 
 	it("detects the organization individual-subscription entitlement message", () => {
 		expect(
-			isClineOrgIndividualInferenceSubscriptionMessage(
+			isHadyanCodeOrgIndividualInferenceSubscriptionMessage(
 				JSON.stringify({
 					error: {
 						code: "ENTITLEMENT_ERROR",
@@ -159,40 +159,40 @@ describe("ClineOrgIndividualInferenceSubscriptionError", () => {
 			),
 		).toBe(true);
 		expect(
-			isClineOrgIndividualInferenceSubscriptionMessage(
+			isHadyanCodeOrgIndividualInferenceSubscriptionMessage(
 				"the user is not subscribed to required model plan",
 			),
 		).toBe(false);
 	});
 });
 
-describe("ClinePassLimitError", () => {
+describe("HadyanCodePassLimitError", () => {
 	it("preserves the dynamic backend limit message", () => {
 		const message =
-			"You have reached your weekly Clinepass limit. The limit resets in 7d, please try again later.";
-		expect(new ClinePassLimitError(message, "cline-pass").message).toBe(
+			"You have reached your weekly HadyanCodepass limit. The limit resets in 7d, please try again later.";
+		expect(new HadyanCodePassLimitError(message, "hadyancode-pass").message).toBe(
 			message,
 		);
 	});
 
-	it("detects ClinePass period limit messages with variable period and reset", () => {
+	it("detects HadyanCodePass period limit messages with variable period and reset", () => {
 		expect(
-			isClinePassLimitMessage(
-				"You have reached your weekly Clinepass limit. The limit resets in 7d, please try again later.",
+			isHadyanCodePassLimitMessage(
+				"You have reached your weekly HadyanCodepass limit. The limit resets in 7d, please try again later.",
 			),
 		).toBe(true);
 		expect(
-			isClinePassLimitMessage(
-				"You have reached your monthly Clinepass limit. The limit resets in 12h, please try again later.",
+			isHadyanCodePassLimitMessage(
+				"You have reached your monthly HadyanCodepass limit. The limit resets in 12h, please try again later.",
 			),
 		).toBe(true);
 		expect(
-			isClinePassLimitMessage(
-				`You have reached your\t-\tClinepass limit.The limit resets in\t${"\t".repeat(10_000)}`,
+			isHadyanCodePassLimitMessage(
+				`You have reached your\t-\tHadyanCodepass limit.The limit resets in\t${"\t".repeat(10_000)}`,
 			),
 		).toBe(false);
 		expect(
-			isClinePassLimitMessage(
+			isHadyanCodePassLimitMessage(
 				"the user is not subscribed to required model plan",
 			),
 		).toBe(false);

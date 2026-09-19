@@ -1,7 +1,7 @@
 import type {
-	ClineGitHubRepository,
-	ClineIntegration,
-} from "../webview/lib/cline-integrations-types";
+	HadyanCodeGitHubRepository,
+	HadyanCodeIntegration,
+} from "../webview/lib/hadyancode-integrations-types";
 
 const DEFAULT_TIMEOUT_MS = 30_000;
 
@@ -27,7 +27,7 @@ function resolveInstallRedirect(location: string, requestUrl: URL): string {
 	return resolved.toString();
 }
 
-export interface ClineIntegrationsRequestOptions {
+export interface HadyanCodeIntegrationsRequestOptions {
 	apiBaseUrl: string;
 	/** Frontend origin the browser install flow returns to when it finishes. */
 	appBaseUrl: string;
@@ -36,25 +36,25 @@ export interface ClineIntegrationsRequestOptions {
 	fetchImpl?: typeof fetch;
 }
 
-export async function listClineIntegrations(
-	options: ClineIntegrationsRequestOptions,
-): Promise<ClineIntegration[]> {
-	const data = await requestClineApiJson("/api/v1/integrations", options);
-	return Array.isArray(data) ? (data as ClineIntegration[]) : [];
+export async function listHadyanCodeIntegrations(
+	options: HadyanCodeIntegrationsRequestOptions,
+): Promise<HadyanCodeIntegration[]> {
+	const data = await requestHadyanCodeApiJson("/api/v1/integrations", options);
+	return Array.isArray(data) ? (data as HadyanCodeIntegration[]) : [];
 }
 
-export async function listClineGitHubRepositories(
-	options: ClineIntegrationsRequestOptions,
-): Promise<ClineGitHubRepository[]> {
-	const data = await requestClineApiJson(
+export async function listHadyanCodeGitHubRepositories(
+	options: HadyanCodeIntegrationsRequestOptions,
+): Promise<HadyanCodeGitHubRepository[]> {
+	const data = await requestHadyanCodeApiJson(
 		"/api/v1/integrations/github/repositories",
 		options,
 	);
-	return Array.isArray(data) ? (data as ClineGitHubRepository[]) : [];
+	return Array.isArray(data) ? (data as HadyanCodeGitHubRepository[]) : [];
 }
 
 export async function resolveGitHubInstallUrl(
-	options: ClineIntegrationsRequestOptions,
+	options: HadyanCodeIntegrationsRequestOptions,
 ): Promise<{ url: string }> {
 	const fetchImpl = options.fetchImpl ?? fetch;
 	const installUrl = new URL(
@@ -117,14 +117,14 @@ function formatRequestFailure(
 	const body = bodyText.trim();
 	if (body) {
 		const preview = body.length > 200 ? `${body.slice(0, 200)}...` : body;
-		return `Cline integrations request failed with status ${status}: ${preview}`;
+		return `HadyanCode integrations request failed with status ${status}: ${preview}`;
 	}
-	return `Cline integrations request failed with status ${status}`;
+	return `HadyanCode integrations request failed with status ${status}`;
 }
 
-async function requestClineApiJson(
+async function requestHadyanCodeApiJson(
 	endpoint: string,
-	options: ClineIntegrationsRequestOptions,
+	options: HadyanCodeIntegrationsRequestOptions,
 ): Promise<unknown> {
 	const fetchImpl = options.fetchImpl ?? fetch;
 	const controller = new AbortController();
@@ -153,7 +153,7 @@ async function requestClineApiJson(
 						formatRequestFailure(response.status, text, undefined),
 					);
 				}
-				throw new Error("Cline integrations response was not valid JSON");
+				throw new Error("HadyanCode integrations response was not valid JSON");
 			}
 		}
 
@@ -170,7 +170,7 @@ async function requestClineApiJson(
 			if (typeof envelope.success === "boolean") {
 				if (!envelope.success) {
 					throw new Error(
-						getEnvelopeError(parsed) || "Cline integrations request failed",
+						getEnvelopeError(parsed) || "HadyanCode integrations request failed",
 					);
 				}
 				return envelope.data ?? null;

@@ -1,4 +1,4 @@
-import type { Message } from "@cline/llms"
+import type { Message } from "@hadyancode/llms"
 import { describe, expect, it, vi } from "vitest"
 
 // The shared vscode vitest stub does not define the Language Model API classes,

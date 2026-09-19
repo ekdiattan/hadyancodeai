@@ -18,8 +18,8 @@ import {
 	type ToolApprovalRequest,
 	type ToolApprovalResult,
 	type UserInstructionConfigService,
-} from "@cline/core";
-import type { MessageWithMetadata } from "@cline/shared";
+} from "@hadyancode/core";
+import type { MessageWithMetadata } from "@hadyancode/shared";
 import { createCliCore } from "../../session/session";
 import { submitAndExitInTerminal } from "../../utils/approval";
 import type {

@@ -32,7 +32,7 @@ import {
 	type ToolResultHookPayload,
 	type UserPromptSubmitData,
 	type WorkspaceInfo,
-} from "@cline/shared";
+} from "@hadyancode/shared";
 import { z } from "zod";
 import {
 	type RunSubprocessEventResult,
@@ -258,10 +258,10 @@ function basePayload(
 	options: SubprocessHooksOptions,
 ): HookEventPayloadBase {
 	const env = options.env ?? process.env;
-	const userId = env.CLINE_USER_ID?.trim() || env.USER?.trim() || "unknown";
+	const userId = env.HADYANCODE_USER_ID?.trim() || env.USER?.trim() || "unknown";
 	const workspaceRoot = options.cwd || process.cwd();
 	return {
-		clineVersion: env.CLINE_VERSION?.trim() || "",
+		hadyancodeVersion: env.HADYANCODE_VERSION?.trim() || "",
 		hookName,
 		timestamp: new Date().toISOString(),
 		taskId: ctx.conversationId,
@@ -400,7 +400,7 @@ export function createSubprocessHooks(
 	): Promise<undefined> => {
 		const base = runtimeBase(ctx);
 		const isResume =
-			(options.env ?? process.env).CLINE_HOOK_AGENT_RESUME === "1";
+			(options.env ?? process.env).HADYANCODE_HOOK_AGENT_RESUME === "1";
 		if (isResume) {
 			const resumePayload: AgentResumeHookPayload = {
 				...basePayload("agent_resume", base, options),

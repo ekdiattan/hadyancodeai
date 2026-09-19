@@ -1,8 +1,8 @@
 /**
  * Shared types describing automation cron specs parsed from Markdown files.
- * Split out from `@cline/core` so the parser can live in `shared` where
+ * Split out from `@hadyancode/core` so the parser can live in `shared` where
  * multiple consumers (hub daemon, CLI tools, enterprise adapters) can validate
- * the same `.cline/cron/` spec format without pulling in core's stateful
+ * the same `.hadyancode/cron/` spec format without pulling in core's stateful
  * orchestration layer.
  */
 
@@ -12,7 +12,7 @@ export type CronTriggerKind = "one_off" | "schedule" | "event";
  * Which trigger kind was inferred from the source file path.
  * - `*.cron.md` -> schedule
  * - `events/*.event.md` -> event
- * - everything else under `.cline/cron/*.md` -> one_off
+ * - everything else under `.hadyancode/cron/*.md` -> one_off
  */
 export interface CronSpecModelSelection {
 	providerId?: string;
@@ -72,7 +72,7 @@ export type CronSpec = CronOneOffSpec | CronScheduleSpec | CronEventSpec;
 export interface CronSpecParseResult {
 	/** Stable external identity: frontmatter `id` or normalized relative path. */
 	externalId: string;
-	/** Normalized posix-style path relative to `.cline/cron/`. */
+	/** Normalized posix-style path relative to `.hadyancode/cron/`. */
 	relativePath: string;
 	/** Trigger kind inferred from file naming. */
 	triggerKind: CronTriggerKind;

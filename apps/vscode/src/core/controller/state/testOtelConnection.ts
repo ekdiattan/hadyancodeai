@@ -1,5 +1,5 @@
-import { EmptyRequest } from "@shared/proto/cline/common"
-import { TestConnectionResult } from "@shared/proto/cline/state"
+import { EmptyRequest } from "@shared/proto/hadyancode/common"
+import { TestConnectionResult } from "@shared/proto/hadyancode/state"
 import { REMOTE_CONFIG_OTEL_PROVIDER_ID } from "@/core/storage/remote-config/utils"
 import { telemetryService } from "@/services/telemetry"
 import { Logger } from "@/shared/services/Logger"
@@ -23,13 +23,13 @@ export async function testOtelConnection(_controller: Controller, _: EmptyReques
 			})
 		}
 
-		otelProvider.log("cline.test.connection", {
+		otelProvider.log("hadyancode.test.connection", {
 			test: true,
 			timestamp: new Date().toISOString(),
 			source: "remote_config_settings",
 		})
 
-		otelProvider.recordCounter("cline.test.connection", 1)
+		otelProvider.recordCounter("hadyancode.test.connection", 1)
 
 		await otelProvider.forceFlush()
 

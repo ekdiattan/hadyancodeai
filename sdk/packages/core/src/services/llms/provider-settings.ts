@@ -1,5 +1,5 @@
-import * as Llms from "@cline/llms";
-import { ReasoningLevelSchema } from "@cline/shared";
+import * as Llms from "@hadyancode/llms";
+import { ReasoningLevelSchema } from "@hadyancode/shared";
 import { z } from "zod";
 import {
 	DEFAULT_EXTERNAL_OCA_BASE_URL,
@@ -192,14 +192,6 @@ export function safeParseSettings(
 	return ProviderSettingsSchema.safeParse(input);
 }
 
-function shouldRouteThroughOpenAIResponses(
-	settings: ProviderSettings,
-): boolean {
-	return (
-		settings.protocol === "openai-responses" || settings.client === "openai"
-	);
-}
-
 export function toProviderConfig(
 	settings: ProviderSettings,
 	options: ToProviderConfigOptions = {},
@@ -234,12 +226,7 @@ export function toProviderConfig(
 				? DEFAULT_INTERNAL_OCA_BASE_URL
 				: DEFAULT_EXTERNAL_OCA_BASE_URL
 			: providerDefaults?.baseUrl);
-	const routingProviderId =
-		settings.routingProviderId ??
-		(shouldRouteThroughOpenAIResponses(settings) &&
-		normalizedProviderId !== BUILT_IN_PROVIDER.OPENAI_NATIVE
-			? BUILT_IN_PROVIDER.OPENAI_NATIVE
-			: undefined);
+	const routingProviderId = settings.routingProviderId;
 
 	const knownModels = includeKnownModels
 		? (providerDefaults?.knownModels ??

@@ -1,4 +1,4 @@
-import { createDefaultExecutors, type ToolExecutors } from "@cline/core"
+import { createDefaultExecutors, type ToolExecutors } from "@hadyancode/core"
 import * as path from "path"
 
 type FileReadExecutor = NonNullable<ToolExecutors["readFile"]>

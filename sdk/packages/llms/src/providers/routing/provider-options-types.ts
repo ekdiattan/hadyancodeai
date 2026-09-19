@@ -1,11 +1,11 @@
 import type {
 	GatewayProviderContext,
 	GatewayStreamRequest,
-} from "@cline/shared";
+} from "@hadyancode/shared";
 import type { ProviderOptionsPatch } from "./utils";
 
 export type AiSdkProviderOptionsTarget =
-	| "cline"
+	| "hadyancode"
 	| "openai"
 	| "openai-compatible"
 	| "anthropic"
@@ -61,9 +61,9 @@ export function inferProviderOptionsTarget(
 	providerId: string,
 ): AiSdkProviderOptionsTarget {
 	switch (providerId) {
-		case "cline":
-		case "cline-pass":
-			return "cline";
+		case "hadyancode":
+		case "hadyancode-pass":
+			return "hadyancode";
 		case "openai-native":
 			return "openai";
 		case "anthropic":

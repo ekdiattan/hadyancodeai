@@ -120,8 +120,8 @@ const catalogProviders: Provider[] = [
 		modelList: [],
 	},
 	{
-		id: "cline",
-		name: "Cline",
+		id: "hadyancode",
+		name: "HadyanCode",
 		models: 12,
 		color: "#000000",
 		letter: "CL",
@@ -200,7 +200,7 @@ describe("ProviderListContent", () => {
 				button.textContent?.includes(name),
 			);
 		expect(rowFor("Anthropic")?.textContent).toContain("Configured");
-		expect(rowFor("Cline")?.textContent).toContain("Sign in");
+		expect(rowFor("HadyanCode")?.textContent).toContain("Sign in");
 		expect(rowFor("ElevenLabs")?.textContent).toContain("API key");
 	});
 
@@ -240,7 +240,7 @@ describe("ProviderDetailContent auth flows", () => {
 		container = document.createElement("div");
 		document.body.appendChild(container);
 		root = createRoot(container);
-		// "cline" is a featured provider, so mounting its detail refreshes the
+		// "hadyancode" is a featured provider, so mounting its detail refreshes the
 		// model list; resolve it to keep the auth assertions deterministic.
 		loadProviderModelsMock.mockReset().mockResolvedValue([]);
 	});
@@ -252,8 +252,8 @@ describe("ProviderDetailContent auth flows", () => {
 	});
 
 	const signInProvider: Provider = {
-		id: "cline",
-		name: "Cline",
+		id: "hadyancode",
+		name: "HadyanCode",
 		models: 0,
 		color: "#000",
 		letter: "CL",
@@ -422,18 +422,18 @@ describe("ProviderDetailContent audio capabilities", () => {
 	});
 
 	it("scopes the fetched featured list to its provider and list revision", async () => {
-		const clineProvider: Provider = {
-			id: "cline",
-			name: "Cline",
+		const hadyancodeProvider: Provider = {
+			id: "hadyancode",
+			name: "HadyanCode",
 			models: 1,
 			color: "#000",
 			letter: "CL",
 			enabled: true,
-			modelList: [{ id: "cline/snapshot-model", name: "Cline Snapshot" }],
+			modelList: [{ id: "hadyancode/snapshot-model", name: "HadyanCode Snapshot" }],
 		};
-		const clinePassProvider: Provider = {
-			id: "cline-pass",
-			name: "ClinePass",
+		const hadyancodePassProvider: Provider = {
+			id: "hadyancode-pass",
+			name: "HadyanCodePass",
 			models: 1,
 			color: "#000",
 			letter: "CP",
@@ -454,7 +454,7 @@ describe("ProviderDetailContent audio capabilities", () => {
 
 		let resolvePassModels: (models: unknown[]) => void = () => {};
 		loadProviderModelsMock.mockReset().mockImplementation((id: string) =>
-			id === "cline"
+			id === "hadyancode"
 				? Promise.resolve([
 						{ id: "anthropic/claude-opus-5", name: "Claude Opus 5" },
 					])
@@ -463,13 +463,13 @@ describe("ProviderDetailContent audio capabilities", () => {
 					}),
 		);
 
-		await render(clineProvider);
+		await render(hadyancodeProvider);
 		expect(container.textContent).toContain("Claude Opus 5");
 
 		// Switching directly to the other featured provider must not keep
 		// showing the previous provider's fetched models while its own
 		// request is still pending — the same component instance is reused.
-		await render(clinePassProvider);
+		await render(hadyancodePassProvider);
 		expect(container.textContent).not.toContain("Claude Opus 5");
 		expect(container.textContent).toContain("Pass Snapshot");
 
@@ -482,18 +482,18 @@ describe("ProviderDetailContent audio capabilities", () => {
 	});
 
 	it("keeps the catalog snapshot when the refresh after a switch fails or is empty", async () => {
-		const clineProvider: Provider = {
-			id: "cline",
-			name: "Cline",
+		const hadyancodeProvider: Provider = {
+			id: "hadyancode",
+			name: "HadyanCode",
 			models: 1,
 			color: "#000",
 			letter: "CL",
 			enabled: true,
-			modelList: [{ id: "cline/snapshot-model", name: "Cline Snapshot" }],
+			modelList: [{ id: "hadyancode/snapshot-model", name: "HadyanCode Snapshot" }],
 		};
-		const clinePassProvider: Provider = {
-			id: "cline-pass",
-			name: "ClinePass",
+		const hadyancodePassProvider: Provider = {
+			id: "hadyancode-pass",
+			name: "HadyanCodePass",
 			models: 1,
 			color: "#000",
 			letter: "CP",
@@ -515,30 +515,30 @@ describe("ProviderDetailContent audio capabilities", () => {
 		loadProviderModelsMock
 			.mockReset()
 			.mockImplementation((id: string) =>
-				id === "cline"
+				id === "hadyancode"
 					? Promise.resolve([
 							{ id: "anthropic/claude-opus-5", name: "Claude Opus 5" },
 						])
 					: Promise.reject(new Error("offline")),
 			);
-		await render(clineProvider);
+		await render(hadyancodeProvider);
 		expect(container.textContent).toContain("Claude Opus 5");
 
 		// A failed refresh after switching falls back to the new provider's
 		// snapshot; the previous provider's fetched list must not survive.
-		await render(clinePassProvider);
+		await render(hadyancodePassProvider);
 		expect(container.textContent).not.toContain("Claude Opus 5");
 		expect(container.textContent).toContain("Pass Snapshot");
 
 		// Same for an empty refresh result (a fresh list revision, so the
-		// earlier successful cline fetch no longer applies).
+		// earlier successful hadyancode fetch no longer applies).
 		loadProviderModelsMock.mockReset().mockResolvedValue([]);
 		await render({
-			...clineProvider,
-			modelList: [{ id: "cline/snapshot-model", name: "Cline Snapshot" }],
+			...hadyancodeProvider,
+			modelList: [{ id: "hadyancode/snapshot-model", name: "HadyanCode Snapshot" }],
 		});
 		expect(container.textContent).not.toContain("GPT-5");
-		expect(container.textContent).toContain("Cline Snapshot");
+		expect(container.textContent).toContain("HadyanCode Snapshot");
 	});
 
 	it("reflects same-provider model list updates instead of shadowing them", async () => {
@@ -548,13 +548,13 @@ describe("ProviderDetailContent audio capabilities", () => {
 				{ id: "anthropic/claude-opus-5", name: "Claude Opus 5" },
 			]);
 		const baseProvider: Provider = {
-			id: "cline",
-			name: "Cline",
+			id: "hadyancode",
+			name: "HadyanCode",
 			models: 1,
 			color: "#000",
 			letter: "CL",
 			enabled: true,
-			modelList: [{ id: "cline/snapshot-model", name: "Cline Snapshot" }],
+			modelList: [{ id: "hadyancode/snapshot-model", name: "HadyanCode Snapshot" }],
 		};
 		const render = (detailProvider: Provider) =>
 			act(async () => {
@@ -596,8 +596,8 @@ describe("ProviderDetailContent audio capabilities", () => {
 			]);
 		const onUpdateModels = vi.fn();
 		const baseProvider: Provider = {
-			id: "cline",
-			name: "Cline",
+			id: "hadyancode",
+			name: "HadyanCode",
 			models: 1,
 			color: "#000",
 			letter: "CL",
@@ -688,9 +688,9 @@ describe("ProviderDetailContent audio capabilities", () => {
 			},
 			{ id: "vendor/plain-model", name: "Plain Model" },
 		]);
-		const clineProvider: Provider = {
-			id: "cline",
-			name: "Cline",
+		const hadyancodeProvider: Provider = {
+			id: "hadyancode",
+			name: "HadyanCode",
 			models: 1,
 			color: "#000",
 			letter: "CL",
@@ -704,7 +704,7 @@ describe("ProviderDetailContent audio capabilities", () => {
 				<ProviderDetailContent
 					onBack={vi.fn()}
 					onUpdate={vi.fn()}
-					provider={clineProvider}
+					provider={hadyancodeProvider}
 				/>,
 			);
 		});
@@ -712,7 +712,7 @@ describe("ProviderDetailContent audio capabilities", () => {
 			await Promise.resolve();
 		});
 
-		expect(loadProviderModelsMock).toHaveBeenCalledWith("cline");
+		expect(loadProviderModelsMock).toHaveBeenCalledWith("hadyancode");
 		expect(container.textContent).not.toContain("Stale Model");
 		expect(container.textContent).toContain("Claude Opus 5");
 		expect(container.textContent).toContain("Most intelligent model");

@@ -1,18 +1,18 @@
-// VscodeSessionHost — wraps ClineCore with VSCode-specific customizations
+// VscodeSessionHost — wraps HadyanCodeCore with VSCode-specific customizations
 //
-// Uses ClineCore.create() so the SDK owns session input normalization,
+// Uses HadyanCodeCore.create() so the SDK owns session input normalization,
 // lifecycle bootstrapping, and host selection while the VSCode extension
 // still provides its custom McpHub-backed runtime builder.
 
 import {
 	type ApplyPatchExecutor,
-	ClineCore,
-	type ClineCoreListHistoryOptions,
-	type ClineCoreStartInput,
 	type CompareCheckpointInput,
 	type CompareCheckpointResult,
 	type CoreSessionEvent,
 	type EditorExecutor,
+	HadyanCodeCore,
+	type HadyanCodeCoreListHistoryOptions,
+	type HadyanCodeCoreStartInput,
 	type HookEventPayload,
 	type ITelemetryService,
 	type PendingPromptMutationResult,
@@ -31,14 +31,14 @@ import {
 	type StartSessionInput,
 	type StartSessionResult,
 	type ToolExecutors,
-} from "@cline/core"
+} from "@hadyancode/core"
 import {
 	type AgentToolContext,
 	RUNTIME_CONFIG_EXTENSION_KINDS,
 	type ToolApprovalRequest,
 	type ToolApprovalResult,
 	type ToolPolicy,
-} from "@cline/shared"
+} from "@hadyancode/shared"
 import { StateManager } from "@/core/storage/StateManager"
 import type { VscodeTerminalManager } from "@/hosts/vscode/terminal/VscodeTerminalManager"
 import { getDistinctId } from "@/services/logging/distinctId"
@@ -97,12 +97,12 @@ export interface VscodeSessionHostOptions {
 
 export class VscodeSessionHost implements SdkSessionHost {
 	readonly runtimeAddress: string | undefined
-	private readonly inner: ClineCore
-	private readonly prepareStartSessionInput?: (input: ClineCoreStartInput) => Promise<ClineCoreStartInput>
+	private readonly inner: HadyanCodeCore
+	private readonly prepareStartSessionInput?: (input: HadyanCodeCoreStartInput) => Promise<HadyanCodeCoreStartInput>
 
 	private constructor(
-		inner: ClineCore,
-		prepareStartSessionInput?: (input: ClineCoreStartInput) => Promise<ClineCoreStartInput>,
+		inner: HadyanCodeCore,
+		prepareStartSessionInput?: (input: HadyanCodeCoreStartInput) => Promise<HadyanCodeCoreStartInput>,
 	) {
 		this.inner = inner
 		this.runtimeAddress = inner.runtimeAddress
@@ -139,10 +139,10 @@ export class VscodeSessionHost implements SdkSessionHost {
 
 		// Single funnel for session-start preparation: waits on the remote-config
 		// readiness/policy gate, applies the remote-config integration, and adds
-		// the VSCode extra tools. Used by ClineCore's prepare hook for normal
+		// the VSCode extra tools. Used by HadyanCodeCore's prepare hook for normal
 		// starts AND by restore() for checkpoint-restore replacement sessions,
-		// which ClineCore starts without running the prepare hook.
-		const prepareStartSessionInput = async (input: ClineCoreStartInput): Promise<ClineCoreStartInput> => {
+		// which HadyanCodeCore starts without running the prepare hook.
+		const prepareStartSessionInput = async (input: HadyanCodeCoreStartInput): Promise<HadyanCodeCoreStartInput> => {
 			await options.beforeStartSession?.()
 			// Read only after the readiness gate: it may have atomically replaced
 			// the integration that must be captured by this session.
@@ -178,7 +178,7 @@ export class VscodeSessionHost implements SdkSessionHost {
 			}
 		}
 
-		const inner = await ClineCore.create({
+		const inner = await HadyanCodeCore.create({
 			backendMode: "local",
 			capabilities: {
 				requestToolApproval: options.requestToolApproval as
@@ -194,7 +194,7 @@ export class VscodeSessionHost implements SdkSessionHost {
 			}),
 		})
 
-		Logger.log("[VscodeSessionHost] Initialized with ClineCore + VSCode extra tools")
+		Logger.log("[VscodeSessionHost] Initialized with HadyanCodeCore + VSCode extra tools")
 		if (options.getTerminalManager) {
 			Logger.log("[VscodeSessionHost] SDK run_commands suppressed; using custom foreground/background terminal tool")
 		}
@@ -202,9 +202,9 @@ export class VscodeSessionHost implements SdkSessionHost {
 	}
 
 	async start(input: StartSessionInput): Promise<StartSessionResult>
-	async start(input: ClineCoreStartInput): Promise<StartSessionResult>
-	async start(input: StartSessionInput | ClineCoreStartInput): Promise<StartSessionResult> {
-		return this.inner.start(input as ClineCoreStartInput)
+	async start(input: HadyanCodeCoreStartInput): Promise<StartSessionResult>
+	async start(input: StartSessionInput | HadyanCodeCoreStartInput): Promise<StartSessionResult> {
+		return this.inner.start(input as HadyanCodeCoreStartInput)
 	}
 
 	async send(input: SendSessionInput) {
@@ -253,11 +253,11 @@ export class VscodeSessionHost implements SdkSessionHost {
 		return this.inner.get(sessionId)
 	}
 
-	async list(limit?: number, options: Omit<ClineCoreListHistoryOptions, "limit"> = {}): Promise<SessionHistoryRecord[]> {
+	async list(limit?: number, options: Omit<HadyanCodeCoreListHistoryOptions, "limit"> = {}): Promise<SessionHistoryRecord[]> {
 		return this.inner.list(limit, options)
 	}
 
-	async listHistory(options: ClineCoreListHistoryOptions = {}): Promise<SessionHistoryRecord[]> {
+	async listHistory(options: HadyanCodeCoreListHistoryOptions = {}): Promise<SessionHistoryRecord[]> {
 		return this.inner.listHistory(options)
 	}
 
@@ -278,7 +278,7 @@ export class VscodeSessionHost implements SdkSessionHost {
 	}
 
 	async restore(input: RestoreInput): Promise<RestoreResult> {
-		// ClineCore.restore starts the checkpoint-restore replacement session
+		// HadyanCodeCore.restore starts the checkpoint-restore replacement session
 		// WITHOUT running the prepare hook, which would bypass the remote-config
 		// session gate and integration. Run the same preparation here.
 		if (input.start && this.prepareStartSessionInput) {

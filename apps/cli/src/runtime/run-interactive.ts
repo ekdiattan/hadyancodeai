@@ -6,18 +6,18 @@ import {
 	setPlanActModeGlobally,
 	setToolAutoApproveGlobally,
 	type UserInstructionConfigService,
-} from "@cline/core";
-import { formatModeSwitchNotice } from "@cline/shared";
+} from "@hadyancode/core";
+import { formatModeSwitchNotice } from "@hadyancode/shared";
 import type { CliMigrationNotice } from "../kanban-migration/notice";
 import { logCliError } from "../logging/errors";
 import { exportHistorySession } from "../session/history-export";
 import { deleteSession } from "../session/session";
 import {
-	loadClineAccountSnapshot,
+	loadHadyanCodeAccountSnapshot,
 	loadIndividualSubscriptionPlans,
 	onProviderChange,
-	switchClineAccount,
-} from "../tui/cline-account";
+	switchHadyanCodeAccount,
+} from "../tui/hadyancode-account";
 import type {
 	InteractiveConfigItem,
 	LoadInteractiveConfigDataOptions,
@@ -25,14 +25,14 @@ import type {
 import {
 	type InteractiveSlashCommand,
 	listInteractiveSlashCommands,
-	resolveClineWelcomeLine,
+	resolveHadyanCodeWelcomeLine,
 } from "../tui/interactive-welcome";
 import { disableOpenTuiGraphicsProbe } from "../tui/opentui-env";
 import type { QueuedPromptItem, TuiStartupTarget } from "../tui/types";
 import { type ChatCommandState, chatCommandHost } from "../utils/chat-commands";
 import { applyCliCompactionMode } from "../utils/compaction-mode";
 import {
-	shouldZeroClineFreeModelCost,
+	shouldZeroHadyanCodeFreeModelCost,
 	zeroCliAgentEventCost,
 	zeroCliUsageCost,
 } from "../utils/free-model-cost";
@@ -150,16 +150,16 @@ export async function resumeInteractiveSession(
 	>,
 	sessionId: string,
 ) {
-	const previousAgentResume = process.env.CLINE_HOOK_AGENT_RESUME;
-	process.env.CLINE_HOOK_AGENT_RESUME = "1";
+	const previousAgentResume = process.env.HADYANCODE_HOOK_AGENT_RESUME;
+	process.env.HADYANCODE_HOOK_AGENT_RESUME = "1";
 	let messages: Awaited<ReturnType<typeof sessionRuntime.resumeSession>>;
 	try {
 		messages = await sessionRuntime.resumeSession(sessionId);
 	} catch (error) {
 		if (previousAgentResume === undefined) {
-			delete process.env.CLINE_HOOK_AGENT_RESUME;
+			delete process.env.HADYANCODE_HOOK_AGENT_RESUME;
 		} else {
-			process.env.CLINE_HOOK_AGENT_RESUME = previousAgentResume;
+			process.env.HADYANCODE_HOOK_AGENT_RESUME = previousAgentResume;
 		}
 		throw error;
 	}
@@ -179,8 +179,8 @@ export async function runInteractive(
 	userInstructionService?: UserInstructionConfigService,
 	resumeSessionId?: string,
 	options?: {
-		clineApiBaseUrl?: string;
-		clineProviderSettings?: ProviderSettings;
+		hadyancodeApiBaseUrl?: string;
+		hadyancodeProviderSettings?: ProviderSettings;
 		startupTarget?: TuiStartupTarget;
 		initialPrompt?: string;
 		initialNotice?: CliMigrationNotice;
@@ -526,27 +526,27 @@ export async function runInteractive(
 		workflowSlashCommands,
 		loadAdditionalSlashCommands,
 		loadWelcomeLine: async () =>
-			await resolveClineWelcomeLine({
+			await resolveHadyanCodeWelcomeLine({
 				config,
-				clineApiBaseUrl: options?.clineApiBaseUrl,
-				clineProviderSettings: options?.clineProviderSettings,
+				hadyancodeApiBaseUrl: options?.hadyancodeApiBaseUrl,
+				hadyancodeProviderSettings: options?.hadyancodeProviderSettings,
 			}),
-		loadClineAccount: async () =>
-			await loadClineAccountSnapshot({
+		loadHadyanCodeAccount: async () =>
+			await loadHadyanCodeAccountSnapshot({
 				config,
-				clineApiBaseUrl: options?.clineApiBaseUrl,
+				hadyancodeApiBaseUrl: options?.hadyancodeApiBaseUrl,
 			}),
 		loadIndividualSubscriptionPlans: async () =>
 			await loadIndividualSubscriptionPlans({
 				config,
-				clineApiBaseUrl: options?.clineApiBaseUrl,
-				clineProviderSettings: options?.clineProviderSettings,
+				hadyancodeApiBaseUrl: options?.hadyancodeApiBaseUrl,
+				hadyancodeProviderSettings: options?.hadyancodeProviderSettings,
 			}),
-		switchClineAccount: async (organizationId) =>
-			await switchClineAccount({
+		switchHadyanCodeAccount: async (organizationId) =>
+			await switchHadyanCodeAccount({
 				config,
 				organizationId,
-				clineApiBaseUrl: options?.clineApiBaseUrl,
+				hadyancodeApiBaseUrl: options?.hadyancodeApiBaseUrl,
 			}),
 		loadConfigData: configDataLoader.loadConfigData,
 		onToggleConfigItem,
@@ -617,7 +617,7 @@ export async function runInteractive(
 				}
 				input = chatCommandResult.input;
 				commandOutput = chatCommandResult.commandOutput;
-				zeroTurnCost = await shouldZeroClineFreeModelCost(config);
+				zeroTurnCost = await shouldZeroHadyanCodeFreeModelCost(config);
 				zeroCurrentTurnCost = zeroTurnCost;
 				const {
 					prompt: userInput,
@@ -805,13 +805,13 @@ export async function runInteractive(
 		},
 		onAccountChange: async () => {
 			await sessionRuntime.ensureReady();
-			await loadClineAccountSnapshot({
+			await loadHadyanCodeAccountSnapshot({
 				config,
-				clineApiBaseUrl: options?.clineApiBaseUrl,
+				hadyancodeApiBaseUrl: options?.hadyancodeApiBaseUrl,
 			}).catch((error) => {
 				logCliError(
 					config.logger,
-					"Cline account refresh after account change failed",
+					"HadyanCode account refresh after account change failed",
 					{ error },
 				);
 			});
@@ -819,7 +819,7 @@ export async function runInteractive(
 		},
 		// resumeSession initializes the manager and starts the selected session
 		// directly. Ensuring a session first would mint an empty history entry
-		// when the TUI was launched through `cline history`.
+		// when the TUI was launched through `hadyancode history`.
 		onResumeSession: async (sessionId: string) =>
 			await resumeInteractiveSession(sessionRuntime, sessionId),
 		onExportHistorySession: async (sessionId, format) =>
@@ -891,14 +891,14 @@ export async function runInteractive(
 			prepareTerminalForPostTuiOutput();
 		}
 		writeln(
-			"The shared Cline Hub was updated by another Cline installation. Updating this CLI…",
+			"The shared HadyanCode Hub was updated by another HadyanCode installation. Updating this CLI…",
 		);
 		const { checkForUpdates } = await import("../commands/update");
 		const exitCode = await checkForUpdates({ includeKanban: false });
 		writeln(
 			exitCode === 0
-				? "Start cline again to reconnect to the updated Hub."
-				: "Update did not complete. Run 'cline update' manually, then start cline again.",
+				? "Start hadyancode again to reconnect to the updated Hub."
+				: "Update did not complete. Run 'hadyancode update' manually, then start hadyancode again.",
 		);
 	}
 }

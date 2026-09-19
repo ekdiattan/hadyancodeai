@@ -5,13 +5,18 @@ import "../../src/index.css"
 import { cn } from "@heroui/react"
 import type { Decorator } from "@storybook/react-vite"
 import React from "react"
-import { ClineAuthContext, ClineAuthContextType, ClineAuthProvider, useClineAuth } from "@/context/ClineAuthContext"
 import {
 	ExtensionStateContext,
 	ExtensionStateContextProvider,
 	ExtensionStateContextType,
 	useExtensionState,
 } from "@/context/ExtensionStateContext"
+import {
+	HadyanCodeAuthContext,
+	HadyanCodeAuthContextType,
+	HadyanCodeAuthProvider,
+	useHadyanCodeAuth,
+} from "@/context/HadyanCodeAuthContext"
 import { StorybookThemes } from "../../.storybook/themes"
 
 // Component that handles theme switching
@@ -45,9 +50,9 @@ function StorybookDecoratorProvider(className = "relative"): Decorator {
 		return (
 			<div className={className}>
 				<ExtensionStateContextProvider>
-					<ClineAuthProvider>
+					<HadyanCodeAuthProvider>
 						<ThemeHandler theme={parameters?.globals?.theme}>{React.createElement(story)}</ThemeHandler>
-					</ClineAuthProvider>
+					</HadyanCodeAuthProvider>
 				</ExtensionStateContextProvider>
 			</div>
 		)
@@ -63,23 +68,27 @@ const ExtensionStateProviderWithOverrides: React.FC<{
 	return <ExtensionStateContext.Provider value={{ ...extensionState, ...overrides }}>{children}</ExtensionStateContext.Provider>
 }
 
-const ClineAuthProviderWithOverrides: React.FC<{
-	overrides?: Partial<ClineAuthContextType>
+const HadyanCodeAuthProviderWithOverrides: React.FC<{
+	overrides?: Partial<HadyanCodeAuthContextType>
 	children: React.ReactNode
 }> = ({ overrides, children }) => {
-	const authContext = useClineAuth()
-	return <ClineAuthContext.Provider value={{ ...authContext, ...overrides }}>{children}</ClineAuthContext.Provider>
+	const authContext = useHadyanCodeAuth()
+	return <HadyanCodeAuthContext.Provider value={{ ...authContext, ...overrides }}>{children}</HadyanCodeAuthContext.Provider>
 }
 
 export const createStorybookDecorator =
-	(overrideStates?: Partial<ExtensionStateContextType>, classNames?: string, authOverrides?: Partial<ClineAuthContextType>) =>
+	(
+		overrideStates?: Partial<ExtensionStateContextType>,
+		classNames?: string,
+		authOverrides?: Partial<HadyanCodeAuthContextType>,
+	) =>
 	(Story: any) => (
 		<ExtensionStateProviderWithOverrides overrides={overrideStates}>
-			<ClineAuthProviderWithOverrides overrides={authOverrides}>
+			<HadyanCodeAuthProviderWithOverrides overrides={authOverrides}>
 				<div className={cn("max-w-lg mx-auto", classNames)}>
 					<Story />
 				</div>
-			</ClineAuthProviderWithOverrides>
+			</HadyanCodeAuthProviderWithOverrides>
 		</ExtensionStateProviderWithOverrides>
 	)
 

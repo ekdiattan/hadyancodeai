@@ -11,8 +11,8 @@ import { refreshHooks } from "../core/controller/file/refreshHooks"
 import { toggleHook } from "../core/controller/file/toggleHook"
 import { hookFileName } from "../core/hooks/__tests__/test-utils"
 import { HookDiscoveryCache } from "../core/hooks/HookDiscoveryCache"
+import { CreateHookRequest, DeleteHookRequest, ToggleHookRequest } from "../shared/proto/hadyancode/file"
 import { stubWorkspacePaths } from "./host-provider-test-utils"
-import { CreateHookRequest, DeleteHookRequest, ToggleHookRequest } from "../shared/proto/cline/file"
 
 /**
  * Integration tests for hook management
@@ -32,8 +32,8 @@ describe("Hook Management Integration", () => {
 
 		// Create temporary directories
 		tempDir = await fs.mkdtemp(path.join(os.tmpdir(), "hook-integration-test-"))
-		globalHooksDir = path.join(tempDir, "global", "Documents", "Cline", "Hooks")
-		workspaceHooksDir = path.join(tempDir, "workspace", ".clinerules", "hooks")
+		globalHooksDir = path.join(tempDir, "global", "Documents", "HadyanCode", "Hooks")
+		workspaceHooksDir = path.join(tempDir, "workspace", ".hadyancoderules", "hooks")
 
 		await fs.mkdir(globalHooksDir, { recursive: true })
 		await fs.mkdir(workspaceHooksDir, { recursive: true })

@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const mocks = vi.hoisted(() => ({
 	captureExtensionActivated: vi.fn(),
-	createClineTelemetryServiceConfig: vi.fn((config: unknown) => config),
+	createHadyanCodeTelemetryServiceConfig: vi.fn((config: unknown) => config),
 	createConfiguredTelemetryHandle: vi.fn(),
 	disposeTelemetry: vi.fn(async () => {}),
 	disposeLogger: vi.fn(),
@@ -17,13 +17,13 @@ const logger = {
 };
 const telemetry = { capture: vi.fn() };
 
-vi.mock("@cline/core", async () => {
+vi.mock("@hadyancode/core", async () => {
 	const actual =
-		await vi.importActual<typeof import("@cline/core")>("@cline/core");
+		await vi.importActual<typeof import("@hadyancode/core")>("@hadyancode/core");
 	return {
 		...actual,
 		captureExtensionActivated: mocks.captureExtensionActivated,
-		createClineTelemetryServiceConfig: mocks.createClineTelemetryServiceConfig,
+		createHadyanCodeTelemetryServiceConfig: mocks.createHadyanCodeTelemetryServiceConfig,
 		createConfiguredTelemetryHandle: mocks.createConfiguredTelemetryHandle,
 		identifyAccount: mocks.identifyAccount,
 		ProviderSettingsManager: class {
@@ -55,10 +55,10 @@ describe("desktop observability", () => {
 		const { createDesktopObservability } = await import("./observability");
 		const observability = createDesktopObservability();
 
-		expect(mocks.createClineTelemetryServiceConfig).toHaveBeenCalledWith({
+		expect(mocks.createHadyanCodeTelemetryServiceConfig).toHaveBeenCalledWith({
 			metadata: expect.objectContaining({
-				cline_type: "desktop",
-				platform: "Cline",
+				hadyancode_type: "desktop",
+				platform: "HadyanCode",
 			}),
 		});
 		expect(mocks.createConfiguredTelemetryHandle).toHaveBeenCalledWith(
@@ -66,7 +66,7 @@ describe("desktop observability", () => {
 		);
 		expect(mocks.identifyAccount).toHaveBeenCalledWith(telemetry, {
 			id: "account-1",
-			provider: "cline",
+			provider: "hadyancode",
 		});
 		expect(mocks.captureExtensionActivated).toHaveBeenCalledWith(telemetry);
 		expect(mocks.setSdkLogger).toHaveBeenCalledWith(logger);

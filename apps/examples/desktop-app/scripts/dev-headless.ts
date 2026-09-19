@@ -45,8 +45,8 @@ async function main(): Promise<void> {
 	const sidecarPort = await reserveAvailablePort();
 	const endpoint = `ws://127.0.0.1:${sidecarPort}/transport?approval_token=${approvalToken}`;
 	const sidecar = spawn(["bun", "run", "sidecar/index.ts"], {
-		CLINE_SIDECAR_APPROVAL_TOKEN: approvalToken,
-		CLINE_SIDECAR_PORT: String(sidecarPort),
+		HADYANCODE_SIDECAR_APPROVAL_TOKEN: approvalToken,
+		HADYANCODE_SIDECAR_PORT: String(sidecarPort),
 	});
 	const web = spawn(
 		["bun", "run", "next", "dev", "webview", "-p", "3125", "--turbo"],

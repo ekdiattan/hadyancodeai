@@ -195,19 +195,19 @@ function buildCases(): LiveCase[] {
 		unexpectedBodyKeys: ["thinking"],
 	});
 	addCase({
-		label: "Cline Gateway MiniMax M3 reasoning enabled",
-		providerId: "cline",
+		label: "HadyanCode Gateway MiniMax M3 reasoning enabled",
+		providerId: "hadyancode",
 		modelId: "minimax/minimax-m3",
-		apiKeyEnv: "CLINE_API_KEY",
+		apiKeyEnv: "HADYANCODE_API_KEY",
 		reasoning: { enabled: true },
 		expectedBody: { reasoning: { enabled: true } },
 		unexpectedBodyKeys: ["thinking"],
 	});
 	addCase({
-		label: "Cline Gateway MiniMax M3 reasoning disabled",
-		providerId: "cline",
+		label: "HadyanCode Gateway MiniMax M3 reasoning disabled",
+		providerId: "hadyancode",
 		modelId: "minimax/minimax-m3",
-		apiKeyEnv: "CLINE_API_KEY",
+		apiKeyEnv: "HADYANCODE_API_KEY",
 		reasoning: { enabled: false },
 		expectedBody: { reasoning: { enabled: false } },
 		unexpectedBodyKeys: ["thinking"],

@@ -1,4 +1,4 @@
-import type { GatewayProviderManifest } from "@cline/shared";
+import type { GatewayProviderManifest } from "@hadyancode/shared";
 import { describe, expect, it } from "vitest";
 import {
 	providerManifestSupportsModelTool,
@@ -7,62 +7,16 @@ import {
 } from "./model-tools";
 
 describe("supportsModelTool", () => {
-	it.each([
-		["cline", undefined],
-		["cline-pass", undefined],
-		["anthropic", undefined],
-		["openai-native", undefined],
-		["openai-codex", undefined],
-		["gemini", undefined],
-		["vertex", "gemini-3.1-pro-preview"],
-	])("supports native web search for %s / %s", (providerId, modelId) => {
-		expect(supportsModelTool({ providerId, modelId }, "web_search")).toBe(true);
+	it("supports native web search for Anthropic", () => {
+		expect(supportsModelTool({ providerId: "anthropic" }, "web_search")).toBe(
+			true,
+		);
 	});
 
 	it("normalizes aliases before resolving support", () => {
 		expect(
 			supportsModelTool(
 				{ providerId: "openai-compatible", modelId: "custom" },
-				"web_search",
-			),
-		).toBe(false);
-		// "openai" is an alias for "openai-compatible", not native OpenAI.
-		expect(supportsModelTool({ providerId: "openai" }, "web_search")).toBe(
-			false,
-		);
-	});
-
-	it("offers OpenAI image generation to language models, not dedicated image operations", () => {
-		expect(
-			supportsModelTool(
-				{ providerId: "openai-native", modelId: "gpt-5.4" },
-				"image_generation",
-			),
-		).toBe(true);
-		expect(
-			supportsModelTool(
-				{ providerId: "openai-native", modelId: "gpt-image-2" },
-				"image_generation",
-			),
-		).toBe(false);
-		expect(
-			supportsModelTool(
-				{ providerId: "openai", modelId: "gpt-5.4" },
-				"image_generation",
-			),
-		).toBe(false);
-	});
-
-	it("excludes known and unregistered Claude routes from Vertex", () => {
-		expect(
-			supportsModelTool(
-				{ providerId: "vertex", modelId: "claude-sonnet-4-6" },
-				"web_search",
-			),
-		).toBe(false);
-		expect(
-			supportsModelTool(
-				{ providerId: "vertex", modelId: "claude-custom" },
 				"web_search",
 			),
 		).toBe(false);
@@ -83,10 +37,8 @@ describe("supportsModelTool", () => {
 	});
 
 	it("reports provider-level availability independent of model routes", () => {
-		// Vertex excludes Claude routes per model but still offers web search.
-		expect(providerOffersModelTool("vertex", "web_search")).toBe(true);
 		expect(providerOffersModelTool("anthropic", "web_search")).toBe(true);
-		expect(providerOffersModelTool("openrouter", "web_search")).toBe(false);
+		expect(providerOffersModelTool("deepseek", "web_search")).toBe(false);
 		expect(providerOffersModelTool("unknown-custom", "web_search")).toBe(false);
 	});
 

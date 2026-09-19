@@ -8,10 +8,10 @@ import type { Provider } from "@/lib/provider-schema";
  * entries whose capability metadata is incomplete.
  */
 export const OAUTH_PROVIDER_IDS = new Set([
-	"cline",
-	// ClinePass shares the Cline account OAuth credentials (its auth handler
-	// stores under the "cline" provider), so it never has its own API key.
-	"cline-pass",
+	"hadyancode",
+	// HadyanCodePass shares the HadyanCode account OAuth credentials (its auth handler
+	// stores under the "hadyancode" provider), so it never has its own API key.
+	"hadyancode-pass",
 	"oca",
 	"openai-codex",
 ]);

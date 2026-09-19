@@ -1,4 +1,4 @@
-import { CLINE_DEFAULT_MODEL_ID } from "@cline/shared";
+import { HADYANCODE_DEFAULT_MODEL_ID } from "@hadyancode/shared";
 import { describe, expect, it, vi } from "vitest";
 import type { RuntimeCapabilities } from "../../runtime/capabilities/runtime-capabilities";
 
@@ -163,8 +163,8 @@ describe("hub runtime wiring", () => {
 
 		const runtime = await new DefaultRuntimeBuilder().build({
 			config: {
-				providerId: "cline",
-				modelId: CLINE_DEFAULT_MODEL_ID,
+				providerId: "hadyancode",
+				modelId: HADYANCODE_DEFAULT_MODEL_ID,
 				cwd: process.cwd(),
 				workspaceRoot: process.cwd(),
 				systemPrompt: "Run unattended.",

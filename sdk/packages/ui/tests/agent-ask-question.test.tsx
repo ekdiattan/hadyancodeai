@@ -58,7 +58,7 @@ describe("AgentAskQuestion", () => {
 		expect(onAnswer).toHaveBeenCalledWith("request-1", "Stop");
 		expect(container.textContent).toContain("Request request-1 · Iteration 2");
 		const meta = container.querySelector<HTMLElement>(
-			".cline-ui-agent-ask-question__meta",
+			".hadyancode-ui-agent-ask-question__meta",
 		);
 		expect(meta?.dataset.slot).toBe("badge");
 	});
@@ -91,7 +91,7 @@ describe("AgentAskQuestion", () => {
 		);
 		expect(
 			container
-				.querySelector(".cline-ui-agent-ask-question__item")
+				.querySelector(".hadyancode-ui-agent-ask-question__item")
 				?.getAttribute("aria-busy"),
 		).toBe("true");
 	});
@@ -188,16 +188,16 @@ describe("AgentAskQuestion", () => {
 		);
 
 		const optionButtons = container.querySelectorAll<HTMLButtonElement>(
-			".cline-ui-agent-ask-question__option",
+			".hadyancode-ui-agent-ask-question__option",
 		);
 		expect(
 			optionButtons[25]?.querySelector(
-				".cline-ui-agent-ask-question__option-key",
+				".hadyancode-ui-agent-ask-question__option-key",
 			)?.textContent,
 		).toBe("Z");
 		expect(
 			optionButtons[26]?.querySelector(
-				".cline-ui-agent-ask-question__option-key",
+				".hadyancode-ui-agent-ask-question__option-key",
 			),
 		).toBeNull();
 	});

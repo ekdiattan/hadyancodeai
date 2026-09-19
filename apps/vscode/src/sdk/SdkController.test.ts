@@ -1,15 +1,15 @@
 import { describe, expect, it, vi } from "vitest"
 import { telemetryService } from "@/services/telemetry"
-import { isClineManagedProvider } from "@/shared/utils/cline"
+import { isHadyanCodeManagedProvider } from "@/shared/utils/hadyancode"
 import { Controller as SdkController } from "./SdkController"
 import { resolveWorkspaceManagerPaths, resolveWorkspaceRootPath } from "./workspace-root"
 
-describe("isClineManagedProvider", () => {
-	it("treats both Cline account providers as Cline providers", () => {
-		expect(isClineManagedProvider("cline")).toBe(true)
-		expect(isClineManagedProvider("cline-pass")).toBe(true)
-		expect(isClineManagedProvider("anthropic")).toBe(false)
-		expect(isClineManagedProvider(undefined)).toBe(false)
+describe("isHadyanCodeManagedProvider", () => {
+	it("treats both HadyanCode account providers as HadyanCode providers", () => {
+		expect(isHadyanCodeManagedProvider("hadyancode")).toBe(true)
+		expect(isHadyanCodeManagedProvider("hadyancode-pass")).toBe(true)
+		expect(isHadyanCodeManagedProvider("anthropic")).toBe(false)
+		expect(isHadyanCodeManagedProvider(undefined)).toBe(false)
 	})
 })
 
@@ -104,7 +104,7 @@ describe("SDK remote-config coordination", () => {
 			postStateToWebview: vi.fn(async () => events.push("post")),
 		}
 
-		await SdkController.prototype.handleAuthCallback.call(controller as never, "token", "cline")
+		await SdkController.prototype.handleAuthCallback.call(controller as never, "token", "hadyancode")
 
 		expect(events).toEqual(["auth", "refresh", "post"])
 	})

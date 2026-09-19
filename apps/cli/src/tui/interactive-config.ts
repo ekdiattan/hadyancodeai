@@ -29,12 +29,12 @@ import {
 	type SkillConfig,
 	type UserInstructionConfigService,
 	type WorkflowConfig,
-} from "@cline/core";
+} from "@hadyancode/core";
 import {
 	isMcpTimeoutConfigured,
 	resolveMcpTimeoutSeconds,
-} from "@cline/shared";
-import { readFileSyncStrippingUtf8Bom } from "@cline/shared/node";
+} from "@hadyancode/shared";
+import { readFileSyncStrippingUtf8Bom } from "@hadyancode/shared/node";
 import { getToolCatalog } from "../runtime/tools";
 import {
 	type InteractiveSlashCommand,

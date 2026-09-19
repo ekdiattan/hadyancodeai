@@ -124,13 +124,13 @@ async function generateOpcRequestId(taskId: string, token: string): Promise<stri
 export async function createOcaHeaders(accessToken: string, taskId: string): Promise<Record<string, string>> {
 	const opcRequestId = await generateOpcRequestId(taskId, accessToken)
 	const host = await HostProvider.env.getHostVersion({})
-	const clineVersion = ExtensionRegistryInfo.version
+	const hadyancodeVersion = ExtensionRegistryInfo.version
 
 	return {
 		Authorization: `Bearer ${accessToken}`,
 		"Content-Type": "application/json",
-		client: "Cline",
-		"client-version": `${clineVersion}`,
+		client: "HadyanCode",
+		"client-version": `${hadyancodeVersion}`,
 		"client-ide": host.platform || "unknown",
 		"client-ide-version": host.version || "unknown",
 		"opc-request-id": opcRequestId,

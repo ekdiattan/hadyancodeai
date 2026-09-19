@@ -1,6 +1,6 @@
 {
-	"name": "@cline/cli",
-	"displayName": "cline",
+	"name": "@hadyancode/cli",
+	"displayName": "hadyancode",
 	"version": "3.0.61",
 	"description": "Autonomous coding agent CLI - capable of creating/editing files, running commands, using the browser, and more",
 	"type": "module",
@@ -9,11 +9,11 @@
 	},
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/cline/cline.git",
+		"url": "git+https://github.com/cline/hadyancode.git",
 		"directory": "apps/cli"
 	},
 	"keywords": [
-		"cline",
+		"hadyancode",
 		"claude",
 		"dev",
 		"mcp",
@@ -33,10 +33,10 @@
 	"license": "Apache-2.0",
 	"homepage": "https://cline.bot",
 	"bugs": {
-		"url": "https://github.com/cline/cline/issues"
+		"url": "https://github.com/cline/hadyancode/issues"
 	},
 	"bin": {
-		"cline": "src/index.ts"
+		"hadyancode": "src/index.ts"
 	},
 	"engines": {
 		"node": ">=22"
@@ -56,7 +56,7 @@
 		"prepublishOnly": "bun script/guard-direct-publish.ts",
 		"publish:npm": "bun script/publish-npm.ts",
 		"publish:npm:dry": "bun script/publish-npm.ts --dry-run",
-		"dev": "CLINE_BUILD_ENV=development bun --conditions=development ./src/index.ts",
+		"dev": "HADYANCODE_BUILD_ENV=development bun --conditions=development ./src/index.ts",
 		"typecheck": "tsc --noEmit",
 		"test": "bun run test:unit",
 		"test:unit": "vitest run --config vitest.config.ts",
@@ -76,7 +76,7 @@
 		"@chat-adapter/telegram": "^4.23.0",
 		"@chat-adapter/whatsapp": "^4.23.0",
 		"@clack/prompts": "^1.2.0",
-		"@cline/cline-hub": "workspace:*",
+		"@hadyancode/hadyancode-hub": "workspace:*",
 		"@gramio/format": "^0.7.0",
 		"@opentui-ui/dialog": "^0.1.2",
 		"@opentui/core": "0.4.3",
@@ -97,8 +97,8 @@
 		"zod": "^4.1.11"
 	},
 	"devDependencies": {
-		"@cline/core": "workspace:*",
-		"@cline/shared": "workspace:*",
+		"@hadyancode/core": "workspace:*",
+		"@hadyancode/shared": "workspace:*",
 		"@microsoft/tui-test": "^0.0.2",
 		"@types/bun": "^1.3.10",
 		"@types/react": "19.2.14",

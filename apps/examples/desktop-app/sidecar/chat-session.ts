@@ -4,8 +4,8 @@ import { isDeepStrictEqual } from "node:util";
 import {
 	buildConnectionUpdate,
 	buildWorkspaceMetadata,
-	type ClineCore,
-	type ClineCoreStartConfig,
+	type HadyanCodeCore,
+	type HadyanCodeCoreStartConfig,
 	createSessionCompactionState,
 	createUserInstructionConfigService,
 	findCheckpointForRun,
@@ -20,9 +20,9 @@ import {
 	SessionSource,
 	splitCoreSessionConfig,
 	trimMessagesBeforeUserRun,
-} from "@cline/core";
-import type { MessageWithMetadata } from "@cline/llms";
-import { buildClineSystemPrompt, formatUserCommandBlock } from "@cline/shared";
+} from "@hadyancode/core";
+import type { MessageWithMetadata } from "@hadyancode/llms";
+import { buildHadyanCodeSystemPrompt, formatUserCommandBlock } from "@hadyancode/shared";
 import {
 	deleteMaterializedAttachments,
 	discardAllTrackedAttachments,
@@ -41,7 +41,7 @@ import type {
 } from "./types";
 
 type SessionConnectionUpdate = Parameters<
-	ClineCore["updateSessionConnection"]
+	HadyanCodeCore["updateSessionConnection"]
 >[1];
 
 type WorkspaceMetadataLoader = (cwd: string) => Promise<string>;
@@ -463,7 +463,7 @@ export function buildSessionConnectionUpdate(
 ): SessionConnectionUpdate {
 	// Coerce the untrusted webview JSON (snake_case aliases, blank strings)
 	// into typed fields; the thinking/reasoning transition rules live in the
-	// shared @cline/core builder.
+	// shared @hadyancode/core builder.
 	const providerId = String(config.provider ?? config.providerId ?? "").trim();
 	const modelId = String(config.model ?? config.modelId ?? "").trim();
 	const rawApiKey =
@@ -572,7 +572,7 @@ async function resolveSystemPrompt(config: JsonRecord): Promise<string> {
 		typeof config.rules === "string" && config.rules.trim().length > 0
 			? config.rules
 			: undefined;
-	return buildClineSystemPrompt({
+	return buildHadyanCodeSystemPrompt({
 		ide: "Terminal Shell",
 		workspaceRoot: cwd,
 		workspaceName: basename(cwd),
@@ -648,7 +648,7 @@ function applyPendingPrompts(
 	}));
 }
 
-function getSessionManager(ctx: SidecarContext): ClineCore {
+function getSessionManager(ctx: SidecarContext): HadyanCodeCore {
 	if (!ctx.sessionManager) throw new Error("Session manager not initialized");
 	return ctx.sessionManager;
 }
@@ -690,7 +690,7 @@ async function handleStart(
 		modelId: String(coreConfig.modelId ?? ""),
 	});
 	const startResult = await manager.start({
-		...splitCoreSessionConfig(coreConfig as unknown as ClineCoreStartConfig),
+		...splitCoreSessionConfig(coreConfig as unknown as HadyanCodeCoreStartConfig),
 		source: SessionSource.DESKTOP,
 		interactive: true,
 		...(initialMessages ? { initialMessages } : {}),
@@ -793,7 +793,7 @@ async function handleAttach(
 }
 
 async function startRebuiltSession(
-	manager: ClineCore,
+	manager: HadyanCodeCore,
 	sessionId: string,
 	config: JsonRecord,
 	systemPrompt: string,
@@ -809,7 +809,7 @@ async function startRebuiltSession(
 				...config,
 				sessionId,
 				systemPrompt,
-			}) as unknown as ClineCoreStartConfig,
+			}) as unknown as HadyanCodeCoreStartConfig,
 		),
 		source: SessionSource.DESKTOP,
 		interactive: true,
@@ -834,7 +834,7 @@ async function startRebuiltSession(
 
 async function rebuildSessionForProviderChange(
 	ctx: SidecarContext,
-	manager: ClineCore,
+	manager: HadyanCodeCore,
 	sessionId: string,
 	previousConfig: JsonRecord,
 	nextConfig: JsonRecord,
@@ -996,7 +996,7 @@ async function handleSend(
 			request.attachments?.userFiles,
 		);
 		if (session?.attachedViaHub) {
-			// Once ClineCore sends a turn, its HubRuntimeHost owns the session
+			// Once HadyanCodeCore sends a turn, its HubRuntimeHost owns the session
 			// subscription. Stop projecting the observer stream as well or every
 			// assistant/tool update (including command chunks) is emitted twice.
 			session.attachedViaHub = false;
@@ -1043,7 +1043,7 @@ async function handleSend(
 			promptLength: prompt.length,
 			delivery,
 		});
-		let result: Awaited<ReturnType<ClineCore["send"]>>;
+		let result: Awaited<ReturnType<HadyanCodeCore["send"]>>;
 		try {
 			result = await manager.send({
 				sessionId,
@@ -1294,7 +1294,7 @@ async function handleForkUnlocked(
 			buildCoreSessionConfig({
 				...forkConfig,
 				systemPrompt,
-			}) as unknown as ClineCoreStartConfig,
+			}) as unknown as HadyanCodeCoreStartConfig,
 		),
 		source: SessionSource.DESKTOP,
 		interactive: true,
@@ -1426,7 +1426,7 @@ async function handleRestoreCheckpoint(
 					buildCoreSessionConfig({
 						...config,
 						systemPrompt: await resolveSystemPrompt(config),
-					}) as unknown as ClineCoreStartConfig,
+					}) as unknown as HadyanCodeCoreStartConfig,
 				),
 				source: SessionSource.DESKTOP,
 				interactive: true,

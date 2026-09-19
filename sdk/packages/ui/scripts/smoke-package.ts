@@ -24,23 +24,23 @@ import {
 	AgentQuickActions,
 	SearchCombobox,
 	SessionStatus,
-} from "@cline/ui";
-import { Conversation, Message } from "@cline/ui/components/agent-chat";
-import { ToolFileDiff } from "@cline/ui/components/agent-chat/tool-diff";
-import { buildToolSummary } from "@cline/ui/components/agent-chat/tool-summary";
+} from "@hadyancode/ui";
+import { Conversation, Message } from "@hadyancode/ui/components/agent-chat";
+import { ToolFileDiff } from "@hadyancode/ui/components/agent-chat/tool-diff";
+import { buildToolSummary } from "@hadyancode/ui/components/agent-chat/tool-summary";
 
 for (const specifier of [
-	"@cline/ui/components.css",
-	"@cline/ui/components/markdown.css",
-	"@cline/ui/theme/palette.css",
-	"@cline/ui/theme/scoped-tokens.css",
+	"@hadyancode/ui/components.css",
+	"@hadyancode/ui/components/markdown.css",
+	"@hadyancode/ui/theme/palette.css",
+	"@hadyancode/ui/theme/scoped-tokens.css",
 ]) {
 	if (!existsSync(fileURLToPath(import.meta.resolve(specifier)))) {
 		throw new Error("packed CSS export does not exist: " + specifier);
 	}
 }
 
-const packageJsonUrl = import.meta.resolve("@cline/ui/package.json");
+const packageJsonUrl = import.meta.resolve("@hadyancode/ui/package.json");
 const heroCss = readFileSync(
 	fileURLToPath(new URL("./components/agent-welcome-hero.css", packageJsonUrl)),
 	"utf8",
@@ -51,8 +51,8 @@ if (inlineHeroMaskCount !== 4) {
 	throw new Error("packed hero CSS does not contain four inline SVG masks");
 }
 
-const css = import.meta.resolve("@cline/ui/components/agent-chat.css");
-const tokens = import.meta.resolve("@cline/ui/theme/tokens.css");
+const css = import.meta.resolve("@hadyancode/ui/components/agent-chat.css");
+const tokens = import.meta.resolve("@hadyancode/ui/theme/tokens.css");
 const summary = buildToolSummary({
 	toolName: "read_files",
 	input: { files: [{ path: "src/app.tsx", start_line: 10, end_line: 80 }] },
@@ -99,7 +99,7 @@ function createConsumer(root: string): void {
 	mkdirSync(root, { recursive: true });
 	writeFileSync(
 		join(root, "package.json"),
-		`${JSON.stringify({ name: "cline-ui-smoke", private: true, type: "module" }, null, 2)}\n`,
+		`${JSON.stringify({ name: "hadyancode-ui-smoke", private: true, type: "module" }, null, 2)}\n`,
 	);
 }
 
@@ -148,8 +148,8 @@ async function verifyTailwindContract(
 		"tailwind",
 		[
 			'@import "tailwindcss";',
-			'@import "@cline/ui/theme/scoped-tokens.css";',
-			'@import "@cline/ui/components.css";',
+			'@import "@hadyancode/ui/theme/scoped-tokens.css";',
+			'@import "@hadyancode/ui/components.css";',
 			"@theme inline {",
 			"\t--color-background: var(--host-background);",
 			"\t--radius-lg: var(--host-radius-lg);",
@@ -160,10 +160,10 @@ async function verifyTailwindContract(
 		runner,
 	);
 	for (const candidate of [
-		"bg-cline-ui-background/95",
-		"border-cline-ui-border/60",
-		"text-cline-ui-muted-foreground",
-		"bg-cline-ui-primary/10",
+		"bg-hadyancode-ui-background/95",
+		"border-hadyancode-ui-border/60",
+		"text-hadyancode-ui-muted-foreground",
+		"bg-hadyancode-ui-primary/10",
 		"max-h-64",
 		"leading-none",
 		"max-h-44",
@@ -192,8 +192,8 @@ async function verifyTailwindContract(
 		[
 			"@layer theme, base, components, utilities;",
 			'@import "tailwindcss/theme.css" layer(theme);',
-			'@import "@cline/ui/theme/scoped-tokens.css";',
-			'@import "@cline/ui/components.css";',
+			'@import "@hadyancode/ui/theme/scoped-tokens.css";',
+			'@import "@hadyancode/ui/components.css";',
 			'@import "tailwindcss/utilities.css" layer(utilities);',
 		],
 		runner,
@@ -210,7 +210,7 @@ async function verifyTailwindContract(
 	expectInlineHeroMasks(noPreflightCss, "no-Preflight Tailwind contract");
 }
 
-const temporaryRoot = mkdtempSync(join(tmpdir(), "cline-ui-package-"));
+const temporaryRoot = mkdtempSync(join(tmpdir(), "hadyancode-ui-package-"));
 
 try {
 	let archive = process.argv[2] ? resolve(process.argv[2]) : undefined;

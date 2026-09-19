@@ -1,4 +1,4 @@
-import { DeleteAllTaskHistoryCount } from "@shared/proto/cline/task"
+import { DeleteAllTaskHistoryCount } from "@shared/proto/hadyancode/task"
 import { Logger } from "@/shared/services/Logger"
 import { Controller } from ".."
 

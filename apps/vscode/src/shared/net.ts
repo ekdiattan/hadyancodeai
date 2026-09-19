@@ -1,5 +1,5 @@
 /**
- * # Network Support for Cline
+ * # Network Support for HadyanCode
  *
  * ## Development Guidelines
  *
@@ -35,7 +35,7 @@
  *
  * ## Proxy Support
  *
- * Cline uses platform-specific fetch implementations to handle proxy
+ * HadyanCode uses platform-specific fetch implementations to handle proxy
  * configuration:
  * - **VSCode**: Uses global fetch (VSCode provides proxy configuration)
  * - **JetBrains, CLI**: Uses undici fetch with explicit ProxyAgent
@@ -61,7 +61,7 @@
  * JetBrains exports trusted certificates from the OS and writes them to a
  * temporary file, then configures node TLS by setting NODE_EXTRA_CA_CERTS.
  *
- * The CLI's npm wrapper (bin/cline) does the same automatically: it harvests
+ * The CLI's npm wrapper (bin/hadyancode) does the same automatically: it harvests
  * the OS trust store and points the child's NODE_EXTRA_CA_CERTS at a managed
  * bundle, because the Bun runtime does not read the OS store on its own. A
  * user-set NODE_EXTRA_CA_CERTS is merged in rather than replaced.
@@ -78,7 +78,7 @@
  *
  * 1. Verify proxy env vars: `echo $http_proxy $https_proxy`
  * 2. Check certificates: `echo $NODE_EXTRA_CA_CERTS` (should point to PEM file)
- * 3. View logs: Check ~/.cline/cline-core-service.log for network-related
+ * 3. View logs: Check ~/.hadyancode/hadyancode-core-service.log for network-related
  *    failures.
  * 4. Test connection: Use `curl -x host:port` etc. to isolate proxy
  *    configuration versus client issues.

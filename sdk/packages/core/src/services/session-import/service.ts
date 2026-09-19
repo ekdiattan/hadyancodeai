@@ -88,7 +88,7 @@ export class SessionImportService {
 	}
 
 	/**
-	 * `tool:sourceId` → existing Cline session id, from prior imports. Reads
+	 * `tool:sourceId` → existing HadyanCode session id, from prior imports. Reads
 	 * every row's metadata (not the 2000-row listSessions window) so a marker
 	 * on an old session still prevents a duplicate.
 	 */
@@ -275,7 +275,7 @@ export class SessionImportService {
 
 		// Empty cwd/workspace fails manifest validation and history filters;
 		// sessions whose original directory is unknown live in the shared chat
-		// workspace, exactly like Cline's own project-less sessions.
+		// workspace, exactly like HadyanCode's own project-less sessions.
 		let cwd = converted.cwd.trim();
 		if (!cwd) {
 			cwd = await ensureChatWorkspace();
@@ -290,7 +290,7 @@ export class SessionImportService {
 
 		// Resume adopts the row's provider/model, so stamp what the user will
 		// actually run on; both halves must be present to avoid pairing a
-		// Cline provider with a foreign model id.
+		// HadyanCode provider with a foreign model id.
 		const resumeProvider = options.provider?.trim();
 		const resumeModel = options.model?.trim();
 		const useResumeTarget = Boolean(resumeProvider && resumeModel);

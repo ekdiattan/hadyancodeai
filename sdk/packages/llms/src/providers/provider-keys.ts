@@ -3,10 +3,10 @@
  * runtime provider selection:
  *
  * - `modelsDevKey` is the provider's key in the models.dev API payload.
- * - `generatedProviderId` is Cline's canonical ID for the provider spec and
+ * - `generatedProviderId` is HadyanCode's canonical ID for the provider spec and
  *   model catalog generated from that payload. Generation maps
  *   `modelsDevKey -> generatedProviderId` so upstream names do not leak into
- *   Cline's public provider IDs.
+ *   HadyanCode's public provider IDs.
  * - `runtimeProviderId` is the ID of a configured provider implementation that
  *   should read models from that generated catalog.
  *
@@ -23,130 +23,26 @@ const PROVIDER_IDS_MAP: ReadonlyArray<{
 	generatedProviderId?: string;
 	runtimeProviderId?: string;
 }> = [
-	{
-		modelsDevKey: "openai",
-		generatedProviderId: "openai-native",
-		runtimeProviderId: "openai-native",
-	},
-	{
-		modelsDevKey: "openai",
-		generatedProviderId: "openai-native",
-		runtimeProviderId: "openai-codex-cli",
-	},
-	{
-		modelsDevKey: "openai",
-		generatedProviderId: "openai-native",
-		runtimeProviderId: "openai-codex",
-	},
 	{ modelsDevKey: "anthropic", generatedProviderId: "anthropic" },
 	{
 		modelsDevKey: "anthropic",
 		generatedProviderId: "anthropic",
 		runtimeProviderId: "claude-code",
 	},
-	{ modelsDevKey: "google", generatedProviderId: "gemini" },
 	{
 		modelsDevKey: "deepseek",
 		generatedProviderId: "deepseek",
 		runtimeProviderId: "deepseek",
 	},
-	{ modelsDevKey: "xai", generatedProviderId: "xai" },
 	{
-		modelsDevKey: "togetherai",
-		generatedProviderId: "together",
-		runtimeProviderId: "together",
-	},
-	{
-		modelsDevKey: "sap-ai-core",
-		generatedProviderId: "sapaicore",
-		runtimeProviderId: "sapaicore",
-	},
-	{ modelsDevKey: "ollama", runtimeProviderId: "ollama-cloud" },
-	{ modelsDevKey: "ollama-cloud", generatedProviderId: "ollama" },
-	{
-		modelsDevKey: "fireworks-ai",
-		generatedProviderId: "fireworks",
-		runtimeProviderId: "fireworks",
-	},
-	{
-		modelsDevKey: "groq",
-		generatedProviderId: "groq",
-		runtimeProviderId: "groq",
-	},
-	{
-		modelsDevKey: "poolside",
-		generatedProviderId: "poolside",
-		runtimeProviderId: "poolside",
-	},
-	{
-		modelsDevKey: "cerebras",
-		generatedProviderId: "cerebras",
-		runtimeProviderId: "cerebras",
-	},
-	{
-		modelsDevKey: "sambanova",
-		generatedProviderId: "sambanova",
-		runtimeProviderId: "sambanova",
-	},
-	{
-		modelsDevKey: "nebius",
-		generatedProviderId: "nebius",
-		runtimeProviderId: "nebius",
-	},
-	{
-		modelsDevKey: "huggingface",
-		generatedProviderId: "huggingface",
-		runtimeProviderId: "huggingface",
-	},
-	{
+		// The first-party gateway is OpenRouter-backed: its catalog is the
+		// marketplace's Claude + DeepSeek subset, baked under our own provider id
+		// so the marketplace provider itself is never registered. The model-level
+		// policy is applied by scripts/generate-models.ts and by
+		// filterHadyanCodeGatewayModels at runtime.
 		modelsDevKey: "openrouter",
-		generatedProviderId: "openrouter",
+		generatedProviderId: "hadyancode",
 	},
-	{
-		modelsDevKey: "vercel",
-		generatedProviderId: "vercel-ai-gateway",
-		runtimeProviderId: "dify",
-	},
-	{
-		modelsDevKey: "vercel",
-		generatedProviderId: "vercel-ai-gateway",
-	},
-	{
-		modelsDevKey: "openrouter",
-		generatedProviderId: "openrouter",
-		runtimeProviderId: "cline",
-	},
-	{
-		modelsDevKey: "aihubmix",
-		generatedProviderId: "aihubmix",
-		runtimeProviderId: "aihubmix",
-	},
-	{ modelsDevKey: "hicap", runtimeProviderId: "hicap" },
-	{ modelsDevKey: "nous-research", runtimeProviderId: "nousResearch" },
-	{ modelsDevKey: "huawei-cloud-maas", runtimeProviderId: "huawei-cloud-maas" },
-	{
-		modelsDevKey: "baseten",
-		generatedProviderId: "baseten",
-		runtimeProviderId: "baseten",
-	},
-	{ modelsDevKey: "zai-coding-plan", generatedProviderId: "zai-coding-plan" },
-	{ modelsDevKey: "google-vertex", generatedProviderId: "vertex" },
-	{ modelsDevKey: "lmstudio", generatedProviderId: "lmstudio" },
-	{ modelsDevKey: "zai", generatedProviderId: "zai" },
-	{ modelsDevKey: "requesty", generatedProviderId: "requesty" },
-	{ modelsDevKey: "amazon-bedrock", generatedProviderId: "bedrock" },
-	{ modelsDevKey: "mistral", generatedProviderId: "mistral" },
-	{ modelsDevKey: "moonshotai", generatedProviderId: "moonshot" },
-	{ modelsDevKey: "minimax", generatedProviderId: "minimax" },
-	{ modelsDevKey: "opencode", generatedProviderId: "opencode" },
-	{ modelsDevKey: "wandb", generatedProviderId: "wandb" },
-	{ modelsDevKey: "kilo", generatedProviderId: "kilo" },
-	{ modelsDevKey: "xiaomi", generatedProviderId: "xiaomi" },
-	{
-		modelsDevKey: "tencent-tokenhub",
-		generatedProviderId: "tencent-tokenhub",
-	},
-	{ modelsDevKey: "v0", generatedProviderId: "v0" },
 ];
 
 function dedupe(values: readonly string[]): string[] {
@@ -163,7 +59,7 @@ export const MODELS_DEV_PROVIDER_KEY_MAP = Object.fromEntries(
 
 /**
  * Providers that must remain excluded even when their models.dev entry uses a
- * supported AI SDK package. IDs use Cline's generated provider identifiers
+ * supported AI SDK package. IDs use HadyanCode's generated provider identifiers
  * after applying MODELS_DEV_PROVIDER_KEY_MAP.
  */
 export const MODELS_DEV_BLOCKED_PROVIDER_IDS: ReadonlySet<string> = new Set();

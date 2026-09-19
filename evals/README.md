@@ -1,8 +1,8 @@
-# Cline Evaluation Framework
+# HadyanCode Evaluation Framework
 
-A layered testing system for measuring Cline's performance at different levels.
+A layered testing system for measuring HadyanCode's performance at different levels.
 
-> Note: Smoke tests (Layer 2) are partially disabled while the eval framework is repointed at the new SDK CLI. The scenarios under `evals/smoke-tests/` are preserved and `npm run eval:smoke:run` still works against whatever `cline` is on `$PATH` (install with `npm i -g cline`). The old build-and-link helpers and the auto-running `cline-evals-regression.yml` workflow are off until someone wires the build step at the new SDK CLI.
+> Note: Smoke tests (Layer 2) are partially disabled while the eval framework is repointed at the new SDK CLI. The scenarios under `evals/smoke-tests/` are preserved and `npm run eval:smoke:run` still works against whatever `hadyancode` is on `$PATH` (install with `npm i -g hadyancode`). The old build-and-link helpers and the auto-running `hadyancode-evals-regression.yml` workflow are off until someone wires the build step at the new SDK CLI.
 
 ## Directory Structure
 
@@ -24,7 +24,7 @@ evals/
 │   │   ├── classifier.ts  # Failure pattern matching
 │   │   └── reporters/     # Markdown, JSON output
 │   └── patterns/
-│       └── cline-failures.yaml
+│       └── hadyancode-failures.yaml
 │
 └── baselines/             # Performance baselines for regression detection
 ```
@@ -51,11 +51,11 @@ Location: `evals/smoke-tests/`
 Quick validation across providers with real LLM calls:
 - 5 curated scenarios
 - 3 trials per test for pass@k metrics
-- Runs the `cline` CLI with `--config`, `-y`, `-t`, and `-m`
+- Runs the `hadyancode` CLI with `--config`, `-y`, `-t`, and `-m`
 
 ```bash
-# Set API key (Cline provider)
-export CLINE_API_KEY=sk-...
+# Set API key (HadyanCode provider)
+export HADYANCODE_API_KEY=sk-...
 
 # Run smoke tests
 npm run eval:smoke:run
@@ -136,7 +136,7 @@ npm run eval:e2e
 
 ### E2E Task
 
-Contribute to [cline/cline-bench](https://github.com/cline/cline-bench)
+Contribute to [hadyancode/cline-bench](https://github.com/cline/cline-bench)
 
 ## Resources
 

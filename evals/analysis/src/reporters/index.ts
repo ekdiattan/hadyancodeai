@@ -1,5 +1,5 @@
 /**
- * Reporter exports for Cline Analysis Framework
+ * Reporter exports for HadyanCode Analysis Framework
  *
  * Available reporters:
  * - JsonReporter: Structured JSON output with schema validation

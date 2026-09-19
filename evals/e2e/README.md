@@ -4,9 +4,9 @@ Full end-to-end tests using real-world tasks from cline-bench.
 
 ## Overview
 
-These tests run Cline against production-grade coding problems derived from actual user sessions. Each task:
+These tests run HadyanCode against production-grade coding problems derived from actual user sessions. Each task:
 - Starts with a broken codebase in Docker
-- Gives Cline the task description
+- Gives HadyanCode the task description
 - Verifies the fix with pytest
 
 ## Prerequisites
@@ -103,7 +103,7 @@ jobs/
     ├── result.json              # Aggregate results
     └── <task-id>__<hash>/
         ├── result.json          # Trial result
-        ├── agent/cline.txt      # Conversation log
+        ├── agent/hadyancode.txt      # Conversation log
         └── verifier/reward.txt  # 1 (pass) or 0 (fail)
 ```
 

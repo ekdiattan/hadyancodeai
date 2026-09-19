@@ -15,12 +15,12 @@ const listSessionHistoryFromBackend = vi.fn();
 const featureFlagsPoll = vi.fn(async () => {});
 const featureFlagsDispose = vi.fn(async () => {});
 
-vi.mock("@cline/core", async () => {
+vi.mock("@hadyancode/core", async () => {
 	const actual =
-		await vi.importActual<typeof import("@cline/core")>("@cline/core");
+		await vi.importActual<typeof import("@hadyancode/core")>("@hadyancode/core");
 	return {
 		...actual,
-		ClineCore: {
+		HadyanCodeCore: {
 			create: createCore,
 		},
 		resolveSessionBackend,
@@ -35,9 +35,9 @@ vi.mock("../utils/telemetry", () => ({
 describe("createCliCore", () => {
 	let sessionModule: typeof import("./session");
 	const envSnapshot = {
-		CLINE_RPC_ADDRESS: process.env.CLINE_RPC_ADDRESS,
-		CLINE_SESSION_BACKEND_MODE: process.env.CLINE_SESSION_BACKEND_MODE,
-		CLINE_VCR: process.env.CLINE_VCR,
+		HADYANCODE_RPC_ADDRESS: process.env.HADYANCODE_RPC_ADDRESS,
+		HADYANCODE_SESSION_BACKEND_MODE: process.env.HADYANCODE_SESSION_BACKEND_MODE,
+		HADYANCODE_VCR: process.env.HADYANCODE_VCR,
 	};
 
 	beforeAll(async () => {
@@ -71,22 +71,22 @@ describe("createCliCore", () => {
 			subscribe: vi.fn(),
 			updateSessionModel: vi.fn(),
 		});
-		delete process.env.CLINE_RPC_ADDRESS;
-		delete process.env.CLINE_SESSION_BACKEND_MODE;
-		delete process.env.CLINE_VCR;
+		delete process.env.HADYANCODE_RPC_ADDRESS;
+		delete process.env.HADYANCODE_SESSION_BACKEND_MODE;
+		delete process.env.HADYANCODE_VCR;
 		featureFlagsPoll.mockClear();
 		featureFlagsDispose.mockClear();
 	});
 
 	afterEach(() => {
-		process.env.CLINE_RPC_ADDRESS = envSnapshot.CLINE_RPC_ADDRESS;
-		process.env.CLINE_SESSION_BACKEND_MODE =
-			envSnapshot.CLINE_SESSION_BACKEND_MODE;
-		process.env.CLINE_VCR = envSnapshot.CLINE_VCR;
+		process.env.HADYANCODE_RPC_ADDRESS = envSnapshot.HADYANCODE_RPC_ADDRESS;
+		process.env.HADYANCODE_SESSION_BACKEND_MODE =
+			envSnapshot.HADYANCODE_SESSION_BACKEND_MODE;
+		process.env.HADYANCODE_VCR = envSnapshot.HADYANCODE_VCR;
 	});
 
 	it("passes hub client metadata through without forcing hub mode", async () => {
-		process.env.CLINE_RPC_ADDRESS = "127.0.0.1:5001";
+		process.env.HADYANCODE_RPC_ADDRESS = "127.0.0.1:5001";
 
 		await sessionModule.createCliCore();
 
@@ -94,7 +94,7 @@ describe("createCliCore", () => {
 			expect.objectContaining({
 				hub: expect.objectContaining({
 					clientType: "cli",
-					displayName: "Cline CLI",
+					displayName: "HadyanCode CLI",
 				}),
 			}),
 		);
@@ -107,7 +107,7 @@ describe("createCliCore", () => {
 			expect.objectContaining({
 				hub: expect.objectContaining({
 					clientType: "cli",
-					displayName: "Cline CLI",
+					displayName: "HadyanCode CLI",
 				}),
 			}),
 		);
@@ -137,7 +137,7 @@ describe("createCliCore", () => {
 				backendMode: "hub",
 				hub: expect.objectContaining({
 					clientType: "cli",
-					displayName: "Cline CLI",
+					displayName: "HadyanCode CLI",
 				}),
 			}),
 		);
@@ -176,14 +176,14 @@ describe("createCliCore", () => {
 				}),
 				hub: expect.objectContaining({
 					clientType: "cli",
-					displayName: "Cline CLI",
+					displayName: "HadyanCode CLI",
 				}),
 			}),
 		);
 	});
 
 	it("passes env-managed routing through to core when local is requested via env", async () => {
-		process.env.CLINE_SESSION_BACKEND_MODE = "local";
+		process.env.HADYANCODE_SESSION_BACKEND_MODE = "local";
 
 		await sessionModule.createCliCore();
 
@@ -195,7 +195,7 @@ describe("createCliCore", () => {
 	});
 
 	it("passes env-managed routing through to core when vcr is enabled", async () => {
-		process.env.CLINE_VCR = "1";
+		process.env.HADYANCODE_VCR = "1";
 
 		await sessionModule.createCliCore();
 

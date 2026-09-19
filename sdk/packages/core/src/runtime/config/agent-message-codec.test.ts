@@ -1,4 +1,4 @@
-import { EMPTY_CONTENT_TEXT, type MessageWithMetadata } from "@cline/shared";
+import { EMPTY_CONTENT_TEXT, type MessageWithMetadata } from "@hadyancode/shared";
 import { describe, expect, it } from "vitest";
 import { projectSessionMessagesForDisplay } from "../../session/display-messages";
 import {
@@ -91,7 +91,7 @@ describe("agent message codec", () => {
 					toolCallId: "search_1",
 					toolName: "web_search",
 					execution: "client",
-					input: { query: "Cline" },
+					input: { query: "HadyanCode" },
 					output: { results: [] },
 				},
 			],

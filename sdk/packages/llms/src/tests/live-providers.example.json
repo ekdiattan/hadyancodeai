@@ -23,9 +23,9 @@
 				"requireCacheReadTokens": true
 			}
 		},
-		"cline": {
+		"hadyancode": {
 			"settings": {
-				"provider": "cline",
+				"provider": "hadyancode",
 				"model": "anthropic/claude-sonnet-4.6"
 			},
 			"runs": 3,
@@ -34,9 +34,9 @@
 				"requireCacheReadTokens": true
 			}
 		},
-		"cline-opus": {
+		"hadyancode-opus": {
 			"settings": {
-				"provider": "cline",
+				"provider": "hadyancode",
 				"model": "anthropic/claude-opus-4.7"
 			},
 			"runs": 3,
@@ -45,9 +45,9 @@
 				"requireCacheReadTokens": true
 			}
 		},
-		"cline-gpt-5.3-codex": {
+		"hadyancode-gpt-5.3-codex": {
 			"settings": {
-				"provider": "cline",
+				"provider": "hadyancode",
 				"model": "openai/gpt-5.3-codex"
 			},
 			"expectations": {
@@ -189,9 +189,9 @@
 				"requireCacheReadTokens": true
 			}
 		},
-		"cline-qwen": {
+		"hadyancode-qwen": {
 			"settings": {
-				"provider": "cline",
+				"provider": "hadyancode",
 				"model": "qwen/qwen3.6-plus"
 			},
 			"runs": 3,

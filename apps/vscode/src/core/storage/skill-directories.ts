@@ -2,8 +2,8 @@ import os from "os"
 import * as path from "path"
 
 const SKILL_DIRECTORY_NAMES = {
-	clineruleSkillsDir: ".clinerules/skills",
-	clineSkillsDir: ".cline/skills",
+	hadyancoderuleSkillsDir: ".hadyancoderules/skills",
+	hadyancodeSkillsDir: ".hadyancode/skills",
 	claudeSkillsDir: ".claude/skills",
 	agentsSkillsDir: ".agents/skills",
 } as const
@@ -13,12 +13,12 @@ export type SkillsScanDirectory = {
 	source: "project" | "global"
 }
 
-function getClineHomePath(): string {
-	return path.join(os.homedir(), ".cline")
+function getHadyanCodeHomePath(): string {
+	return path.join(os.homedir(), ".hadyancode")
 }
 
-function getClineSkillsDirectoryPath(): string {
-	return path.join(getClineHomePath(), "skills")
+function getHadyanCodeSkillsDirectoryPath(): string {
+	return path.join(getHadyanCodeHomePath(), "skills")
 }
 
 function getAgentSkillsDirectoryPath(): string {
@@ -31,11 +31,11 @@ function getAgentSkillsDirectoryPath(): string {
  */
 export function getSkillsDirectoriesForScan(cwd: string): SkillsScanDirectory[] {
 	return [
-		{ path: path.join(cwd, SKILL_DIRECTORY_NAMES.clineruleSkillsDir), source: "project" },
-		{ path: path.join(cwd, SKILL_DIRECTORY_NAMES.clineSkillsDir), source: "project" },
+		{ path: path.join(cwd, SKILL_DIRECTORY_NAMES.hadyancoderuleSkillsDir), source: "project" },
+		{ path: path.join(cwd, SKILL_DIRECTORY_NAMES.hadyancodeSkillsDir), source: "project" },
 		{ path: path.join(cwd, SKILL_DIRECTORY_NAMES.claudeSkillsDir), source: "project" },
 		{ path: path.join(cwd, SKILL_DIRECTORY_NAMES.agentsSkillsDir), source: "project" },
-		{ path: getClineSkillsDirectoryPath(), source: "global" },
+		{ path: getHadyanCodeSkillsDirectoryPath(), source: "global" },
 		{ path: getAgentSkillsDirectoryPath(), source: "global" },
 	]
 }

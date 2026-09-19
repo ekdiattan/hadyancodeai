@@ -42,10 +42,10 @@ For file hooks, successful task completion maps to the `agent_end` event. For a 
 Log every tool call and its inputs. Useful for auditing what the agent is about to do.
 
 ```bash
-mkdir -p .cline/hooks
-cp examples/hooks/PreToolUse.sh .cline/hooks/
-chmod +x .cline/hooks/PreToolUse.sh
-cline -i "do something"  # See tool calls logged to stderr
+mkdir -p .hadyancode/hooks
+cp examples/hooks/PreToolUse.sh .hadyancode/hooks/
+chmod +x .hadyancode/hooks/PreToolUse.sh
+hadyancode -i "do something"  # See tool calls logged to stderr
 ```
 
 #### `PostToolUse.sh`
@@ -53,10 +53,10 @@ cline -i "do something"  # See tool calls logged to stderr
 Inspect tool results and add supplementary context.
 
 ```bash
-mkdir -p .cline/hooks
-cp examples/hooks/PostToolUse.sh .cline/hooks/
-chmod +x .cline/hooks/PostToolUse.sh
-cline -i "do something"  # See tool results logged and enriched
+mkdir -p .hadyancode/hooks
+cp examples/hooks/PostToolUse.sh .hadyancode/hooks/
+chmod +x .hadyancode/hooks/PostToolUse.sh
+hadyancode -i "do something"  # See tool results logged and enriched
 ```
 
 #### `PreToolUse_BlockDestructive.sh`
@@ -64,35 +64,35 @@ cline -i "do something"  # See tool results logged and enriched
 Prevent destructive operations like force pushes or bulk deletes.
 
 ```bash
-mkdir -p .cline/hooks
-cp examples/hooks/PreToolUse_BlockDestructive.sh .cline/hooks/PreToolUse.sh
-chmod +x .cline/hooks/PreToolUse.sh
-cline -i "clean up the repo"  # Destructive operations will be blocked
+mkdir -p .hadyancode/hooks
+cp examples/hooks/PreToolUse_BlockDestructive.sh .hadyancode/hooks/PreToolUse.sh
+chmod +x .hadyancode/hooks/PreToolUse.sh
+hadyancode -i "clean up the repo"  # Destructive operations will be blocked
 ```
 
-#### `PreToolUse_ClineignoreGuard.sh`
+#### `PreToolUse_HadyanCodeignoreGuard.sh`
 
-Block file reads, edits, and shell commands whose paths match gitignore-style patterns in a workspace `.clineignore` file — an enforced replacement for the legacy `.clineignore` feature. Handles both the CLI and VS Code extension hook payload shapes, and protects `.clineignore` itself from modification. See the [.clineignore docs](https://docs.cline.bot/customization/clineignore) for the full walkthrough.
+Block file reads, edits, and shell commands whose paths match gitignore-style patterns in a workspace `.hadyancodeignore` file — an enforced replacement for the legacy `.hadyancodeignore` feature. Handles both the CLI and VS Code extension hook payload shapes, and protects `.hadyancodeignore` itself from modification. See the [.hadyancodeignore docs](https://docs.cline.bot/customization/hadyancodeignore) for the full walkthrough.
 
 ```bash
-mkdir -p .cline/hooks
-cp examples/hooks/PreToolUse_ClineignoreGuard.sh .cline/hooks/PreToolUse.sh
-chmod +x .cline/hooks/PreToolUse.sh
-echo ".env" >> .clineignore
-cline -i "read the .env file"  # The read is cancelled before it runs
+mkdir -p .hadyancode/hooks
+cp examples/hooks/PreToolUse_HadyanCodeignoreGuard.sh .hadyancode/hooks/PreToolUse.sh
+chmod +x .hadyancode/hooks/PreToolUse.sh
+echo ".env" >> .hadyancodeignore
+hadyancode -i "read the .env file"  # The read is cancelled before it runs
 ```
 
-For the VS Code extension, copy it to `.clinerules/hooks/PreToolUse` (no file extension) instead and check "Enable Hooks" in Cline's feature settings.
+For the VS Code extension, copy it to `.hadyancoderules/hooks/PreToolUse` (no file extension) instead and check "Enable Hooks" in HadyanCode's feature settings.
 
 #### `PreToolUse_RequireReview.sh`
 
 Require user review before certain operations (file writes to critical files).
 
 ```bash
-mkdir -p .cline/hooks
-cp examples/hooks/PreToolUse_RequireReview.sh .cline/hooks/PreToolUse.sh
-chmod +x .cline/hooks/PreToolUse.sh
-cline -i "update dependencies"  # Critical file writes will pause for review
+mkdir -p .hadyancode/hooks
+cp examples/hooks/PreToolUse_RequireReview.sh .hadyancode/hooks/PreToolUse.sh
+chmod +x .hadyancode/hooks/PreToolUse.sh
+hadyancode -i "update dependencies"  # Critical file writes will pause for review
 ```
 
 #### `PreToolUse_InjectFileContext.sh`
@@ -100,10 +100,10 @@ cline -i "update dependencies"  # Critical file writes will pause for review
 Extract and inject file context before tool execution (related test files, lock files, environment context).
 
 ```bash
-mkdir -p .cline/hooks
-cp examples/hooks/PreToolUse_InjectFileContext.sh .cline/hooks/PreToolUse.sh
-chmod +x .cline/hooks/PreToolUse.sh
-cline -i "review the configuration"  # Related files will be mentioned automatically
+mkdir -p .hadyancode/hooks
+cp examples/hooks/PreToolUse_InjectFileContext.sh .hadyancode/hooks/PreToolUse.sh
+chmod +x .hadyancode/hooks/PreToolUse.sh
+hadyancode -i "review the configuration"  # Related files will be mentioned automatically
 ```
 
 #### `TaskStart.sh`, `TaskComplete.sh`, `SessionShutdown.sh`
@@ -111,12 +111,12 @@ cline -i "review the configuration"  # Related files will be mentioned automatic
 Track agent session lifecycle events (start, end, shutdown).
 
 ```bash
-mkdir -p .cline/hooks
-cp examples/hooks/TaskStart.sh .cline/hooks/
-cp examples/hooks/TaskComplete.sh .cline/hooks/
-cp examples/hooks/SessionShutdown.sh .cline/hooks/
-chmod +x .cline/hooks/Task*.sh .cline/hooks/SessionShutdown.sh
-cline -i "do something"  # Session lifecycle will be logged
+mkdir -p .hadyancode/hooks
+cp examples/hooks/TaskStart.sh .hadyancode/hooks/
+cp examples/hooks/TaskComplete.sh .hadyancode/hooks/
+cp examples/hooks/SessionShutdown.sh .hadyancode/hooks/
+chmod +x .hadyancode/hooks/Task*.sh .hadyancode/hooks/SessionShutdown.sh
+hadyancode -i "do something"  # Session lifecycle will be logged
 ```
 
 ### Python Examples
@@ -126,10 +126,10 @@ cline -i "do something"  # Session lifecycle will be logged
 Python-based hook to log and filter tool calls.
 
 ```bash
-mkdir -p .cline/hooks
-cp examples/hooks/PreToolUse.py .cline/hooks/
-chmod +x .cline/hooks/PreToolUse.py
-cline -i "do something"  # Python hook will log tool calls
+mkdir -p .hadyancode/hooks
+cp examples/hooks/PreToolUse.py .hadyancode/hooks/
+chmod +x .hadyancode/hooks/PreToolUse.py
+hadyancode -i "do something"  # Python hook will log tool calls
 ```
 
 #### `PostToolUse.py`
@@ -137,10 +137,10 @@ cline -i "do something"  # Python hook will log tool calls
 Python-based post-tool-use hook for result enrichment.
 
 ```bash
-mkdir -p .cline/hooks
-cp examples/hooks/PostToolUse.py .cline/hooks/
-chmod +x .cline/hooks/PostToolUse.py
-cline -i "do something"  # Python hook will enrich tool results
+mkdir -p .hadyancode/hooks
+cp examples/hooks/PostToolUse.py .hadyancode/hooks/
+chmod +x .hadyancode/hooks/PostToolUse.py
+hadyancode -i "do something"  # Python hook will enrich tool results
 ```
 
 #### `PreToolUse_InjectContext.py`
@@ -148,10 +148,10 @@ cline -i "do something"  # Python hook will enrich tool results
 Python-based context injection with file analysis (test files, config files, lock files, Node.js version, git branch).
 
 ```bash
-mkdir -p .cline/hooks
-cp examples/hooks/PreToolUse_InjectContext.py .cline/hooks/PreToolUse.py
-chmod +x .cline/hooks/PreToolUse.py
-cline -i "add a new feature"  # Related files and environment will be injected
+mkdir -p .hadyancode/hooks
+cp examples/hooks/PreToolUse_InjectContext.py .hadyancode/hooks/PreToolUse.py
+chmod +x .hadyancode/hooks/PreToolUse.py
+hadyancode -i "add a new feature"  # Related files and environment will be injected
 ```
 
 ### TypeScript Examples
@@ -161,10 +161,10 @@ cline -i "add a new feature"  # Related files and environment will be injected
 TypeScript hook for advanced tool call filtering and logging.
 
 ```bash
-mkdir -p .cline/hooks
-cp examples/hooks/PreToolUse.ts .cline/hooks/
-chmod +x .cline/hooks/PreToolUse.ts
-cline -i "do something"  # TypeScript hook will execute via bun
+mkdir -p .hadyancode/hooks
+cp examples/hooks/PreToolUse.ts .hadyancode/hooks/
+chmod +x .hadyancode/hooks/PreToolUse.ts
+hadyancode -i "do something"  # TypeScript hook will execute via bun
 ```
 
 #### `PostToolUse.ts`
@@ -172,10 +172,10 @@ cline -i "do something"  # TypeScript hook will execute via bun
 TypeScript hook for post-execution actions.
 
 ```bash
-mkdir -p .cline/hooks
-cp examples/hooks/PostToolUse.ts .cline/hooks/
-chmod +x .cline/hooks/PostToolUse.ts
-cline -i "do something"  # TypeScript hook will execute via bun
+mkdir -p .hadyancode/hooks
+cp examples/hooks/PostToolUse.ts .hadyancode/hooks/
+chmod +x .hadyancode/hooks/PostToolUse.ts
+hadyancode -i "do something"  # TypeScript hook will execute via bun
 ```
 
 #### `PreToolUse_ModifyInput.ts`
@@ -183,45 +183,45 @@ cline -i "do something"  # TypeScript hook will execute via bun
 Modify tool inputs before execution (normalize paths, add defaults, sanitize).
 
 ```bash
-mkdir -p .cline/hooks
-cp examples/hooks/PreToolUse_ModifyInput.ts .cline/hooks/PreToolUse.ts
-chmod +x .cline/hooks/PreToolUse.ts
-cline -i "install dependencies"  # npm install will have --save-exact added automatically
+mkdir -p .hadyancode/hooks
+cp examples/hooks/PreToolUse_ModifyInput.ts .hadyancode/hooks/PreToolUse.ts
+chmod +x .hadyancode/hooks/PreToolUse.ts
+hadyancode -i "install dependencies"  # npm install will have --save-exact added automatically
 ```
 
 ## Getting Started
 
 ### 1. Copy a hook to your project
 
-**File hooks** go in `.cline/hooks/` and must be named after the event they handle:
+**File hooks** go in `.hadyancode/hooks/` and must be named after the event they handle:
 
 ```bash
-mkdir -p .cline/hooks
+mkdir -p .hadyancode/hooks
 
 # Copy PreToolUse example (pick your language)
-cp examples/hooks/PreToolUse.sh .cline/hooks/PreToolUse.sh      # Bash
-cp examples/hooks/PreToolUse.py .cline/hooks/PreToolUse.py      # Python
-cp examples/hooks/PreToolUse.ts .cline/hooks/PreToolUse.ts      # TypeScript
+cp examples/hooks/PreToolUse.sh .hadyancode/hooks/PreToolUse.sh      # Bash
+cp examples/hooks/PreToolUse.py .hadyancode/hooks/PreToolUse.py      # Python
+cp examples/hooks/PreToolUse.ts .hadyancode/hooks/PreToolUse.ts      # TypeScript
 
 # Copy PostToolUse example
-cp examples/hooks/PostToolUse.sh .cline/hooks/PostToolUse.sh    # Bash
-cp examples/hooks/PostToolUse.py .cline/hooks/PostToolUse.py    # Python
-cp examples/hooks/PostToolUse.ts .cline/hooks/PostToolUse.ts    # TypeScript
+cp examples/hooks/PostToolUse.sh .hadyancode/hooks/PostToolUse.sh    # Bash
+cp examples/hooks/PostToolUse.py .hadyancode/hooks/PostToolUse.py    # Python
+cp examples/hooks/PostToolUse.ts .hadyancode/hooks/PostToolUse.ts    # TypeScript
 ```
 
 ### 2. Make it executable
 
 ```bash
-chmod +x .cline/hooks/PreToolUse.*
-chmod +x .cline/hooks/PostToolUse.*
+chmod +x .hadyancode/hooks/PreToolUse.*
+chmod +x .hadyancode/hooks/PostToolUse.*
 ```
 
 ### 3. Test it
 
 ```bash
-cline -i "test prompt"
+hadyancode -i "test prompt"
 # Or load from a custom hooks directory:
-cline --hooks-dir ./my-hooks -i "test prompt"
+hadyancode --hooks-dir ./my-hooks -i "test prompt"
 ```
 
 ## Hook Input/Output Format
@@ -234,7 +234,7 @@ All hooks receive a detailed JSON event on stdin and must return JSON on stdout.
 ```json
 {
   "hookName": "tool_call",
-  "clineVersion": "1.0.0",
+  "hadyancodeVersion": "1.0.0",
   "timestamp": "2026-01-15T10:30:00Z",
   "taskId": "conv-123",
   "workspaceRoots": ["/path/to/repo"],
@@ -252,7 +252,7 @@ All hooks receive a detailed JSON event on stdin and must return JSON on stdout.
 ```json
 {
   "hookName": "tool_result",
-  "clineVersion": "1.0.0",
+  "hadyancodeVersion": "1.0.0",
   "timestamp": "2026-01-15T10:30:00Z",
   "tool_result": {
     "id": "call-456",
@@ -269,7 +269,7 @@ All hooks receive a detailed JSON event on stdin and must return JSON on stdout.
 ```json
 {
   "hookName": "agent_start",
-  "clineVersion": "1.0.0",
+  "hadyancodeVersion": "1.0.0",
   "timestamp": "2026-01-15T10:30:00Z",
   "taskId": "conv-123",
   "workspaceRoots": ["/path/to/repo"],
@@ -405,17 +405,17 @@ async function getGitBranch(): Promise<string> {
 
 ### Print hook invocations
 ```bash
-cline --verbose "your prompt"
+hadyancode --verbose "your prompt"
 ```
 
 ### Test a hook manually
 ```bash
-echo '{"tool_call": {"name": "read_files", "input": {"filePath": "test.ts"}}}' | .cline/hooks/PreToolUse.sh
+echo '{"tool_call": {"name": "read_files", "input": {"filePath": "test.ts"}}}' | .hadyancode/hooks/PreToolUse.sh
 ```
 
 ### Check hook output
 ```bash
-.cline/hooks/PreToolUse.sh < input.json | jq .
+.hadyancode/hooks/PreToolUse.sh < input.json | jq .
 ```
 
 ## Runtime Hooks: Custom Compaction
@@ -423,9 +423,9 @@ echo '{"tool_call": {"name": "read_files", "input": {"filePath": "test.ts"}}}' |
 File hooks observe lifecycle events. For more advanced use cases like message compaction, use a TypeScript **runtime hook** plugin:
 
 ```bash
-cline plugin install https://github.com/cline/cline/blob/main/sdk/examples/hooks/custom-compaction-hook.example.ts --cwd .
+hadyancode plugin install https://github.com/cline/hadyancode/blob/main/sdk/examples/hooks/custom-compaction-hook.example.ts --cwd .
 
-cline -i "Search the codebase for dispatcher usage, then summarize it"
+hadyancode -i "Search the codebase for dispatcher usage, then summarize it"
 ```
 
 This example uses `hooks.beforeModel` to estimate request size and replace older middle history with a summary message before the provider request.
@@ -434,7 +434,7 @@ This example uses `hooks.beforeModel` to estimate request size and replace older
 
 | Example | Extension Point | Message Shape | Best For |
 | ------- | --------------- | ------------- | -------- |
-| `custom-compaction-hook.example.ts` (in `.cline/plugins/`) | `hooks.beforeModel` runtime hook | Agent runtime request messages with runtime parts such as `tool-call`, `tool-result`, `reasoning`, `image`, and `file` | Cases needing runtime-hook context, current runtime snapshot, or direct request mutation |
+| `custom-compaction-hook.example.ts` (in `.hadyancode/plugins/`) | `hooks.beforeModel` runtime hook | Agent runtime request messages with runtime parts such as `tool-call`, `tool-result`, `reasoning`, `image`, and `file` | Cases needing runtime-hook context, current runtime snapshot, or direct request mutation |
 | `plugins/custom-compaction.ts` | `api.registerMessageBuilder()` | SDK/provider-bound `Message[]` after runtime messages are converted for model delivery | Most reusable plugin-owned message rewrites and compaction policies |
 
 **Prefer `registerMessageBuilder()`** for normal plugin-owned provider-message rewrites because it runs in the core message pipeline before the built-in provider-safety builder. **Use `beforeModel`** when the compaction logic needs runtime hook context or needs to inspect the exact runtime request object.
@@ -445,5 +445,5 @@ This example uses `hooks.beforeModel` to estimate request size and replace older
 - **Use stderr for logging** — stdout is reserved for JSON output
 - **Keep hooks fast** — they run before every tool call, so performance matters
 - **Test with `jq`** — JSON parsing is finicky; use `jq` for safe extraction
-- **Use multiple hooks** — different event files can coexist in `.cline/hooks/`
+- **Use multiple hooks** — different event files can coexist in `.hadyancode/hooks/`
 - **Load from custom dirs** — use `--hooks-dir ./ci/hooks` to load from elsewhere

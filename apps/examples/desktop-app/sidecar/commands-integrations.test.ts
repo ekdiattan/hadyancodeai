@@ -1,8 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { isClineAccountNotAuthenticatedResult } from "../webview/lib/cline-account-state";
+import { isHadyanCodeAccountNotAuthenticatedResult } from "../webview/lib/hadyancode-account-state";
 import {
-	listClineGitHubRepositories,
-	listClineIntegrations,
+	listHadyanCodeGitHubRepositories,
+	listHadyanCodeIntegrations,
 	resolveGitHubInstallUrl,
 } from "./commands-integrations";
 import type { SidecarContext } from "./types";
@@ -10,9 +10,9 @@ import type { SidecarContext } from "./types";
 const getProviderSettingsMock = vi.hoisted(() => vi.fn());
 const resolveProviderApiKeyMock = vi.hoisted(() => vi.fn());
 
-vi.mock("@cline/core", async () => {
+vi.mock("@hadyancode/core", async () => {
 	const actual =
-		await vi.importActual<typeof import("@cline/core")>("@cline/core");
+		await vi.importActual<typeof import("@hadyancode/core")>("@hadyancode/core");
 	return {
 		...actual,
 		ProviderSettingsManager: class {
@@ -62,7 +62,7 @@ afterEach(() => {
 	vi.unstubAllGlobals();
 });
 
-describe("listClineIntegrations", () => {
+describe("listHadyanCodeIntegrations", () => {
 	it("lists integrations through the envelope with a bearer token", async () => {
 		const fetchImpl = vi
 			.fn()
@@ -70,7 +70,7 @@ describe("listClineIntegrations", () => {
 				jsonResponse({ success: true, data: [{ provider: "github" }] }),
 			);
 
-		const result = await listClineIntegrations(requestOptions(fetchImpl));
+		const result = await listHadyanCodeIntegrations(requestOptions(fetchImpl));
 
 		expect(result).toEqual([{ provider: "github" }]);
 		const [url, init] = fetchImpl.mock.calls[0] as [URL, RequestInit];
@@ -81,17 +81,17 @@ describe("listClineIntegrations", () => {
 	});
 });
 
-describe("listClineGitHubRepositories", () => {
+describe("listHadyanCodeGitHubRepositories", () => {
 	it("lists GitHub repositories from the repositories endpoint", async () => {
 		const fetchImpl = vi
 			.fn()
 			.mockResolvedValue(
-				jsonResponse({ success: true, data: [{ full_name: "cline/cline" }] }),
+				jsonResponse({ success: true, data: [{ full_name: "hadyancode/hadyancode" }] }),
 			);
 
-		const result = await listClineGitHubRepositories(requestOptions(fetchImpl));
+		const result = await listHadyanCodeGitHubRepositories(requestOptions(fetchImpl));
 
-		expect(result).toEqual([{ full_name: "cline/cline" }]);
+		expect(result).toEqual([{ full_name: "hadyancode/hadyancode" }]);
 		expect(String(fetchImpl.mock.calls[0][0])).toBe(
 			"https://api.example.com/api/v1/integrations/github/repositories",
 		);
@@ -108,7 +108,7 @@ describe("listClineGitHubRepositories", () => {
 			);
 
 		await expect(
-			listClineIntegrations(requestOptions(fetchImpl)),
+			listHadyanCodeIntegrations(requestOptions(fetchImpl)),
 		).rejects.toThrow("failed to list integrations");
 	});
 });
@@ -119,7 +119,7 @@ describe("resolveGitHubInstallUrl", () => {
 			new Response(null, {
 				status: 302,
 				headers: {
-					location: "https://github.com/apps/cline/installations/new?state=abc",
+					location: "https://github.com/apps/hadyancode/installations/new?state=abc",
 				},
 			}),
 		);
@@ -127,13 +127,13 @@ describe("resolveGitHubInstallUrl", () => {
 		const result = await resolveGitHubInstallUrl(requestOptions(fetchImpl));
 
 		expect(result).toEqual({
-			url: "https://github.com/apps/cline/installations/new?state=abc",
+			url: "https://github.com/apps/hadyancode/installations/new?state=abc",
 		});
 		const [url, init] = fetchImpl.mock.calls[0] as [URL, RequestInit];
 		expect(url.origin + url.pathname).toBe(
 			"https://api.example.com/api/v1/integrations/github/install",
 		);
-		// The post-install browser hop must land on the Cline dashboard.
+		// The post-install browser hop must land on the HadyanCode dashboard.
 		expect(url.searchParams.get("redirect")).toBe(
 			"https://app.example.com/dashboard/integrations",
 		);
@@ -145,7 +145,7 @@ describe("resolveGitHubInstallUrl", () => {
 		const fetchImpl = vi.fn().mockResolvedValue(
 			new Response(null, {
 				status: 302,
-				headers: { location: "//github.com/apps/cline/installations/new" },
+				headers: { location: "//github.com/apps/hadyancode/installations/new" },
 			}),
 		);
 
@@ -153,16 +153,16 @@ describe("resolveGitHubInstallUrl", () => {
 
 		// A bare relative Location would blow up later in the URL opener.
 		expect(result).toEqual({
-			url: "https://github.com/apps/cline/installations/new",
+			url: "https://github.com/apps/hadyancode/installations/new",
 		});
 	});
 
 	it.each([
-		["https://evil.example/apps/cline", "evil.example"],
-		["https://github.com.evil.example/apps/cline", "github.com.evil.example"],
+		["https://evil.example/apps/hadyancode", "evil.example"],
+		["https://github.com.evil.example/apps/hadyancode", "github.com.evil.example"],
 		// Subdomains are not part of the install flow, so they are not allowed
 		// either -- the host must be exactly github.com.
-		["https://gist.github.com/apps/cline", "gist.github.com"],
+		["https://gist.github.com/apps/hadyancode", "gist.github.com"],
 	])("rejects a redirect to a non-GitHub host (%s)", async (location, host) => {
 		const fetchImpl = vi
 			.fn()
@@ -179,7 +179,7 @@ describe("resolveGitHubInstallUrl", () => {
 		const fetchImpl = vi.fn().mockResolvedValue(
 			new Response(null, {
 				status: 302,
-				headers: { location: "http://github.com/apps/cline" },
+				headers: { location: "http://github.com/apps/hadyancode" },
 			}),
 		);
 
@@ -214,7 +214,7 @@ describe("resolveGitHubInstallUrl", () => {
 	});
 });
 
-describe("cline_integrations command auth states", () => {
+describe("hadyancode_integrations command auth states", () => {
 	it("returns a typed not-authenticated result when signed out, without calling the API", async () => {
 		const { ctx, capture } = createContext();
 		resolveProviderApiKeyMock.mockResolvedValue(null);
@@ -223,16 +223,16 @@ describe("cline_integrations command auth states", () => {
 		vi.stubGlobal("fetch", fetchMock);
 
 		const { handleCommand } = await import("./commands");
-		const result = await handleCommand(ctx, "cline_integrations", {
+		const result = await handleCommand(ctx, "hadyancode_integrations", {
 			operation: "list",
 		});
 
-		expect(isClineAccountNotAuthenticatedResult(result)).toBe(true);
+		expect(isHadyanCodeAccountNotAuthenticatedResult(result)).toBe(true);
 		expect(fetchMock).not.toHaveBeenCalled();
 		expect(capture).not.toHaveBeenCalled();
 	});
 
-	it("calls the Cline API with the resolved fresh token when signed in", async () => {
+	it("calls the HadyanCode API with the resolved fresh token when signed in", async () => {
 		const { ctx } = createContext();
 		resolveProviderApiKeyMock.mockResolvedValue({
 			apiKey: "fresh-token",
@@ -247,7 +247,7 @@ describe("cline_integrations command auth states", () => {
 		vi.stubGlobal("fetch", fetchMock);
 
 		const { handleCommand } = await import("./commands");
-		const result = await handleCommand(ctx, "cline_integrations", {
+		const result = await handleCommand(ctx, "hadyancode_integrations", {
 			operation: "list",
 		});
 
@@ -271,10 +271,10 @@ describe("cline_integrations command auth states", () => {
 
 		const { handleCommand } = await import("./commands");
 		await expect(
-			handleCommand(ctx, "cline_integrations", {
+			handleCommand(ctx, "hadyancode_integrations", {
 				operation: "dropIntegrations",
 			}),
-		).rejects.toThrow("Unsupported Cline integrations operation");
+		).rejects.toThrow("Unsupported HadyanCode integrations operation");
 		expect(fetchMock).not.toHaveBeenCalled();
 	});
 });

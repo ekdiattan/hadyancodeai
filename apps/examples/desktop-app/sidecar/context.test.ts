@@ -1,7 +1,7 @@
 import { existsSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import type { RuntimeCapabilities } from "@cline/core";
+import type { RuntimeCapabilities } from "@hadyancode/core";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { materializeUserFiles } from "./attachments";
 import type { LiveSession, SidecarContext } from "./types";
@@ -21,12 +21,12 @@ vi.mock("@ai-sdk/provider-utils", () => ({
 	createProviderDefinedToolFactory: vi.fn(() => vi.fn()),
 }));
 
-vi.mock("@cline/core", async () => {
+vi.mock("@hadyancode/core", async () => {
 	const actual =
-		await vi.importActual<typeof import("@cline/core")>("@cline/core");
+		await vi.importActual<typeof import("@hadyancode/core")>("@hadyancode/core");
 	return {
 		...actual,
-		ClineCore: {
+		HadyanCodeCore: {
 			create: createCoreMock,
 		},
 		ensureCompatibleLocalHubUrl: ensureCompatibleLocalHubUrlMock,
@@ -110,7 +110,7 @@ describe("Code sidecar runtime capabilities", () => {
 					workspaceRoot: "/workspace/project",
 					cwd: "/workspace/project",
 					clientType: "code-sidecar",
-					displayName: "Cline Desktop sidecar",
+					displayName: "HadyanCode Desktop sidecar",
 				}),
 			}),
 		);
@@ -121,7 +121,7 @@ describe("Code sidecar runtime capabilities", () => {
 			expect.objectContaining({
 				url: "ws://127.0.0.1:25463/hub",
 				clientType: "code-sidecar-observer",
-				displayName: "Cline Desktop observer",
+				displayName: "HadyanCode Desktop observer",
 			}),
 		);
 	});
@@ -145,7 +145,7 @@ describe("Code sidecar runtime capabilities", () => {
 
 		expect(createCoreMock).toHaveBeenCalledWith(
 			expect.objectContaining({
-				clientName: "cline-code",
+				clientName: "hadyancode-code",
 				logger,
 				telemetry,
 			}),
@@ -745,7 +745,7 @@ describe("Code sidecar runtime capabilities", () => {
 				hub: expect.objectContaining({
 					strategy: "require-hub",
 					clientType: "code-sidecar",
-					displayName: "Cline Desktop sidecar",
+					displayName: "HadyanCode Desktop sidecar",
 				}),
 			}),
 		);
@@ -1227,19 +1227,19 @@ describe("disposeSidecarContext attachment cleanup", () => {
 	let testSessionDataDir: string;
 
 	beforeEach(() => {
-		previousSessionDataDir = process.env.CLINE_SESSION_DATA_DIR;
+		previousSessionDataDir = process.env.HADYANCODE_SESSION_DATA_DIR;
 		testSessionDataDir = join(
 			tmpdir(),
-			`cline-desktop-dispose-${Date.now()}-${Math.random().toString(36).slice(2)}`,
+			`hadyancode-desktop-dispose-${Date.now()}-${Math.random().toString(36).slice(2)}`,
 		);
-		process.env.CLINE_SESSION_DATA_DIR = testSessionDataDir;
+		process.env.HADYANCODE_SESSION_DATA_DIR = testSessionDataDir;
 	});
 
 	afterEach(() => {
 		if (previousSessionDataDir === undefined) {
-			delete process.env.CLINE_SESSION_DATA_DIR;
+			delete process.env.HADYANCODE_SESSION_DATA_DIR;
 		} else {
-			process.env.CLINE_SESSION_DATA_DIR = previousSessionDataDir;
+			process.env.HADYANCODE_SESSION_DATA_DIR = previousSessionDataDir;
 		}
 		rmSync(testSessionDataDir, { recursive: true, force: true });
 	});

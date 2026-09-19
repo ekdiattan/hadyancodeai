@@ -1,4 +1,4 @@
-import type { ClineMessage, TurnPhase } from "@shared/ExtensionMessage"
+import type { HadyanCodeMessage, TurnPhase } from "@shared/ExtensionMessage"
 import type { HistoryItem } from "@shared/HistoryItem"
 import { Logger } from "@/shared/services/Logger"
 import type { SdkInteractionCoordinator } from "./sdk-interaction-coordinator"
@@ -55,9 +55,9 @@ export class SdkTaskControlCoordinator {
 
 	constructor(private readonly options: SdkTaskControlCoordinatorOptions) {}
 
-	async cancelClineTaskOnSignOut(isClineManagedProvider: boolean): Promise<void> {
+	async cancelHadyanCodeTaskOnSignOut(isHadyanCodeManagedProvider: boolean): Promise<void> {
 		const activeSession = this.options.sessions.getActiveSession()
-		if (!isClineManagedProvider || !activeSession?.isRunning) {
+		if (!isHadyanCodeManagedProvider || !activeSession?.isRunning) {
 			return
 		}
 
@@ -94,7 +94,7 @@ export class SdkTaskControlCoordinator {
 
 		this.options.sessions.setRunning(false)
 
-		const resumeMessage: ClineMessage = {
+		const resumeMessage: HadyanCodeMessage = {
 			ts: Date.now(),
 			type: "ask",
 			ask: "resume_task",
@@ -209,7 +209,7 @@ export class SdkTaskControlCoordinator {
 			// postStateToWebview() caller never sees the new id with empty messages.
 			const isLegacyTask = await this.options.taskHistory.isLegacyTask(taskId)
 			const sessionStatus = isLegacyTask ? undefined : await this.options.taskHistory.getSessionStatus(taskId)
-			const rawMessages = await this.options.taskHistory.getClineMessages(taskId)
+			const rawMessages = await this.options.taskHistory.getHadyanCodeMessages(taskId)
 			if (isSuperseded()) {
 				return historyItem
 			}
@@ -249,7 +249,7 @@ export class SdkTaskControlCoordinator {
 				Logger.log(`[SdkController] No messages found for task: ${taskId}`)
 			}
 
-			// The final state update below includes the loaded clineMessages. Avoid pushing
+			// The final state update below includes the loaded hadyancodeMessages. Avoid pushing
 			// each historical message through the partial-message stream one-by-one; for
 			// long tasks that serial loop can dominate history-open latency.
 			await this.options.postStateToWebview()
@@ -260,7 +260,7 @@ export class SdkTaskControlCoordinator {
 		return historyItem
 	}
 
-	private appendFreshResumeMessage(messages: ClineMessage[], sessionStatus?: string): ClineMessage[] {
+	private appendFreshResumeMessage(messages: HadyanCodeMessage[], sessionStatus?: string): HadyanCodeMessage[] {
 		// The persisted session status is the only reliable completion signal:
 		// SDK conversations do not record a completion tool call in the
 		// transcript (a completed turn and a turn interrupted mid-stream both
@@ -281,7 +281,7 @@ export class SdkTaskControlCoordinator {
 		return cleanedMessages
 	}
 
-	private appendLegacyTaskWarningAndResumeMessage(messages: ClineMessage[]): ClineMessage[] {
+	private appendLegacyTaskWarningAndResumeMessage(messages: HadyanCodeMessage[]): HadyanCodeMessage[] {
 		const cleanedMessages = messages.filter((m) => m.ask !== "resume_task" && m.ask !== "resume_completed_task")
 		const now = Date.now()
 		cleanedMessages.push(

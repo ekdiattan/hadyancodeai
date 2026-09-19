@@ -1,30 +1,30 @@
 import { createServer, type IncomingMessage, type Server, type ServerResponse } from "node:http"
 import type { Socket } from "node:net"
 import { v4 as uuidv4 } from "uuid"
-import type { BalanceResponse, OrganizationBalanceResponse, UserResponse } from "../../../../shared/ClineAccount"
+import type { BalanceResponse, OrganizationBalanceResponse, UserResponse } from "../../../../shared/HadyanCodeAccount"
 import {
 	E2E_MOCK_API_RESPONSES,
-	E2E_MOCK_CLINE_MODELS,
-	E2E_MOCK_CLINE_RECOMMENDED_MODELS,
 	E2E_MOCK_EDITOR_TOOL_CALL,
+	E2E_MOCK_HADYANCODE_MODELS,
+	E2E_MOCK_HADYANCODE_RECOMMENDED_MODELS,
 	E2E_MOCK_POWERSHELL_TOOL_CALL,
 	E2E_REGISTERED_MOCK_ENDPOINTS,
 } from "./api"
-import { ClineDataMock } from "./data"
+import { HadyanCodeDataMock } from "./data"
 
 const E2E_API_SERVER_PORT = 7777
 
-export const MOCK_CLINE_API_SERVER_URL = `http://localhost:${E2E_API_SERVER_PORT}`
+export const MOCK_HADYANCODE_API_SERVER_URL = `http://localhost:${E2E_API_SERVER_PORT}`
 
-const useVerboseLogging = process.env.CLINE_E2E_TESTS_VERBOSE === "true"
+const useVerboseLogging = process.env.HADYANCODE_E2E_TESTS_VERBOSE === "true"
 function log(...args: unknown[]) {
 	if (useVerboseLogging) {
-		console.log("[ClineApiServerMock]", ...args)
+		console.log("[HadyanCodeApiServerMock]", ...args)
 	}
 }
 
-export class ClineApiServerMock {
-	static globalSharedServer: ClineApiServerMock | null = null
+export class HadyanCodeApiServerMock {
+	static globalSharedServer: HadyanCodeApiServerMock | null = null
 	static globalSockets: Set<Socket> = new Set()
 
 	private currentUser: UserResponse | null = null
@@ -34,7 +34,7 @@ export class ClineApiServerMock {
 	private spendLimitExceeded = false
 	public generationCounter = 0
 
-	public readonly API_USER = new ClineDataMock("personal")
+	public readonly API_USER = new HadyanCodeDataMock("personal")
 
 	constructor(public readonly server: Server) {}
 
@@ -129,17 +129,17 @@ export class ClineApiServerMock {
 	}
 
 	// Starts the global shared server
-	public static async startGlobalServer(): Promise<ClineApiServerMock> {
+	public static async startGlobalServer(): Promise<HadyanCodeApiServerMock> {
 		log("=== SERVER FIXTURE CALLED ===")
-		if (ClineApiServerMock.globalSharedServer) {
+		if (HadyanCodeApiServerMock.globalSharedServer) {
 			log("Using existing global server")
-			return ClineApiServerMock.globalSharedServer
+			return HadyanCodeApiServerMock.globalSharedServer
 		}
 
 		log("Starting global server...")
 		const server = createServer((req: IncomingMessage, res: ServerResponse) => {
 			// Parse URL and method
-			const parsedUrl = new URL(req.url || "/", MOCK_CLINE_API_SERVER_URL)
+			const parsedUrl = new URL(req.url || "/", MOCK_HADYANCODE_API_SERVER_URL)
 			const path = parsedUrl.pathname
 			const query = Object.fromEntries(parsedUrl.searchParams.entries())
 			const method = req.method || "GET"
@@ -189,11 +189,11 @@ export class ClineApiServerMock {
 			if (isAuthRequired && authToken) {
 				log(`Authenticating token: ${authToken}`)
 				const normalizedAuthToken = authToken.replace(/^workos:/i, "")
-				const user = ClineApiServerMock.globalSharedServer!.API_USER.getUserByToken(normalizedAuthToken)
+				const user = HadyanCodeApiServerMock.globalSharedServer!.API_USER.getUserByToken(normalizedAuthToken)
 				if (!user) {
 					return sendApiError("Invalid token", 401)
 				}
-				ClineApiServerMock.globalSharedServer!.setCurrentUser(user)
+				HadyanCodeApiServerMock.globalSharedServer!.setCurrentUser(user)
 			}
 
 			log("=== MOCK SERVER REQUEST ===")
@@ -206,14 +206,14 @@ export class ClineApiServerMock {
 			// Route handling
 			const handleRequest = async () => {
 				// Try to match the route using registered endpoints
-				const routeMatch = ClineApiServerMock.matchRoute(path, method)
+				const routeMatch = HadyanCodeApiServerMock.matchRoute(path, method)
 
 				if (!routeMatch.matched) {
 					return sendJson({ error: "Not found" }, 404)
 				}
 
 				const { baseRoute, endpoint, params = {} } = routeMatch
-				const controller = ClineApiServerMock.globalSharedServer!
+				const controller = HadyanCodeApiServerMock.globalSharedServer!
 
 				// Health check endpoints
 				if (baseRoute === "/health") {
@@ -227,12 +227,12 @@ export class ClineApiServerMock {
 
 				// API v1 endpoints
 				if (baseRoute === "/api/v1") {
-					if (endpoint === "/ai/cline/recommended-models" && method === "GET") {
-						return sendJson(E2E_MOCK_CLINE_RECOMMENDED_MODELS)
+					if (endpoint === "/ai/hadyancode/recommended-models" && method === "GET") {
+						return sendJson(E2E_MOCK_HADYANCODE_RECOMMENDED_MODELS)
 					}
 
-					if (endpoint === "/ai/cline/models" && method === "GET") {
-						return sendJson({ data: E2E_MOCK_CLINE_MODELS })
+					if (endpoint === "/ai/hadyancode/models" && method === "GET") {
+						return sendJson({ data: E2E_MOCK_HADYANCODE_MODELS })
 					}
 
 					// User endpoints
@@ -359,7 +359,7 @@ export class ClineApiServerMock {
 								subject: user.id,
 								email: user.email,
 								name: user.displayName,
-								clineUserId: user.id,
+								hadyancodeUserId: user.id,
 								accounts: null,
 								organizations: user.organizations,
 							},
@@ -382,7 +382,7 @@ export class ClineApiServerMock {
 							return sendApiError("Invalid or expired authorization code", 400)
 						}
 
-						// Return format matching ClineAuthProvider expectations
+						// Return format matching HadyanCodeAuthProvider expectations
 						return sendApiResponse({
 							accessToken: code + "_access",
 							refreshToken: code + "_refresh",
@@ -392,7 +392,7 @@ export class ClineApiServerMock {
 								subject: user.id,
 								email: user.email,
 								name: user.displayName,
-								clineUserId: user.id,
+								hadyancodeUserId: user.id,
 								accounts: null,
 								organizations: user.organizations,
 							},
@@ -416,7 +416,7 @@ export class ClineApiServerMock {
 							return sendApiError("Invalid or expired refresh token", 400)
 						}
 
-						// Return format matching ClineAuthProvider expectations
+						// Return format matching HadyanCodeAuthProvider expectations
 						return sendApiResponse({
 							accessToken: originalToken + "_access_refreshed",
 							refreshToken: refreshToken, // Keep same refresh token
@@ -426,7 +426,7 @@ export class ClineApiServerMock {
 								subject: user.id,
 								email: user.email,
 								name: user.displayName,
-								clineUserId: user.id,
+								hadyancodeUserId: user.id,
 								accounts: null,
 							},
 						})
@@ -636,7 +636,7 @@ export class ClineApiServerMock {
 									index: 0,
 									message: {
 										role: "assistant",
-										content: "Hello! I'm a mock Cline API response.",
+										content: "Hello! I'm a mock HadyanCode API response.",
 									},
 									finish_reason: "stop",
 								},
@@ -727,14 +727,14 @@ export class ClineApiServerMock {
 		})
 
 		// Initialize the controller after the server is created
-		const controller = new ClineApiServerMock(server)
-		ClineApiServerMock.globalSharedServer = controller
+		const controller = new HadyanCodeApiServerMock(server)
+		HadyanCodeApiServerMock.globalSharedServer = controller
 
 		// Track connections for proper cleanup
 		server.on("connection", (socket) => {
-			ClineApiServerMock.globalSockets.add(socket)
+			HadyanCodeApiServerMock.globalSockets.add(socket)
 			socket.on("close", () => {
-				ClineApiServerMock.globalSockets.delete(socket)
+				HadyanCodeApiServerMock.globalSockets.delete(socket)
 			})
 		})
 
@@ -744,7 +744,7 @@ export class ClineApiServerMock {
 					console.error(`Failed to start server on port ${E2E_API_SERVER_PORT}:`, error)
 					reject(error)
 				} else {
-					log(`ClineApiServerMock listening on port ${E2E_API_SERVER_PORT}`)
+					log(`HadyanCodeApiServerMock listening on port ${E2E_API_SERVER_PORT}`)
 					resolve()
 				}
 			})
@@ -755,15 +755,15 @@ export class ClineApiServerMock {
 
 	// Stops the global shared server
 	public static async stopGlobalServer(): Promise<void> {
-		if (!ClineApiServerMock.globalSharedServer) {
+		if (!HadyanCodeApiServerMock.globalSharedServer) {
 			return
 		}
 
-		const server = ClineApiServerMock.globalSharedServer.server
+		const server = HadyanCodeApiServerMock.globalSharedServer.server
 
 		// Clean shutdown - destroy all socket connections first
-		ClineApiServerMock.globalSockets.forEach((socket) => socket.destroy())
-		ClineApiServerMock.globalSockets.clear()
+		HadyanCodeApiServerMock.globalSockets.forEach((socket) => socket.destroy())
+		HadyanCodeApiServerMock.globalSockets.clear()
 
 		await new Promise<void>((resolve, reject) => {
 			server.close((err) => {
@@ -776,6 +776,6 @@ export class ClineApiServerMock {
 			})
 		})
 
-		ClineApiServerMock.globalSharedServer = null
+		HadyanCodeApiServerMock.globalSharedServer = null
 	}
 }

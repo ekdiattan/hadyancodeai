@@ -1,13 +1,13 @@
 // Replaces classic src/core/api buildApiHandler (see origin/main).
 //
-// Builds an SDK ApiHandler (from `@cline/llms`) directly from the extension's
+// Builds an SDK ApiHandler (from `@hadyancode/llms`) directly from the extension's
 // legacy ApiConfiguration. This is the single inference path: the main task
-// loop runs through ClineCore (see cline-session-factory.ts), and standalone
+// loop runs through HadyanCodeCore (see hadyancode-session-factory.ts), and standalone
 // utility callers (commit message generation) use the handler
 // returned here. Both share the same provider/model/key/baseUrl resolution so
 // there is no second source of truth.
 
-import { type ApiHandler, createHandler, type ProviderConfig } from "@cline/llms"
+import { type ApiHandler, createHandler, type ProviderConfig } from "@hadyancode/llms"
 import type { ApiConfiguration } from "@shared/api"
 import type { Mode } from "@shared/storage/types"
 import { reasoningEffortFromThinkingBudget } from "@shared/utils/reasoning-support"
@@ -19,7 +19,7 @@ import {
 	resolveModelId,
 	resolveOllamaProviderConfig,
 	resolveVertexProviderConfig,
-} from "./cline-session-factory"
+} from "./hadyancode-session-factory"
 import { toSdkProviderId } from "./model-catalog/sdk-provider-id"
 
 export interface BuildApiHandlerOptions {
@@ -53,7 +53,7 @@ export function buildSdkProviderConfig(
 	mode: Mode,
 	options?: BuildApiHandlerOptions,
 ): ProviderConfig {
-	const providerId = (mode === "plan" ? configuration.planModeApiProvider : configuration.actModeApiProvider) ?? "cline"
+	const providerId = (mode === "plan" ? configuration.planModeApiProvider : configuration.actModeApiProvider) ?? "hadyancode"
 
 	const apiKey = resolveApiKey(providerId, configuration)
 	const modelId = resolveModelId(providerId, mode, configuration)
@@ -72,7 +72,7 @@ export function buildSdkProviderConfig(
 		baseUrl,
 		...(vertexProviderConfig ?? {}),
 		// Use the proxy-aware fetch so gateway providers respect corporate proxy
-		// configuration (see .clinerules/network.md).
+		// configuration (see .hadyancoderules/network.md).
 		fetch,
 		// Bedrock needs its region + structured AWS auth options forwarded to the
 		// SDK gateway. Without these, a pasted Bedrock API key / region is dropped.

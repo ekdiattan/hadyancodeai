@@ -1,5 +1,5 @@
 /**
- * JSON reporter for Cline analysis results
+ * JSON reporter for HadyanCode analysis results
  *
  * Outputs structured JSON with schema versioning for:
  * - CI integration (baseline diffing, regression detection)

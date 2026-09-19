@@ -98,18 +98,18 @@ describe("AccountView signed-out state", () => {
 		});
 
 		await vi.waitFor(() => {
-			expect(container.textContent).toContain("Sign in to Cline");
+			expect(container.textContent).toContain("Sign in to HadyanCode");
 		});
 		expect(container.textContent).not.toContain(
-			"No Cline account auth token found",
+			"No HadyanCode account auth token found",
 		);
 		// The auth state gates the rest of the overview: signed out means the
 		// balance/organization commands are never fired.
 		const accountCalls = invoke.mock.calls.filter(
-			([command]) => command === "cline_account",
+			([command]) => command === "hadyancode_account",
 		);
 		expect(accountCalls).toEqual([
-			["cline_account", { action: "clineAccount", operation: "fetchMe" }],
+			["hadyancode_account", { action: "hadyancodeAccount", operation: "fetchMe" }],
 		]);
 	});
 
@@ -135,7 +135,7 @@ describe("AccountView signed-out state", () => {
 						return [
 							{
 								organizationId: "org-1",
-								name: "Cline",
+								name: "HadyanCode",
 								active: true,
 								roles: ["member"],
 							},
@@ -153,7 +153,7 @@ describe("AccountView signed-out state", () => {
 		});
 
 		await vi.waitFor(() => {
-			expect(container.textContent).toContain("Sign in to Cline");
+			expect(container.textContent).toContain("Sign in to HadyanCode");
 		});
 		expect(container.textContent).not.toContain("Beatrix");
 	});
@@ -188,6 +188,6 @@ describe("AccountView signed-out state", () => {
 		await vi.waitFor(() => {
 			expect(container.textContent).toContain("Beatrix");
 		});
-		expect(container.textContent).not.toContain("Sign in to Cline");
+		expect(container.textContent).not.toContain("Sign in to HadyanCode");
 	});
 });

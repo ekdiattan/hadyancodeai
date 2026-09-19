@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * Cline Analysis Framework CLI
+ * HadyanCode Analysis Framework CLI
  *
  * Commands:
  * - analyze: Parse Harbor job output and generate reports
@@ -17,7 +17,7 @@ import type { AnalysisOutputV1, ComparisonResult } from "./schemas"
 
 const program = new Command()
 
-program.name("cline-analysis").description("Analysis framework for Cline evaluations").version("1.0.0")
+program.name("hadyancode-analysis").description("Analysis framework for HadyanCode evaluations").version("1.0.0")
 
 // Analyze command
 program

@@ -31,7 +31,7 @@ function ImagePlusIcon() {
 	return (
 		<svg
 			aria-hidden="true"
-			className="size-8 text-cline-ui-primary"
+			className="size-8 text-hadyancode-ui-primary"
 			fill="none"
 			stroke="currentColor"
 			strokeLinecap="round"
@@ -134,13 +134,13 @@ export const AttachmentDropZone = forwardRef<
 				ref={ref}
 			>
 				{isDraggingFiles ? (
-					<div className="pointer-events-none absolute inset-0 z-50 flex items-center justify-center bg-cline-ui-background/80 backdrop-blur-sm">
-						<div className="flex flex-col items-center gap-2 rounded-cline-ui-xl border-2 border-cline-ui-primary/60 border-dashed bg-cline-ui-card px-10 py-8 shadow-lg">
+					<div className="pointer-events-none absolute inset-0 z-50 flex items-center justify-center bg-hadyancode-ui-background/80 backdrop-blur-sm">
+						<div className="flex flex-col items-center gap-2 rounded-hadyancode-ui-xl border-2 border-hadyancode-ui-primary/60 border-dashed bg-hadyancode-ui-card px-10 py-8 shadow-lg">
 							<ImagePlusIcon />
-							<p className="font-cline-ui-medium text-cline-ui-foreground text-cline-ui-sm">
+							<p className="font-hadyancode-ui-medium text-hadyancode-ui-foreground text-hadyancode-ui-sm">
 								{label}
 							</p>
-							<p className="text-cline-ui-muted-foreground text-cline-ui-xs">
+							<p className="text-hadyancode-ui-muted-foreground text-hadyancode-ui-xs">
 								{description}
 							</p>
 						</div>

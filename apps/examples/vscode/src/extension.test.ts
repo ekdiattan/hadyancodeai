@@ -1,4 +1,4 @@
-import type { MessageWithMetadata } from "@cline/shared";
+import type { MessageWithMetadata } from "@hadyancode/shared";
 import { describe, expect, it, vi } from "vitest";
 
 vi.mock("vscode", () => ({}));

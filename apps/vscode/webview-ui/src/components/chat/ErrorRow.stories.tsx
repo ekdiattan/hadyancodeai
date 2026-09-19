@@ -1,4 +1,4 @@
-import { ClineMessage } from "@shared/ExtensionMessage"
+import { HadyanCodeMessage } from "@shared/ExtensionMessage"
 import type { Meta, StoryObj } from "@storybook/react-vite"
 import { useMemo } from "react"
 import { expect, userEvent, within } from "storybook/test"
@@ -6,7 +6,7 @@ import { createStorybookDecorator } from "@/config/StorybookDecorator"
 import ErrorRow from "./ErrorRow"
 
 // Mock data factories
-const createMockMessage = (overrides: Partial<ClineMessage> = {}): ClineMessage => ({
+const createMockMessage = (overrides: Partial<HadyanCodeMessage> = {}): HadyanCodeMessage => ({
 	ts: Date.now(),
 	type: "say",
 	say: "error",
@@ -15,7 +15,7 @@ const createMockMessage = (overrides: Partial<ClineMessage> = {}): ClineMessage 
 })
 
 const createMockAuthState = (overrides: any = {}) => ({
-	clineUser: null,
+	hadyancodeUser: null,
 	activeOrganization: null,
 	isAuthenticated: false,
 	...overrides,
@@ -23,7 +23,7 @@ const createMockAuthState = (overrides: any = {}) => ({
 
 const createMockExtensionState = (overrides: any = {}) => ({
 	version: "1.0.0",
-	clineMessages: [],
+	hadyancodeMessages: [],
 	taskHistory: [],
 	shouldShowAnnouncement: false,
 	...overrides,
@@ -51,7 +51,7 @@ const meta: Meta<typeof ErrorRow> = {
 		docs: {
 			description: {
 				component:
-					"Displays different types of error messages in the chat interface, including API errors, credit limit errors, diff errors, and clineignore errors. Handles special error parsing for Cline provider errors and provides appropriate user actions.",
+					"Displays different types of error messages in the chat interface, including API errors, credit limit errors, diff errors, and hadyancodeignore errors. Handles special error parsing for HadyanCode provider errors and provides appropriate user actions.",
 			},
 		},
 	},
@@ -71,7 +71,7 @@ export const Default: Story = {
 	argTypes: {
 		errorType: {
 			control: { type: "select" },
-			options: ["error", "mistake_limit_reached", "diff_error", "clineignore_error"],
+			options: ["error", "mistake_limit_reached", "diff_error", "hadyancodeignore_error"],
 			description: "Type of error to display",
 		},
 		message: {
@@ -120,8 +120,8 @@ export const ApiStreamingFailed: Story = {
 	},
 }
 
-// Cline-specific errors
-export const ClineBalanceError: Story = {
+// HadyanCode-specific errors
+export const HadyanCodeBalanceError: Story = {
 	args: {
 		message: createMockMessage(),
 		errorType: "error",
@@ -129,7 +129,7 @@ export const ClineBalanceError: Story = {
 			message: "Insufficient credits to complete this request.",
 			code: "insufficient_credits",
 			request_id: "req_123456789",
-			providerId: "cline",
+			providerId: "hadyancode",
 			details: {
 				current_balance: 0.5,
 				total_spent: 25.75,
@@ -141,19 +141,19 @@ export const ClineBalanceError: Story = {
 	},
 }
 
-export const ClineRateLimitError: Story = {
+export const HadyanCodeRateLimitError: Story = {
 	args: {
 		message: createMockMessage(),
 		errorType: "error",
 		apiRequestFailedMessage: JSON.stringify({
 			message: "Rate limit exceeded. Please wait before making another request.",
 			request_id: "req_987654321",
-			providerId: "cline",
+			providerId: "hadyancode",
 		}),
 	},
 }
 
-export const ClineSpendLimitDaily: Story = {
+export const HadyanCodeSpendLimitDaily: Story = {
 	args: {
 		message: createMockMessage(),
 		errorType: "error",
@@ -161,7 +161,7 @@ export const ClineSpendLimitDaily: Story = {
 			message: "$20.00 daily limit has been reached.",
 			status: 429,
 			code: "SPEND_LIMIT_EXCEEDED",
-			providerId: "cline",
+			providerId: "hadyancode",
 			details: {
 				code: "SPEND_LIMIT_EXCEEDED",
 				limit_scope: "user",
@@ -175,7 +175,7 @@ export const ClineSpendLimitDaily: Story = {
 	},
 }
 
-export const ClineSpendLimitMonthly: Story = {
+export const HadyanCodeSpendLimitMonthly: Story = {
 	args: {
 		message: createMockMessage(),
 		errorType: "error",
@@ -183,7 +183,7 @@ export const ClineSpendLimitMonthly: Story = {
 			message: "$100.00 monthly limit has been reached.",
 			status: 429,
 			code: "SPEND_LIMIT_EXCEEDED",
-			providerId: "cline",
+			providerId: "hadyancode",
 			details: {
 				code: "SPEND_LIMIT_EXCEEDED",
 				limit_scope: "user",
@@ -197,7 +197,7 @@ export const ClineSpendLimitMonthly: Story = {
 	},
 }
 
-export const ClineSpendLimitMinimal: Story = {
+export const HadyanCodeSpendLimitMinimal: Story = {
 	args: {
 		message: createMockMessage(),
 		errorType: "error",
@@ -205,7 +205,7 @@ export const ClineSpendLimitMinimal: Story = {
 			message: "Spend limit reached.",
 			status: 429,
 			code: "SPEND_LIMIT_EXCEEDED",
-			providerId: "cline",
+			providerId: "hadyancode",
 			details: {
 				code: "SPEND_LIMIT_EXCEEDED",
 				message: "Spend limit reached.",
@@ -214,18 +214,18 @@ export const ClineSpendLimitMinimal: Story = {
 	},
 }
 
-// ClinePass entitlement error (user not subscribed to a required model plan)
-export const ClinePassEntitlementError: Story = {
+// HadyanCodePass entitlement error (user not subscribed to a required model plan)
+export const HadyanCodePassEntitlementError: Story = {
 	args: {
 		message: createMockMessage(),
 		errorType: "error",
 		apiRequestFailedMessage:
-			"No access to ClinePass subscription models yet. Subscribe to ClinePass, the low cost open weights model coding plan:",
+			"No access to HadyanCodePass subscription models yet. Subscribe to HadyanCodePass, the low cost open weights model coding plan:",
 	},
 	parameters: {
 		docs: {
 			description: {
-				story: "ClinePass model returns the SDK ClineNotSubscribedError message when the user is not subscribed. A human-readable message with a 'Get ClinePass' subscribe link and a retry button is shown.",
+				story: "HadyanCodePass model returns the SDK HadyanCodeNotSubscribedError message when the user is not subscribed. A human-readable message with a 'Get HadyanCodePass' subscribe link and a retry button is shown.",
 			},
 		},
 	},
@@ -240,7 +240,7 @@ export const AuthenticationErrors: Story = {
 			message: "Authentication failed. Please sign in to continue.",
 			code: "ERR_BAD_REQUEST",
 			request_id: "req_auth_123",
-			providerId: "cline",
+			providerId: "hadyancode",
 		}),
 	},
 	argTypes: {
@@ -263,7 +263,7 @@ export const AuthErrorSignedIn: Story = {
 	...AuthenticationErrors,
 	decorators: [
 		createStoryDecorator({
-			clineUser: { id: "user123", email: "user@example.com" },
+			hadyancodeUser: { id: "user123", email: "user@example.com" },
 			isAuthenticated: true,
 		}),
 	],
@@ -284,17 +284,17 @@ export const InteractiveSignIn: Story = {
 		message: createMockMessage(),
 		errorType: "error",
 		apiRequestFailedMessage: JSON.stringify({
-			message: "Please sign in to access Cline services.",
+			message: "Please sign in to access HadyanCode services.",
 			code: "ERR_BAD_REQUEST",
 			request_id: "req_signin_test",
-			providerId: "cline",
+			providerId: "hadyancode",
 		}),
 	},
 	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement)
 
 		// Find the sign in button
-		const signInButton = canvas.getByRole("button", { name: /sign in to cline/i })
+		const signInButton = canvas.getByRole("button", { name: /sign in to hadyancode/i })
 		await expect(signInButton).toBeInTheDocument()
 
 		// Test button is clickable
@@ -333,7 +333,7 @@ export const ErrorWithRequestId: Story = {
 		apiRequestFailedMessage: JSON.stringify({
 			message: "An unexpected error occurred while processing your request.",
 			request_id: "req_detailed_123456",
-			providerId: "cline",
+			providerId: "hadyancode",
 		}),
 	},
 	play: async ({ canvasElement }) => {

@@ -1,6 +1,6 @@
 "use client";
 
-import { isChatWorkspacePath } from "@cline/shared/browser";
+import { isChatWorkspacePath } from "@hadyancode/shared/browser";
 import {
 	Check,
 	FilePlus2,

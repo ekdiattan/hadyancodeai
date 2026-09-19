@@ -516,7 +516,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "cline-app"
+name = "hadyancode-app"
 version = "0.1.0"
 dependencies = [
  "notify-rust",

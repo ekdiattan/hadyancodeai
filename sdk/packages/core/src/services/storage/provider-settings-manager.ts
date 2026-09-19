@@ -8,7 +8,7 @@ import {
 	writeFileSync,
 } from "node:fs";
 import { basename, dirname } from "node:path";
-import { resolveProviderSettingsPath } from "@cline/shared/storage";
+import { resolveProviderSettingsPath } from "@hadyancode/shared/storage";
 import { getLiveModelsCatalog } from "../..";
 import { getProviderAuthHandler } from "../../auth/provider-auth-registry";
 import { hashSecret, sdkDebug } from "../../logging/early-logger";
@@ -46,11 +46,11 @@ export interface SaveProviderSettingsOptions {
 }
 
 export interface ResolveLastUsedProviderSettingsOptions {
-	isClinePassEnabled?: boolean;
+	isHadyanCodePassEnabled?: boolean;
 }
 
-const CLINE_PROVIDER_ID = "cline";
-const CLINE_PASS_PROVIDER_ID = "cline-pass";
+const HADYANCODE_PROVIDER_ID = "hadyancode";
+const HADYANCODE_PASS_PROVIDER_ID = "hadyancode-pass";
 
 function inferLegacyDataDir(filePath: string): string | undefined {
 	if (basename(filePath) !== "providers.json") {
@@ -104,9 +104,9 @@ export class ProviderSettingsManager {
 			const result = StoredProviderSettingsSchema.safeParse(parsed);
 			if (result.success) {
 				registerConfiguredProvidersFromSettings(result.data);
-				const clineAuth = result.data.providers["cline"]?.settings?.auth;
+				const hadyancodeAuth = result.data.providers["hadyancode"]?.settings?.auth;
 				sdkDebug(
-					`providers.read providers=[${Object.keys(result.data.providers).join(",")}] lastUsed=${result.data.lastUsedProvider ?? "none"} clineAuthPresent=${!!clineAuth?.accessToken} clineAccessTokenHash=${hashSecret(clineAuth?.accessToken)} clineRefreshTokenHash=${hashSecret(clineAuth?.refreshToken)}`,
+					`providers.read providers=[${Object.keys(result.data.providers).join(",")}] lastUsed=${result.data.lastUsedProvider ?? "none"} hadyancodeAuthPresent=${!!hadyancodeAuth?.accessToken} hadyancodeAccessTokenHash=${hashSecret(hadyancodeAuth?.accessToken)} hadyancodeRefreshTokenHash=${hashSecret(hadyancodeAuth?.refreshToken)}`,
 				);
 				return result.data;
 			}
@@ -124,7 +124,7 @@ export class ProviderSettingsManager {
 			mkdirSync(dir, { recursive: true, mode: 0o700 });
 		}
 		// Stage to a pid-unique temp file and rename into place. Concurrent
-		// Cline processes (CLI, extension, hub) share this file; a bare
+		// HadyanCode processes (CLI, extension, hub) share this file; a bare
 		// writeFileSync lets readers catch a partial file, which read() treats
 		// as empty settings — indistinguishable from being logged out.
 		const tempPath = `${this.filePath}.${process.pid}.tmp`;
@@ -173,15 +173,15 @@ export class ProviderSettingsManager {
 				: previous.lastUsedProvider,
 		};
 		this.write(next);
-		const prevClineAuth = previous.providers["cline"]?.settings?.auth;
-		const nextClineAuth =
-			validatedSettings.provider === "cline"
+		const prevHadyanCodeAuth = previous.providers["hadyancode"]?.settings?.auth;
+		const nextHadyanCodeAuth =
+			validatedSettings.provider === "hadyancode"
 				? validatedSettings.auth
-				: next.providers["cline"]?.settings?.auth;
+				: next.providers["hadyancode"]?.settings?.auth;
 		const authDropped =
-			!!prevClineAuth?.accessToken && !nextClineAuth?.accessToken;
+			!!prevHadyanCodeAuth?.accessToken && !nextHadyanCodeAuth?.accessToken;
 		sdkDebug(
-			`providers.save providerId=${providerId} tokenSource=${tokenSource} clineAuthWasPresent=${!!prevClineAuth?.accessToken} clineAuthIsPresent=${!!nextClineAuth?.accessToken} authDropped=${authDropped}`,
+			`providers.save providerId=${providerId} tokenSource=${tokenSource} hadyancodeAuthWasPresent=${!!prevHadyanCodeAuth?.accessToken} hadyancodeAuthIsPresent=${!!nextHadyanCodeAuth?.accessToken} authDropped=${authDropped}`,
 		);
 		return next;
 	}
@@ -239,10 +239,10 @@ export class ProviderSettingsManager {
 	): string | undefined {
 		const providerId = state.lastUsedProvider;
 		if (
-			providerId === CLINE_PASS_PROVIDER_ID &&
-			options.isClinePassEnabled === false
+			providerId === HADYANCODE_PASS_PROVIDER_ID &&
+			options.isHadyanCodePassEnabled === false
 		) {
-			return CLINE_PROVIDER_ID;
+			return HADYANCODE_PROVIDER_ID;
 		}
 
 		return providerId;

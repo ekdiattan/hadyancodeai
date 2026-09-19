@@ -32,13 +32,13 @@
 			"maxBudget": 6000
 		}
 	},
-	"actModeApiProvider": "cline",
-	"planModeApiProvider": "cline",
-	"actModeClineModelId": "anthropic/claude-sonnet-4.6",
-	"planModeClineModelId": "anthropic/claude-sonnet-4.6",
+	"actModeApiProvider": "hadyancode",
+	"planModeApiProvider": "hadyancode",
+	"actModeHadyanCodeModelId": "anthropic/claude-sonnet-4.6",
+	"planModeHadyanCodeModelId": "anthropic/claude-sonnet-4.6",
 	"openAiHeaders": {},
 	"sapAiCoreUseOrchestrationMode": true,
 	"ocaMode": "internal",
-	"globalClineRulesToggles": {},
+	"globalHadyanCodeRulesToggles": {},
 	"globalWorkflowToggles": {}
 }

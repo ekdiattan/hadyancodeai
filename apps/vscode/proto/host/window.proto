@@ -4,7 +4,7 @@ package host;
 
 option go_package = "github.com/cline/grpc-go/host";
 option java_multiple_files = true;
-option java_package = "bot.cline.host.proto";
+option java_package = "bot.hadyancode.host.proto";
 
 // Provides methods for working with IDE windows and editors.
 service WindowService {

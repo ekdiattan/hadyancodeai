@@ -71,14 +71,14 @@ export function describeOutdatedHubSessions(counts: {
 }): string {
 	const sessions = counts.activeSessionCount;
 	if (typeof sessions !== "number" || sessions <= 0) {
-		return "active sessions from other Cline clients";
+		return "active sessions from other HadyanCode clients";
 	}
 	const sessionsPhrase = `${sessions} active session${sessions === 1 ? "" : "s"}`;
 	const clients = counts.participantClientCount;
 	if (typeof clients !== "number" || clients <= 0) {
 		return sessionsPhrase;
 	}
-	return `${sessionsPhrase} from ${clients} connected Cline client${clients === 1 ? "" : "s"}`;
+	return `${sessionsPhrase} from ${clients} connected HadyanCode client${clients === 1 ? "" : "s"}`;
 }
 
 /**
@@ -103,6 +103,6 @@ export function resolveHubUpdateRestartDecision(
 	}
 	return {
 		action: "stay",
-		hint: "No app update is available to download yet. You can keep working - Cline stays connected to the updated Hub - and try again later.",
+		hint: "No app update is available to download yet. You can keep working - HadyanCode stays connected to the updated Hub - and try again later.",
 	};
 }

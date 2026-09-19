@@ -99,7 +99,7 @@ describe("MemoizedMarkdown interactions", () => {
 	});
 
 	test("opens honest external links directly in the default browser", async () => {
-		const url = "https://example.com/review?source=cline";
+		const url = "https://example.com/review?source=hadyancode";
 		await renderMarkdown({ content: `[Review docs](${url})` });
 		const link = await vi.waitFor(() => {
 			const renderedLink = container.querySelector<HTMLAnchorElement>(
@@ -122,8 +122,8 @@ describe("MemoizedMarkdown interactions", () => {
 	});
 
 	test("requires confirmation before opening a deceptive external link", async () => {
-		const url = "https://example.com/review?source=cline";
-		await renderMarkdown({ content: `[github.com/cline](${url})` });
+		const url = "https://example.com/review?source=hadyancode";
+		await renderMarkdown({ content: `[github.com/hadyancode](${url})` });
 		const link = await vi.waitFor(() => {
 			const renderedLink = container.querySelector<HTMLElement>(
 				'[data-streamdown="link"]',
@@ -240,7 +240,7 @@ describe("MemoizedMarkdown interactions", () => {
 
 	// With lineNumbers off, Streamdown emits one bare inline <span> per Shiki
 	// token line with no newline text between non-empty lines; the shared
-	// @cline/ui markdown.css turns those direct line spans into blocks. This
+	// @hadyancode/ui markdown.css turns those direct line spans into blocks. This
 	// asserts the one-span-per-line structure that CSS contract depends on,
 	// after the async Shiki highlight replaces the raw fallback render (the
 	// SSR tests never exercise that client-side path).

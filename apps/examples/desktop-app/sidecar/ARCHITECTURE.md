@@ -1,11 +1,11 @@
-# Sidecar Architecture — @cline/code
+# Sidecar Architecture — @hadyancode/code
 
 ## Overview
 
 The sidecar is a Bun process that adapts the desktop UI and native operations to
-the shared Cline Hub.
+the shared HadyanCode Hub.
 
-It imports `@cline/core`, discovers or starts the canonical shared Hub, registers
+It imports `@hadyancode/core`, discovers or starts the canonical shared Hub, registers
 as a Hub client, and serves the Next.js frontend over HTTP + WebSocket. The
 sidecar does not own a private agent runtime Hub.
 
@@ -36,20 +36,20 @@ Event:    { "type": "event", "event": { "name": string, "payload": unknown } }
 
 ### 1. Chat Sessions — Shared Hub Client
 
-`ClineCore` uses Hub mode without an explicit endpoint. Core therefore reuses
+`HadyanCodeCore` uses Hub mode without an explicit endpoint. Core therefore reuses
 the same compatible Hub discovered by the CLI or starts the canonical detached
 Hub when the desktop is the first client:
 
 ```typescript
-const sessionManager = await ClineCore.create({
-  clientName: "cline-code",
+const sessionManager = await HadyanCodeCore.create({
+  clientName: "hadyancode-code",
   backendMode: "hub",
   hub: {
     strategy: "require-hub",
     workspaceRoot,
     cwd: workspaceRoot,
     clientType: "code-sidecar",
-    displayName: "Cline Desktop sidecar",
+    displayName: "HadyanCode Desktop sidecar",
   },
   capabilities: {
     requestToolApproval: async (request) => {
@@ -100,14 +100,14 @@ const pendingApprovals = new Map<string, {
 ### 3. Provider Management — Direct ProviderSettingsManager
 
 ```typescript
-import { ProviderSettingsManager, listLocalProviders, ... } from "@cline/core";
+import { ProviderSettingsManager, listLocalProviders, ... } from "@hadyancode/core";
 const manager = new ProviderSettingsManager();
 ```
 
 ### 4. Session Storage — Direct SqliteSessionStore
 
 ```typescript
-import { SqliteSessionStore, resolveSessionBackend } from "@cline/core";
+import { SqliteSessionStore, resolveSessionBackend } from "@hadyancode/core";
 const store = new SqliteSessionStore();
 ```
 
@@ -138,7 +138,7 @@ Supported commands:
 
 | Command | Implementation |
 |---------|---------------|
-| `chat_session_command` | shared Hub through `ClineCore` |
+| `chat_session_command` | shared Hub through `HadyanCodeCore` |
 | `list_provider_catalog` | `ProviderSettingsManager` + `listLocalProviders` |
 | `list_provider_models` | `getLocalProviderModels` |
 | `save_voice_input_settings` | validates and persists the selected transcription provider/model |

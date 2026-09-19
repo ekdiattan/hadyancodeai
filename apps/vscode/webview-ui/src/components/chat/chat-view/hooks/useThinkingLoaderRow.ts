@@ -1,4 +1,4 @@
-import type { ClineMessage, TurnState } from "@shared/ExtensionMessage"
+import type { HadyanCodeMessage, TurnState } from "@shared/ExtensionMessage"
 import { useEffect, useMemo, useRef, useState } from "react"
 import { isToolGroup } from "../utils/messageUtils"
 
@@ -15,14 +15,14 @@ export const THINKING_LOADER_GRACE_MS = 500
 
 export interface ThinkingLoaderInputs {
 	turnState: TurnState | undefined
-	/** Tail of the raw clineMessages array. */
-	lastRawMessage: ClineMessage | undefined
-	groupedMessages: (ClineMessage | ClineMessage[])[]
+	/** Tail of the raw hadyancodeMessages array. */
+	lastRawMessage: HadyanCodeMessage | undefined
+	groupedMessages: (HadyanCodeMessage | HadyanCodeMessage[])[]
 	/** Tail of groupedMessages. */
-	lastVisibleRow: ClineMessage | ClineMessage[] | undefined
+	lastVisibleRow: HadyanCodeMessage | HadyanCodeMessage[] | undefined
 	/** Tail message of lastVisibleRow (last element when it is a group). */
-	lastVisibleMessage: ClineMessage | undefined
-	modifiedMessages: ClineMessage[]
+	lastVisibleMessage: HadyanCodeMessage | undefined
+	modifiedMessages: HadyanCodeMessage[]
 	/**
 	 * Optimistic override: a turn-starting response RPC (new task or a follow-up sent outside a
 	 * streaming phase) was submitted before the backend published its next TurnState, so the

@@ -1,5 +1,5 @@
-import { Empty } from "@shared/proto/cline/common"
-import { AutoApprovalSettingsRequest } from "@shared/proto/cline/state"
+import { Empty } from "@shared/proto/hadyancode/common"
+import { AutoApprovalSettingsRequest } from "@shared/proto/hadyancode/state"
 import { Controller } from ".."
 
 /**

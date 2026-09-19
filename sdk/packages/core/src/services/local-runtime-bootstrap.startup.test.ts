@@ -1,4 +1,4 @@
-import type { ITelemetryService } from "@cline/shared";
+import type { ITelemetryService } from "@hadyancode/shared";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { ProviderSettings } from "../types/provider-settings";
 
@@ -11,7 +11,7 @@ function createProviderSettingsManager(settings?: ProviderSettings) {
 function createStartInput() {
 	return {
 		config: {
-			providerId: "cline",
+			providerId: "hadyancode",
 			modelId: "anthropic/claude-haiku-4.5",
 			apiKey: "test-key",
 			cwd: "/tmp/project-startup",

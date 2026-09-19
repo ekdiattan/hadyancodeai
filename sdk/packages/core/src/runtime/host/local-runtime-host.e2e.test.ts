@@ -9,9 +9,9 @@ import {
 } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import type * as LlmsProviders from "@cline/llms";
-import type { AgentResult } from "@cline/shared";
-import { setClineDir, setHomeDir } from "@cline/shared/storage";
+import type * as LlmsProviders from "@hadyancode/llms";
+import type { AgentResult } from "@hadyancode/shared";
+import { setHadyanCodeDir, setHomeDir } from "@hadyancode/shared/storage";
 import { nanoid } from "nanoid";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { deriveTitleFromPrompt } from "../../services/session-data";
@@ -276,7 +276,7 @@ class LocalFileSessionService {
 describe("LocalRuntimeHost e2e", () => {
 	const envSnapshot = {
 		HOME: process.env.HOME,
-		CLINE_DIR: process.env.CLINE_DIR,
+		HADYANCODE_DIR: process.env.HADYANCODE_DIR,
 	};
 	const tempDirs: string[] = [];
 	let isolatedHomeDir = "";
@@ -284,16 +284,16 @@ describe("LocalRuntimeHost e2e", () => {
 	beforeEach(() => {
 		isolatedHomeDir = mkdtempSync(join(tmpdir(), "core-session-home-"));
 		process.env.HOME = isolatedHomeDir;
-		process.env.CLINE_DIR = join(isolatedHomeDir, ".cline");
+		process.env.HADYANCODE_DIR = join(isolatedHomeDir, ".hadyancode");
 		setHomeDir(isolatedHomeDir);
-		setClineDir(process.env.CLINE_DIR);
+		setHadyanCodeDir(process.env.HADYANCODE_DIR);
 	});
 
 	afterEach(() => {
 		process.env.HOME = envSnapshot.HOME;
-		process.env.CLINE_DIR = envSnapshot.CLINE_DIR;
+		process.env.HADYANCODE_DIR = envSnapshot.HADYANCODE_DIR;
 		setHomeDir(envSnapshot.HOME ?? "~");
-		setClineDir(envSnapshot.CLINE_DIR ?? join("~", ".cline"));
+		setHadyanCodeDir(envSnapshot.HADYANCODE_DIR ?? join("~", ".hadyancode"));
 		for (const dir of tempDirs.splice(0)) {
 			rmSync(dir, { recursive: true, force: true });
 		}

@@ -115,20 +115,20 @@ describe("parseRolloutAssignment", () => {
 });
 
 describe("identity prefix", () => {
-	it("maps the nightly manifest name to the cline-nightly namespace", () => {
-		expect(idPrefix("cline-nightly")).toBe("cline-nightly");
+	it("maps the nightly manifest name to the hadyancode-nightly namespace", () => {
+		expect(idPrefix("hadyancode-nightly")).toBe("hadyancode-nightly");
 	});
 
-	it("maps everything else (stable claude-dev, unknown, missing) to cline", () => {
-		expect(idPrefix("claude-dev")).toBe("cline");
-		expect(idPrefix("some-fork")).toBe("cline");
-		expect(idPrefix(undefined)).toBe("cline");
+	it("maps everything else (stable claude-dev, unknown, missing) to hadyancode", () => {
+		expect(idPrefix("claude-dev")).toBe("hadyancode");
+		expect(idPrefix("some-fork")).toBe("hadyancode");
+		expect(idPrefix(undefined)).toBe("hadyancode");
 	});
 
 	it("derives the setting section and context key from the prefix", () => {
-		expect(settingSection("cline")).toBe("cline.rollout");
-		expect(settingSection("cline-nightly")).toBe("cline-nightly.rollout");
-		expect(bundleContextKey("cline")).toBe("cline.sdkBundle");
-		expect(bundleContextKey("cline-nightly")).toBe("cline-nightly.sdkBundle");
+		expect(settingSection("hadyancode")).toBe("hadyancode.rollout");
+		expect(settingSection("hadyancode-nightly")).toBe("hadyancode-nightly.rollout");
+		expect(bundleContextKey("hadyancode")).toBe("hadyancode.sdkBundle");
+		expect(bundleContextKey("hadyancode-nightly")).toBe("hadyancode-nightly.sdkBundle");
 	});
 });

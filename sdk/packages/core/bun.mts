@@ -26,9 +26,9 @@ const external = Object.keys({
 	...(packageJson.peerDependencies ?? {}),
 });
 
-const sourcemap = Bun.env.CLINE_SOURCEMAPS === "1" ? "linked" : "none";
+const sourcemap = Bun.env.HADYANCODE_SOURCEMAPS === "1" ? "linked" : "none";
 // minify: true keeps identifier mangling active even when sourcemaps are enabled.
-const minify = Bun.env.CLINE_SOURCEMAPS !== "1";
+const minify = Bun.env.HADYANCODE_SOURCEMAPS !== "1";
 
 const buildConfig = {
 	target: "node",
@@ -38,11 +38,11 @@ const buildConfig = {
 	sourcemap,
 	external,
 	define: {
-		__CLINE_CORE_RUNTIME_BUILD_ID__: JSON.stringify(runtimeBuildId),
+		__HADYANCODE_CORE_RUNTIME_BUILD_ID__: JSON.stringify(runtimeBuildId),
 		// Unlike the deterministic fingerprint above, the epoch orders builds in
 		// time so managed-Hub compatibility can tell a newer daemon from a stale
 		// one. Consulted only when fingerprints already differ.
-		__CLINE_CORE_RUNTIME_BUILD_EPOCH_MS__: JSON.stringify(Date.now()),
+		__HADYANCODE_CORE_RUNTIME_BUILD_EPOCH_MS__: JSON.stringify(Date.now()),
 	},
 } as const;
 

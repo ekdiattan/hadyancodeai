@@ -25,17 +25,17 @@ import type {
 import { PROTOCOL_VERSION, RequestError } from "@agentclientprotocol/sdk";
 import {
 	type AgentEvent,
-	type ClineCore,
+	type HadyanCodeCore,
 	Llms,
 	ProviderSettingsManager,
 	SessionSource,
-} from "@cline/core";
-import { isLikelyAuthError, type MessageWithMetadata } from "@cline/shared";
+} from "@hadyancode/core";
+import { isLikelyAuthError, type MessageWithMetadata } from "@hadyancode/shared";
 import { getPersistedProviderApiKey } from "../commands/auth";
 import { resolveSystemPrompt } from "../runtime/prompt";
 import { subscribeToAgentEvents } from "../runtime/session-events";
 import { createCliCore } from "../session/session";
-import { isClineOrgIndividualInferenceSubscriptionErrorMessage } from "../utils/cline-pass-errors";
+import { isHadyanCodeOrgIndividualInferenceSubscriptionErrorMessage } from "../utils/hadyancode-pass-errors";
 import { getCliBuildInfo } from "../utils/common";
 import { randomSessionId, resolveWorkspaceRoot } from "../utils/helpers";
 import type { Config } from "../utils/types";
@@ -53,12 +53,12 @@ import {
 } from "./auto-approve";
 import {
 	buildOrganizationConfigOption,
-	fetchClineOrganizations,
+	fetchHadyanCodeOrganizations,
 	getAcpOrgSubscriptionMessage,
 	ORGANIZATION_CONFIG_ID,
 	PERSONAL_ACCOUNT_VALUE,
-	switchClineOrganization,
-	usesClineAccount,
+	switchHadyanCodeOrganization,
+	usesHadyanCodeAccount,
 } from "./organizations";
 import { requestAcpToolApproval } from "./permissions";
 import { replaySessionHistory } from "./session-load";
@@ -87,7 +87,7 @@ interface SessionState {
 	/** When true, all tool calls are approved without asking the client. */
 	autoApproveTools: boolean;
 	/** Active session manager for the running agent, if any. */
-	sessionManager?: ClineCore;
+	sessionManager?: HadyanCodeCore;
 	/** Internal session id within the session manager. */
 	activeSessionId?: string;
 	/** Abort controller for the current prompt, if running. */
@@ -150,7 +150,7 @@ export class AcpAgent implements Agent {
 
 	isSessionReady() {
 		// Require authentication unless an API key is provided via env var.
-		if (!this.authResult && !process.env.CLINE_API_KEY) {
+		if (!this.authResult && !process.env.HADYANCODE_API_KEY) {
 			// Check for valid persisted credentials from a previous session
 			// before forcing the client to re-authenticate.
 			this.authResult = this.tryRestoreAuth();
@@ -187,18 +187,18 @@ export class AcpAgent implements Agent {
 
 		const defaultMode = "act";
 		const providerId =
-			process.env.CLINE_PROVIDER ?? this.authResult?.providerId ?? "cline";
+			process.env.HADYANCODE_PROVIDER ?? this.authResult?.providerId ?? "hadyancode";
 
 		const providerModels = await Llms.getModelsForProvider(
 			providerId,
 			CHAT_MODEL_QUERY_OPTIONS,
 		);
 		// Model ids are provider-scoped, so the default must come from the
-		// provider's own catalog: `cline-pass` uses `cline-pass/…` ids that mean
-		// nothing to `cline`, and vice versa.
+		// provider's own catalog: `hadyancode-pass` uses `hadyancode-pass/…` ids that mean
+		// nothing to `hadyancode`, and vice versa.
 		const defaultModelId = await resolveDefaultModelId(
 			providerId,
-			process.env.CLINE_MODEL,
+			process.env.HADYANCODE_MODEL,
 			providerModels,
 		);
 
@@ -262,7 +262,7 @@ export class AcpAgent implements Agent {
 				// as a new session, with the model resolved against the
 				// provider's own catalog just like newSession.
 				const providerId =
-					process.env.CLINE_PROVIDER ?? this.authResult?.providerId ?? "cline";
+					process.env.HADYANCODE_PROVIDER ?? this.authResult?.providerId ?? "hadyancode";
 				const providerModels = await Llms.getModelsForProvider(
 					providerId,
 					CHAT_MODEL_QUERY_OPTIONS,
@@ -275,7 +275,7 @@ export class AcpAgent implements Agent {
 					currentProviderId: providerId,
 					currentModelId: await resolveDefaultModelId(
 						providerId,
-						process.env.CLINE_MODEL,
+						process.env.HADYANCODE_MODEL,
 						providerModels,
 					),
 					autoApproveTools: this.defaultAutoApproveTools,
@@ -461,10 +461,10 @@ export class AcpAgent implements Agent {
 
 		switch (params.configId) {
 			case "provider": {
-				if (process.env.CLINE_PROVIDER) {
+				if (process.env.HADYANCODE_PROVIDER) {
 					throw RequestError.invalidParams(
 						undefined,
-						"Cannot change provider: CLINE_PROVIDER environment variable is set",
+						"Cannot change provider: HADYANCODE_PROVIDER environment variable is set",
 					);
 				}
 				if (!isAcpAuthMethodId(value)) {
@@ -483,7 +483,7 @@ export class AcpAgent implements Agent {
 				// Re-resolve the model against the new provider's catalog: keep the
 				// current one when it's offered there too, otherwise fall back to the
 				// provider's declared default rather than whichever model happens to
-				// be listed first (for cline-pass that is an unrelated free model).
+				// be listed first (for hadyancode-pass that is an unrelated free model).
 				const providerModels = await Llms.getModelsForProvider(
 					value,
 					CHAT_MODEL_QUERY_OPTIONS,
@@ -498,7 +498,7 @@ export class AcpAgent implements Agent {
 
 			case ORGANIZATION_CONFIG_ID: {
 				try {
-					await switchClineOrganization({
+					await switchHadyanCodeOrganization({
 						apiKey: this.accountApiKey,
 						providerSettingsManager: this.providerSettingsManager,
 						organizationId: value === PERSONAL_ACCOUNT_VALUE ? null : value,
@@ -607,16 +607,16 @@ export class AcpAgent implements Agent {
 	}
 
 	private get accountApiKey(): string {
-		return process.env.CLINE_API_KEY ?? this.authResult?.apiKey ?? "";
+		return process.env.HADYANCODE_API_KEY ?? this.authResult?.apiKey ?? "";
 	}
 
 	private async getOrganizationConfigOption(
 		providerId: string,
 	): Promise<SessionConfigOption | undefined> {
-		if (!usesClineAccount(providerId)) {
+		if (!usesHadyanCodeAccount(providerId)) {
 			return undefined;
 		}
-		const organizations = await fetchClineOrganizations({
+		const organizations = await fetchHadyanCodeOrganizations({
 			apiKey: this.accountApiKey,
 			providerSettingsManager: this.providerSettingsManager,
 		});
@@ -762,8 +762,8 @@ export class AcpAgent implements Agent {
 		const cwd = session.cwd || process.cwd();
 		const workspaceRoot = resolveWorkspaceRoot(cwd);
 		// Resolve credentials: env vars take precedence, then session provider.
-		const providerId = process.env.CLINE_PROVIDER ?? session.currentProviderId;
-		const apiKey = process.env.CLINE_API_KEY ?? this.authResult?.apiKey ?? "";
+		const providerId = process.env.HADYANCODE_PROVIDER ?? session.currentProviderId;
+		const apiKey = process.env.HADYANCODE_API_KEY ?? this.authResult?.apiKey ?? "";
 		const systemPrompt = await resolveSystemPrompt({
 			cwd,
 			providerId,
@@ -791,7 +791,7 @@ export class AcpAgent implements Agent {
 			workspaceRoot,
 			extensionContext: {
 				client: {
-					name: "cline-acp",
+					name: "hadyancode-acp",
 					version: cliBuildInfo.version,
 					platform: "cli",
 					platformVersion: cliBuildInfo.version,
@@ -839,7 +839,7 @@ async function resolveDefaultModelId(
  * the object ACP actually receives.
  */
 function toAcpPromptError(error: Error): RequestError {
-	if (isClineOrgIndividualInferenceSubscriptionErrorMessage(error)) {
+	if (isHadyanCodeOrgIndividualInferenceSubscriptionErrorMessage(error)) {
 		const message = getAcpOrgSubscriptionMessage();
 		return RequestError.internalError({ message }, message);
 	}

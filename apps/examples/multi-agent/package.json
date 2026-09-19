@@ -1,5 +1,5 @@
 {
-	"name": "@cline/example-multi-agent",
+	"name": "@hadyancode/example-multi-agent",
 	"version": "0.0.0",
 	"private": true,
 	"type": "module",
@@ -10,7 +10,7 @@
 		"start": "node dist/index.js"
 	},
 	"dependencies": {
-		"@cline/sdk": "workspace:*"
+		"@hadyancode/sdk": "workspace:*"
 	},
 	"devDependencies": {
 		"typescript": "^5.9.3"

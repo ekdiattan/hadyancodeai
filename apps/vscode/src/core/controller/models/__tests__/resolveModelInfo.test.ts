@@ -292,27 +292,27 @@ describe("resolveModelInfo", () => {
 		expect(response.modelInfo).toBeUndefined()
 	})
 
-	it("resolves a free model id from the cline-pass catalog without coercing to the default", async () => {
+	it("resolves a free model id from the hadyancode-pass catalog without coercing to the default", async () => {
 		const { resolveModelInfo } = await import("../resolveModelInfo")
-		const store = makeStore({ providerId: parseProviderId("cline-pass") })
+		const store = makeStore({ providerId: parseProviderId("hadyancode-pass") })
 		const catalog = makeCatalog()
-		// The cline-pass catalog carries the endpoint's clinePass bucket plus the
-		// Cline free models (zero-priced, OpenRouter-style ids without the
-		// cline-pass/ prefix). Selecting a free model must not be replaced by the
+		// The hadyancode-pass catalog carries the endpoint's hadyancodePass bucket plus the
+		// HadyanCode free models (zero-priced, OpenRouter-style ids without the
+		// hadyancode-pass/ prefix). Selecting a free model must not be replaced by the
 		// default pass model.
 		vi.mocked(catalog.peekModels).mockReturnValue(
 			peekResult(
-				"cline-pass",
+				"hadyancode-pass",
 				[
-					["cline-pass/glm-5.1", { name: "GLM 5.1", supportsPromptCache: false, contextWindow: 200_000 }],
+					["hadyancode-pass/glm-5.1", { name: "GLM 5.1", supportsPromptCache: false, contextWindow: 200_000 }],
 					["kwaipilot/kat-coder-pro", { name: "KAT Coder Pro", supportsPromptCache: false, contextWindow: 256_000 }],
 				],
-				"cline-pass/glm-5.1",
+				"hadyancode-pass/glm-5.1",
 			),
 		)
 
 		const response = await resolveModelInfo(makeController(store, catalog), {
-			providerId: "cline-pass",
+			providerId: "hadyancode-pass",
 			modelId: "kwaipilot/kat-coder-pro",
 		})
 

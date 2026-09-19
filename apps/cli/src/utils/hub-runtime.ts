@@ -4,12 +4,12 @@ import {
 	type HubEndpointOverrides,
 	resolveDefaultHubHost,
 	resolveDefaultHubPort,
-} from "@cline/core";
+} from "@hadyancode/core";
 
 /**
  * Build a `host:port` rpc address string that respects the current build
  * environment. In development, this picks the dev hub port to avoid
- * colliding with a production Cline hub on the standard port.
+ * colliding with a production HadyanCode hub on the standard port.
  */
 export function resolveDefaultCliRpcAddress(): string {
 	return `${resolveDefaultHubHost()}:${resolveDefaultHubPort()}`;

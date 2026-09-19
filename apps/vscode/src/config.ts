@@ -16,18 +16,18 @@ interface EndpointsFileSchema {
 }
 
 /**
- * Error thrown when the Cline configuration file exists but is invalid.
- * This error prevents Cline from starting to avoid misconfiguration in enterprise environments.
+ * Error thrown when the HadyanCode configuration file exists but is invalid.
+ * This error prevents HadyanCode from starting to avoid misconfiguration in enterprise environments.
  */
-export class ClineConfigurationError extends Error {
+export class HadyanCodeConfigurationError extends Error {
 	constructor(message: string) {
 		super(message)
-		this.name = "ClineConfigurationError"
+		this.name = "HadyanCodeConfigurationError"
 	}
 }
 
-class ClineEndpoint {
-	private static _instance: ClineEndpoint | null = null
+class HadyanCodeEndpoint {
+	private static _instance: HadyanCodeEndpoint | null = null
 	private static _initialized = false
 	private static _extensionFsPath: string
 
@@ -39,56 +39,56 @@ class ClineEndpoint {
 
 	private constructor() {
 		// Set environment at module load. Use override if provided.
-		const _env = process?.env?.CLINE_ENVIRONMENT_OVERRIDE || process?.env?.CLINE_ENVIRONMENT
+		const _env = process?.env?.HADYANCODE_ENVIRONMENT_OVERRIDE || process?.env?.HADYANCODE_ENVIRONMENT
 		if (_env && Object.values(Environment).includes(_env as Environment)) {
 			this.environment = _env as Environment
 		}
 	}
 
 	/**
-	 * Initializes the ClineEndpoint singleton.
+	 * Initializes the HadyanCodeEndpoint singleton.
 	 * Must be called before any other methods.
 	 * Reads the endpoints.json file if it exists and validates its schema.
 	 *
 	 * @param extensionFsPath Path to the extension installation directory (for checking bundled endpoints.json)
-	 * @throws ClineConfigurationError if the endpoints.json file exists but is invalid
+	 * @throws HadyanCodeConfigurationError if the endpoints.json file exists but is invalid
 	 */
 	public static async initialize(extensionFsPath: string): Promise<void> {
-		if (ClineEndpoint._initialized) {
+		if (HadyanCodeEndpoint._initialized) {
 			return
 		}
 
-		ClineEndpoint._extensionFsPath = extensionFsPath
-		ClineEndpoint._instance = new ClineEndpoint()
+		HadyanCodeEndpoint._extensionFsPath = extensionFsPath
+		HadyanCodeEndpoint._instance = new HadyanCodeEndpoint()
 
 		// Try to load on-premise config from file
-		const endpointsConfig = await ClineEndpoint.loadEndpointsFile()
+		const endpointsConfig = await HadyanCodeEndpoint.loadEndpointsFile()
 		if (endpointsConfig) {
-			ClineEndpoint._instance.onPremiseConfig = endpointsConfig
-			Logger.log("Cline running in self-hosted mode with custom endpoints")
+			HadyanCodeEndpoint._instance.onPremiseConfig = endpointsConfig
+			Logger.log("HadyanCode running in self-hosted mode with custom endpoints")
 		}
 
-		ClineEndpoint._initialized = true
+		HadyanCodeEndpoint._initialized = true
 	}
 
 	/**
-	 * Returns true if the ClineEndpoint has been initialized.
+	 * Returns true if the HadyanCodeEndpoint has been initialized.
 	 */
 	public static isInitialized(): boolean {
-		return ClineEndpoint._initialized
+		return HadyanCodeEndpoint._initialized
 	}
 
 	/**
-	 * Checks if Cline is running in self-hosted/on-premise mode.
+	 * Checks if HadyanCode is running in self-hosted/on-premise mode.
 	 * @returns true if in selfHosted mode, or true if not initialized (safety fallback to prevent accidental external calls)
 	 */
 	public static isSelfHosted(): boolean {
 		// Safety fallback: if not initialized, treat as selfHosted
 		// to prevent accidental external service calls before configuration is loaded
-		if (!ClineEndpoint._initialized) {
+		if (!HadyanCodeEndpoint._initialized) {
 			return true
 		}
-		return ClineEndpoint.config.environment === Environment.selfHosted
+		return HadyanCodeEndpoint.config.environment === Environment.selfHosted
 	}
 
 	/**
@@ -97,21 +97,21 @@ class ClineEndpoint {
 	 * @throws Error if not initialized
 	 */
 	public static isBundledConfig(): boolean {
-		if (!ClineEndpoint._initialized || !ClineEndpoint._instance) {
-			throw new Error("ClineEndpoint not initialized. Call ClineEndpoint.initialize() first.")
+		if (!HadyanCodeEndpoint._initialized || !HadyanCodeEndpoint._instance) {
+			throw new Error("HadyanCodeEndpoint not initialized. Call HadyanCodeEndpoint.initialize() first.")
 		}
-		return ClineEndpoint._instance.isBundled
+		return HadyanCodeEndpoint._instance.isBundled
 	}
 
 	/**
 	 * Returns the singleton instance.
 	 * @throws Error if not initialized
 	 */
-	public static get instance(): ClineEndpoint {
-		if (!ClineEndpoint._initialized || !ClineEndpoint._instance) {
-			throw new Error("ClineEndpoint not initialized. Call ClineEndpoint.initialize() first.")
+	public static get instance(): HadyanCodeEndpoint {
+		if (!HadyanCodeEndpoint._initialized || !HadyanCodeEndpoint._instance) {
+			throw new Error("HadyanCodeEndpoint not initialized. Call HadyanCodeEndpoint.initialize() first.")
 		}
-		return ClineEndpoint._instance
+		return HadyanCodeEndpoint._instance
 	}
 
 	/**
@@ -119,15 +119,15 @@ class ClineEndpoint {
 	 * @throws Error if not initialized
 	 */
 	public static get config(): EnvironmentConfig {
-		return ClineEndpoint.instance.config()
+		return HadyanCodeEndpoint.instance.config()
 	}
 
 	/**
 	 * Returns the path to the endpoints.json configuration file.
-	 * Located at ~/.cline/endpoints.json
+	 * Located at ~/.hadyancode/endpoints.json
 	 */
 	private static getEndpointsFilePath(): string {
-		return path.join(os.homedir(), ".cline", "endpoints.json")
+		return path.join(os.homedir(), ".hadyancode", "endpoints.json")
 	}
 
 	/**
@@ -135,19 +135,19 @@ class ClineEndpoint {
 	 * Located in the extension installation directory.
 	 */
 	private static getBundledEndpointsFilePath(): string {
-		return path.join(ClineEndpoint._extensionFsPath, "endpoints.json")
+		return path.join(HadyanCodeEndpoint._extensionFsPath, "endpoints.json")
 	}
 
 	/**
 	 * Loads and validates the endpoints.json file.
 	 * Checks bundled location first, then falls back to user directory.
-	 * Priority: bundled endpoints.json → ~/.cline/endpoints.json → null (standard mode)
+	 * Priority: bundled endpoints.json → ~/.hadyancode/endpoints.json → null (standard mode)
 	 * @returns The validated endpoints config, or null if no file exists
-	 * @throws ClineConfigurationError if a file exists but is invalid
+	 * @throws HadyanCodeConfigurationError if a file exists but is invalid
 	 */
 	private static async loadEndpointsFile(): Promise<EndpointsFileSchema | null> {
 		// 1. Try bundled file
-		const bundledPath = ClineEndpoint.getBundledEndpointsFilePath()
+		const bundledPath = HadyanCodeEndpoint.getBundledEndpointsFilePath()
 		try {
 			await fs.access(bundledPath)
 			// File exists, load and validate it
@@ -157,24 +157,24 @@ class ClineEndpoint {
 			try {
 				data = JSON.parse(fileContent)
 			} catch (parseError) {
-				throw new ClineConfigurationError(
+				throw new HadyanCodeConfigurationError(
 					`Invalid JSON in bundled endpoints configuration file (${bundledPath}): ${parseError instanceof Error ? parseError.message : String(parseError)}`,
 				)
 			}
 
-			const config = ClineEndpoint.validateEndpointsSchema(data, bundledPath)
+			const config = HadyanCodeEndpoint.validateEndpointsSchema(data, bundledPath)
 			// Mark as bundled enterprise distribution
-			ClineEndpoint._instance!.isBundled = true
+			HadyanCodeEndpoint._instance!.isBundled = true
 			return config
 		} catch (error) {
-			if (error instanceof ClineConfigurationError) {
+			if (error instanceof HadyanCodeConfigurationError) {
 				throw error
 			}
 			// Bundled file doesn't exist or is not accessible, try user file
 		}
 
-		// 2. Try ~/.cline/endpoints.json
-		const userPath = ClineEndpoint.getEndpointsFilePath()
+		// 2. Try ~/.hadyancode/endpoints.json
+		const userPath = HadyanCodeEndpoint.getEndpointsFilePath()
 		try {
 			await fs.access(userPath)
 		} catch {
@@ -190,17 +190,17 @@ class ClineEndpoint {
 			try {
 				data = JSON.parse(fileContent)
 			} catch (parseError) {
-				throw new ClineConfigurationError(
+				throw new HadyanCodeConfigurationError(
 					`Invalid JSON in user endpoints configuration file (${userPath}): ${parseError instanceof Error ? parseError.message : String(parseError)}`,
 				)
 			}
 
-			return ClineEndpoint.validateEndpointsSchema(data, userPath)
+			return HadyanCodeEndpoint.validateEndpointsSchema(data, userPath)
 		} catch (error) {
-			if (error instanceof ClineConfigurationError) {
+			if (error instanceof HadyanCodeConfigurationError) {
 				throw error
 			}
-			throw new ClineConfigurationError(
+			throw new HadyanCodeConfigurationError(
 				`Failed to read user endpoints configuration file (${userPath}): ${error instanceof Error ? error.message : String(error)}`,
 			)
 		}
@@ -213,11 +213,11 @@ class ClineEndpoint {
 	 * @param data The parsed JSON data to validate
 	 * @param filePath The path to the file (for error messages)
 	 * @returns The validated EndpointsFileSchema
-	 * @throws ClineConfigurationError if validation fails
+	 * @throws HadyanCodeConfigurationError if validation fails
 	 */
 	private static validateEndpointsSchema(data: unknown, filePath: string): EndpointsFileSchema {
 		if (typeof data !== "object" || data === null) {
-			throw new ClineConfigurationError(`Endpoints configuration file (${filePath}) must contain a JSON object`)
+			throw new HadyanCodeConfigurationError(`Endpoints configuration file (${filePath}) must contain a JSON object`)
 		}
 
 		const obj = data as Record<string, unknown>
@@ -228,19 +228,19 @@ class ClineEndpoint {
 			const value = obj[field]
 
 			if (value === undefined || value === null) {
-				throw new ClineConfigurationError(
+				throw new HadyanCodeConfigurationError(
 					`Missing required field "${field}" in endpoints configuration file (${filePath})`,
 				)
 			}
 
 			if (typeof value !== "string") {
-				throw new ClineConfigurationError(
+				throw new HadyanCodeConfigurationError(
 					`Field "${field}" in endpoints configuration file (${filePath}) must be a string`,
 				)
 			}
 
 			if (!value.trim()) {
-				throw new ClineConfigurationError(
+				throw new HadyanCodeConfigurationError(
 					`Field "${field}" in endpoints configuration file (${filePath}) cannot be empty`,
 				)
 			}
@@ -249,7 +249,7 @@ class ClineEndpoint {
 			try {
 				new URL(value)
 			} catch {
-				throw new ClineConfigurationError(
+				throw new HadyanCodeConfigurationError(
 					`Field "${field}" in endpoints configuration file (${filePath}) must be a valid URL. Got: "${value}"`,
 				)
 			}
@@ -273,7 +273,9 @@ class ClineEndpoint {
 	 */
 	public setEnvironment(env: string) {
 		if (this.onPremiseConfig) {
-			throw new Error("Cannot change environment in on-premise mode. Endpoints are configured via ~/.cline/endpoints.json")
+			throw new Error(
+				"Cannot change environment in on-premise mode. Endpoints are configured via ~/.hadyancode/endpoints.json",
+			)
 		}
 
 		switch (env.toLowerCase()) {
@@ -334,16 +336,16 @@ class ClineEndpoint {
 /**
  * Singleton instance to access the current environment configuration.
  * Usage:
- * - ClineEnv.config() to get the current config.
- * - ClineEnv.setEnvironment(Environment.local) to change the environment.
+ * - HadyanCodeEnv.config() to get the current config.
+ * - HadyanCodeEnv.setEnvironment(Environment.local) to change the environment.
  *
- * IMPORTANT: ClineEndpoint.initialize() must be called before using ClineEnv.
+ * IMPORTANT: HadyanCodeEndpoint.initialize() must be called before using HadyanCodeEnv.
  */
-export const ClineEnv = {
-	config: () => ClineEndpoint.config,
-	setEnvironment: (env: string) => ClineEndpoint.instance.setEnvironment(env),
-	getEnvironment: () => ClineEndpoint.instance.getEnvironment(),
+export const HadyanCodeEnv = {
+	config: () => HadyanCodeEndpoint.config,
+	setEnvironment: (env: string) => HadyanCodeEndpoint.instance.setEnvironment(env),
+	getEnvironment: () => HadyanCodeEndpoint.instance.getEnvironment(),
 }
 
 // Export the class for initialization
-export { ClineEndpoint }
+export { HadyanCodeEndpoint }

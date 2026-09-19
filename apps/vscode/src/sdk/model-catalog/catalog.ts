@@ -1,6 +1,6 @@
-import { listLocalProviders, type ModelCatalogConfig, resolveProviderConfig } from "@cline/core"
-import { type ProviderConfig, resolveProviderUsageCostDisplay } from "@cline/llms"
-import { type ProviderListItem } from "@cline/shared"
+import { listLocalProviders, type ModelCatalogConfig, resolveProviderConfig } from "@hadyancode/core"
+import { type ProviderConfig, resolveProviderUsageCostDisplay } from "@hadyancode/llms"
+import { type ProviderListItem } from "@hadyancode/shared"
 import { getProviderSettingsManager } from "../provider-migration"
 import type {
 	CatalogError,
@@ -191,7 +191,7 @@ function toProviderListing(provider: ProviderListItem): ProviderListing {
 async function listSdkProviderListings(): Promise<ReadonlyArray<ProviderListing>> {
 	const manager = getProviderSettingsManager()
 	const { providers } = await listLocalProviders(manager, {
-		isClinePassEnabled: true,
+		isHadyanCodePassEnabled: true,
 	})
 	return providers.map(toProviderListing)
 }

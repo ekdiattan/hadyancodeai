@@ -1,30 +1,30 @@
 /**
- * @cline/core
+ * @hadyancode/core
  *
  * Core contracts, shared state utilities, and Node runtime services.
  */
 
-export * as Llms from "@cline/llms";
+export * as Llms from "@hadyancode/llms";
 export {
-	ClineFreeModelLimitError,
-	ClineNotSubscribedError,
-	ClineOrgIndividualInferenceSubscriptionError,
-	ClinePassLimitError,
-	extractClineFreeModelLimitResetTime,
-	extractClinePassLimitMessage,
-	getClineNotSubscribedMessage,
-	getClineOrgIndividualInferenceSubscriptionMessage,
-	getClinePassSubscriptionUrl,
-	isClineFreeModelLimitError,
-	isClineFreeModelLimitMessage,
-	isClineModelNotFoundMessage,
-	isClineNotSubscribedError,
-	isClineNotSubscribedMessage,
-	isClineOrgIndividualInferenceSubscriptionError,
-	isClineOrgIndividualInferenceSubscriptionMessage,
-	isClinePassLimitError,
-	isClinePassLimitMessage,
-} from "@cline/llms";
+	HadyanCodeFreeModelLimitError,
+	HadyanCodeNotSubscribedError,
+	HadyanCodeOrgIndividualInferenceSubscriptionError,
+	HadyanCodePassLimitError,
+	extractHadyanCodeFreeModelLimitResetTime,
+	extractHadyanCodePassLimitMessage,
+	getHadyanCodeNotSubscribedMessage,
+	getHadyanCodeOrgIndividualInferenceSubscriptionMessage,
+	getHadyanCodePassSubscriptionUrl,
+	isHadyanCodeFreeModelLimitError,
+	isHadyanCodeFreeModelLimitMessage,
+	isHadyanCodeModelNotFoundMessage,
+	isHadyanCodeNotSubscribedError,
+	isHadyanCodeNotSubscribedMessage,
+	isHadyanCodeOrgIndividualInferenceSubscriptionError,
+	isHadyanCodeOrgIndividualInferenceSubscriptionMessage,
+	isHadyanCodePassLimitError,
+	isHadyanCodePassLimitMessage,
+} from "@hadyancode/llms";
 // Shared contracts and path helpers re-exported for app consumers.
 export type {
 	AddProviderActionRequest,
@@ -50,7 +50,7 @@ export type {
 	ChatStartSessionArtifacts,
 	ChatStartSessionRequest,
 	ChatTurnResult,
-	ClineAccountActionRequest,
+	HadyanCodeAccountActionRequest,
 	ConnectorHookEvent,
 	ContentBlock,
 	FeatureFlag,
@@ -97,14 +97,14 @@ export type {
 	WorkspaceInfoSchema,
 	WorkspaceManifest,
 	WorkspaceManifestSchema,
-} from "@cline/shared";
+} from "@hadyancode/shared";
 export {
-	buildClineSystemPrompt as getClineDefaultSystemPrompt,
+	buildHadyanCodeSystemPrompt as getHadyanCodeDefaultSystemPrompt,
 	buildSdkErrorProperties,
 	ContributionRegistry,
 	captureSdkError,
-	createClineTelemetryServiceConfig,
-	createClineTelemetryServiceMetadata,
+	createHadyanCodeTelemetryServiceConfig,
+	createHadyanCodeTelemetryServiceMetadata,
 	createContributionRegistry,
 	createTool,
 	emptyWorkspaceManifest,
@@ -118,26 +118,26 @@ export {
 	registerDisposable,
 	SDK_ERROR_TELEMETRY_EVENT,
 	stripUtf8Bom,
-} from "@cline/shared";
-export * from "@cline/shared/storage";
+} from "@hadyancode/shared";
+export * from "@hadyancode/shared/storage";
 export {
-	type ClineAccountBalance,
-	type ClineAccountOperations,
-	type ClineAccountOrganization,
-	type ClineAccountOrganizationBalance,
-	type ClineAccountOrganizationUsageTransaction,
-	type ClineAccountPaymentTransaction,
-	ClineAccountService,
-	type ClineAccountServiceOptions,
-	type ClineAccountUsageTransaction,
-	type ClineAccountUser,
-	type ClineOrganization,
-	type ClineSubscriptionPlan,
-	executeClineAccountAction,
+	type HadyanCodeAccountBalance,
+	type HadyanCodeAccountOperations,
+	type HadyanCodeAccountOrganization,
+	type HadyanCodeAccountOrganizationBalance,
+	type HadyanCodeAccountOrganizationUsageTransaction,
+	type HadyanCodeAccountPaymentTransaction,
+	HadyanCodeAccountService,
+	type HadyanCodeAccountServiceOptions,
+	type HadyanCodeAccountUsageTransaction,
+	type HadyanCodeAccountUser,
+	type HadyanCodeOrganization,
+	type HadyanCodeSubscriptionPlan,
+	executeHadyanCodeAccountAction,
 	type FeaturebaseTokenResponse,
-	isClineAccountActionRequest,
+	isHadyanCodeAccountActionRequest,
 	type ProviderActionExecutor,
-	RpcClineAccountService,
+	RpcHadyanCodeAccountService,
 	type UserCurrentPlan,
 	type UserRemoteConfigOrganization,
 	type UserRemoteConfigResponse,
@@ -147,12 +147,12 @@ export {
 	type OAuthClientCallbacksOptions,
 } from "./auth/client";
 export {
-	completeClineDeviceAuth,
-	getValidClineCredentials,
-	loginClineOAuth,
-	refreshClineToken,
-	startClineDeviceAuth,
-} from "./auth/cline";
+	completeHadyanCodeDeviceAuth,
+	getValidHadyanCodeCredentials,
+	loginHadyanCodeOAuth,
+	refreshHadyanCodeToken,
+	startHadyanCodeDeviceAuth,
+} from "./auth/hadyancode";
 export {
 	getValidOpenAICodexCredentials,
 	loginOpenAICodex,
@@ -199,23 +199,23 @@ export type {
 	OcaOAuthProviderOptions,
 	OcaTokenResolution,
 } from "./auth/types";
-export { ClineCore } from "./ClineCore";
+export { HadyanCodeCore } from "./HadyanCodeCore";
 export type {
-	ClineAutomationEventIngressResult,
-	ClineAutomationEventLog,
-	ClineAutomationEventSuppression,
-	ClineAutomationListEventsOptions,
-	ClineAutomationListRunsOptions,
-	ClineAutomationListSpecsOptions,
-	ClineAutomationRun,
-	ClineAutomationRunStatus,
-	ClineAutomationSpec,
-	ClineCoreAutomationApi,
-	ClineCoreAutomationOptions,
-	ClineCoreListHistoryOptions,
-	ClineCoreOptions,
-	ClineCoreSettingsApi,
-	ClineCoreStartInput,
+	HadyanCodeAutomationEventIngressResult,
+	HadyanCodeAutomationEventLog,
+	HadyanCodeAutomationEventSuppression,
+	HadyanCodeAutomationListEventsOptions,
+	HadyanCodeAutomationListRunsOptions,
+	HadyanCodeAutomationListSpecsOptions,
+	HadyanCodeAutomationRun,
+	HadyanCodeAutomationRunStatus,
+	HadyanCodeAutomationSpec,
+	HadyanCodeCoreAutomationApi,
+	HadyanCodeCoreAutomationOptions,
+	HadyanCodeCoreListHistoryOptions,
+	HadyanCodeCoreOptions,
+	HadyanCodeCoreSettingsApi,
+	HadyanCodeCoreStartInput,
 	CompareCheckpointInput,
 	CompareCheckpointResult,
 	HubOptions,
@@ -223,7 +223,7 @@ export type {
 	RestoreInput,
 	RestoreOptions,
 	RestoreResult,
-} from "./cline-core/types";
+} from "./hadyancode-core/types";
 export type {
 	AgentPluginPackageDiagnostic,
 	AgentPluginPackageDiagnosticScope,
@@ -695,7 +695,7 @@ export {
 	markLocalProviderEnabled,
 	normalizeOAuthProvider,
 	refreshProviderModelsFromSource,
-	resolveLocalClineAuthToken,
+	resolveLocalHadyanCodeAuthToken,
 	saveLocalProviderOAuthCredentials,
 	saveLocalProviderSettings,
 	saveVoiceInputSettings,
@@ -916,7 +916,7 @@ export { CORE_BUILD_VERSION } from "./version";
 export async function loadOpenTelemetryAdapter() {
 	return import("./services/telemetry/index.js");
 }
-export { Agent, createAgentRuntime } from "@cline/agents";
+export { Agent, createAgentRuntime } from "@hadyancode/agents";
 export {
 	createCompactionStateAwarePrepareTurn,
 	createContextCompactionPrepareTurn,
@@ -974,16 +974,16 @@ export {
 	truncateCommandOutput,
 } from "./extensions/tools";
 export {
-	applyClineFeaturedModels,
-	type ClineRecommendedModel,
-	type ClineRecommendedModelsData,
-	FALLBACK_CLINE_RECOMMENDED_MODELS,
-	type FetchClineRecommendedModelsOptions,
-	fetchClineRecommendedModels,
-	getCachedClineRecommendedModels,
-	peekClineRecommendedModels,
-	resetClineRecommendedModelsCacheForTests,
-} from "./services/llms/cline-recommended-models";
+	applyHadyanCodeFeaturedModels,
+	type HadyanCodeRecommendedModel,
+	type HadyanCodeRecommendedModelsData,
+	FALLBACK_HADYANCODE_RECOMMENDED_MODELS,
+	type FetchHadyanCodeRecommendedModelsOptions,
+	fetchHadyanCodeRecommendedModels,
+	getCachedHadyanCodeRecommendedModels,
+	peekHadyanCodeRecommendedModels,
+	resetHadyanCodeRecommendedModelsCacheForTests,
+} from "./services/llms/hadyancode-recommended-models";
 export {
 	clearLiveModelsCatalogCache,
 	clearPrivateModelsCatalogCache,
@@ -1072,7 +1072,7 @@ export type { RuntimeEnvironment } from "./types";
 export type { SessionStatus } from "./types/common";
 export { SESSION_STATUSES, SessionSource } from "./types/common";
 export type {
-	ClineCoreStartConfig,
+	HadyanCodeCoreStartConfig,
 	CoreAgentMode,
 	CoreCheckpointConfig,
 	CoreCheckpointContext,

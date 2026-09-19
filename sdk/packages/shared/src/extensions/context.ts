@@ -7,25 +7,25 @@ import type {
 } from "./contribution-registry";
 
 /**
- * The IDE or client surface the user is running Cline from.
+ * The IDE or client surface the user is running HadyanCode from.
  */
 export type ClientName =
-	| "cline-vscode"
-	| "cline-jetbrains"
-	| "cline-cli"
-	| "cline-sdk"
-	| "cline-kanban"
-	| "cline-acp"
-	| "cline-platform"
+	| "hadyancode-vscode"
+	| "hadyancode-jetbrains"
+	| "hadyancode-cli"
+	| "hadyancode-sdk"
+	| "hadyancode-kanban"
+	| "hadyancode-acp"
+	| "hadyancode-platform"
 	| (string & {});
 
 /**
  * Identity of the calling client and host surface.
  */
 export interface ClientContext {
-	/** Client type emitted to Cline request headers, e.g. "VSCode Extension", "cline-cli", "cline-sdk" */
+	/** Client type emitted to HadyanCode request headers, e.g. "VSCode Extension", "hadyancode-cli", "hadyancode-sdk" */
 	name: ClientName;
-	/** Cline client/extension semver string, e.g. "3.12.0" */
+	/** HadyanCode client/extension semver string, e.g. "3.12.0" */
 	version?: string;
 	/** Host platform display name, e.g. "Visual Studio Code", "Cursor", "cli" */
 	platform?: string;
@@ -49,7 +49,7 @@ export interface UserContext {
  * Everything needed to describe the workspace and build the system prompt.
  *
  * Extends WorkspaceInfo (rootPath + git fields) with the additional fields
- * required by buildClineSystemPrompt, so callers can spread a WorkspaceInfo
+ * required by buildHadyanCodeSystemPrompt, so callers can spread a WorkspaceInfo
  * and add only what they know.
  */
 export interface WorkspaceContext extends WorkspaceInfo {
@@ -61,7 +61,7 @@ export interface WorkspaceContext extends WorkspaceInfo {
 	/** Human-readable workspace name shown in the system prompt */
 	workspaceName?: string;
 	/**
-	 * Pre-serialized workspace metadata block that replaces {{CLINE_METADATA}}
+	 * Pre-serialized workspace metadata block that replaces {{HADYANCODE_METADATA}}
 	 * in the system prompt template.
 	 */
 	metadata?: string;
@@ -90,7 +90,7 @@ export interface ExtensionContext {
 	session?: AgentExtensionSessionContext;
 	/**
 	 * Host-provided automation ingress for plugins. Present when the session is
-	 * started through a ClineCore instance with automation enabled.
+	 * started through a HadyanCodeCore instance with automation enabled.
 	 */
 	automation?: AgentExtensionAutomationContext;
 	logger?: BasicLogger;

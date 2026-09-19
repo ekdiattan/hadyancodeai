@@ -1,6 +1,6 @@
 "use client";
 
-import { AttachmentDropZone } from "@cline/ui";
+import { AttachmentDropZone } from "@hadyancode/ui";
 import { Loader2 } from "lucide-react";
 import dynamic from "next/dynamic";
 import {
@@ -1236,7 +1236,7 @@ function ChatThreadPane({
 			hydratedSessionRef.current = null;
 			manualTitleSessionRef.current = null;
 			window.dispatchEvent(
-				new CustomEvent("cline:session-deleted", {
+				new CustomEvent("hadyancode:session-deleted", {
 					detail: {
 						sessionId: activeSessionToDelete,
 					},
@@ -1437,7 +1437,7 @@ function ChatThreadPane({
 					title: normalizedTitle || undefined,
 				});
 				window.dispatchEvent(
-					new CustomEvent("cline:session-title-updated", {
+					new CustomEvent("hadyancode:session-title-updated", {
 						detail: {
 							sessionId: activeSessionForTitle,
 							title: normalizedTitle,
@@ -1554,7 +1554,7 @@ function ChatThreadPane({
 			>
 				{!isWelcomeState ? (
 					<WindowTitleBarContent>
-						<div className="cline-view-enter z-20 border-b border-border/70 bg-background/85 backdrop-blur-sm">
+						<div className="hadyancode-view-enter z-20 border-b border-border/70 bg-background/85 backdrop-blur-sm">
 							<AgentHeader
 								agentActivity={agentActivity}
 								agents={agents}

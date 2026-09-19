@@ -1,6 +1,6 @@
 #!/usr/bin/env bun
 
-// Publishes cline and all platform-specific binary packages to npm.
+// Publishes hadyancode and all platform-specific binary packages to npm.
 //
 // Usage:
 //   bun script/publish-npm.ts                 # publish with "latest" tag
@@ -30,23 +30,23 @@ const { values } = parseArgs({
 
 const dryRun = values["dry-run"] ?? false;
 const npmTag = values.tag ?? "latest";
-const wrapperPackageName = "cline";
+const wrapperPackageName = "hadyancode";
 
 const expectedPlatformPackages = [
-	"@cline/cli-darwin-arm64",
-	"@cline/cli-darwin-x64",
-	"@cline/cli-linux-arm64",
-	"@cline/cli-linux-x64",
-	"@cline/cli-windows-arm64",
-	"@cline/cli-windows-x64",
+	"@hadyancode/cli-darwin-arm64",
+	"@hadyancode/cli-darwin-x64",
+	"@hadyancode/cli-linux-arm64",
+	"@hadyancode/cli-linux-x64",
+	"@hadyancode/cli-windows-arm64",
+	"@hadyancode/cli-windows-x64",
 ] as const;
 
 const hostSdkPackages = [
-	{ name: "@cline/sdk", directory: "sdk" },
-	{ name: "@cline/core", directory: "core" },
-	{ name: "@cline/agents", directory: "agents" },
-	{ name: "@cline/llms", directory: "llms" },
-	{ name: "@cline/shared", directory: "shared" },
+	{ name: "@hadyancode/sdk", directory: "sdk" },
+	{ name: "@hadyancode/core", directory: "core" },
+	{ name: "@hadyancode/agents", directory: "agents" },
+	{ name: "@hadyancode/llms", directory: "llms" },
+	{ name: "@hadyancode/shared", directory: "shared" },
 ] as const;
 
 interface PlatformPackageManifest {
@@ -244,7 +244,7 @@ console.log("\nPublishing platform packages...");
 const platformTasks = Object.keys(binaries)
 	.sort()
 	.map(async (name) => {
-		const dirName = name.replace("@cline/", "");
+		const dirName = name.replace("@hadyancode/", "");
 		const pkgDir = join(cliDir, "dist", dirName);
 
 		await publishPackage({
@@ -312,7 +312,7 @@ const bugs = "bugs" in mainPkgRecord ? mainPkgRecord.bugs : undefined;
 const wrapperPackageJson = {
 	name: wrapperPackageName,
 	version,
-	description: description || "Cline CLI",
+	description: description || "HadyanCode CLI",
 	license: license || "Apache-2.0",
 	...(keywords ? { keywords } : {}),
 	...(author ? { author } : {}),
@@ -320,7 +320,7 @@ const wrapperPackageJson = {
 	...(bugs ? { bugs } : {}),
 	...(sourceRepository ? { repository: sourceRepository } : {}),
 	bin: {
-		cline: "./bin/cline",
+		hadyancode: "./bin/hadyancode",
 	},
 	scripts: {
 		postinstall: "node ./postinstall.mjs || true",

@@ -1,17 +1,17 @@
 import { test } from "@microsoft/tui-test";
-import { CLINE_BIN } from "./helpers/constants.js";
-import { clineEnv } from "./helpers/env.js";
+import { HADYANCODE_BIN } from "./helpers/constants.js";
+import { hadyancodeEnv } from "./helpers/env.js";
 import { expectVisible } from "./helpers/terminal.js";
 
 const HELP_TERMINAL = { columns: 120, rows: 50 };
 
 // ===========================================================================
-// cline --help  (root help)
+// hadyancode --help  (root help)
 // ===========================================================================
-test.describe("cline --help", () => {
+test.describe("hadyancode --help", () => {
 	test.use({
-		program: { file: CLINE_BIN, args: ["--help"] },
-		env: clineEnv("claude-sonnet-4.6"),
+		program: { file: HADYANCODE_BIN, args: ["--help"] },
+		env: hadyancodeEnv("claude-sonnet-4.6"),
 		...HELP_TERMINAL,
 	});
 
@@ -44,12 +44,12 @@ test.describe("cline --help", () => {
 });
 
 // ===========================================================================
-// cline -h  (short help flag)
+// hadyancode -h  (short help flag)
 // ===========================================================================
-test.describe("cline -h", () => {
+test.describe("hadyancode -h", () => {
 	test.use({
-		program: { file: CLINE_BIN, args: ["-h"] },
-		env: clineEnv("claude-sonnet-4.6"),
+		program: { file: HADYANCODE_BIN, args: ["-h"] },
+		env: hadyancodeEnv("claude-sonnet-4.6"),
 		...HELP_TERMINAL,
 	});
 
@@ -59,12 +59,12 @@ test.describe("cline -h", () => {
 });
 
 // ===========================================================================
-// cline history --help
+// hadyancode history --help
 // ===========================================================================
-test.describe("cline history --help", () => {
+test.describe("hadyancode history --help", () => {
 	test.use({
-		program: { file: CLINE_BIN, args: ["history", "--help"] },
-		env: clineEnv("claude-sonnet-4.6"),
+		program: { file: HADYANCODE_BIN, args: ["history", "--help"] },
+		env: hadyancodeEnv("claude-sonnet-4.6"),
 		...HELP_TERMINAL,
 	});
 
@@ -74,12 +74,12 @@ test.describe("cline history --help", () => {
 });
 
 // ===========================================================================
-// cline h --help  (history alias)
+// hadyancode h --help  (history alias)
 // ===========================================================================
-test.describe("cline h --help (history alias)", () => {
+test.describe("hadyancode h --help (history alias)", () => {
 	test.use({
-		program: { file: CLINE_BIN, args: ["h", "--help"] },
-		env: clineEnv("claude-sonnet-4.6"),
+		program: { file: HADYANCODE_BIN, args: ["h", "--help"] },
+		env: hadyancodeEnv("claude-sonnet-4.6"),
 		...HELP_TERMINAL,
 	});
 
@@ -89,12 +89,12 @@ test.describe("cline h --help (history alias)", () => {
 });
 
 // ===========================================================================
-// cline config --help
+// hadyancode config --help
 // ===========================================================================
-test.describe("cline config --help", () => {
+test.describe("hadyancode config --help", () => {
 	test.use({
-		program: { file: CLINE_BIN, args: ["config", "--help"] },
-		env: clineEnv("claude-sonnet-4.6"),
+		program: { file: HADYANCODE_BIN, args: ["config", "--help"] },
+		env: hadyancodeEnv("claude-sonnet-4.6"),
 		...HELP_TERMINAL,
 	});
 
@@ -104,12 +104,12 @@ test.describe("cline config --help", () => {
 });
 
 // ===========================================================================
-// cline auth --help
+// hadyancode auth --help
 // ===========================================================================
-test.describe("cline auth --help", () => {
+test.describe("hadyancode auth --help", () => {
 	test.use({
-		program: { file: CLINE_BIN, args: ["auth", "--help"] },
-		env: clineEnv("claude-sonnet-4.6"),
+		program: { file: HADYANCODE_BIN, args: ["auth", "--help"] },
+		env: hadyancodeEnv("claude-sonnet-4.6"),
 		...HELP_TERMINAL,
 	});
 
@@ -126,12 +126,12 @@ test.describe("cline auth --help", () => {
 });
 
 // ===========================================================================
-// cline version --help
+// hadyancode version --help
 // ===========================================================================
-test.describe("cline version --help", () => {
+test.describe("hadyancode version --help", () => {
 	test.use({
-		program: { file: CLINE_BIN, args: ["version", "--help"] },
-		env: clineEnv("claude-sonnet-4.6"),
+		program: { file: HADYANCODE_BIN, args: ["version", "--help"] },
+		env: hadyancodeEnv("claude-sonnet-4.6"),
 		...HELP_TERMINAL,
 	});
 
@@ -141,12 +141,12 @@ test.describe("cline version --help", () => {
 });
 
 // ===========================================================================
-// cline update --help
+// hadyancode update --help
 // ===========================================================================
-test.describe("cline update --help", () => {
+test.describe("hadyancode update --help", () => {
 	test.use({
-		program: { file: CLINE_BIN, args: ["update", "--help"] },
-		env: clineEnv("claude-sonnet-4.6"),
+		program: { file: HADYANCODE_BIN, args: ["update", "--help"] },
+		env: hadyancodeEnv("claude-sonnet-4.6"),
 		...HELP_TERMINAL,
 	});
 
@@ -156,12 +156,12 @@ test.describe("cline update --help", () => {
 });
 
 // ===========================================================================
-// cline doctor --help
+// hadyancode doctor --help
 // ===========================================================================
-test.describe("cline doctor --help", () => {
+test.describe("hadyancode doctor --help", () => {
 	test.use({
-		program: { file: CLINE_BIN, args: ["doctor", "--help"] },
-		env: clineEnv("claude-sonnet-4.6"),
+		program: { file: HADYANCODE_BIN, args: ["doctor", "--help"] },
+		env: hadyancodeEnv("claude-sonnet-4.6"),
 		...HELP_TERMINAL,
 	});
 

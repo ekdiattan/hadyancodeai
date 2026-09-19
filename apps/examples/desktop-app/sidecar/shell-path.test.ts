@@ -12,8 +12,8 @@ import {
 	shellInvocation,
 } from "./shell-path";
 
-const MARKER_START = "__CLINE_SIDECAR_PATH_START__";
-const MARKER_END = "__CLINE_SIDECAR_PATH_END__";
+const MARKER_START = "__HADYANCODE_SIDECAR_PATH_START__";
+const MARKER_END = "__HADYANCODE_SIDECAR_PATH_END__";
 
 let tempDirs: string[] = [];
 
@@ -26,7 +26,7 @@ function writeFakeShell(
 	script = 'PATH="/opt/homebrew/bin:/usr/bin"; eval "$4"',
 	name = "fake-shell",
 ): string {
-	const dir = mkdtempSync(join(tmpdir(), "cline-shell-path-"));
+	const dir = mkdtempSync(join(tmpdir(), "hadyancode-shell-path-"));
 	tempDirs.push(dir);
 	const shellPath = join(dir, name);
 	writeFileSync(shellPath, `#!/bin/sh\n${script}\n`);
@@ -219,7 +219,7 @@ describe("ensureLoginShellPath", () => {
 	it("skips when the escape hatch is set", async () => {
 		const env: NodeJS.ProcessEnv = {
 			PATH: "/usr/bin",
-			CLINE_SIDECAR_SKIP_SHELL_PATH: "1",
+			HADYANCODE_SIDECAR_SKIP_SHELL_PATH: "1",
 		};
 		const result = await ensureLoginShellPath({ platform: "darwin", env });
 		expect(result.status).toBe("skipped");

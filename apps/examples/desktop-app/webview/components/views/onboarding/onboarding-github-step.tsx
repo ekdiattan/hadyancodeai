@@ -1,17 +1,17 @@
 "use client";
 
-import { GitHubIcon } from "@cline/ui";
+import { GitHubIcon } from "@hadyancode/ui";
 import { Loader2, Lock } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
-	type ClineGitHubRepository,
+	type HadyanCodeGitHubRepository,
 	fetchGitHubInstallUrl,
 	findGitHubIntegration,
-	listClineGitHubRepositories,
-	listClineIntegrations,
-} from "@/lib/cline-integrations";
+	listHadyanCodeGitHubRepositories,
+	listHadyanCodeIntegrations,
+} from "@/lib/hadyancode-integrations";
 import { openExternalUrl } from "@/lib/desktop-client";
 
 export const GITHUB_INSTALL_POLL_INTERVAL_MS = 3_000;
@@ -21,7 +21,7 @@ type GitHubStepPhase = "checking" | "connect" | "waiting" | "connected";
 export function GitHubConnectStep({ onContinue }: { onContinue: () => void }) {
 	const [phase, setPhase] = useState<GitHubStepPhase>("checking");
 	const [connectError, setConnectError] = useState<string | null>(null);
-	const [repos, setRepos] = useState<ClineGitHubRepository[] | null>(null);
+	const [repos, setRepos] = useState<HadyanCodeGitHubRepository[] | null>(null);
 
 	const onContinueRef = useRef(onContinue);
 	useEffect(() => {
@@ -32,7 +32,7 @@ export function GitHubConnectStep({ onContinue }: { onContinue: () => void }) {
 		let cancelled = false;
 		void (async () => {
 			try {
-				const result = await listClineIntegrations();
+				const result = await listHadyanCodeIntegrations();
 				if (cancelled) {
 					return;
 				}
@@ -74,7 +74,7 @@ export function GitHubConnectStep({ onContinue }: { onContinue: () => void }) {
 
 		async function poll() {
 			try {
-				const result = await listClineIntegrations();
+				const result = await listHadyanCodeIntegrations();
 				if (cancelled) {
 					return;
 				}
@@ -83,7 +83,7 @@ export function GitHubConnectStep({ onContinue }: { onContinue: () => void }) {
 					// arrive, so stop polling instead of spinning forever.
 					stop();
 					setConnectError(
-						"Your Cline account session ended. Sign in again to connect GitHub.",
+						"Your HadyanCode account session ended. Sign in again to connect GitHub.",
 					);
 					setPhase("connect");
 					return;
@@ -115,7 +115,7 @@ export function GitHubConnectStep({ onContinue }: { onContinue: () => void }) {
 			return;
 		}
 		let cancelled = false;
-		listClineGitHubRepositories()
+		listHadyanCodeGitHubRepositories()
 			.then((result) => {
 				if (!cancelled) {
 					setRepos(result);
@@ -161,7 +161,7 @@ export function GitHubConnectStep({ onContinue }: { onContinue: () => void }) {
 				Connect GitHub
 			</h1>
 			<p className="mt-2 text-sm text-muted-foreground">
-				Grant Cline access to your GitHub repositories to supercharge it with
+				Grant HadyanCode access to your GitHub repositories to supercharge it with
 				real-world context. You can always do this later from your dashboard.
 			</p>
 
@@ -200,7 +200,7 @@ export function GitHubConnectStep({ onContinue }: { onContinue: () => void }) {
 					<div className="mt-3 flex flex-wrap items-center gap-3">
 						<p className="inline-flex items-center gap-2 text-sm text-muted-foreground">
 							<Loader2 className="size-4 animate-spin" />
-							Finish installing the Cline GitHub App in your browser...
+							Finish installing the HadyanCode GitHub App in your browser...
 						</p>
 						<button
 							className="text-sm text-muted-foreground transition-colors hover:text-foreground"

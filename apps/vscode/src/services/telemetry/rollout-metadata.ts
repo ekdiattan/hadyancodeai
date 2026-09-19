@@ -16,10 +16,10 @@ export const ROLLOUT_ERROR_MESSAGE_LIMIT = 500
 
 /**
  * The rollout variant this bundle was built as, or undefined for ordinary builds.
- * CLINE_ROLLOUT_VARIANT is inlined at build time by the combined rollout workflow only.
+ * HADYANCODE_ROLLOUT_VARIANT is inlined at build time by the combined rollout workflow only.
  */
 export function getExtensionVariant(): ExtensionVariant | undefined {
-	const variant = process.env.CLINE_ROLLOUT_VARIANT
+	const variant = process.env.HADYANCODE_ROLLOUT_VARIANT
 	return variant === "legacy" || variant === "next" ? variant : undefined
 }
 

@@ -49,7 +49,7 @@ const pkg = JSON.parse(readFileSync(join(cliDir, "package.json"), "utf-8"));
 const version: string = pkg.version;
 const repository: unknown = pkg.repository;
 
-console.log(`Building @cline/cli v${version}`);
+console.log(`Building @hadyancode/cli v${version}`);
 
 const buildOptions = parseBuildOptions(process.argv.slice(2));
 
@@ -100,11 +100,11 @@ if (!buildOptions.skipSdkBuild) {
 	await $`bun run build:sdk`.cwd(rootDir);
 
 	console.log("Building CLI bundle...");
-	await $`bun -F @cline/cli build`.cwd(rootDir);
+	await $`bun -F @hadyancode/cli build`.cwd(rootDir);
 }
 
-const hubWebviewSource = join(cliDir, "../cline-hub/src/webview");
-const hubWebviewDist = join(cliDir, "../cline-hub/dist/webview");
+const hubWebviewSource = join(cliDir, "../hadyancode-hub/src/webview");
+const hubWebviewDist = join(cliDir, "../hadyancode-hub/dist/webview");
 const hubWebviewIndex = join(hubWebviewDist, "index.html");
 
 function newestFileMtimeMs(dir: string): number {
@@ -141,8 +141,8 @@ function shouldBuildHubWebview(): boolean {
 }
 
 if (shouldBuildHubWebview()) {
-	console.log("Building Cline Hub webview...");
-	await $`bun -F @cline/cline-hub build:webview`.cwd(rootDir);
+	console.log("Building HadyanCode Hub webview...");
+	await $`bun -F @hadyancode/hadyancode-hub build:webview`.cwd(rootDir);
 }
 
 const binaries: Record<string, string> = {};
@@ -183,10 +183,10 @@ async function buildCompiledBinary(input: {
 	// Build to /tmp first so Bun's temp-file rename stays on one filesystem
 	// layer in containerized environments (virtiofs, overlayfs).
 	const entrypoint = join(cliDir, "src/index.ts");
-	const tmpDir = join("/tmp", `cline-build-${input.dirName}`);
+	const tmpDir = join("/tmp", `hadyancode-build-${input.dirName}`);
 	const tmpOutfile = join(
 		tmpDir,
-		input.outfile.endsWith(".exe") ? "cline.exe" : "cline",
+		input.outfile.endsWith(".exe") ? "hadyancode.exe" : "hadyancode",
 	);
 	mkdirSync(tmpDir, { recursive: true });
 
@@ -225,9 +225,9 @@ async function buildCompiledBinary(input: {
 for (const item of targets) {
 	// npm treats "win32" specially in os field, but for package naming use "windows"
 	const displayOs = item.os === "win32" ? "windows" : item.os;
-	const name = `@cline/cli-${displayOs}-${item.arch}`;
+	const name = `@hadyancode/cli-${displayOs}-${item.arch}`;
 	const dirName = `cli-${displayOs}-${item.arch}`;
-	const binaryName = item.os === "win32" ? "cline.exe" : "cline";
+	const binaryName = item.os === "win32" ? "hadyancode.exe" : "hadyancode";
 	const bunTarget = getBunTarget(item);
 
 	console.log(`\nBuilding ${name} (target: ${bunTarget})...`);
@@ -269,8 +269,8 @@ for (const item of targets) {
 	}
 
 	if (existsSync(hubWebviewDist)) {
-		const hubWebviewDest = join(cliDir, `dist/${dirName}/cline-hub/webview`);
-		mkdirSync(join(cliDir, `dist/${dirName}/cline-hub`), {
+		const hubWebviewDest = join(cliDir, `dist/${dirName}/hadyancode-hub/webview`);
+		mkdirSync(join(cliDir, `dist/${dirName}/hadyancode-hub`), {
 			recursive: true,
 		});
 		cpSync(hubWebviewDist, hubWebviewDest, { recursive: true });
@@ -283,12 +283,12 @@ for (const item of targets) {
 			{
 				name,
 				version,
-				description: `Cline CLI binary for ${displayOs} ${item.arch}`,
+				description: `HadyanCode CLI binary for ${displayOs} ${item.arch}`,
 				os: [item.os],
 				cpu: [item.arch],
 				...(repository ? { repository } : {}),
 				bin: {
-					cline: `bin/${binaryName}`,
+					hadyancode: `bin/${binaryName}`,
 				},
 			},
 			null,

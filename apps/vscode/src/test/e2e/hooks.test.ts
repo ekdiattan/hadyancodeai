@@ -1,7 +1,7 @@
 import { expect } from "@playwright/test"
 import fs from "fs/promises"
 import path from "path"
-import { e2e, E2ETestHelper } from "./utils/helpers"
+import { E2ETestHelper, e2e } from "./utils/helpers"
 
 // This spec runs against its own fixture workspace: hooks execute on every
 // prompt once discovered (hooksEnabled defaults to true), so keeping the hook
@@ -14,11 +14,11 @@ const hooksE2e = e2e.extend({
 })
 
 // The fixture ships a UserPromptSubmit hook
-// (.clinerules/hooks/UserPromptSubmit[.ps1]) that writes hook-ran.json into its
+// (.hadyancoderules/hooks/UserPromptSubmit[.ps1]) that writes hook-ran.json into its
 // working directory, recording process.cwd() and the workspaceRoots it received
 // on stdin. Discovery, cwd selection, and hook input metadata all resolve from
 // the window's actual workspace folders, so the marker must land in this
-// window's workspace root and name it — regardless of what any other Cline
+// window's workspace root and name it — regardless of what any other HadyanCode
 // instance recorded in shared state.
 hooksE2e("Hooks - workspace hook runs from this window's workspace root", async ({ helper, sidebar, workspaceDir }) => {
 	const markerPath = path.join(workspaceDir, "hook-ran.json")
@@ -34,7 +34,7 @@ hooksE2e("Hooks - workspace hook runs from this window's workspace root", async 
 
 		// The hook runs during beforeRun, ahead of the model call, so the
 		// marker exists by the time the mock response renders.
-		await expect(sidebar.getByText("mock Cline API response")).toBeVisible()
+		await expect(sidebar.getByText("mock HadyanCode API response")).toBeVisible()
 
 		let markerRaw: string | undefined
 		await expect

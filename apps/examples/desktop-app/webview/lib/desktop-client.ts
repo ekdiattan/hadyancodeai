@@ -8,7 +8,7 @@ import type {
 	DesktopDebugLogPayload,
 	HubTaskCreateInput,
 	HubTaskUpdateInput,
-} from "@cline/shared";
+} from "@hadyancode/shared";
 import type {
 	DesktopTransportEvent,
 	DesktopTransportMessage,
@@ -198,13 +198,13 @@ function webviewDebugLoggingEnabled(): boolean {
 	try {
 		runtimeEnabled =
 			typeof window !== "undefined" &&
-			window.localStorage.getItem("cline.debugLogs") === "1";
+			window.localStorage.getItem("hadyancode.debugLogs") === "1";
 	} catch {
 		// Some embedded/privacy contexts deny localStorage access.
 	}
 	return (
 		process.env.NODE_ENV !== "production" ||
-		process.env.NEXT_PUBLIC_CLINE_DEBUG_LOGS === "1" ||
+		process.env.NEXT_PUBLIC_HADYANCODE_DEBUG_LOGS === "1" ||
 		runtimeEnabled
 	);
 }

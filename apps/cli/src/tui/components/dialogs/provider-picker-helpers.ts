@@ -2,13 +2,13 @@ import {
 	getProviderAuthStorageId,
 	type ProviderSettingsManager,
 	saveLocalProviderSettings,
-} from "@cline/core";
+} from "@hadyancode/core";
 import {
 	type DialogDismissKey,
 	isAnyKeyDismiss,
 } from "../../utils/dialog-keys";
 
-const CLINE_PASS_SUBSCRIPTION_PATH = "/dashboard/subscription";
+const HADYANCODE_PASS_SUBSCRIPTION_PATH = "/dashboard/subscription";
 const DEFAULT_APP_BASE_URL = "https://app.cline.bot";
 
 /**
@@ -17,8 +17,8 @@ const DEFAULT_APP_BASE_URL = "https://app.cline.bot";
  * are cleared: the auth handler prefers auth.accessToken over apiKey, so a
  * stale token would otherwise keep winning over the manual key.
  *
- * The key is written both to the provider's auth storage entry (cline-pass
- * stores credentials under "cline") and to the provider's own entry: settings
+ * The key is written both to the provider's auth storage entry (hadyancode-pass
+ * stores credentials under "hadyancode") and to the provider's own entry: settings
  * resolution lets a direct entry shadow the storage entry, and provider
  * switching copies merged settings (including auth) into direct entries, so
  * both must be updated for the manual key to reliably take effect.
@@ -53,7 +53,7 @@ export function saveManualProviderApiKey(
  * entry when that fallback is available; any other (unmodified) key cancels
  * the pending auth attempt; modifier-held keys are ignored.
  *
- * Like the ClinePass promo dialog, this screen must never depend on Esc
+ * Like the HadyanCodePass promo dialog, this screen must never depend on Esc
  * alone: it is non-interactive, it may be waiting on a browser flow that
  * never completes, and Esc is the least reliably delivered key across
  * terminals (notably on Windows, where console input layers can swallow it).
@@ -68,11 +68,11 @@ export function resolveOAuthWaitKeyAction(
 	return allowApiKeyFallback && key.name === "k" ? "use_api_key" : "cancel";
 }
 
-export function buildClinePassSubscriptionPageUrl(
+export function buildHadyanCodePassSubscriptionPageUrl(
 	appBaseUrl: string | undefined,
 ): string {
 	const url = new URL(
-		CLINE_PASS_SUBSCRIPTION_PATH,
+		HADYANCODE_PASS_SUBSCRIPTION_PATH,
 		appBaseUrl || DEFAULT_APP_BASE_URL,
 	);
 	url.searchParams.set("personal", "true");

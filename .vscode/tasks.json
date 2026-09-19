@@ -328,7 +328,7 @@
 			"options": {
 				"cwd": "${workspaceFolder}",
 				"env": {
-					"CLINE_SOURCEMAPS": "1"
+					"HADYANCODE_SOURCEMAPS": "1"
 				}
 			}
 		}

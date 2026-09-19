@@ -1,7 +1,7 @@
 /**
- * @cline/agents
+ * @hadyancode/agents
  *
- * Browser-safe agent runtime for the next-generation Cline SDK.
+ * Browser-safe agent runtime for the next-generation HadyanCode SDK.
  *
  * Exports:
  *   - `AgentRuntime` / `Agent` — the agentic loop class (two names for the
@@ -11,10 +11,10 @@
  *   - `AgentRuntimeConfig` and its two variants (`AgentRuntimeConfigWithModel`,
  *     `AgentRuntimeConfigWithProvider`) — the discriminated config union.
  *   - `AgentRunInput` / `AgentEventListener` — convenience type aliases.
- *   - `createTool` — re-exported from `@cline/shared` for authoring tools.
+ *   - `createTool` — re-exported from `@hadyancode/shared` for authoring tools.
  *
  * Shared types (`AgentMessage`, `AgentRunResult`, etc.) should be imported
- * directly from `@cline/shared`.
+ * directly from `@hadyancode/shared`.
  */
 
 export type {
@@ -39,8 +39,8 @@ export type {
 	AgentUsage,
 	ToolApprovalResult,
 	ToolPolicy,
-} from "@cline/shared";
-export { createTool } from "@cline/shared";
+} from "@hadyancode/shared";
+export { createTool } from "@hadyancode/shared";
 export type {
 	AgentEventListener,
 	AgentRunInput,

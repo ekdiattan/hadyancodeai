@@ -1,4 +1,4 @@
-import { validateImageMedia } from "@cline/shared/browser";
+import { validateImageMedia } from "@hadyancode/shared/browser";
 import type { ChatMessageImage } from "@/lib/chat-schema";
 import type { SerializedAttachmentFile, SerializedAttachments } from "./types";
 

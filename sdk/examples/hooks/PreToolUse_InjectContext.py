@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-Cline Hook: PreToolUse (Inject Context)
+HadyanCode Hook: PreToolUse (Inject Context)
 Injects file context and environment info before tool execution.
-Copy to ~/.cline/hooks/PreToolUse.py and chmod +x
+Copy to ~/.hadyancode/hooks/PreToolUse.py and chmod +x
 """
 
 import sys

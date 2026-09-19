@@ -1,11 +1,11 @@
-import { projectSessionMessagesForDisplay } from "@cline/core";
+import { projectSessionMessagesForDisplay } from "@hadyancode/core";
 import {
 	type ContentBlock,
 	formatDisplayUserInput,
 	type MessageWithMetadata,
 	type ToolResultContent,
 	type ToolUseContent,
-} from "@cline/shared";
+} from "@hadyancode/shared";
 import { formatStructuredCommand } from "../utils/helpers";
 
 export interface ConversationHistory {

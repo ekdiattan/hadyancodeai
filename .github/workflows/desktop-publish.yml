@@ -31,7 +31,7 @@ jobs:
   validate:
     name: Validate release tag
     if: |
-      github.repository == 'cline/cline' &&
+      github.repository == 'hadyancode/hadyancode' &&
       github.event.inputs.confirm_publish == 'publish' &&
       !endsWith(github.actor, '[bot]')
     runs-on: ubuntu-latest
@@ -111,7 +111,7 @@ jobs:
               fi
               ANCESTOR_REF=main
               FEED=desktop-latest
-              PRODUCT="Cline"
+              PRODUCT="HadyanCode"
               ;;
             beta)
               if ! printf "%s\n" "$TAG" | grep -Eq '^desktop-v[0-9]+\.[0-9]+\.[0-9]+-beta\.[0-9]+$'; then
@@ -120,7 +120,7 @@ jobs:
               fi
               ANCESTOR_REF=desktop-experimental
               FEED=desktop-beta
-              PRODUCT="Cline Beta"
+              PRODUCT="HadyanCode Beta"
               ;;
             *)
               echo "unknown channel: ${CHANNEL}"
@@ -435,7 +435,7 @@ jobs:
           OUT="dist/publish"
           mkdir -p "$OUT"
 
-          # "Cline" -> Cline, "Cline Beta" -> Cline-Beta
+          # "HadyanCode" -> HadyanCode, "HadyanCode Beta" -> HadyanCode-Beta
           PREFIX="${PRODUCT// /-}"
 
           DMG=$(find "$BUNDLE_DIR/dmg" -name '*.dmg' -print -quit)
@@ -468,8 +468,8 @@ jobs:
     # Same gate rationale as the macOS build job above. This job additionally
     # needs id-token: write for Azure OIDC: Windows binaries are
     # Authenticode-signed with Azure Trusted Signing, authenticated through the
-    # PublishDesktop-environment federated credential on the cline-cli-signing
-    # Entra app (subject repo:cline/cline:environment:PublishDesktop).
+    # PublishDesktop-environment federated credential on the hadyancode-cli-signing
+    # Entra app (subject repo:hadyancode/hadyancode:environment:PublishDesktop).
     if: github.ref == 'refs/heads/main'
     environment: PublishDesktop
     runs-on: windows-latest
@@ -689,7 +689,7 @@ jobs:
           OUT="dist/publish"
           mkdir -p "$OUT"
 
-          # "Cline" -> Cline, "Cline Beta" -> Cline-Beta
+          # "HadyanCode" -> HadyanCode, "HadyanCode Beta" -> HadyanCode-Beta
           PREFIX="${PRODUCT// /-}"
 
           SETUP=$(find "$BUNDLE_DIR/nsis" -name '*-setup.exe' -print -quit)
@@ -880,14 +880,14 @@ jobs:
           if ! gh release view "$FEED" >/dev/null 2>&1; then
             if [ "$CHANNEL" = "beta" ]; then
               gh release create "$FEED" \
-                --title "Cline desktop beta (auto-update feed)" \
+                --title "HadyanCode desktop beta (auto-update feed)" \
                 --notes "Rolling release backing the beta desktop app auto-updater. The latest.json asset points at the newest desktop-vX.Y.Z-beta.N release. Only beta installs poll this feed; stable installs use desktop-latest. Do not delete." \
                 --latest=false \
                 --prerelease \
                 --target "$(git rev-parse HEAD)"
             else
               gh release create "$FEED" \
-                --title "Cline desktop (auto-update feed)" \
+                --title "HadyanCode desktop (auto-update feed)" \
                 --notes "Rolling release backing the desktop app auto-updater. The latest.json asset points at the newest desktop-vX.Y.Z release. Do not delete." \
                 --latest=false \
                 --target "$(git rev-parse HEAD)"
@@ -901,7 +901,7 @@ jobs:
           TAG: ${{ needs.validate.outputs.tag }}
           FEED: ${{ needs.validate.outputs.feed }}
         run: |
-          echo "Published Cline desktop v${VERSION}"
+          echo "Published HadyanCode desktop v${VERSION}"
           echo "Release: https://github.com/${GITHUB_REPOSITORY}/releases/tag/${TAG}"
           echo "Auto-update feed refreshed: https://github.com/${GITHUB_REPOSITORY}/releases/download/${FEED}/latest.json"
 
@@ -912,12 +912,12 @@ jobs:
           token: ${{ secrets.SLACK_RELEASE_BOT_TOKEN }}
           payload: |
             channel: "C0APVKGGZFC"
-            text: "Cline desktop v${{ needs.validate.outputs.version }}${{ needs.validate.outputs.channel == 'beta' && ' (beta)' || '' }}"
+            text: "HadyanCode desktop v${{ needs.validate.outputs.version }}${{ needs.validate.outputs.channel == 'beta' && ' (beta)' || '' }}"
             blocks:
               - type: "section"
                 text:
                   type: "mrkdwn"
-                  text: "Cline desktop v${{ needs.validate.outputs.version }}${{ needs.validate.outputs.channel == 'beta' && ' (beta)' || '' }}"
+                  text: "HadyanCode desktop v${{ needs.validate.outputs.version }}${{ needs.validate.outputs.channel == 'beta' && ' (beta)' || '' }}"
               - type: "section"
                 text:
                   type: "mrkdwn"

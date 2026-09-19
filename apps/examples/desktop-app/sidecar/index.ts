@@ -1,13 +1,13 @@
 import { homedir } from "node:os";
 import {
 	checkManagedHubBuildMismatch,
-	createClineTelemetryServiceConfig,
+	createHadyanCodeTelemetryServiceConfig,
 	readGlobalSettings,
 	setHomeDirIfUnset,
 	setModelToolEnabledGlobally,
 	watchManagedHubBuildMismatch,
-} from "@cline/core";
-import { captureSdkError, claimHubDaemonProcess } from "@cline/shared";
+} from "@hadyancode/core";
+import { captureSdkError, claimHubDaemonProcess } from "@hadyancode/shared";
 import { prewarmWorkspaceMetadata } from "./chat-session";
 import { configureConnectorCliLaunch } from "./connectors";
 import {
@@ -68,9 +68,9 @@ async function main() {
 		pid: process.pid,
 	});
 
-	// Web search is opt-in elsewhere in Cline, but the desktop app defaults
+	// Web search is opt-in elsewhere in HadyanCode, but the desktop app defaults
 	// it to on. Seed the shared setting only when the user has never set it,
-	// so an explicit off (from any Cline app) stays off. Best-effort: an
+	// so an explicit off (from any HadyanCode app) stays off. Best-effort: an
 	// unwritable settings file must not block startup over a default.
 	try {
 		if (readGlobalSettings().tools?.web_search === undefined) {
@@ -151,7 +151,7 @@ async function main() {
 		mode: SIDECAR_MODE,
 	});
 
-	// Another Cline installation (e.g. an updated CLI) can replace the shared
+	// Another HadyanCode installation (e.g. an updated CLI) can replace the shared
 	// Hub daemon while this app is running. Surface that to the webview so it
 	// can prompt the user to update and restart.
 	watchManagedHubBuildMismatch({
@@ -172,9 +172,9 @@ async function main() {
 	// init has already settled the hub state, so check once right away. The
 	// broadcast reaches webviews that are already connected; the replay in
 	// createWebSocketHandler covers ones that connect later. Skipped when
-	// CLINE_HUB_PORT pins an explicit endpoint, matching the watcher: such
+	// HADYANCODE_HUB_PORT pins an explicit endpoint, matching the watcher: such
 	// hosts keep protocol-only compatibility and must not show update prompts.
-	if (!process.env.CLINE_HUB_PORT?.trim()) {
+	if (!process.env.HADYANCODE_HUB_PORT?.trim()) {
 		void checkManagedHubBuildMismatch()
 			.then((mismatch) => {
 				if (!mismatch || ctx.hubBuildMismatch) {
@@ -220,7 +220,7 @@ async function main() {
  */
 function runTelemetrySelfcheck(): void {
 	const report = buildTelemetrySelfcheckReport(
-		createClineTelemetryServiceConfig(),
+		createHadyanCodeTelemetryServiceConfig(),
 	);
 	process.stdout.write(`${JSON.stringify(report)}\n`);
 }
@@ -235,7 +235,7 @@ async function runEntrypoint(): Promise<void> {
 	// Claim rather than read: consuming the sentinel keeps daemon-hosted sessions
 	// from handing it to every process they spawn.
 	if (claimHubDaemonProcess()) {
-		await import("@cline/core/hub/daemon-entry");
+		await import("@hadyancode/core/hub/daemon-entry");
 		return;
 	}
 	await main();

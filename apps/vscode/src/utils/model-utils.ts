@@ -1,5 +1,5 @@
-import { MODEL_COLLECTIONS_BY_PROVIDER_ID } from "@cline/llms"
 import { ApiHandlerModel } from "@core/api"
+import { MODEL_COLLECTIONS_BY_PROVIDER_ID } from "@hadyancode/llms"
 import type { AnthropicModelId } from "@/shared/api"
 
 const CLAUDE_VERSION_MATCH_REGEX = /[-_ ]([\d](?:\.[05])?)[-_ ]?/

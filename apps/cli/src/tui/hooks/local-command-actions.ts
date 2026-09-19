@@ -17,7 +17,7 @@ export interface LocalSlashCommandActionInput {
 	clearConversation: () => Promise<void>;
 	openHelp: () => void;
 	openHistory: () => void;
-	exitCline: () => void;
+	exitHadyanCode: () => void;
 }
 
 export function runLocalSlashCommandAction(
@@ -79,7 +79,7 @@ export function runLocalSlashCommandAction(
 		return true;
 	}
 	if (normalized === "quit") {
-		setTimeout(input.exitCline, 0);
+		setTimeout(input.exitHadyanCode, 0);
 		return true;
 	}
 	return false;

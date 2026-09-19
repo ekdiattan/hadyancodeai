@@ -1,6 +1,6 @@
-import type { UserInstructionConfigService } from "@cline/core";
-import { HubSessionClient } from "@cline/core";
-import type { ChatStartSessionRequest } from "@cline/shared";
+import type { UserInstructionConfigService } from "@hadyancode/core";
+import { HubSessionClient } from "@hadyancode/core";
+import type { ChatStartSessionRequest } from "@hadyancode/shared";
 import { resolveCliSessionMetadata } from "../utils/enterprise";
 import { ensureCliHubServer } from "../utils/hub-runtime";
 import { c, emitJsonLine, writeErr, writeln } from "../utils/output";
@@ -17,7 +17,7 @@ const ZEN_DISPATCH_ACK_TIMEOUT_MS = 5_000;
  * hub continues to execute the agent loop in the background and, on
  * completion, already publishes a `ui.notify` event which the menubar app
  * (if installed) surfaces as a system notification. If the menubar app is not
- * running, users can still find the result later via `cline history`.
+ * running, users can still find the result later via `hadyancode history`.
  *
  * Because no human is available to approve tool calls once the CLI exits,
  * zen mode forces full tool auto-approval (same semantics as yolo) and only
@@ -38,10 +38,10 @@ export async function runZen(
 		return;
 	}
 	if (
-		process.env.CLINE_SESSION_BACKEND_MODE?.trim().toLowerCase() === "local"
+		process.env.HADYANCODE_SESSION_BACKEND_MODE?.trim().toLowerCase() === "local"
 	) {
 		writeErr(
-			"--zen requires the hub backend but CLINE_SESSION_BACKEND_MODE=local is set.",
+			"--zen requires the hub backend but HADYANCODE_SESSION_BACKEND_MODE=local is set.",
 		);
 		process.exitCode = 1;
 		return;
@@ -65,7 +65,7 @@ export async function runZen(
 		address: hubUrl,
 		authToken: hubAuthToken,
 		clientType: "cli-zen",
-		displayName: "Cline CLI (zen)",
+		displayName: "HadyanCode CLI (zen)",
 		workspaceRoot,
 		cwd: config.cwd,
 	});
@@ -100,7 +100,7 @@ export async function runZen(
 			enableTeams: false,
 			autoApproveTools: true,
 			toolExecutors: ["submit"],
-			source: "cline-cli-zen",
+			source: "hadyancode-cli-zen",
 			interactive: false,
 			logger: config.loggerConfig,
 		};

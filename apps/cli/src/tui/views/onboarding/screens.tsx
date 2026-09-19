@@ -6,25 +6,23 @@ import {
 	CODEX_CLI_INSTALL_URL,
 	type CodexCliStatus,
 } from "../../../utils/codex-cli";
+import { HadyanCodeWordmark } from "../../components/hadyancode-brand";
 import {
-	ClineModelPicker,
-	type ClineModelPickerEntry,
-} from "../../components/model-selector/cline-model-picker";
+	HadyanCodeModelPicker,
+	type HadyanCodeModelPickerEntry,
+} from "../../components/model-selector/hadyancode-model-picker";
 import {
 	type SearchableItem,
 	SearchableList,
 	type SearchableListState,
 } from "../../components/searchable-list";
-import {
-	TrackedRobot,
-	type useMouseTracker,
-} from "../../components/tracked-robot";
+import type { useMouseTracker } from "../../components/tracked-robot";
 import { useTheme } from "../../hooks/use-theme";
 import { getInputRuleColor, getUserMessageBackground } from "../../palette";
 import { FIELD_ORDER } from "./fields";
 import {
-	type ClinePassSubscriptionOption,
-	type ClinePassSubscriptionStatus,
+	type HadyanCodePassSubscriptionOption,
+	type HadyanCodePassSubscriptionStatus,
 	type MenuOption,
 	THINKING_LEVELS,
 } from "./model";
@@ -52,8 +50,8 @@ function useOnboardingColors() {
 	};
 }
 
-function getClinePassSubscriptionOptionId(index: number): string {
-	return `cline-pass-subscription-option-${index}`;
+function getHadyanCodePassSubscriptionOptionId(index: number): string {
+	return `hadyancode-pass-subscription-option-${index}`;
 }
 
 interface OnboardingFrameProps {
@@ -78,9 +76,7 @@ function OnboardingFrame({
 			alignItems="center"
 			onMouseMove={mouse.onMouseMove}
 		>
-			{!compact && (
-				<TrackedRobot cursorX={mouse.cursor.x} cursorY={mouse.cursor.y} />
-			)}
+			{!compact && <HadyanCodeWordmark />}
 			<box
 				flexDirection="column"
 				width={contentWidth}
@@ -247,7 +243,7 @@ export function OnboardingDeviceCodeScreen(props: {
 import type {
 	ProviderConfigFieldKey,
 	ProviderConfigFieldRequirement,
-} from "@cline/core";
+} from "@hadyancode/core";
 
 const DEFAULT_FIELD_LABELS: Partial<Record<ProviderConfigFieldKey, string>> = {
 	apiKey: "API key",
@@ -463,9 +459,9 @@ export function OnboardingProviderPickerScreen(props: {
 	);
 }
 
-export function OnboardingClineModelScreen(props: {
-	clineEntries: ClineModelPickerEntry[];
-	clineModelSelected: number;
+export function OnboardingHadyanCodeModelScreen(props: {
+	hadyancodeEntries: HadyanCodeModelPickerEntry[];
+	hadyancodeModelSelected: number;
 	compact: boolean;
 	contentWidth: number;
 	mouse: MouseTrackerState;
@@ -485,9 +481,9 @@ export function OnboardingClineModelScreen(props: {
 				You can change this anytime
 			</text>
 
-			<ClineModelPicker
-				entries={props.clineEntries}
-				selected={props.clineModelSelected}
+			<HadyanCodeModelPicker
+				entries={props.hadyancodeEntries}
+				selected={props.hadyancodeModelSelected}
 				loading={props.recommendedLoading}
 			/>
 
@@ -498,17 +494,17 @@ export function OnboardingClineModelScreen(props: {
 	);
 }
 
-export function OnboardingClinePassSubscriptionScreen(props: {
+export function OnboardingHadyanCodePassSubscriptionScreen(props: {
 	compact: boolean;
 	contentWidth: number;
 	currentPlanName: string;
 	error: string;
 	mouse: MouseTrackerState;
 	openStatus: string;
-	options: ClinePassSubscriptionOption[];
+	options: HadyanCodePassSubscriptionOption[];
 	planFeatures: string[];
 	selected: number;
-	status: ClinePassSubscriptionStatus;
+	status: HadyanCodePassSubscriptionStatus;
 	subscriptionUrl: string;
 }) {
 	const defaultFg = useDefaultFg();
@@ -526,7 +522,7 @@ export function OnboardingClinePassSubscriptionScreen(props: {
 		}
 		const scrollSelectedOptionIntoView = () => {
 			scrollRef.current?.scrollChildIntoView(
-				getClinePassSubscriptionOptionId(props.selected),
+				getHadyanCodePassSubscriptionOptionId(props.selected),
 			);
 		};
 		scrollSelectedOptionIntoView();
@@ -566,32 +562,34 @@ export function OnboardingClinePassSubscriptionScreen(props: {
 							flexShrink={0}
 						>
 							{isSubscribed
-								? "ClinePass subscription active"
-								: "ClinePass subscription required"}
+								? "HadyanCodePass subscription active"
+								: "HadyanCodePass subscription required"}
 						</text>
 
 						{isLoading ? (
 							<box flexDirection="row" gap={1} flexShrink={0}>
 								<spinner name="dots" color="gray" />
-								<text fg="gray">Checking your ClinePass subscription...</text>
+								<text fg="gray">
+									Checking your HadyanCodePass subscription...
+								</text>
 							</box>
 						) : isSubscribed ? (
 							<text fg={defaultFg} selectable flexShrink={0}>
-								Current plan: {props.currentPlanName || "ClinePass"}
+								Current plan: {props.currentPlanName || "HadyanCodePass"}
 							</text>
 						) : isError ? (
 							<text
 								fg={defaultFg}
 								selectable
 								flexShrink={0}
-								content="Could not verify your ClinePass subscription. Re-check before choosing a ClinePass model."
+								content="Could not verify your HadyanCodePass subscription. Re-check before choosing a HadyanCodePass model."
 							/>
 						) : (
 							<text
 								fg={defaultFg}
 								selectable
 								flexShrink={0}
-								content="No access to ClinePass subscription models yet. Subscribe to ClinePass, the low cost open weights model coding plan."
+								content="No access to HadyanCodePass subscription models yet. Subscribe to HadyanCodePass, the low cost open weights model coding plan."
 							/>
 						)}
 
@@ -635,7 +633,7 @@ export function OnboardingClinePassSubscriptionScreen(props: {
 									const isSel = i === props.selected;
 									return (
 										<box
-											id={getClinePassSubscriptionOptionId(i)}
+											id={getHadyanCodePassSubscriptionOptionId(i)}
 											key={option.value}
 											paddingX={1}
 											flexDirection="row"
@@ -868,10 +866,7 @@ export function OnboardingMainMenuScreen(props: {
 			alignItems="center"
 			onMouseMove={props.mouse.onMouseMove}
 		>
-			<TrackedRobot
-				cursorX={props.mouse.cursor.x}
-				cursorY={props.mouse.cursor.y}
-			/>
+			<HadyanCodeWordmark color={colors.accent} />
 
 			<box
 				flexDirection="column"
@@ -880,7 +875,7 @@ export function OnboardingMainMenuScreen(props: {
 				marginTop={1}
 			>
 				<text fg={defaultFg}>
-					<strong>Welcome to Cline</strong>
+					<strong>Welcome to HadyanCode</strong>
 				</text>
 				<text fg="gray" marginTop={1}>
 					Connect a model provider to get started.

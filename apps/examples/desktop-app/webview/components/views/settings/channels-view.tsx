@@ -5,7 +5,7 @@ import {
 	type ConnectorChannel,
 	type ConnectorChannelsResponse,
 	shouldIncludeConnectorField,
-} from "@cline/shared/browser";
+} from "@hadyancode/shared/browser";
 import { Circle, Eye, EyeOff, RefreshCw, Search } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
@@ -599,10 +599,10 @@ export function ChannelsContent({
 			{chrome === "page" ? (
 				<PageHeader
 					actions={refreshButton}
-					description="Connect messaging platforms so you can chat with Cline anywhere. Click on a channel name to view or edit its configuration."
+					description="Connect messaging platforms so you can chat with HadyanCode anywhere. Click on a channel name to view or edit its configuration."
 					meta={
 						<span className="rounded-md border border-border bg-background px-2 py-0.5 text-xs text-muted-foreground">
-							cline connect
+							hadyancode connect
 						</span>
 					}
 					title="Channels"
@@ -610,7 +610,7 @@ export function ChannelsContent({
 			) : (
 				<div className="mb-4 flex items-center justify-between gap-3">
 					<p className="text-sm text-muted-foreground">
-						Connect messaging platforms so you can chat with Cline anywhere.
+						Connect messaging platforms so you can chat with HadyanCode anywhere.
 						Click on a channel name to view or edit its configuration.
 					</p>
 					{refreshButton}

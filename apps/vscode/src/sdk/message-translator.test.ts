@@ -1,7 +1,7 @@
-import type { CoreSessionEvent } from "@cline/core"
-import type { Message as SdkMessage } from "@cline/llms"
-import type { AgentEvent, MessageWithMetadata } from "@cline/shared"
-import type { ClineAskUseMcpServer, ClineSayTool } from "@shared/ExtensionMessage"
+import type { CoreSessionEvent } from "@hadyancode/core"
+import type { Message as SdkMessage } from "@hadyancode/llms"
+import type { AgentEvent, MessageWithMetadata } from "@hadyancode/shared"
+import type { HadyanCodeAskUseMcpServer, HadyanCodeSayTool } from "@shared/ExtensionMessage"
 import { describe, expect, it } from "vitest"
 import { getDesktopDir } from "@/utils/path"
 import {
@@ -9,7 +9,7 @@ import {
 	extractToolOutputText,
 	historyItemToSessionFields,
 	MessageTranslatorState,
-	sdkMessagesToClineMessages,
+	sdkMessagesToHadyanCodeMessages,
 	translateSessionEvent,
 } from "./message-translator"
 
@@ -579,8 +579,8 @@ describe("translateSessionEvent — agent_event content_start", () => {
 		expect(result.messages).toHaveLength(1)
 		expect(result.messages[0].say).toBe("tool")
 		expect(result.messages[0].partial).toBe(true)
-		// sdkToolToClineSayTool converts "read_files" → "readFile" and
-		// the text is JSON.stringify(ClineSayTool)
+		// sdkToolToHadyanCodeSayTool converts "read_files" → "readFile" and
+		// the text is JSON.stringify(HadyanCodeSayTool)
 		expect(result.messages[0].text).toContain("readFile")
 		expect(result.messages[0].text).toContain("/src/index.ts")
 	})
@@ -709,7 +709,7 @@ describe("translateSessionEvent — agent_event content_end", () => {
 
 		const result = translateSessionEvent(event, state)
 		expect(result.messages).toHaveLength(1)
-		// Tool content_end produces a ClineSayTool JSON with the tool name
+		// Tool content_end produces a HadyanCodeSayTool JSON with the tool name
 		expect(result.messages[0].say).toBe("tool")
 		expect(result.messages[0].text).toContain("readFile")
 		expect(result.messages[0].partial).toBe(false)
@@ -1501,7 +1501,7 @@ describe("translateSessionEvent — agent_event error", () => {
 		expect(state.wasErrorSeen()).toBe(false)
 	})
 
-	it("reshapes insufficient_credits error into ClineError-compatible format", () => {
+	it("reshapes insufficient_credits error into HadyanCodeError-compatible format", () => {
 		const state = new MessageTranslatorState()
 		const errorJson = JSON.stringify({
 			code: "insufficient_credits",
@@ -1522,11 +1522,11 @@ describe("translateSessionEvent — agent_event error", () => {
 		const result = translateSessionEvent(event, state)
 		expect(result.messages).toHaveLength(2)
 
-		// The api_req_failed text should be structured JSON that ClineError.parse() can handle
+		// The api_req_failed text should be structured JSON that HadyanCodeError.parse() can handle
 		const failedText = result.messages[1].text!
 		const parsed = JSON.parse(failedText)
 		expect(parsed.code).toBe("insufficient_credits")
-		expect(parsed.providerId).toBe("cline")
+		expect(parsed.providerId).toBe("hadyancode")
 		expect(parsed.details.current_balance).toBe(-0.14)
 		expect(parsed.details.message).toBe("Not enough credits available")
 	})
@@ -1556,7 +1556,7 @@ describe("translateSessionEvent — agent_event error", () => {
 		expect(parsed.details.current_balance).toBe(0)
 	})
 
-	it("reshapes SPEND_LIMIT_EXCEEDED error into ClineError-compatible format", () => {
+	it("reshapes SPEND_LIMIT_EXCEEDED error into HadyanCodeError-compatible format", () => {
 		const state = new MessageTranslatorState()
 		const errorJson = JSON.stringify({
 			code: "SPEND_LIMIT_EXCEEDED",
@@ -1584,12 +1584,12 @@ describe("translateSessionEvent — agent_event error", () => {
 		const failedText = result.messages[1].text!
 		const parsed = JSON.parse(failedText)
 		expect(parsed.code).toBe("SPEND_LIMIT_EXCEEDED")
-		expect(parsed.providerId).toBe("cline")
+		expect(parsed.providerId).toBe("hadyancode")
 		expect(parsed.details.budget_period).toBe("daily")
 		expect(parsed.details.limit_usd).toBe(20.0)
 	})
 
-	it("reshapes plain-text insufficient credits error into ClineError-compatible format", () => {
+	it("reshapes plain-text insufficient credits error into HadyanCodeError-compatible format", () => {
 		const state = new MessageTranslatorState()
 		// The SDK often extracts human-readable text from the API response,
 		// losing the structured JSON. This tests that plain-text balance errors
@@ -1601,7 +1601,7 @@ describe("translateSessionEvent — agent_event error", () => {
 				event: {
 					type: "error",
 					error: {
-						message: "Insufficient balance. Your Cline Credits balance is $-0.14",
+						message: "Insufficient balance. Your HadyanCode Credits balance is $-0.14",
 					},
 				} as AgentEvent,
 			},
@@ -1613,12 +1613,12 @@ describe("translateSessionEvent — agent_event error", () => {
 		const failedText = result.messages[1].text!
 		const parsed = JSON.parse(failedText)
 		expect(parsed.code).toBe("insufficient_credits")
-		expect(parsed.providerId).toBe("cline")
+		expect(parsed.providerId).toBe("hadyancode")
 		expect(parsed.details.current_balance).toBe(-0.14)
 		expect(parsed.details.message).toContain("Insufficient balance")
 	})
 
-	it("reshapes plain-text 'Not enough credits' error into ClineError-compatible format", () => {
+	it("reshapes plain-text 'Not enough credits' error into HadyanCodeError-compatible format", () => {
 		const state = new MessageTranslatorState()
 		const event: CoreSessionEvent = {
 			type: "agent_event",
@@ -1637,11 +1637,11 @@ describe("translateSessionEvent — agent_event error", () => {
 		const failedText = result.messages[1].text!
 		const parsed = JSON.parse(failedText)
 		expect(parsed.code).toBe("insufficient_credits")
-		expect(parsed.providerId).toBe("cline")
+		expect(parsed.providerId).toBe("hadyancode")
 		expect(parsed.details.current_balance).toBe(0)
 	})
 
-	it("reshapes plain-text spend limit error into ClineError-compatible format", () => {
+	it("reshapes plain-text spend limit error into HadyanCodeError-compatible format", () => {
 		const state = new MessageTranslatorState()
 		const event: CoreSessionEvent = {
 			type: "agent_event",
@@ -1662,12 +1662,12 @@ describe("translateSessionEvent — agent_event error", () => {
 		const failedText = result.messages[1].text!
 		const parsed = JSON.parse(failedText)
 		expect(parsed.code).toBe("SPEND_LIMIT_EXCEEDED")
-		expect(parsed.providerId).toBe("cline")
+		expect(parsed.providerId).toBe("hadyancode")
 	})
 
-	it("preserves ClinePass period limit errors for specialized webview rendering", () => {
-		const state = new MessageTranslatorState(undefined, () => "cline-pass")
-		const message = "You have reached your weekly Clinepass limit. The limit resets in 7d, please try again later."
+	it("preserves HadyanCodePass period limit errors for specialized webview rendering", () => {
+		const state = new MessageTranslatorState(undefined, () => "hadyancode-pass")
+		const message = "You have reached your weekly HadyanCodepass limit. The limit resets in 7d, please try again later."
 		const event: CoreSessionEvent = {
 			type: "agent_event",
 			payload: {
@@ -2915,7 +2915,7 @@ describe("translateSessionEvent — run_commands bare array/string input (ENG-18
 // S6-40: skills tool renders skill name (SDK input: { skill: "name" })
 // ---------------------------------------------------------------------------
 
-describe("sdkToolToClineSayTool — fetch_web_content and skills (S6-39, S6-40)", () => {
+describe("sdkToolToHadyanCodeSayTool — fetch_web_content and skills (S6-39, S6-40)", () => {
 	it("S6-39: fetch_web_content extracts URL from SDK requests array", () => {
 		const state = new MessageTranslatorState()
 		const event: CoreSessionEvent = {
@@ -3107,7 +3107,7 @@ describe("sdkToolToClineSayTool — fetch_web_content and skills (S6-39, S6-40)"
 // S6-47: search_codebase renders query and path correctly
 // ---------------------------------------------------------------------------
 
-describe("sdkToolToClineSayTool — search_codebase (S6-47)", () => {
+describe("sdkToolToHadyanCodeSayTool — search_codebase (S6-47)", () => {
 	it("S6-47: search_codebase with { queries: ['TODO', 'FIXME'] } extracts regex", () => {
 		const state = new MessageTranslatorState()
 		const event: CoreSessionEvent = {
@@ -3318,7 +3318,7 @@ describe("sdkToolToClineSayTool — search_codebase (S6-47)", () => {
 // S6-48: Editor diff rendering — search/replace format for old_text+new_text
 // ---------------------------------------------------------------------------
 
-describe("sdkToolToClineSayTool — editor diff rendering (S6-48)", () => {
+describe("sdkToolToHadyanCodeSayTool — editor diff rendering (S6-48)", () => {
 	it("S6-48: editor with old_text and new_text builds search/replace diff in content", () => {
 		const state = new MessageTranslatorState()
 		const event: CoreSessionEvent = {
@@ -3443,7 +3443,7 @@ describe("sdkToolToClineSayTool — editor diff rendering (S6-48)", () => {
 	// S6-48: apply_patch tool — content populated from SDK input field
 	// ---------------------------------------------------------------------------
 
-	describe("sdkToolToClineSayTool — apply_patch content (S6-48)", () => {
+	describe("sdkToolToHadyanCodeSayTool — apply_patch content (S6-48)", () => {
 		it("S6-48: apply_patch with SDK { input: '...' } populates both content and diff", () => {
 			const state = new MessageTranslatorState()
 			const patchContent = "*** Begin Patch\n*** Update File: src/file.ts\n@@\n-old\n+new\n*** End Patch"
@@ -3513,7 +3513,7 @@ describe("sdkToolToClineSayTool — editor diff rendering (S6-48)", () => {
 	})
 })
 
-describe("apply_patch multi-file split (cline#9904)", () => {
+describe("apply_patch multi-file split (hadyancode#9904)", () => {
 	const startEvent = (patch: string, callId: string): CoreSessionEvent => ({
 		type: "agent_event",
 		payload: {
@@ -3569,7 +3569,7 @@ describe("apply_patch multi-file split (cline#9904)", () => {
 		const result = translateSessionEvent(startEvent(TWO_FILE, "call-1"), state)
 
 		// Streaming preview is intentionally one row (the whole patch); the per-file
-		// split happens only at content_end so the finalized ids match (cline#9904).
+		// split happens only at content_end so the finalized ids match (hadyancode#9904).
 		expect(result.messages).toHaveLength(1)
 		expect(result.messages[0].partial).toBe(true)
 		const tool = JSON.parse(result.messages[0].text!)
@@ -3595,7 +3595,7 @@ describe("apply_patch multi-file split (cline#9904)", () => {
 		expect(b.content).not.toContain("src/a.ts")
 	})
 
-	it("reconciles start→end by ts: N rows, none left partial (cline#9904 orphan guard)", () => {
+	it("reconciles start→end by ts: N rows, none left partial (hadyancode#9904 orphan guard)", () => {
 		const state = new MessageTranslatorState()
 		const startResult = translateSessionEvent(startEvent(TWO_FILE, "call-1"), state)
 		const endResult = translateSessionEvent(endEvent("call-1"), state)
@@ -3695,7 +3695,7 @@ describe("apply_patch multi-file split (cline#9904)", () => {
 // ---------------------------------------------------------------------------
 
 describe("MCP tool rendering (serverName__toolName convention)", () => {
-	it("content_start for MCP tool emits say='use_mcp_server' with ClineAskUseMcpServer payload", () => {
+	it("content_start for MCP tool emits say='use_mcp_server' with HadyanCodeAskUseMcpServer payload", () => {
 		const state = new MessageTranslatorState()
 		const event: CoreSessionEvent = {
 			type: "agent_event",
@@ -3716,7 +3716,7 @@ describe("MCP tool rendering (serverName__toolName convention)", () => {
 		expect(msg.type).toBe("say")
 		expect(msg.say).toBe("use_mcp_server")
 		expect(msg.partial).toBe(true)
-		const payload = JSON.parse(msg.text!) as ClineAskUseMcpServer
+		const payload = JSON.parse(msg.text!) as HadyanCodeAskUseMcpServer
 		expect(payload.type).toBe("use_mcp_tool")
 		expect(payload.serverName).toBe("notion")
 		expect(payload.toolName).toBe("notion-get-users")
@@ -3778,7 +3778,7 @@ describe("MCP tool rendering (serverName__toolName convention)", () => {
 						contentType: "tool",
 						toolName: "github__search-repos",
 						toolCallId: "c2",
-						input: { query: "cline" },
+						input: { query: "hadyancode" },
 					} as AgentEvent,
 				},
 			},
@@ -3823,7 +3823,7 @@ describe("MCP tool rendering (serverName__toolName convention)", () => {
 			},
 			state,
 		)
-		const payload = JSON.parse(result.messages[0].text!) as ClineAskUseMcpServer
+		const payload = JSON.parse(result.messages[0].text!) as HadyanCodeAskUseMcpServer
 		expect(payload.serverName).toBe("notion")
 		expect(payload.toolName).toBe("list-databases")
 		expect(payload.arguments).toBeUndefined()
@@ -3932,7 +3932,7 @@ describe("tool display paths are relativized to the cwd", () => {
 		},
 	})
 
-	const parseTool = (text: string | undefined) => JSON.parse(text ?? "{}") as ClineSayTool
+	const parseTool = (text: string | undefined) => JSON.parse(text ?? "{}") as HadyanCodeSayTool
 
 	it("renders a readFile path inside the cwd as relative, keeping the absolute click-to-open target", () => {
 		const state = stateWithCwd()
@@ -4101,20 +4101,20 @@ describe("tool display paths are relativized to the cwd", () => {
 			{ role: "assistant", content: [{ type: "text", text: "The readme says hello." }] } as SdkMessage,
 		]
 
-		const clineMessages = sdkMessagesToClineMessages(messages)
+		const hadyancodeMessages = sdkMessagesToHadyanCodeMessages(messages)
 
-		const hookRows = clineMessages.filter((m) => m.say === "hook_status").map((m) => JSON.parse(m.text ?? "{}"))
+		const hookRows = hadyancodeMessages.filter((m) => m.say === "hook_status").map((m) => JSON.parse(m.text ?? "{}"))
 		expect(hookRows).toEqual([
 			{ hookName: "PreToolUse", toolName: "read_files", status: "completed" },
 			{ hookName: "PostToolUse", toolName: "read_files", status: "completed" },
 		])
 
 		// The injected context never renders as a user bubble.
-		expect(clineMessages.some((m) => m.text?.includes("<hook_context"))).toBe(false)
+		expect(hadyancodeMessages.some((m) => m.text?.includes("<hook_context"))).toBe(false)
 
 		// The hidden injection is not a turn boundary: the final text keeps the
 		// inferred completion retag.
-		expect(clineMessages.some((m) => m.say === "completion_result" || m.ask === "completion_result")).toBe(true)
+		expect(hadyancodeMessages.some((m) => m.say === "completion_result" || m.ask === "completion_result")).toBe(true)
 	})
 
 	it("relativizes persisted-history tool paths via options.cwd", () => {
@@ -4124,8 +4124,8 @@ describe("tool display paths are relativized to the cwd", () => {
 				content: [{ type: "tool_use", id: "t1", name: "read_files", input: { path: `${CWD}/src/index.ts` } }],
 			} as SdkMessage,
 		]
-		const clineMessages = sdkMessagesToClineMessages(messages, undefined, { cwd: CWD })
-		const toolMessage = clineMessages.find((m) => m.say === "tool")
+		const hadyancodeMessages = sdkMessagesToHadyanCodeMessages(messages, undefined, { cwd: CWD })
+		const toolMessage = hadyancodeMessages.find((m) => m.say === "tool")
 		expect(toolMessage).toBeDefined()
 		expect(parseTool(toolMessage?.text).path).toBe("src/index.ts")
 	})
@@ -4138,8 +4138,8 @@ describe("tool display paths are relativized to the cwd", () => {
 			} as SdkMessage,
 		]
 
-		const clineMessages = sdkMessagesToClineMessages(messages)
-		const imageMessage = clineMessages.find((message) => message.media?.length)
+		const hadyancodeMessages = sdkMessagesToHadyanCodeMessages(messages)
+		const imageMessage = hadyancodeMessages.find((message) => message.media?.length)
 		expect(imageMessage).toEqual(
 			expect.objectContaining({
 				type: "say",
@@ -4174,14 +4174,14 @@ describe("tool display paths are relativized to the cwd", () => {
 			},
 		]
 
-		const clineMessages = sdkMessagesToClineMessages(messages)
-		const toolMessage = clineMessages.find((message) => message.say === "tool")
+		const hadyancodeMessages = sdkMessagesToHadyanCodeMessages(messages)
+		const toolMessage = hadyancodeMessages.find((message) => message.say === "tool")
 
 		expect(toolMessage).toBeDefined()
 		expect(parseTool(toolMessage?.text)).toMatchObject({
 			tool: "webSearch",
 		})
-		expect(clineMessages).toContainEqual(
+		expect(hadyancodeMessages).toContainEqual(
 			expect.objectContaining({
 				type: "say",
 				text: "Bun 1.3.14 is current.",

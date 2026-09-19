@@ -4,12 +4,12 @@ import {
 	getUserRunSpan,
 	projectSessionMessagesForDisplay,
 	resolveMessageDisplayRole,
-} from "@cline/core";
+} from "@hadyancode/core";
 import {
 	isGeneratedMedia,
 	type MessageWithMetadata,
 	validateImageMedia,
-} from "@cline/shared";
+} from "@hadyancode/shared";
 import {
 	readSessionManifest,
 	sharedSessionMessagesPath,

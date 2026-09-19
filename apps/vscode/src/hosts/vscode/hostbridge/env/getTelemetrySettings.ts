@@ -1,6 +1,6 @@
 import * as vscode from "vscode"
 import { ErrorSettings } from "@/services/error"
-import { EmptyRequest } from "@/shared/proto/index.cline"
+import { EmptyRequest } from "@/shared/proto/index.hadyancode"
 import { GetTelemetrySettingsResponse, Setting } from "@/shared/proto/index.host"
 
 export async function getTelemetrySettings(_: EmptyRequest): Promise<GetTelemetrySettingsResponse> {
@@ -9,7 +9,6 @@ export async function getTelemetrySettings(_: EmptyRequest): Promise<GetTelemetr
 
 	if (vscode.env.isTelemetryEnabled) {
 		return { isEnabled: Setting.ENABLED, errorLevel }
-	} else {
-		return { isEnabled: Setting.DISABLED, errorLevel }
 	}
+	return { isEnabled: Setting.DISABLED, errorLevel }
 }

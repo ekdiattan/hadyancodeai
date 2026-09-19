@@ -1,14 +1,14 @@
 import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { ProviderSettingsManager } from "@cline/core";
+import { ProviderSettingsManager } from "@hadyancode/core";
 import { afterEach, describe, expect, it } from "vitest";
 import {
 	getPersistedProviderApiKey,
 	isProviderConfigured,
 } from "../../../utils/provider-auth";
 import {
-	buildClinePassSubscriptionPageUrl,
+	buildHadyanCodePassSubscriptionPageUrl,
 	resolveOAuthWaitKeyAction,
 	saveManualProviderApiKey,
 } from "./provider-picker-helpers";
@@ -47,10 +47,10 @@ describe("resolveOAuthWaitKeyAction", () => {
 	});
 });
 
-describe("buildClinePassSubscriptionPageUrl", () => {
+describe("buildHadyanCodePassSubscriptionPageUrl", () => {
 	it("opens the personal subscription page on production by default", () => {
 		expect(
-			buildClinePassSubscriptionPageUrl(undefined).startsWith(
+			buildHadyanCodePassSubscriptionPageUrl(undefined).startsWith(
 				"https://app.cline.bot/dashboard/subscription?personal=true",
 			),
 		).toBe(true);
@@ -58,7 +58,7 @@ describe("buildClinePassSubscriptionPageUrl", () => {
 
 	it("keeps the configured app base URL", () => {
 		expect(
-			buildClinePassSubscriptionPageUrl(
+			buildHadyanCodePassSubscriptionPageUrl(
 				"https://staging-app.cline.bot",
 			).startsWith(
 				"https://staging-app.cline.bot/dashboard/subscription?personal=true",
@@ -77,7 +77,7 @@ describe("saveManualProviderApiKey", () => {
 	});
 
 	function createManager(): ProviderSettingsManager {
-		const dir = mkdtempSync(join(tmpdir(), "cline-cli-provider-picker-"));
+		const dir = mkdtempSync(join(tmpdir(), "hadyancode-cli-provider-picker-"));
 		tempDirs.push(dir);
 		return new ProviderSettingsManager({
 			filePath: join(dir, "providers.json"),
@@ -87,7 +87,7 @@ describe("saveManualProviderApiKey", () => {
 	it("clears stored OAuth tokens so the manual key takes effect", () => {
 		const manager = createManager();
 		manager.saveProviderSettings({
-			provider: "cline",
+			provider: "hadyancode",
 			auth: {
 				accessToken: "stale-access-token",
 				refreshToken: "stale-refresh-token",
@@ -95,57 +95,57 @@ describe("saveManualProviderApiKey", () => {
 			},
 		});
 
-		saveManualProviderApiKey(manager, "cline", "manual-api-key");
+		saveManualProviderApiKey(manager, "hadyancode", "manual-api-key");
 
-		const settings = manager.getProviderSettings("cline");
+		const settings = manager.getProviderSettings("hadyancode");
 		expect(settings?.apiKey).toBe("manual-api-key");
 		expect(settings?.auth?.accessToken).toBeUndefined();
 		expect(settings?.auth?.refreshToken).toBeUndefined();
 		expect(settings?.auth?.accountId).toBe("acct_123");
-		expect(getPersistedProviderApiKey("cline", settings)).toBe(
+		expect(getPersistedProviderApiKey("hadyancode", settings)).toBe(
 			"manual-api-key",
 		);
-		expect(isProviderConfigured("cline", settings)).toBe(true);
+		expect(isProviderConfigured("hadyancode", settings)).toBe(true);
 	});
 
-	it("saves cline-pass keys to the shared cline auth storage entry", () => {
+	it("saves hadyancode-pass keys to the shared hadyancode auth storage entry", () => {
 		const manager = createManager();
 		manager.saveProviderSettings({
-			provider: "cline",
+			provider: "hadyancode",
 			auth: {
 				accessToken: "stale-access-token",
 				refreshToken: "stale-refresh-token",
 			},
 		});
 
-		saveManualProviderApiKey(manager, "cline-pass", "manual-api-key");
+		saveManualProviderApiKey(manager, "hadyancode-pass", "manual-api-key");
 
-		// cline-pass inherits auth storage from the "cline" entry, so the key
+		// hadyancode-pass inherits auth storage from the "hadyancode" entry, so the key
 		// must land there and the stale tokens must be gone for both providers.
-		const clineSettings = manager.getProviderSettings("cline");
-		expect(clineSettings?.apiKey).toBe("manual-api-key");
-		expect(clineSettings?.auth?.accessToken).toBeUndefined();
+		const hadyancodeSettings = manager.getProviderSettings("hadyancode");
+		expect(hadyancodeSettings?.apiKey).toBe("manual-api-key");
+		expect(hadyancodeSettings?.auth?.accessToken).toBeUndefined();
 
-		const clinePassSettings = manager.getProviderSettings("cline-pass");
-		expect(getPersistedProviderApiKey("cline-pass", clinePassSettings)).toBe(
+		const hadyancodePassSettings = manager.getProviderSettings("hadyancode-pass");
+		expect(getPersistedProviderApiKey("hadyancode-pass", hadyancodePassSettings)).toBe(
 			"manual-api-key",
 		);
-		expect(isProviderConfigured("cline-pass", clinePassSettings)).toBe(true);
+		expect(isProviderConfigured("hadyancode-pass", hadyancodePassSettings)).toBe(true);
 	});
 
-	it("clears stale credentials copied into a direct cline-pass entry", () => {
+	it("clears stale credentials copied into a direct hadyancode-pass entry", () => {
 		const manager = createManager();
 		manager.saveProviderSettings({
-			provider: "cline",
+			provider: "hadyancode",
 			auth: {
 				accessToken: "stale-access-token",
 				refreshToken: "stale-refresh-token",
 			},
 		});
 		// Provider switching copies the merged settings (including auth) into
-		// a direct cline-pass entry, which shadows the shared "cline" entry.
+		// a direct hadyancode-pass entry, which shadows the shared "hadyancode" entry.
 		manager.saveProviderSettings({
-			provider: "cline-pass",
+			provider: "hadyancode-pass",
 			apiKey: "stale-copied-key",
 			auth: {
 				accessToken: "stale-access-token",
@@ -153,11 +153,11 @@ describe("saveManualProviderApiKey", () => {
 			},
 		});
 
-		saveManualProviderApiKey(manager, "cline-pass", "manual-api-key");
+		saveManualProviderApiKey(manager, "hadyancode-pass", "manual-api-key");
 
-		const clinePassSettings = manager.getProviderSettings("cline-pass");
-		expect(clinePassSettings?.auth?.accessToken).toBeUndefined();
-		expect(getPersistedProviderApiKey("cline-pass", clinePassSettings)).toBe(
+		const hadyancodePassSettings = manager.getProviderSettings("hadyancode-pass");
+		expect(hadyancodePassSettings?.auth?.accessToken).toBeUndefined();
+		expect(getPersistedProviderApiKey("hadyancode-pass", hadyancodePassSettings)).toBe(
 			"manual-api-key",
 		);
 	});

@@ -2,7 +2,7 @@
 //
 // The SDK-backed Controller. It provides the same interface as the classic
 // Controller but delegates session lifecycle (initTask, askResponse,
-// cancelTask, …) to the Cline SDK (@cline/core) and bridges SDK events to
+// cancelTask, …) to the HadyanCode SDK (@hadyancode/core) and bridges SDK events to
 // the webview's gRPC streams.
 import * as fs from "node:fs/promises"
 import * as path from "node:path"
@@ -18,19 +18,24 @@ import {
 	type SessionHistoryRecord,
 	setTelemetryOptOutGlobally,
 	type UserInstructionConfigService,
-} from "@cline/core"
-import { formatDisplayUserInput, type RemoteConfig, type RemoteConfigBundle } from "@cline/shared"
+} from "@hadyancode/core"
+import { formatDisplayUserInput, type RemoteConfig, type RemoteConfigBundle } from "@hadyancode/shared"
 import type { ApiConfiguration } from "@shared/api"
 import type { ChatContent } from "@shared/ChatContent"
-import { CLINE_ACCOUNT_AUTH_ERROR_MESSAGE } from "@shared/ClineAccount"
 import { mentionRegexGlobal } from "@shared/context-mentions"
-import type { ClineApiReqInfo, ClineMessage, ExtensionState } from "@shared/ExtensionMessage"
+import type { ExtensionState, HadyanCodeApiReqInfo, HadyanCodeMessage } from "@shared/ExtensionMessage"
+import { HADYANCODE_ACCOUNT_AUTH_ERROR_MESSAGE } from "@shared/HadyanCodeAccount"
 import type { HistoryItem } from "@shared/HistoryItem"
-import { DeleteAllTaskHistoryCount, type GetTaskHistoryRequest, TaskHistoryArray, TaskResponse } from "@shared/proto/cline/task"
+import {
+	DeleteAllTaskHistoryCount,
+	type GetTaskHistoryRequest,
+	TaskHistoryArray,
+	TaskResponse,
+} from "@shared/proto/hadyancode/task"
 import type { Settings } from "@shared/storage/state-keys"
 import type { Mode } from "@shared/storage/types"
 import type { TelemetrySetting } from "@shared/TelemetrySetting"
-import type { ClineCheckpointRestore } from "@shared/WebviewMessage"
+import type { HadyanCodeCheckpointRestore } from "@shared/WebviewMessage"
 import { parseMentions } from "@/core/mentions"
 import { ensureMcpServersDirectoryExists } from "@/core/storage/disk"
 import { clearSdkRemoteConfig, refreshSdkRemoteConfig } from "@/core/storage/remote-config/sdk-refresh"
@@ -41,19 +46,19 @@ import { VscodeTerminalManager } from "@/hosts/vscode/terminal/VscodeTerminalMan
 import { ExtensionRegistryInfo } from "@/registry"
 import { OcaAuthService } from "@/services/auth/oca/OcaAuthService"
 import { UrlContentFetcher } from "@/services/browser/UrlContentFetcher"
-import { ClineError } from "@/services/error/ClineError"
+import { HadyanCodeError } from "@/services/error/HadyanCodeError"
 import { McpHub } from "@/services/mcp/McpHub"
 import { telemetryService } from "@/services/telemetry"
-import type { ClineExtensionContext } from "@/shared/cline"
+import type { HadyanCodeExtensionContext } from "@/shared/hadyancode"
 import { toLegacyApiProvider } from "@/shared/model-catalog/provider-helpers"
 import { ShowMessageRequest, ShowMessageType } from "@/shared/proto/host/window"
 import { Logger } from "@/shared/services/Logger"
-import { isClineManagedProvider } from "@/shared/utils/cline"
+import { isHadyanCodeManagedProvider } from "@/shared/utils/hadyancode"
 import { arePathsEqual, getDesktopDir } from "@/utils/path"
-import { ClineAccountService } from "./account-service"
+import { HadyanCodeAccountService } from "./account-service"
 import { AuthService, LogoutReason } from "./auth-service"
 import { BUILTIN_SLASH_COMMANDS } from "./builtin-slash-commands"
-import { buildStartSessionInput, createHistoryItemFromSession } from "./cline-session-factory"
+import { buildStartSessionInput, createHistoryItemFromSession } from "./hadyancode-session-factory"
 import { MessageTranslatorState, reshapeErrorForWebview } from "./message-translator"
 import { createProviderCatalog } from "./model-catalog/catalog"
 import type { Disposable, ProviderCatalog, ProviderConfigChange, ProviderConfigStore } from "./model-catalog/contracts"
@@ -121,8 +126,8 @@ function metadataNumber(metadata: SessionHistoryRecord["metadata"] | undefined, 
 	return typeof value === "number" && Number.isFinite(value) ? value : undefined
 }
 
-function usesClineAccountAuth(providerId: string): boolean {
-	return getProviderAuthStorageId(providerId) === "cline"
+function usesHadyanCodeAccountAuth(providerId: string): boolean {
+	return getProviderAuthStorageId(providerId) === "hadyancode"
 }
 
 function metadataBoolean(metadata: SessionHistoryRecord["metadata"] | undefined, key: string): boolean | undefined {
@@ -203,7 +208,7 @@ export class Controller {
 	task?: TaskProxy
 
 	mcpHub: McpHub
-	accountService: ClineAccountService
+	accountService: HadyanCodeAccountService
 	authService: AuthService
 	ocaAuthService: OcaAuthService
 	readonly stateManager: StateManager
@@ -226,7 +231,7 @@ export class Controller {
 	// Private state kept for stub compatibility
 	private backgroundCommandRunning = false
 	private backgroundCommandTaskId?: string
-	private pendingClineAuthRetryPrompt?: string
+	private pendingHadyanCodeAuthRetryPrompt?: string
 	checkpointRestoreInput?: ExtensionState["checkpointRestoreInput"]
 
 	// Timer for periodic remote config fetching (enterprise policy enforcement)
@@ -243,7 +248,7 @@ export class Controller {
 	})
 
 	// Watches user-instruction files (workflows/skills/rules), including those
-	// materialized by remote config under `.cline/remote-config/`. Used to expand
+	// materialized by remote config under `.hadyancode/remote-config/`. Used to expand
 	// `/workflow` and `/skill` slash commands into their instruction bodies before
 	// the prompt reaches the model — the same mechanism the CLI uses in
 	// `buildUserInputMessage`. The agent loop never auto-expands commands, so this
@@ -275,7 +280,7 @@ export class Controller {
 		return this.remoteConfigRevision
 	}
 
-	constructor(readonly context: ClineExtensionContext) {
+	constructor(readonly context: HadyanCodeExtensionContext) {
 		// StateManager must be initialized before creating the Controller
 		this.stateManager = StateManager.get()
 		syncTelemetrySettingFromSharedGlobalSettings(this.stateManager)
@@ -290,10 +295,10 @@ export class Controller {
 			this.handleProviderConfigChange(event)
 		})
 
-		// IMPORTANT: Use ~/.cline/data/settings/ for the settings directory,
+		// IMPORTANT: Use ~/.hadyancode/data/settings/ for the settings directory,
 		// NOT ensureSettingsDirectoryExists() which returns the VSCode extension
 		// storage path (HostProvider.globalStorageFsPath/settings/). The MCP
-		// settings file lives at ~/.cline/data/settings/cline_mcp_settings.json
+		// settings file lives at ~/.hadyancode/data/settings/hadyancode_mcp_settings.json
 		// (shared across VSCode, CLI, and JetBrains clients).
 		this.mcpHub = new McpHub(
 			() => ensureMcpServersDirectoryExists(),
@@ -309,14 +314,14 @@ export class Controller {
 		// Initialize SDK-backed auth and account services.
 		this.authService = AuthService.getInstance(this, this.sdkTelemetry.telemetry)
 		this.ocaAuthService = OcaAuthService.initialize(this)
-		this.accountService = ClineAccountService.getInstance()
+		this.accountService = HadyanCodeAccountService.getInstance()
 
 		// Initialize message translator state. The mode getter styles the inferred turn-final
 		// completion row (plan → yellow plan box, act → green completion box).
 		this.messageTranslatorState = new MessageTranslatorState(
 			undefined,
 			// Provider backing the active turn — error reshaping branches on it
-			// (BYOK credential guidance vs the cline sign-in card). Prefer the
+			// (BYOK credential guidance vs the hadyancode sign-in card). Prefer the
 			// active session's start metadata over the current settings
 			// selection: a provider/mode switch made while a turn is in flight
 			// changes the settings selection immediately, but the failing turn
@@ -327,7 +332,7 @@ export class Controller {
 			() => (this.stateManager.getGlobalSettingsKey("mode") === "plan" ? "plan" : "act"),
 			() => this.lastKnownWorkspaceRoot,
 			// Model backing the active turn — lets error reshaping recognize
-			// retired cline-free/ models (the error payload itself never names one).
+			// retired hadyancode-free/ models (the error payload itself never names one).
 			// The task shim is preferred over session-start metadata: a mid-task
 			// model-only switch updates the running session's model in place
 			// (updateActiveSessionModel) and refreshes the shim, but never touches
@@ -434,13 +439,13 @@ export class Controller {
 				this.turnStateTracker.set("error")
 				const errorMessage = error instanceof Error ? error.message : String(error)
 				const providerId = this.getSessionProviderId(sessionId) ?? this.getActiveProviderId()
-				const isClineAuthError =
-					isClineManagedProvider(providerId) &&
-					(errorMessage.includes(CLINE_ACCOUNT_AUTH_ERROR_MESSAGE) ||
+				const isHadyanCodeAuthError =
+					isHadyanCodeManagedProvider(providerId) &&
+					(errorMessage.includes(HADYANCODE_ACCOUNT_AUTH_ERROR_MESSAGE) ||
 						errorMessage.toLowerCase().includes("missing api key") ||
 						errorMessage.toLowerCase().includes("unauthorized"))
 
-				if (isClineAuthError) {
+				if (isHadyanCodeAuthError) {
 					this.captureProviderFailure({
 						sessionId,
 						error,
@@ -448,8 +453,8 @@ export class Controller {
 						errorType: PROVIDER_FAILURE_ERROR_TYPE.AUTH,
 						failurePhase: PROVIDER_FAILURE_PHASE.PREFLIGHT,
 					})
-					this.emitClineAuthError()
-				} else if (isClineManagedProvider(providerId) && this.isClineBalanceError(errorMessage)) {
+					this.emitHadyanCodeAuthError()
+				} else if (isHadyanCodeManagedProvider(providerId) && this.isHadyanCodeBalanceError(errorMessage)) {
 					this.captureProviderFailure({
 						sessionId,
 						error,
@@ -457,7 +462,7 @@ export class Controller {
 						errorType: PROVIDER_FAILURE_ERROR_TYPE.BALANCE,
 						failurePhase: PROVIDER_FAILURE_PHASE.PREFLIGHT,
 					})
-					this.emitClineBalanceError(errorMessage)
+					this.emitHadyanCodeBalanceError(errorMessage)
 				} else {
 					this.captureProviderFailure({
 						sessionId,
@@ -503,7 +508,7 @@ export class Controller {
 			loadInitialMessages: async (sdkHost, sessionId) =>
 				(await this.sessionHistory.loadInitialMessages(sdkHost, sessionId)) ?? [],
 			buildStartSessionInput,
-			emitClineAuthError: () => this.emitClineAuthErrorWithTelemetry(),
+			emitHadyanCodeAuthError: () => this.emitHadyanCodeAuthErrorWithTelemetry(),
 			resetMessageTranslator: () => this.resetMessageTranslatorAndFence(),
 			postStateToWebview: () => this.postStateToWebview(),
 			getTurnPhase: () => this.turnStateTracker.currentPhase,
@@ -573,8 +578,8 @@ export class Controller {
 			loadInitialMessages: (sessionHost, taskId) => this.sessionHistory.loadInitialMessages(sessionHost, taskId),
 			buildStartSessionInput,
 			resolveContextMentions: (text) => this.resolveContextMentions(text),
-			isClineManagedProviderActive: () => this.isClineManagedProviderActive(),
-			emitClineAuthError: () => this.emitClineAuthErrorWithTelemetry(),
+			isHadyanCodeManagedProviderActive: () => this.isHadyanCodeManagedProviderActive(),
+			emitHadyanCodeAuthError: () => this.emitHadyanCodeAuthErrorWithTelemetry(),
 			resetMessageTranslator: () => this.resetMessageTranslatorAndFence(),
 			postStateToWebview: () => this.postStateToWebview(),
 			onResumeFailed: () => {
@@ -619,7 +624,7 @@ export class Controller {
 			buildStartSessionInput,
 			createHistoryItemFromSession,
 			clearTask: async () => {
-				this.pendingClineAuthRetryPrompt = undefined
+				this.pendingHadyanCodeAuthRetryPrompt = undefined
 				await this.taskControl.clearTask()
 			},
 			setTask: (task) => {
@@ -631,8 +636,8 @@ export class Controller {
 			createTempSessionHost: () => this.createRemoteConfigAwareSessionHost(),
 			loadInitialMessages: (reader, taskId) => this.sessionHistory.loadInitialMessages(reader, taskId),
 			resolveContextMentions: (text) => this.resolveContextMentions(text),
-			isClineManagedProviderActive: () => this.isClineManagedProviderActive(),
-			emitClineAuthError: (task) => this.emitClineAuthErrorWithTelemetry(task),
+			isHadyanCodeManagedProviderActive: () => this.isHadyanCodeManagedProviderActive(),
+			emitHadyanCodeAuthError: (task) => this.emitHadyanCodeAuthErrorWithTelemetry(task),
 			captureProviderApiError: (event) => this.captureProviderFailure(event),
 			postStateToWebview: () => this.postStateToWebview(),
 		})
@@ -887,7 +892,7 @@ export class Controller {
 			return false
 		}
 		// Remote config may have materialized new workflows/skills/rules under
-		// `.cline/remote-config/`. Refresh the watcher so slash-command expansion
+		// `.hadyancode/remote-config/`. Refresh the watcher so slash-command expansion
 		// sees them without waiting on filesystem events.
 		await this.refreshUserInstructionWatchers()
 		return refreshed
@@ -952,8 +957,8 @@ export class Controller {
 	/**
 	 * Lazily create (or rebuild on workspace-root change) the user-instruction
 	 * watcher. Pointed at the workspace root so it discovers both local config
-	 * (`.clinerules/workflows`, `.cline/workflows`, …) and remote-config files
-	 * materialized under `<root>/.cline/remote-config/{workflows,skills,rules}`.
+	 * (`.hadyancoderules/workflows`, `.hadyancode/workflows`, …) and remote-config files
+	 * materialized under `<root>/.hadyancode/remote-config/{workflows,skills,rules}`.
 	 *
 	 * `workspaceRoot` is resolved by the caller so the memoization check below runs
 	 * synchronously on entry — there is no `await` before the assignment, so
@@ -1116,7 +1121,7 @@ export class Controller {
 
 	/**
 	 * Directory used when no workspace folder is open: the SDK's shared chat
-	 * workspace (`~/.cline/data/workspaces/chat`, seeded with an AGENTS.md
+	 * workspace (`~/.hadyancode/data/workspaces/chat`, seeded with an AGENTS.md
 	 * etiquette file), matching how the desktop app and CLI host sessions
 	 * started without a project. Desktop is only a last resort when the chat
 	 * workspace cannot be created. Memoized so repeated no-workspace calls
@@ -1152,7 +1157,7 @@ export class Controller {
 	// ---- Session event subscription ----
 
 	/**
-	 * Subscribe to session events translated to ClineMessages.
+	 * Subscribe to session events translated to HadyanCodeMessages.
 	 * Returns an unsubscribe function.
 	 */
 	onSessionEvent(listener: SessionEventListener): () => void {
@@ -1202,10 +1207,10 @@ export class Controller {
 	}
 
 	/**
-	 * Check if the active API provider uses Cline account auth for the current mode.
+	 * Check if the active API provider uses HadyanCode account auth for the current mode.
 	 */
-	private isClineManagedProviderActive(): boolean {
-		return isClineManagedProvider(this.getActiveProviderId())
+	private isHadyanCodeManagedProviderActive(): boolean {
+		return isHadyanCodeManagedProvider(this.getActiveProviderId())
 	}
 
 	private captureProviderFailure(event: ProviderFailureTelemetry): void {
@@ -1222,15 +1227,15 @@ export class Controller {
 
 		const provider = event.providerId ?? this.getSessionProviderId(event.sessionId) ?? "unknown"
 		const model = event.modelId ?? this.getSessionModelId(event.sessionId) ?? this.getTaskModelId() ?? "unknown"
-		const clineError = ClineError.transform(event.error, model, provider)
+		const hadyancodeError = HadyanCodeError.transform(event.error, model, provider)
 
 		telemetryService.captureProviderApiError({
 			ulid,
 			model,
 			provider,
-			errorMessage: clineError.message || String(event.error),
-			errorStatus: clineError.status,
-			requestId: clineError.requestId,
+			errorMessage: hadyancodeError.message || String(event.error),
+			errorStatus: hadyancodeError.status,
+			requestId: hadyancodeError.requestId,
 			errorType: event.errorType,
 			failurePhase: event.failurePhase,
 			// Every event here is a failure the user actually saw: transient
@@ -1242,11 +1247,11 @@ export class Controller {
 		})
 	}
 
-	private emitClineAuthErrorWithTelemetry(task?: string, sessionId?: string): void {
-		this.emitClineAuthError(task)
+	private emitHadyanCodeAuthErrorWithTelemetry(task?: string, sessionId?: string): void {
+		this.emitHadyanCodeAuthError(task)
 		this.captureProviderFailure({
 			sessionId: sessionId ?? this.task?.taskId,
-			error: CLINE_ACCOUNT_AUTH_ERROR_MESSAGE,
+			error: HADYANCODE_ACCOUNT_AUTH_ERROR_MESSAGE,
 			providerId: this.getActiveProviderId(),
 			errorType: PROVIDER_FAILURE_ERROR_TYPE.AUTH,
 			failurePhase: PROVIDER_FAILURE_PHASE.PREFLIGHT,
@@ -1254,18 +1259,18 @@ export class Controller {
 	}
 
 	/**
-	 * Emit a proper auth error for the 'cline' provider when the user is not
+	 * Emit a proper auth error for the 'hadyancode' provider when the user is not
 	 * logged in. The message sequence drives ErrorRow to render the
-	 * "Sign in to Cline" button.
+	 * "Sign in to HadyanCode" button.
 	 *
 	 * Message sequence:
 	 *   1. say:'task'           – the user's message text
 	 *   2. say:'api_req_started' – opens the API request row
-	 *   3. ask:'api_req_failed'  – ClineError JSON → ErrorRow renders auth UI
+	 *   3. ask:'api_req_failed'  – HadyanCodeError JSON → ErrorRow renders auth UI
 	 */
-	private emitClineAuthError(task?: string): void {
+	private emitHadyanCodeAuthError(task?: string): void {
 		const ts = Date.now()
-		this.pendingClineAuthRetryPrompt = task
+		this.pendingHadyanCodeAuthRetryPrompt = task
 
 		if (!this.task) {
 			this.task = createTaskProxy(
@@ -1275,15 +1280,15 @@ export class Controller {
 			)
 		}
 
-		const clineError = new ClineError(
-			{ message: CLINE_ACCOUNT_AUTH_ERROR_MESSAGE, status: 401 },
+		const hadyancodeError = new HadyanCodeError(
+			{ message: HADYANCODE_ACCOUNT_AUTH_ERROR_MESSAGE, status: 401 },
 			undefined, // modelId
-			"cline",
+			"hadyancode",
 		)
-		const serializedError = clineError.serialize()
+		const serializedError = hadyancodeError.serialize()
 
 		const failedAskTs = ts + 2
-		const messages: ClineMessage[] = [
+		const messages: HadyanCodeMessage[] = [
 			{
 				ts,
 				type: "say",
@@ -1297,7 +1302,7 @@ export class Controller {
 				say: "api_req_started",
 				text: JSON.stringify({
 					streamingFailedMessage: serializedError,
-				} satisfies ClineApiReqInfo),
+				} satisfies HadyanCodeApiReqInfo),
 				partial: false,
 			},
 			{
@@ -1324,9 +1329,9 @@ export class Controller {
 
 	/**
 	 * Check if an error message indicates an insufficient credits / balance error
-	 * by reshaping it into ClineError format and inspecting the result.
+	 * by reshaping it into HadyanCodeError format and inspecting the result.
 	 */
-	private isClineBalanceError(errorMessage: string): boolean {
+	private isHadyanCodeBalanceError(errorMessage: string): boolean {
 		try {
 			const shaped = JSON.parse(reshapeErrorForWebview({ message: errorMessage }))
 			return shaped.code === "insufficient_credits"
@@ -1336,33 +1341,33 @@ export class Controller {
 	}
 
 	/**
-	 * Emit a balance error for the 'cline' provider when the user has insufficient
-	 * credits. Produces the same message sequence as emitClineAuthError so the
+	 * Emit a balance error for the 'hadyancode' provider when the user has insufficient
+	 * credits. Produces the same message sequence as emitHadyanCodeAuthError so the
 	 * webview renders the "Buy Credits" button via CreditLimitError.
 	 *
 	 * Message sequence:
-	 *   1. say:'api_req_started' – streamingFailedMessage holds the ClineError JSON
-	 *   2. ask:'api_req_failed'  – ClineError JSON → ErrorRow renders balance UI
+	 *   1. say:'api_req_started' – streamingFailedMessage holds the HadyanCodeError JSON
+	 *   2. ask:'api_req_failed'  – HadyanCodeError JSON → ErrorRow renders balance UI
 	 */
-	private emitClineBalanceError(rawErrorMessage: string): void {
+	private emitHadyanCodeBalanceError(rawErrorMessage: string): void {
 		const ts = Date.now()
 
 		// reshapeErrorForWebview extracts structured fields from the SDK error
 		// message (which may be plain text or embedded JSON) and produces the
-		// ClineError-serialized JSON that the webview's ErrorRow expects.
+		// HadyanCodeError-serialized JSON that the webview's ErrorRow expects.
 		const serializedError = reshapeErrorForWebview({
 			message: rawErrorMessage,
 		})
 
 		const failedAskTs = ts + 1
-		const messages: ClineMessage[] = [
+		const messages: HadyanCodeMessage[] = [
 			{
 				ts,
 				type: "say",
 				say: "api_req_started",
 				text: JSON.stringify({
 					streamingFailedMessage: serializedError,
-				} satisfies ClineApiReqInfo),
+				} satisfies HadyanCodeApiReqInfo),
 				partial: false,
 			},
 			{
@@ -1471,7 +1476,7 @@ export class Controller {
 	}
 
 	async clearTask(): Promise<void> {
-		this.pendingClineAuthRetryPrompt = undefined
+		this.pendingHadyanCodeAuthRetryPrompt = undefined
 		// No active task — UI returns to idle (input enabled, no buttons/thinking).
 		this.turnStateTracker.set("idle")
 		await this.taskControl.clearTask()
@@ -1492,9 +1497,9 @@ export class Controller {
 	 * return immediately so the webview stays responsive.
 	 */
 	async askResponse(prompt?: string, images?: string[], files?: string[]): Promise<void> {
-		if (this.pendingClineAuthRetryPrompt !== undefined && this.task?.taskState?.askResponse === "yesButtonClicked") {
-			const retryPrompt = this.pendingClineAuthRetryPrompt
-			this.pendingClineAuthRetryPrompt = undefined
+		if (this.pendingHadyanCodeAuthRetryPrompt !== undefined && this.task?.taskState?.askResponse === "yesButtonClicked") {
+			const retryPrompt = this.pendingHadyanCodeAuthRetryPrompt
+			this.pendingHadyanCodeAuthRetryPrompt = undefined
 			await this.initTask(retryPrompt, images, files)
 			return
 		}
@@ -1537,20 +1542,20 @@ export class Controller {
 			throw new Error("No active task to edit")
 		}
 
-		const clineMessages = currentTask.messageStateHandler.getClineMessages()
-		const targetIndex = clineMessages.findIndex((message) => message.ts === input.messageTs)
+		const hadyancodeMessages = currentTask.messageStateHandler.getHadyanCodeMessages()
+		const targetIndex = hadyancodeMessages.findIndex((message) => message.ts === input.messageTs)
 		if (targetIndex === -1) {
 			throw new Error("Message to edit was not found")
 		}
-		const targetMessage = clineMessages[targetIndex]
+		const targetMessage = hadyancodeMessages[targetIndex]
 		if (targetMessage.type !== "say" || (targetMessage.say !== "task" && targetMessage.say !== "user_feedback")) {
 			throw new Error("Only user messages can be edited")
 		}
 
-		const userOrdinal = clineMessages
+		const userOrdinal = hadyancodeMessages
 			.slice(0, targetIndex + 1)
 			.filter((message) => message.type === "say" && (message.say === "task" || message.say === "user_feedback")).length
-		const canRestoreWorkspace = getCheckpointRunCountForMessage(clineMessages, targetIndex) !== undefined
+		const canRestoreWorkspace = getCheckpointRunCountForMessage(hadyancodeMessages, targetIndex) !== undefined
 		const sourceSessionId = activeSession?.sessionId ?? currentTask.taskId
 		let sdkMessages: SdkUserMessage[]
 		let tempHost: VscodeSessionHost | undefined
@@ -1572,7 +1577,7 @@ export class Controller {
 			const historyTitle =
 				userOrdinal === 1
 					? editedText
-					: extractSdkUserText(firstUserMessage ?? {}) || clineMessages[0]?.text || editedText
+					: extractSdkUserText(firstUserMessage ?? {}) || hadyancodeMessages[0]?.text || editedText
 			const fallbackCwd = await this.getWorkspaceRoot()
 			const [sessionRecord, historyItem] = await Promise.all([
 				sessionHost.get(sourceSessionId).catch(() => undefined),
@@ -1585,8 +1590,8 @@ export class Controller {
 				fallbackCwd
 			const mode = this.stateManager.getGlobalSettingsKey("mode") === "plan" ? "plan" : "act"
 			const config = await this.sessionConfigBuilder.build({ cwd, mode, prompt: historyTitle })
-			if (usesClineAccountAuth(config.providerId) && !config.apiKey) {
-				this.emitClineAuthErrorWithTelemetry(editedText)
+			if (usesHadyanCodeAccountAuth(config.providerId) && !config.apiKey) {
+				this.emitHadyanCodeAuthErrorWithTelemetry(editedText)
 				return
 			}
 
@@ -1644,7 +1649,7 @@ export class Controller {
 			const newHistoryItem = createHistoryItemFromSession(startResult.sessionId, historyTitle, config.modelId, cwd)
 			await this.taskHistory.updateTaskHistoryItem(newHistoryItem)
 
-			const visibleMessages = clineMessages.slice(0, targetIndex)
+			const visibleMessages = hadyancodeMessages.slice(0, targetIndex)
 			if (visibleMessages.length > 0) {
 				task.messageStateHandler.addMessages(visibleMessages)
 			}
@@ -1667,7 +1672,7 @@ export class Controller {
 		}
 	}
 
-	async restoreCheckpoint(input: { checkpointRunCount: number; restoreType: ClineCheckpointRestore }): Promise<void> {
+	async restoreCheckpoint(input: { checkpointRunCount: number; restoreType: HadyanCodeCheckpointRestore }): Promise<void> {
 		const restoreMessages = input.restoreType === "task" || input.restoreType === "taskAndWorkspace"
 		const restoreWorkspace = input.restoreType === "workspace" || input.restoreType === "taskAndWorkspace"
 		const checkpointRunCount = Number(input.checkpointRunCount)
@@ -1684,7 +1689,7 @@ export class Controller {
 			await this.cancelTask()
 		}
 
-		const currentMessages = currentTask.messageStateHandler.getClineMessages()
+		const currentMessages = currentTask.messageStateHandler.getHadyanCodeMessages()
 		const target = restoreMessages ? findVisibleCheckpointUserMessageByRun(currentMessages, checkpointRunCount) : undefined
 		if (restoreMessages && !target) {
 			throw new Error(`Could not find user message for checkpoint run ${checkpointRunCount}`)
@@ -1696,8 +1701,8 @@ export class Controller {
 		const restoredText = target?.message.text ?? ""
 		const historyTitle = checkpointRunCount === 1 ? restoredText : firstUserMessage?.text || restoredText
 		const config = restoreMessages ? await this.sessionConfigBuilder.build({ cwd, mode, prompt: historyTitle }) : undefined
-		if (config && usesClineAccountAuth(config.providerId) && !config.apiKey) {
-			this.emitClineAuthErrorWithTelemetry(restoredText)
+		if (config && usesHadyanCodeAccountAuth(config.providerId) && !config.apiKey) {
+			this.emitHadyanCodeAuthErrorWithTelemetry(restoredText)
 			return
 		}
 
@@ -1856,7 +1861,7 @@ export class Controller {
 	 * this.task = undefined and may trigger async operations (session stop/dispose)
 	 * that race with the new task proxy creation. If any of those async operations
 	 * trigger postStateToWebview() while this.task is undefined, the webview
-	 * receives a state with no currentTaskItem/clineMessages and flashes back
+	 * receives a state with no currentTaskItem/hadyancodeMessages and flashes back
 	 * to the welcome screen (S6-6/S6-23 fix).
 	 *
 	 * Instead, we:
@@ -1900,7 +1905,7 @@ export class Controller {
 		// Capture before deauth nulls the auth info, so the per-org config cache
 		// (which can hold enterprise secrets) is actually deleted on sign-out.
 		const organizationId = this.authService.getActiveOrganizationId() ?? undefined
-		await this.taskControl.cancelClineTaskOnSignOut(isClineManagedProvider(sessionProviderId))
+		await this.taskControl.cancelHadyanCodeTaskOnSignOut(isHadyanCodeManagedProvider(sessionProviderId))
 		await this.authService.handleDeauth(LogoutReason.USER_INITIATED)
 		// Invalidate BEFORE clearing: a refresh that already fetched under the
 		// signed-in identity must not republish the policy (and re-create the
@@ -1920,7 +1925,7 @@ export class Controller {
 	}
 
 	async handleAuthCallback(customToken: string, provider: string | null = null): Promise<void> {
-		await this.authService.handleAuthCallback(customToken, provider ?? "cline")
+		await this.authService.handleAuthCallback(customToken, provider ?? "hadyancode")
 		// Fetch remote config immediately after login so enterprise policies
 		// (provider lockdown, MCP servers, OTel, etc.) are applied right away.
 		await this.refreshRemoteConfig()
@@ -2059,7 +2064,7 @@ export class Controller {
 
 		if (offset === 0 && !favoritesOnly && this.task?.taskId && !tasks.some((task) => task.id === this.task?.taskId)) {
 			const taskMessage = this.task.messageStateHandler
-				.getClineMessages()
+				.getHadyanCodeMessages()
 				.find((message) => message.type === "say" && message.say === "task" && message.text)
 			const matchesSearch = !searchQuery || taskMessage?.text?.toLowerCase().includes(searchQuery.toLowerCase())
 			if (taskMessage?.text && matchesSearch) {
@@ -2267,7 +2272,7 @@ export class Controller {
 			// asserts that taskHistory reflects newTask before the model turn completes.
 			if (this.task?.taskId && !mergedTaskHistoryById.has(this.task.taskId)) {
 				const taskMessage = this.task.messageStateHandler
-					.getClineMessages()
+					.getHadyanCodeMessages()
 					.find((message) => message.type === "say" && message.say === "task" && message.text)
 				if (taskMessage?.text) {
 					mergedTaskHistoryById.set(this.task.taskId, {

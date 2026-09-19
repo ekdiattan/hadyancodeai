@@ -1,11 +1,11 @@
 // @jsxImportSource @opentui/react
 
-import type { SessionHistoryRecord } from "@cline/core";
+import type { SessionHistoryRecord } from "@hadyancode/core";
 import {
 	formatDisplayUserInput,
 	formatHumanReadableDate,
 	truncateStr,
-} from "@cline/shared";
+} from "@hadyancode/shared";
 import { useTerminalDimensions } from "@opentui/react";
 import type { ChoiceContext } from "@opentui-ui/dialog";
 import { useDialogKeyboard } from "@opentui-ui/dialog/react";

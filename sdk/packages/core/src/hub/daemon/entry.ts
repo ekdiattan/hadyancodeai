@@ -1,5 +1,5 @@
-import { AgentRuntimeAbortError } from "@cline/agents";
-import { initVcr, resolveClineBuildEnv } from "@cline/shared";
+import { AgentRuntimeAbortError } from "@hadyancode/agents";
+import { initVcr, resolveHadyanCodeBuildEnv } from "@hadyancode/shared";
 import { cleanupConnectorInstanceViaCli } from "../../services/connectors/connector-cleanup";
 import {
 	ConnectorSupervisor,
@@ -23,7 +23,7 @@ import {
 } from "./shutdown-coordinator";
 import { createHubDaemonTelemetry } from "./telemetry";
 
-initVcr(process.env.CLINE_VCR);
+initVcr(process.env.HADYANCODE_VCR);
 
 let resolveHubDaemonReady!: () => void;
 let rejectHubDaemonReady!: (error: unknown) => void;
@@ -257,7 +257,7 @@ async function main(): Promise<void> {
 			port: endpoint.port,
 			pathname: endpoint.pathname,
 			owner:
-				resolveClineBuildEnv() === "production"
+				resolveHadyanCodeBuildEnv() === "production"
 					? resolveProductionHubOwnerContext()
 					: resolveSharedHubOwnerContext(),
 			telemetry: daemonTelemetry.telemetry,

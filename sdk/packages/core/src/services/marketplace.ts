@@ -2,7 +2,7 @@ import { spawn } from "node:child_process";
 import { existsSync, rmSync } from "node:fs";
 import { homedir, platform } from "node:os";
 import { dirname, join } from "node:path";
-import { resolveClineDir, resolveMcpSettingsPath } from "@cline/shared/storage";
+import { resolveHadyanCodeDir, resolveMcpSettingsPath } from "@hadyancode/shared/storage";
 import { updateMcpSettingsFileSync } from "../extensions/mcp";
 import { parseMcpInstallArgs } from "./mcp-install";
 import { uninstallPlugin } from "./plugin-uninstall";
@@ -248,7 +248,7 @@ export function getMarketplaceSkillCandidates(
 
 export function getGlobalMarketplaceSkillPaths(skillName: string): string[] {
 	return [
-		join(resolveClineDir(), "skills", skillName, "SKILL.md"),
+		join(resolveHadyanCodeDir(), "skills", skillName, "SKILL.md"),
 		join(resolveHomeDir(), ".agents", "skills", skillName, "SKILL.md"),
 	].filter((path, index, paths) => paths.indexOf(path) === index);
 }
@@ -329,7 +329,7 @@ export async function uninstallMarketplaceSkill(
 	const removedPaths = removeRemainingMarketplaceSkillPaths(entry);
 	if (isMarketplaceSkillInstalled(entry)) {
 		throw new Error(
-			`Skill uninstall completed, but ${entry.name ?? entry.id} is still present in Cline's global skills directories.`,
+			`Skill uninstall completed, but ${entry.name ?? entry.id} is still present in HadyanCode's global skills directories.`,
 		);
 	}
 	return {

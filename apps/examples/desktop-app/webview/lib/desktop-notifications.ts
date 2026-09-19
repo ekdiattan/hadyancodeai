@@ -7,7 +7,7 @@ import {
 import { desktopClient, isTauriAvailable } from "@/lib/desktop-client";
 
 const DESKTOP_NOTIFICATION_SETTINGS_STORAGE_KEY =
-	"cline:desktop-notification-settings:v1";
+	"hadyancode:desktop-notification-settings:v1";
 const MAX_SEEN_REQUESTS = 500;
 
 export const DESKTOP_NOTIFICATION_EVENT_TYPES = [
@@ -328,7 +328,7 @@ export function watchDesktopNotifications(): () => void {
 				eventType: "taskCompletion",
 				sessionId,
 				title: "Task completed",
-				body: "Cline finished working and the result is ready.",
+				body: "HadyanCode finished working and the result is ready.",
 			});
 			return;
 		}
@@ -336,7 +336,7 @@ export function watchDesktopNotifications(): () => void {
 			eventType: "sessionError",
 			sessionId,
 			title: "Task failed",
-			body: detail || "Cline encountered an error while running this task.",
+			body: detail || "HadyanCode encountered an error while running this task.",
 		});
 	};
 
@@ -425,10 +425,10 @@ export function watchDesktopNotifications(): () => void {
 			void notify({
 				eventType: "questionAsked",
 				sessionId,
-				title: "Cline has a question",
+				title: "HadyanCode has a question",
 				body:
 					asNonEmptyString(item.question) ||
-					"Open this task to answer Cline's question.",
+					"Open this task to answer HadyanCode's question.",
 			});
 		}),
 	];

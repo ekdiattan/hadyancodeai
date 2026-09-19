@@ -1,4 +1,4 @@
-import { isClineProvider } from "@cline/shared";
+import { isHadyanCodeProvider } from "@hadyancode/shared";
 
 export type ProviderOptionsPatch = Record<string, Record<string, unknown>>;
 
@@ -22,10 +22,10 @@ export function createEphemeralCacheControl() {
  * The bucket name must match the AI SDK provider `name`, because the
  * openai-compatible model only applies request-body passthrough from
  * `providerOptions[<name>]` (and its camelCase alias). For almost every
- * provider the name is the gateway provider id, but both Cline gateway ids
- * (`cline` and `cline-pass`) are served by the shared "cline" AI SDK provider
- * (see `createClineProviderModule`) and hit the same Cline API, so their
- * options key to the shared `cline` bucket.
+ * provider the name is the gateway provider id, but both HadyanCode gateway ids
+ * (`hadyancode` and `hadyancode-pass`) are served by the shared "hadyancode" AI SDK provider
+ * (see `createHadyanCodeProviderModule`) and hit the same HadyanCode API, so their
+ * options key to the shared `hadyancode` bucket.
  */
 export function buildProviderAndAliasPatch(options: {
 	providerId: string;
@@ -33,11 +33,11 @@ export function buildProviderAndAliasPatch(options: {
 	bucketOptions: Record<string, unknown>;
 }): ProviderOptionsPatch {
 	const { bucketOptions } = options;
-	const providerId = isClineProvider(options.providerId)
-		? "cline"
+	const providerId = isHadyanCodeProvider(options.providerId)
+		? "hadyancode"
 		: options.providerId;
-	const providerOptionsKey = isClineProvider(options.providerId)
-		? "cline"
+	const providerOptionsKey = isHadyanCodeProvider(options.providerId)
+		? "hadyancode"
 		: options.providerOptionsKey;
 	const needsAlias =
 		providerOptionsKey !== providerId && providerOptionsKey !== "anthropic";

@@ -7,7 +7,7 @@ import {
 } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import type { ChatStartSessionRequest, CronOneOffSpec } from "@cline/shared";
+import type { ChatStartSessionRequest, CronOneOffSpec } from "@hadyancode/shared";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { DefaultToolNames } from "../../extensions/tools/constants";
 import type {
@@ -82,7 +82,7 @@ describe("CronRunner", () => {
 	let materializer: CronMaterializer;
 
 	beforeEach(() => {
-		dir = mkdtempSync(join(tmpdir(), "cline-runner-"));
+		dir = mkdtempSync(join(tmpdir(), "hadyancode-runner-"));
 		workspaceRoot = join(dir, "ws");
 		cronDir = join(dir, "cron-specs");
 		mkdirSync(workspaceRoot, { recursive: true });

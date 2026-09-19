@@ -1,19 +1,19 @@
-import type { AgentEvent } from "@cline/core";
+import type { AgentEvent } from "@hadyancode/core";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import {
-	clearClineFreeModelCostCache,
-	shouldZeroClineFreeModelCost,
+	clearHadyanCodeFreeModelCostCache,
+	shouldZeroHadyanCodeFreeModelCost,
 	zeroCliAgentEventCost,
 	zeroCliUsageCost,
 } from "./free-model-cost";
 
 afterEach(() => {
-	clearClineFreeModelCostCache();
+	clearHadyanCodeFreeModelCostCache();
 	vi.unstubAllGlobals();
 });
 
-describe("shouldZeroClineFreeModelCost", () => {
-	it("uses the Cline free model list", async () => {
+describe("shouldZeroHadyanCodeFreeModelCost", () => {
+	it("uses the HadyanCode free model list", async () => {
 		const fetchMock = vi.fn(
 			async (_input: Parameters<typeof fetch>[0], _init?: RequestInit) => {
 				return new Response(
@@ -27,25 +27,25 @@ describe("shouldZeroClineFreeModelCost", () => {
 		vi.stubGlobal("fetch", fetchMock);
 
 		await expect(
-			shouldZeroClineFreeModelCost({
-				providerId: "cline",
+			shouldZeroHadyanCodeFreeModelCost({
+				providerId: "hadyancode",
 				modelId: "deepseek/deepseek-v4-flash",
-				baseUrl: "https://cline.test/api/v1",
+				baseUrl: "https://hadyancode.test/api/v1",
 			}),
 		).resolves.toBe(true);
 
 		expect(fetchMock.mock.calls[0]?.[0]).toBe(
-			"https://cline.test/api/v1/ai/cline/recommended-models",
+			"https://hadyancode.test/api/v1/ai/hadyancode/recommended-models",
 		);
 	});
 
-	it("matches cline-free model ids from the free endpoint bucket exactly", async () => {
+	it("matches hadyancode-free model ids from the free endpoint bucket exactly", async () => {
 		vi.stubGlobal(
 			"fetch",
 			vi.fn(async () => {
 				return new Response(
 					JSON.stringify({
-						free: [{ id: "cline-free/deepseek-v4-flash" }],
+						free: [{ id: "hadyancode-free/deepseek-v4-flash" }],
 					}),
 					{ status: 200, headers: { "content-type": "application/json" } },
 				);
@@ -53,37 +53,37 @@ describe("shouldZeroClineFreeModelCost", () => {
 		);
 
 		await expect(
-			shouldZeroClineFreeModelCost({
-				providerId: "cline",
-				modelId: "cline-free/deepseek-v4-flash",
-				baseUrl: "https://cline.test/api/v1",
+			shouldZeroHadyanCodeFreeModelCost({
+				providerId: "hadyancode",
+				modelId: "hadyancode-free/deepseek-v4-flash",
+				baseUrl: "https://hadyancode.test/api/v1",
 			}),
 		).resolves.toBe(true);
 
 		await expect(
-			shouldZeroClineFreeModelCost({
-				providerId: "cline-pass",
+			shouldZeroHadyanCodeFreeModelCost({
+				providerId: "hadyancode-pass",
 				modelId: "deepseek-v4-flash",
-				baseUrl: "https://cline.test/api/v1",
+				baseUrl: "https://hadyancode.test/api/v1",
 			}),
 		).resolves.toBe(false);
 	});
 
-	it("does not zero non-Cline providers", async () => {
+	it("does not zero non-HadyanCode providers", async () => {
 		const fetchMock = vi.fn();
 		vi.stubGlobal("fetch", fetchMock);
 
 		await expect(
-			shouldZeroClineFreeModelCost({
+			shouldZeroHadyanCodeFreeModelCost({
 				providerId: "openrouter",
 				modelId: "deepseek/deepseek-v4-flash",
-				baseUrl: "https://cline.test/api/v1",
+				baseUrl: "https://hadyancode.test/api/v1",
 			}),
 		).resolves.toBe(false);
 		expect(fetchMock).not.toHaveBeenCalled();
 	});
 
-	it("zeros cost of free models selected on the cline-pass provider", async () => {
+	it("zeros cost of free models selected on the hadyancode-pass provider", async () => {
 		vi.stubGlobal(
 			"fetch",
 			vi.fn(async () => {
@@ -97,19 +97,19 @@ describe("shouldZeroClineFreeModelCost", () => {
 		);
 
 		await expect(
-			shouldZeroClineFreeModelCost({
-				providerId: "cline-pass",
+			shouldZeroHadyanCodeFreeModelCost({
+				providerId: "hadyancode-pass",
 				modelId: "deepseek/deepseek-v4-flash",
-				baseUrl: "https://cline.test/api/v1",
+				baseUrl: "https://hadyancode.test/api/v1",
 			}),
 		).resolves.toBe(true);
 
-		// subscription (cline-pass/...) models are not in the free bucket
+		// subscription (hadyancode-pass/...) models are not in the free bucket
 		await expect(
-			shouldZeroClineFreeModelCost({
-				providerId: "cline-pass",
-				modelId: "cline-pass/glm-5.1",
-				baseUrl: "https://cline.test/api/v1",
+			shouldZeroHadyanCodeFreeModelCost({
+				providerId: "hadyancode-pass",
+				modelId: "hadyancode-pass/glm-5.1",
+				baseUrl: "https://hadyancode.test/api/v1",
 			}),
 		).resolves.toBe(false);
 	});
@@ -128,10 +128,10 @@ describe("shouldZeroClineFreeModelCost", () => {
 		);
 
 		await expect(
-			shouldZeroClineFreeModelCost({
-				providerId: "cline",
+			shouldZeroHadyanCodeFreeModelCost({
+				providerId: "hadyancode",
 				modelId: "acme/deepseek-v4-flash",
-				baseUrl: "https://cline.test/api/v1",
+				baseUrl: "https://hadyancode.test/api/v1",
 			}),
 		).resolves.toBe(false);
 	});
@@ -151,17 +151,17 @@ describe("shouldZeroClineFreeModelCost", () => {
 		vi.stubGlobal("fetch", fetchMock);
 
 		await expect(
-			shouldZeroClineFreeModelCost({
-				providerId: "cline",
+			shouldZeroHadyanCodeFreeModelCost({
+				providerId: "hadyancode",
 				modelId: "deepseek/deepseek-v4-flash",
-				baseUrl: "https://cline.test/api/v1",
+				baseUrl: "https://hadyancode.test/api/v1",
 			}),
 		).resolves.toBe(false);
 		await expect(
-			shouldZeroClineFreeModelCost({
-				providerId: "cline",
+			shouldZeroHadyanCodeFreeModelCost({
+				providerId: "hadyancode",
 				modelId: "deepseek/deepseek-v4-flash",
-				baseUrl: "https://cline.test/api/v1",
+				baseUrl: "https://hadyancode.test/api/v1",
 			}),
 		).resolves.toBe(true);
 		expect(fetchMock).toHaveBeenCalledTimes(2);

@@ -6,8 +6,8 @@ import { StateManager } from "@/core/storage/StateManager"
 import { createProviderCatalog } from "@/sdk/model-catalog/catalog"
 import type { ProviderCatalog, ProviderConfigStore } from "@/sdk/model-catalog/contracts"
 import { createProviderConfigStore } from "@/sdk/model-catalog/store"
-import { Empty, StringRequest } from "@/shared/proto/cline/common"
-import { CommitModelSelectionRequest } from "@/shared/proto/cline/models"
+import { Empty, StringRequest } from "@/shared/proto/hadyancode/common"
+import { CommitModelSelectionRequest } from "@/shared/proto/hadyancode/models"
 import { createStorageContext } from "@/shared/storage/storage-context"
 import { commitModelSelection } from "../commitModelSelection"
 import { listProviders } from "../listProviders"
@@ -20,17 +20,17 @@ vi.mock("@/services/logging/distinctId", () => ({
 }))
 
 describe("provider model catalog backend smoke", () => {
-	let clineDir: string
+	let hadyancodeDir: string
 	let store: ProviderConfigStore
 	let catalog: ProviderCatalog
 	let controller: ProviderCatalogController
-	let originalClineDir: string | undefined
+	let originalHadyanCodeDir: string | undefined
 
 	beforeAll(async () => {
-		clineDir = await fs.mkdtemp(path.join(os.tmpdir(), "cline-provider-catalog-smoke-"))
-		originalClineDir = process.env.CLINE_DIR
-		process.env.CLINE_DIR = clineDir
-		await StateManager.initialize(createStorageContext({ clineDir, workspacePath: clineDir }))
+		hadyancodeDir = await fs.mkdtemp(path.join(os.tmpdir(), "hadyancode-provider-catalog-smoke-"))
+		originalHadyanCodeDir = process.env.HADYANCODE_DIR
+		process.env.HADYANCODE_DIR = hadyancodeDir
+		await StateManager.initialize(createStorageContext({ hadyancodeDir, workspacePath: hadyancodeDir }))
 		store = createProviderConfigStore()
 		catalog = createProviderCatalog(store)
 		controller = {
@@ -41,13 +41,13 @@ describe("provider model catalog backend smoke", () => {
 
 	afterAll(async () => {
 		await StateManager.get().flushPendingState()
-		if (originalClineDir === undefined) {
-			delete process.env.CLINE_DIR
+		if (originalHadyanCodeDir === undefined) {
+			delete process.env.HADYANCODE_DIR
 		} else {
-			process.env.CLINE_DIR = originalClineDir
+			process.env.HADYANCODE_DIR = originalHadyanCodeDir
 		}
 		await StateManager.get().reInitialize()
-		await fs.rm(clineDir, { recursive: true, force: true })
+		await fs.rm(hadyancodeDir, { recursive: true, force: true })
 	})
 
 	it("lists providers, resolves DeepSeek models, and round-trips committed selection", async () => {

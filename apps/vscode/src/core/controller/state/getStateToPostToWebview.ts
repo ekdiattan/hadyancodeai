@@ -4,17 +4,17 @@
 // This allows the SdkController to reuse the classic state-building logic
 // without inheriting the entire classic Controller implementation.
 
-import { isModelToolEnabledGlobally, readCompactionStrategyGlobally } from "@cline/core"
 import { getHooksEnabledSafe } from "@core/hooks/hooks-utils"
+import { isModelToolEnabledGlobally, readCompactionStrategyGlobally } from "@hadyancode/core"
 import type { ExtensionState, Platform } from "@shared/ExtensionMessage"
-import { ClineEnv } from "@/config"
+import { HadyanCodeEnv } from "@/config"
 import { ExtensionRegistryInfo } from "@/registry"
 import { BannerService } from "@/services/banner/BannerService"
 import { featureFlagsService } from "@/services/feature-flags"
 import { getDistinctId } from "@/services/logging/distinctId"
 import { getExtensionVariant } from "@/services/telemetry/rollout-metadata"
 import { getLatestAnnouncementId } from "@/utils/announcements"
-import { getClineOnboardingModels } from "../models/getClineOnboardingModels"
+import { getHadyanCodeOnboardingModels } from "../models/getHadyanCodeOnboardingModels"
 
 /**
  * Builds the ExtensionState object to push to the webview.
@@ -35,7 +35,7 @@ export async function getStateToPostToWebview(controller: {
 	const stateManager = controller.stateManager
 
 	// Get API configuration from cache for immediate access
-	const onboardingModels = getClineOnboardingModels()
+	const onboardingModels = getHadyanCodeOnboardingModels()
 	const apiConfiguration = stateManager.getApiConfiguration()
 	const lastShownAnnouncementId = stateManager.getGlobalStateKey("lastShownAnnouncementId")
 	const taskHistory = stateManager.getGlobalStateKey("taskHistory")
@@ -53,7 +53,7 @@ export async function getStateToPostToWebview(controller: {
 	const telemetrySetting = stateManager.getGlobalSettingsKey("telemetrySetting")
 	const planActSeparateModelsSetting = stateManager.getGlobalSettingsKey("planActSeparateModelsSetting")
 	const enableCheckpointsSetting = stateManager.getGlobalSettingsKey("enableCheckpointsSetting")
-	const globalClineRulesToggles = stateManager.getGlobalStateKey("globalClineRulesToggles")
+	const globalHadyanCodeRulesToggles = stateManager.getGlobalStateKey("globalHadyanCodeRulesToggles")
 	const globalWorkflowToggles = stateManager.getGlobalStateKey("globalWorkflowToggles")
 	const globalSkillsToggles = stateManager.getGlobalStateKey("globalSkillsToggles")
 	const localSkillsToggles = stateManager.getWorkspaceStateKey("localSkillsToggles")
@@ -74,7 +74,7 @@ export async function getStateToPostToWebview(controller: {
 	const dismissedBanners = stateManager.getGlobalStateKey("dismissedBanners")
 	const showFeatureTips = stateManager.getGlobalSettingsKey("showFeatureTips")
 
-	const localClineRulesToggles = stateManager.getWorkspaceStateKey("localClineRulesToggles")
+	const localHadyanCodeRulesToggles = stateManager.getWorkspaceStateKey("localHadyanCodeRulesToggles")
 	const localWindsurfRulesToggles = stateManager.getWorkspaceStateKey("localWindsurfRulesToggles")
 	const localCursorRulesToggles = stateManager.getWorkspaceStateKey("localCursorRulesToggles")
 	const localAgentsRulesToggles = stateManager.getWorkspaceStateKey("localAgentsRulesToggles")
@@ -83,7 +83,7 @@ export async function getStateToPostToWebview(controller: {
 	const currentTaskItem = controller.task?.taskId
 		? (taskHistory || []).find((item: any) => item.id === controller.task?.taskId)
 		: undefined
-	const clineMessages = [...(controller.task?.messageStateHandler?.getClineMessages?.() || [])]
+	const hadyancodeMessages = [...(controller.task?.messageStateHandler?.getHadyanCodeMessages?.() || [])]
 	const checkpointRestoreInput = controller.checkpointRestoreInput
 
 	const processedTaskHistory = (taskHistory || [])
@@ -96,8 +96,8 @@ export async function getStateToPostToWebview(controller: {
 	const platform = process.platform as Platform
 	const distinctId = getDistinctId()
 	const version = ExtensionRegistryInfo.version
-	const clineConfig = ClineEnv.config()
-	const environment = clineConfig.environment
+	const hadyancodeConfig = HadyanCodeEnv.config()
+	const environment = hadyancodeConfig.environment
 	const banners = BannerService.get().getActiveBanners() ?? []
 	const welcomeBanners = BannerService.get().getWelcomeBanners() ?? []
 
@@ -115,7 +115,7 @@ export async function getStateToPostToWebview(controller: {
 		extensionVariant: getExtensionVariant(),
 		apiConfiguration,
 		currentTaskItem,
-		clineMessages,
+		hadyancodeMessages,
 		checkpointRestoreInput,
 		autoApprovalSettings,
 		browserSettings,
@@ -134,8 +134,8 @@ export async function getStateToPostToWebview(controller: {
 		platform,
 		environment,
 		distinctId,
-		globalClineRulesToggles: globalClineRulesToggles || {},
-		localClineRulesToggles: localClineRulesToggles || {},
+		globalHadyanCodeRulesToggles: globalHadyanCodeRulesToggles || {},
+		localHadyanCodeRulesToggles: localHadyanCodeRulesToggles || {},
 		localWindsurfRulesToggles: localWindsurfRulesToggles || {},
 		localCursorRulesToggles: localCursorRulesToggles || {},
 		localAgentsRulesToggles: localAgentsRulesToggles || {},

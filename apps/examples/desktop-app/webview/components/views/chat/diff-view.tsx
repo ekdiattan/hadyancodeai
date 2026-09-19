@@ -1,6 +1,6 @@
 "use client";
 
-import { ToolFileDiff } from "@cline/ui/components/agent-chat/tool-diff";
+import { ToolFileDiff } from "@hadyancode/ui/components/agent-chat/tool-diff";
 import {
 	AppWindow,
 	Check,
@@ -314,7 +314,7 @@ function DiffHunk({ hunk, path }: { hunk: SessionDiffHunk; path: string }) {
 	return (
 		<ToolFileDiff
 			background="var(--background)"
-			className="cline-chat-selectable"
+			className="hadyancode-chat-selectable"
 			fragment={!isCompleteNewContents}
 			newText={hunk.new}
 			oldText={isCompleteNewContents ? undefined : hunk.old}

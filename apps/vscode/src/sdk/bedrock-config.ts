@@ -3,8 +3,8 @@
 //
 // Both inference paths need this:
 //   - buildSdkProviderConfig() in sdk-api-handler.ts (standalone utility calls)
-//   - buildSessionConfig() in cline-session-factory.ts (main task loop, which
-//     hands a CoreSessionConfig.providerConfig to ClineCore)
+//   - buildSessionConfig() in hadyancode-session-factory.ts (main task loop, which
+//     hands a CoreSessionConfig.providerConfig to HadyanCodeCore)
 //
 // Without it, the SDK gateway never receives the AWS region or authentication
 // mode, so a pasted Bedrock API key (awsBedrockApiKey + awsAuthentication
@@ -12,8 +12,8 @@
 // credential chain with no region. This mirrors the structured aws block built
 // by the shared provider-settings legacy migration and the CLI.
 
-import type { ProviderSettings } from "@cline/core"
-import type { ProviderConfig } from "@cline/llms"
+import type { ProviderSettings } from "@hadyancode/core"
+import type { ProviderConfig } from "@hadyancode/llms"
 import type { ApiConfiguration } from "@shared/api"
 import type { Mode } from "@shared/storage/types"
 

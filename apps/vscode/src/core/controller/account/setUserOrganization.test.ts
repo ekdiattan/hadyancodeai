@@ -1,4 +1,4 @@
-import { UserOrganizationUpdateRequest } from "@shared/proto/cline/account"
+import { UserOrganizationUpdateRequest } from "@shared/proto/hadyancode/account"
 import { describe, expect, it, vi } from "vitest"
 import { setUserOrganization } from "./setUserOrganization"
 

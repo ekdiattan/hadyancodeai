@@ -14,7 +14,7 @@ import {
 	type ShellKind,
 	validateWithZod,
 	zodToJsonSchema,
-} from "@cline/shared";
+} from "@hadyancode/shared";
 import { captureRunCommandsTimeout } from "../../services/telemetry/core-events";
 import { CommandExitError } from "./executors/bash";
 import {
@@ -861,7 +861,7 @@ export function createSubmitAndExitTool(
  *
  * @example
  * ```typescript
- * import { Agent, createDefaultTools } from "@cline/core"
+ * import { Agent, createDefaultTools } from "@hadyancode/core"
  * import * as fs from "fs/promises"
  * import { exec } from "child_process"
  *

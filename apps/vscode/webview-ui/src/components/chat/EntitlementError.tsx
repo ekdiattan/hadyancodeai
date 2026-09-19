@@ -1,8 +1,8 @@
-import { AskResponseRequest } from "@shared/proto/cline/task"
+import { AskResponseRequest } from "@shared/proto/hadyancode/task"
 import { VSCodeButton } from "@vscode/webview-ui-toolkit/react"
 import React from "react"
 import VSCodeButtonLink from "@/components/common/VSCodeButtonLink"
-import { useClineAuth } from "@/context/ClineAuthContext"
+import { useHadyanCodeAuth } from "@/context/HadyanCodeAuthContext"
 import { TaskServiceClient } from "@/services/grpc-client"
 
 interface EntitlementErrorProps {
@@ -10,9 +10,9 @@ interface EntitlementErrorProps {
 }
 
 // Relative (no leading slash) so it appends to path-prefixed app URLs (e.g. self-hosted/proxy) instead of resetting to origin.
-const CLINE_PASS_SUBSCRIBE_PATH = "dashboard/subscription"
+const HADYANCODE_PASS_SUBSCRIBE_PATH = "dashboard/subscription"
 
-const HEADLINE = "This model requires a ClinePass subscription."
+const HEADLINE = "This model requires a HadyanCodePass subscription."
 
 function buildSubscribeUrl(appBaseUrl?: string): string | undefined {
 	if (!appBaseUrl) {
@@ -20,7 +20,7 @@ function buildSubscribeUrl(appBaseUrl?: string): string | undefined {
 	}
 	try {
 		const base = appBaseUrl.endsWith("/") ? appBaseUrl : `${appBaseUrl}/`
-		const url = new URL(CLINE_PASS_SUBSCRIBE_PATH, base)
+		const url = new URL(HADYANCODE_PASS_SUBSCRIBE_PATH, base)
 		url.searchParams.set("personal", "true")
 		return url.toString()
 	} catch {
@@ -30,8 +30,8 @@ function buildSubscribeUrl(appBaseUrl?: string): string | undefined {
 }
 
 const EntitlementError: React.FC<EntitlementErrorProps> = ({ message }) => {
-	const { clineUser } = useClineAuth()
-	const subscribeUrl = buildSubscribeUrl(clineUser?.appBaseUrl)
+	const { hadyancodeUser } = useHadyanCodeAuth()
+	const subscribeUrl = buildSubscribeUrl(hadyancodeUser?.appBaseUrl)
 	const backendDetail = message && message !== HEADLINE ? message : undefined
 
 	return (
@@ -39,7 +39,7 @@ const EntitlementError: React.FC<EntitlementErrorProps> = ({ message }) => {
 			<div className="mb-3">
 				<div className="text-error mb-2">{HEADLINE}</div>
 				<div className="text-(--vscode-descriptionForeground) text-xs">
-					Subscribe to ClinePass to use this model, then retry your request.
+					Subscribe to HadyanCodePass to use this model, then retry your request.
 				</div>
 				{backendDetail && (
 					<div className="text-(--vscode-descriptionForeground) text-xs mt-1 opacity-80 wrap-anywhere">
@@ -51,7 +51,7 @@ const EntitlementError: React.FC<EntitlementErrorProps> = ({ message }) => {
 			{subscribeUrl && (
 				<VSCodeButtonLink className="w-full mb-2" href={subscribeUrl}>
 					<span className="codicon codicon-rocket mr-[6px] text-[14px]" />
-					Get ClinePass
+					Get HadyanCodePass
 				</VSCodeButtonLink>
 			)}
 

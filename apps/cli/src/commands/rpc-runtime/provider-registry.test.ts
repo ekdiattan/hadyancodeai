@@ -1,8 +1,8 @@
-import type { SaveProviderSettingsActionRequest } from "@cline/core";
+import type { SaveProviderSettingsActionRequest } from "@hadyancode/core";
 import {
 	type ProviderSettingsManager,
 	saveLocalProviderSettings,
-} from "@cline/core";
+} from "@hadyancode/core";
 import { describe, expect, it, vi } from "vitest";
 
 describe("saveLocalProviderSettings", () => {
@@ -155,7 +155,7 @@ describe("saveLocalProviderSettings", () => {
 			write: vi.fn(),
 			getFilePath: vi.fn().mockReturnValue("/tmp/providers.json"),
 			getProviderSettings: vi.fn().mockReturnValue({
-				provider: "cline",
+				provider: "hadyancode",
 				apiKey: "manual-old",
 				auth: {
 					accessToken: "workos:oauth-access",
@@ -170,7 +170,7 @@ describe("saveLocalProviderSettings", () => {
 			manager as unknown as ProviderSettingsManager,
 			{
 				action: "saveProviderSettings",
-				providerId: "cline",
+				providerId: "hadyancode",
 				apiKey: "manual-new",
 			} as SaveProviderSettingsActionRequest,
 		);
@@ -178,7 +178,7 @@ describe("saveLocalProviderSettings", () => {
 		expect(save).toHaveBeenCalledTimes(1);
 		expect(save).toHaveBeenCalledWith(
 			{
-				provider: "cline",
+				provider: "hadyancode",
 				apiKey: "manual-new",
 				auth: {
 					accessToken: "workos:oauth-access",

@@ -31,7 +31,7 @@ describe("HookProcess", () => {
 
 		await withPlatform("win32", async () => {
 			const config = await getHookLaunchConfig(
-				"C:\\workspace\\.clinerules\\hooks\\PreToolUse.ps1",
+				"C:\\workspace\\.hadyancoderules\\hooks\\PreToolUse.ps1",
 				async () => resolvedExecutable,
 			)
 
@@ -42,7 +42,7 @@ describe("HookProcess", () => {
 				"-ExecutionPolicy",
 				"Bypass",
 				"-File",
-				"C:\\workspace\\.clinerules\\hooks\\PreToolUse.ps1",
+				"C:\\workspace\\.hadyancoderules\\hooks\\PreToolUse.ps1",
 			])
 			config.shell.should.equal(false)
 			config.detached.should.equal(false)
@@ -51,7 +51,7 @@ describe("HookProcess", () => {
 
 	it("keeps Unix launch behavior unchanged", async () => {
 		await withPlatform("linux", async () => {
-			const config = await getHookLaunchConfig("/tmp/.clinerules/hooks/PreToolUse")
+			const config = await getHookLaunchConfig("/tmp/.hadyancoderules/hooks/PreToolUse")
 			config.args.should.deepEqual([])
 			config.shell.should.equal(true)
 			config.detached.should.equal(true)
@@ -61,7 +61,7 @@ describe("HookProcess", () => {
 	it("surfaces resolver failures", async () => {
 		await withPlatform("win32", async () => {
 			try {
-				await getHookLaunchConfig("C:\\workspace\\.clinerules\\hooks\\PreToolUse.ps1", async () => {
+				await getHookLaunchConfig("C:\\workspace\\.hadyancoderules\\hooks\\PreToolUse.ps1", async () => {
 					throw new Error("resolver failed")
 				})
 				throw new Error("Expected getHookLaunchConfig to throw")
@@ -73,7 +73,7 @@ describe("HookProcess", () => {
 
 	it("uses PowerShell on Windows", async () => {
 		await withPlatform("win32", async () => {
-			const ps1Path = "C:\\workspace\\.clinerules\\hooks\\PreToolUse.ps1"
+			const ps1Path = "C:\\workspace\\.hadyancoderules\\hooks\\PreToolUse.ps1"
 			const resolvedExecutable = "C:\\Program Files\\PowerShell\\7\\pwsh.exe"
 
 			let resolverCallCount = 0
@@ -102,9 +102,9 @@ describe("HookProcess", () => {
 			}
 
 			const launchRequests = [
-				getHookLaunchConfig("C:\\workspace\\.clinerules\\hooks\\PreToolUse.ps1", resolver),
-				getHookLaunchConfig("C:\\workspace\\.clinerules\\hooks\\PostToolUse.ps1", resolver),
-				getHookLaunchConfig("C:\\workspace\\.clinerules\\hooks\\TaskResume.ps1", resolver),
+				getHookLaunchConfig("C:\\workspace\\.hadyancoderules\\hooks\\PreToolUse.ps1", resolver),
+				getHookLaunchConfig("C:\\workspace\\.hadyancoderules\\hooks\\PostToolUse.ps1", resolver),
+				getHookLaunchConfig("C:\\workspace\\.hadyancoderules\\hooks\\TaskResume.ps1", resolver),
 			]
 
 			await Promise.resolve()
@@ -133,13 +133,16 @@ describe("HookProcess", () => {
 			}
 
 			try {
-				await getHookLaunchConfig("C:\\workspace\\.clinerules\\hooks\\PreToolUse.ps1", flakyResolver)
+				await getHookLaunchConfig("C:\\workspace\\.hadyancoderules\\hooks\\PreToolUse.ps1", flakyResolver)
 				throw new Error("Expected first call to fail")
 			} catch (error: any) {
 				error.message.should.match(/initial resolver failure/)
 			}
 
-			const recoveredConfig = await getHookLaunchConfig("C:\\workspace\\.clinerules\\hooks\\PreToolUse.ps1", flakyResolver)
+			const recoveredConfig = await getHookLaunchConfig(
+				"C:\\workspace\\.hadyancoderules\\hooks\\PreToolUse.ps1",
+				flakyResolver,
+			)
 
 			recoveredConfig.command.should.equal("C:\\Program Files\\PowerShell\\7\\pwsh.exe")
 			resolverCallCount.should.equal(2)
@@ -159,15 +162,21 @@ describe("HookProcess", () => {
 			]
 
 			try {
-				const firstConfig = await getHookLaunchConfig("C:\\workspace\\.clinerules\\hooks\\PreToolUse.ps1", async () => {
-					resolverCallCount += 1
-					return resolvedExecutables.shift() || "unexpected"
-				})
+				const firstConfig = await getHookLaunchConfig(
+					"C:\\workspace\\.hadyancoderules\\hooks\\PreToolUse.ps1",
+					async () => {
+						resolverCallCount += 1
+						return resolvedExecutables.shift() || "unexpected"
+					},
+				)
 
-				const secondConfig = await getHookLaunchConfig("C:\\workspace\\.clinerules\\hooks\\TaskResume.ps1", async () => {
-					resolverCallCount += 1
-					return resolvedExecutables.shift() || "unexpected"
-				})
+				const secondConfig = await getHookLaunchConfig(
+					"C:\\workspace\\.hadyancoderules\\hooks\\TaskResume.ps1",
+					async () => {
+						resolverCallCount += 1
+						return resolvedExecutables.shift() || "unexpected"
+					},
+				)
 
 				firstConfig.command.should.equal("C:\\Program Files\\PowerShell\\7\\pwsh.exe")
 				secondConfig.command.should.equal("C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe")

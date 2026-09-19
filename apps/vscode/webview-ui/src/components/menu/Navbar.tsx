@@ -1,4 +1,4 @@
-import { IntentEvent } from "@shared/proto/cline/ui"
+import { IntentEvent } from "@shared/proto/hadyancode/ui"
 import { HistoryIcon, PlusIcon, PuzzleIcon, SettingsIcon, UserCircleIcon } from "lucide-react"
 import { useMemo } from "react"
 import { Button } from "@/components/ui/button"
@@ -67,7 +67,7 @@ export const Navbar = () => {
 	return (
 		<nav
 			className="flex-none inline-flex justify-end bg-transparent gap-2 mb-1 z-10 border-none items-center mr-4!"
-			id="cline-navbar-container">
+			id="hadyancode-navbar-container">
 			{SETTINGS_TABS.map((tab) => (
 				<Tooltip key={`navbar-tooltip-${tab.id}`}>
 					<TooltipContent side="bottom">{tab.tooltip}</TooltipContent>

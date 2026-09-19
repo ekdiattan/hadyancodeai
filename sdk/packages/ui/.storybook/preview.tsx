@@ -1,18 +1,18 @@
 import type { Decorator, Preview } from "@storybook/react-vite";
 import "./preview.css";
 
-const withClineTheme: Decorator = (Story, context) => {
+const withHadyanCodeTheme: Decorator = (Story, context) => {
 	const isDark = context.globals.theme === "dark";
 	document.documentElement.classList.toggle("dark", isDark);
 	return (
-		<div className="cline-storybook-surface">
+		<div className="hadyancode-storybook-surface">
 			<Story />
 		</div>
 	);
 };
 
 const preview: Preview = {
-	decorators: [withClineTheme],
+	decorators: [withHadyanCodeTheme],
 	parameters: {
 		backgrounds: { disable: true },
 		controls: {
@@ -39,7 +39,7 @@ const preview: Preview = {
 	},
 	globalTypes: {
 		theme: {
-			description: "Cline color theme",
+			description: "HadyanCode color theme",
 			defaultValue: "dark",
 			toolbar: {
 				dynamicTitle: true,

@@ -1,8 +1,8 @@
 #!/usr/bin/env bun
 /**
- * Cline Hook: PreToolUse (TypeScript)
+ * HadyanCode Hook: PreToolUse (TypeScript)
  * Logs and filters tool calls with type safety.
- * Copy to ~/.cline/hooks/PreToolUse.ts and chmod +x
+ * Copy to ~/.hadyancode/hooks/PreToolUse.ts and chmod +x
  */
 
 interface ToolCall {

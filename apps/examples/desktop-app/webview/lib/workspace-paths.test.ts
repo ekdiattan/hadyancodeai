@@ -26,17 +26,17 @@ describe("workspace paths", () => {
 	});
 
 	it("normalizes trailing separators and Windows path casing", () => {
-		expect(normalizeWorkspacePath(" /workspace/cline/ ")).toBe(
-			"/workspace/cline",
+		expect(normalizeWorkspacePath(" /workspace/hadyancode/ ")).toBe(
+			"/workspace/hadyancode",
 		);
-		expect(normalizeWorkspacePath("C:\\Users\\Saoud\\Cline\\")).toBe(
-			"c:\\users\\saoud\\cline",
+		expect(normalizeWorkspacePath("C:\\Users\\Saoud\\HadyanCode\\")).toBe(
+			"c:\\users\\saoud\\hadyancode",
 		);
 		expect(normalizeWorkspacePath("/")).toBe("/");
 	});
 
 	it("detects absolute file paths across platforms", () => {
-		expect(isAbsoluteFilePath("/Users/renee/cline/docs/a.mdx")).toBe(true);
+		expect(isAbsoluteFilePath("/Users/renee/hadyancode/docs/a.mdx")).toBe(true);
 		expect(isAbsoluteFilePath("C:\\Users\\renee\\a.mdx")).toBe(true);
 		expect(isAbsoluteFilePath("C:/Users/renee/a.mdx")).toBe(true);
 		expect(isAbsoluteFilePath("\\\\server\\share\\a.mdx")).toBe(true);
@@ -45,15 +45,15 @@ describe("workspace paths", () => {
 	});
 
 	it("resolves relative diff paths against the session cwd", () => {
-		expect(resolveWorkspaceFilePath("docs/a.mdx", "/Users/renee/cline")).toBe(
-			"/Users/renee/cline/docs/a.mdx",
+		expect(resolveWorkspaceFilePath("docs/a.mdx", "/Users/renee/hadyancode")).toBe(
+			"/Users/renee/hadyancode/docs/a.mdx",
 		);
 		expect(
-			resolveWorkspaceFilePath("./docs/a.mdx", "/Users/renee/cline/"),
-		).toBe("/Users/renee/cline/docs/a.mdx");
+			resolveWorkspaceFilePath("./docs/a.mdx", "/Users/renee/hadyancode/"),
+		).toBe("/Users/renee/hadyancode/docs/a.mdx");
 		expect(
-			resolveWorkspaceFilePath("/Users/renee/cline/docs/a.mdx", "/elsewhere"),
-		).toBe("/Users/renee/cline/docs/a.mdx");
+			resolveWorkspaceFilePath("/Users/renee/hadyancode/docs/a.mdx", "/elsewhere"),
+		).toBe("/Users/renee/hadyancode/docs/a.mdx");
 		expect(resolveWorkspaceFilePath("docs/a.mdx", undefined)).toBe(
 			"docs/a.mdx",
 		);
@@ -150,22 +150,22 @@ describe("workspace paths", () => {
 		});
 	});
 
-	it("excludes .cline-internal paths from the workspace catalog", () => {
+	it("excludes .hadyancode-internal paths from the workspace catalog", () => {
 		expect(
-			isExcludedWorkspacePath("/Users/beatrix/.cline/worktrees/5e0b3/sdk-wip"),
+			isExcludedWorkspacePath("/Users/beatrix/.hadyancode/worktrees/5e0b3/sdk-wip"),
 		).toBe(true);
 		expect(
 			isExcludedWorkspacePath(
-				"/Users/beatrix/.cline/plugins/_installed/git/github.com/example-plugin",
+				"/Users/beatrix/.hadyancode/plugins/_installed/git/github.com/example-plugin",
 			),
 		).toBe(true);
 		expect(
-			isExcludedWorkspacePath("C:\\Users\\Saoud\\.cline\\worktrees\\abc"),
+			isExcludedWorkspacePath("C:\\Users\\Saoud\\.hadyancode\\worktrees\\abc"),
 		).toBe(true);
 	});
 
 	it("excludes the SDK chat workspace from discovery and stored selections", () => {
-		const temporaryWorkspace = "/home/host/.cline/data/workspaces/chat";
+		const temporaryWorkspace = "/home/host/.hadyancode/data/workspaces/chat";
 
 		expect(isExcludedWorkspacePath(temporaryWorkspace)).toBe(true);
 		expect(
@@ -208,7 +208,7 @@ describe("workspace paths", () => {
 
 			expect(isExcludedWorkspacePath("d:\\homes\\bea\\")).toBe(true);
 			expect(isExcludedWorkspacePath("D:\\Homes\\Bea\\Desktop")).toBe(true);
-			expect(isExcludedWorkspacePath("D:\\Homes\\Bea\\cline")).toBe(false);
+			expect(isExcludedWorkspacePath("D:\\Homes\\Bea\\hadyancode")).toBe(false);
 		});
 	});
 
@@ -220,19 +220,19 @@ describe("workspace paths", () => {
 		expect(isExcludedWorkspacePath("C:\\Users\\Saoud")).toBe(true);
 		expect(isExcludedWorkspacePath("C:\\Users\\Saoud\\Desktop")).toBe(true);
 
-		expect(isExcludedWorkspacePath("/Users/beatrix/dev/cline")).toBe(false);
+		expect(isExcludedWorkspacePath("/Users/beatrix/dev/hadyancode")).toBe(false);
 		expect(isExcludedWorkspacePath("/Users/beatrix/Desktop/my-app")).toBe(
 			false,
 		);
 		expect(isExcludedWorkspacePath("/home/beatrix/projects")).toBe(false);
-		expect(isExcludedWorkspacePath("/workspace/cline")).toBe(false);
-		expect(isExcludedWorkspacePath("C:\\Users\\Saoud\\Cline")).toBe(false);
+		expect(isExcludedWorkspacePath("/workspace/hadyancode")).toBe(false);
+		expect(isExcludedWorkspacePath("C:\\Users\\Saoud\\HadyanCode")).toBe(false);
 	});
 
 	it("filters excluded paths out of session-derived workspaces", () => {
 		const paths = workspacePathsFromSessions([
 			{ workspaceRoot: "/projects/app" },
-			{ workspaceRoot: "/Users/beatrix/.cline/worktrees/97815/sdk-wip" },
+			{ workspaceRoot: "/Users/beatrix/.hadyancode/worktrees/97815/sdk-wip" },
 			{ cwd: "/Users/beatrix/Desktop" },
 			{ cwd: "/Users/beatrix" },
 			{ cwd: "/projects/tool" },
@@ -248,7 +248,7 @@ describe("workspace paths", () => {
 					lastWorkspace: "/Users/beatrix/Desktop",
 					workspaces: [
 						"/projects/one",
-						"/Users/beatrix/.cline/worktrees/5e0b3/sdk-wip",
+						"/Users/beatrix/.hadyancode/worktrees/5e0b3/sdk-wip",
 						"/Users/beatrix",
 					],
 				}),

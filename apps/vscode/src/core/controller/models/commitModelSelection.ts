@@ -1,6 +1,6 @@
 import { toLegacyApiProvider } from "@/shared/model-catalog/provider-helpers"
-import { Empty } from "@/shared/proto/cline/common"
-import { CommitModelSelectionRequest } from "@/shared/proto/cline/models"
+import { Empty } from "@/shared/proto/hadyancode/common"
+import { CommitModelSelectionRequest } from "@/shared/proto/hadyancode/models"
 import { getProviderModelIdKey } from "@/shared/storage/provider-keys"
 import {
 	hasProviderCatalogStateController,

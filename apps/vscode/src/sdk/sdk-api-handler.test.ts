@@ -26,15 +26,15 @@ describe("buildSdkProviderConfig", () => {
 		vi.clearAllMocks()
 	})
 
-	it("uses shared Cline OAuth credentials for ClinePass direct handlers", () => {
+	it("uses shared HadyanCode OAuth credentials for HadyanCodePass direct handlers", () => {
 		mocks.providerSettingsManager.getProviderSettings.mockImplementation((providerId: string) => {
-			if (providerId !== "cline") {
+			if (providerId !== "hadyancode") {
 				return undefined
 			}
 			return {
-				provider: "cline",
+				provider: "hadyancode",
 				auth: {
-					accessToken: "workos:shared-cline-token",
+					accessToken: "workos:shared-hadyancode-token",
 					refreshToken: "refresh-token",
 				},
 			}
@@ -42,18 +42,18 @@ describe("buildSdkProviderConfig", () => {
 
 		const providerConfig = buildSdkProviderConfig(
 			{
-				actModeApiProvider: "cline-pass",
-				actModeClinePassModelId: "cline-pass/glm-5.2",
+				actModeApiProvider: "hadyancode-pass",
+				actModeHadyanCodePassModelId: "hadyancode-pass/glm-5.2",
 			},
 			"act",
 		)
 
 		expect(providerConfig).toMatchObject({
-			providerId: "cline-pass",
-			modelId: "cline-pass/glm-5.2",
-			apiKey: "workos:shared-cline-token",
+			providerId: "hadyancode-pass",
+			modelId: "hadyancode-pass/glm-5.2",
+			apiKey: "workos:shared-hadyancode-token",
 		})
-		expect(mocks.providerSettingsManager.getProviderSettings).toHaveBeenCalledWith("cline")
+		expect(mocks.providerSettingsManager.getProviderSettings).toHaveBeenCalledWith("hadyancode")
 	})
 
 	it("uses provider-specific settings for SDK-backed direct handlers", () => {

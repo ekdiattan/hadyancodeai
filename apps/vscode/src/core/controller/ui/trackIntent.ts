@@ -1,5 +1,5 @@
-import { Empty } from "@shared/proto/cline/common"
-import type { IntentEvent } from "@shared/proto/cline/ui"
+import { Empty } from "@shared/proto/hadyancode/common"
+import type { IntentEvent } from "@shared/proto/hadyancode/ui"
 import { telemetryService } from "@/services/telemetry"
 import type { Controller } from "../index"
 

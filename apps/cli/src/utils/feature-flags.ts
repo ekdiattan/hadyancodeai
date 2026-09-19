@@ -7,20 +7,20 @@ import {
 	NoOpFeatureFlagsProvider,
 	registerDisposable,
 	resolveCoreDistinctId,
-} from "@cline/core";
+} from "@hadyancode/core";
 import {
-	buildClinePostHogClient,
+	buildHadyanCodePostHogClient,
 	PostHogFeatureFlagsProvider,
-} from "@cline/core/services/feature-flags/posthog";
-import { resolveClineDataDir } from "@cline/shared/storage";
+} from "@hadyancode/core/services/feature-flags/posthog";
+import { resolveHadyanCodeDataDir } from "@hadyancode/shared/storage";
 
-let cliFeatureFlagsContext: FeatureFlagsContext = { clientName: "cline-cli" };
+let cliFeatureFlagsContext: FeatureFlagsContext = { clientName: "hadyancode-cli" };
 let cliFeatureFlagsService: FeatureFlagsService | undefined;
 
 const CLI_FEATURE_FLAGS_CACHE_MAX_AGE_MS = 30 * 24 * 60 * 60 * 1000;
 
 function resolveCliFeatureFlagsCachePath(): string {
-	return join(resolveClineDataDir(), "cache", "feature-flags.json");
+	return join(resolveHadyanCodeDataDir(), "cache", "feature-flags.json");
 }
 
 function ensureCliDistinctId(): string {
@@ -49,7 +49,7 @@ export function getCliFeatureFlagsService(options?: {
 			process.env.IS_TEST !== "true" &&
 			process.env.E2E_TEST !== "true"
 				? new PostHogFeatureFlagsProvider({
-						client: buildClinePostHogClient(apiKey),
+						client: buildHadyanCodePostHogClient(apiKey),
 						config: {
 							logger: options?.logger,
 						},

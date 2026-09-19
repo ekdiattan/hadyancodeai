@@ -2,14 +2,14 @@
  * Custom Model Provider Plugin Example
  *
  * Shows how a plugin can register a brand-new model provider so the agent can
- * run inference against it, no changes to Cline itself required.
+ * run inference against it, no changes to HadyanCode itself required.
  *
  * This example registers an OpenAI-compatible provider pointed at OpenRouter.
- * OpenRouter ships as a built-in provider in Cline already, so this example
+ * OpenRouter ships as a built-in provider in HadyanCode already, so this example
  * registers under a distinct id (`openrouter-plugin`) to avoid colliding with
  * the built-in. It exists to demonstrate the pattern. Swap the `BASE_URL`,
  * `API_KEY_ENV`, and `MODELS` below to add any OpenAI-compatible endpoint
- * (a self-hosted LiteLLM/vLLM gateway, an internal proxy, a niche provider Cline
+ * (a self-hosted LiteLLM/vLLM gateway, an internal proxy, a niche provider HadyanCode
  * does not bundle, etc.).
  *
  * How it works:
@@ -22,7 +22,7 @@
  *     (required by the `providers` capability) so hosts can advertise it.
  */
 
-import { type AgentPlugin, Llms } from "@cline/core";
+import { type AgentPlugin, Llms } from "@hadyancode/core";
 
 // ---------------------------------------------------------------------------
 // Provider definition

@@ -2,25 +2,25 @@ import { describe, expect, it } from "vitest";
 import {
 	getMainMenuOptions,
 	getOAuthProviderLabel,
-	shouldUseFeaturedClineModelPicker,
+	shouldUseFeaturedHadyanCodeModelPicker,
 	toModelEntriesFromKnownModels,
 	toModelEntry,
 	toProviderEntry,
 } from "./model";
 
 describe("onboarding model helpers", () => {
-	it("hides ClinePass from the main menu unless its feature flag is enabled", () => {
+	it("hides HadyanCodePass from the main menu unless its feature flag is enabled", () => {
 		expect(
-			getMainMenuOptions().some((option) => option.value === "cline-pass"),
+			getMainMenuOptions().some((option) => option.value === "hadyancode-pass"),
 		).toBe(false);
 		expect(
-			getMainMenuOptions({ isClinePassEnabled: false }).some(
-				(option) => option.value === "cline-pass",
+			getMainMenuOptions({ isHadyanCodePassEnabled: false }).some(
+				(option) => option.value === "hadyancode-pass",
 			),
 		).toBe(false);
 		expect(
-			getMainMenuOptions({ isClinePassEnabled: true }).some(
-				(option) => option.value === "cline-pass",
+			getMainMenuOptions({ isHadyanCodePassEnabled: true }).some(
+				(option) => option.value === "hadyancode-pass",
 			),
 		).toBe(true);
 	});
@@ -28,16 +28,16 @@ describe("onboarding model helpers", () => {
 	it("maps provider catalog entries into onboarding provider entries", () => {
 		expect(
 			toProviderEntry({
-				id: "cline",
-				name: "Cline",
+				id: "hadyancode",
+				name: "HadyanCode",
 				apiKey: "",
 				oauthAccessTokenPresent: true,
 				models: 12,
 				defaultModelId: "openai/gpt-5.3-codex",
 			}),
 		).toEqual({
-			id: "cline",
-			name: "Cline",
+			id: "hadyancode",
+			name: "HadyanCode",
 			isOAuth: true,
 			isLocalAuth: false,
 			hasAuth: true,
@@ -154,15 +154,15 @@ describe("onboarding model helpers", () => {
 	});
 
 	it("formats OAuth provider labels for onboarding status views", () => {
-		expect(getOAuthProviderLabel("cline")).toBe("Cline");
-		expect(getOAuthProviderLabel("cline-pass")).toBe("ClinePass");
+		expect(getOAuthProviderLabel("hadyancode")).toBe("HadyanCode");
+		expect(getOAuthProviderLabel("hadyancode-pass")).toBe("HadyanCodePass");
 		expect(getOAuthProviderLabel("openai-codex")).toBe("ChatGPT");
 		expect(getOAuthProviderLabel("oca")).toBe("oca");
 	});
 
-	it("uses the featured Cline model picker for the Cline and ClinePass providers", () => {
-		expect(shouldUseFeaturedClineModelPicker("cline")).toBe(true);
-		expect(shouldUseFeaturedClineModelPicker("cline-pass")).toBe(true);
-		expect(shouldUseFeaturedClineModelPicker("anthropic")).toBe(false);
+	it("uses the featured HadyanCode model picker for the HadyanCode and HadyanCodePass providers", () => {
+		expect(shouldUseFeaturedHadyanCodeModelPicker("hadyancode")).toBe(true);
+		expect(shouldUseFeaturedHadyanCodeModelPicker("hadyancode-pass")).toBe(true);
+		expect(shouldUseFeaturedHadyanCodeModelPicker("anthropic")).toBe(false);
 	});
 });

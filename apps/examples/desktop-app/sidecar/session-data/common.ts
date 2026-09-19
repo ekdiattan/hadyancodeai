@@ -1,4 +1,4 @@
-import { formatDisplayUserInput } from "@cline/shared";
+import { formatDisplayUserInput } from "@hadyancode/shared";
 import { readSessionManifest } from "../paths";
 import type { JsonRecord } from "../types";
 

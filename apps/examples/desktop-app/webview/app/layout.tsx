@@ -7,8 +7,8 @@ import { HUB_THEME_BOOTSTRAP_SCRIPT } from "@/lib/theme";
 import "./globals.css";
 
 export const metadata: Metadata = {
-	title: "Cline",
-	description: "Build software with Cline.",
+	title: "HadyanCode",
+	description: "Build software with HadyanCode.",
 	icons: {
 		icon: [
 			{
@@ -36,7 +36,7 @@ export default function RootLayout({
 	return (
 		<html
 			className="dark h-full"
-			data-cline-hub-theme="dark"
+			data-hadyancode-hub-theme="dark"
 			lang="en"
 			suppressHydrationWarning
 		>
@@ -46,12 +46,12 @@ export default function RootLayout({
 					dangerouslySetInnerHTML={{
 						__html: APP_FONT_SIZE_BOOTSTRAP_SCRIPT,
 					}}
-					id="cline-app-font-size-bootstrap"
+					id="hadyancode-app-font-size-bootstrap"
 				/>
 				<script
 					// biome-ignore lint/security/noDangerouslySetInnerHtml: static bootstrap must run before the first paint
 					dangerouslySetInnerHTML={{ __html: HUB_THEME_BOOTSTRAP_SCRIPT }}
-					id="cline-hub-theme-bootstrap"
+					id="hadyancode-hub-theme-bootstrap"
 				/>
 			</head>
 			<body className="h-full min-h-screen font-sans antialiased">

@@ -136,14 +136,14 @@ export interface ConfigPluginSection {
 export function getConfigPluginSections(
 	items: readonly InteractiveConfigItem[],
 ): ConfigPluginSection[] {
-	const clinePlugins = items.filter((item) => item.agentPlugin !== true);
+	const hadyancodePlugins = items.filter((item) => item.agentPlugin !== true);
 	const agentPlugins = items.filter((item) => item.agentPlugin === true);
 	return [
-		...(clinePlugins.length > 0
+		...(hadyancodePlugins.length > 0
 			? [
 					{
-						label: `Cline Plugins (${clinePlugins.length})`,
-						items: clinePlugins,
+						label: `HadyanCode Plugins (${hadyancodePlugins.length})`,
+						items: hadyancodePlugins,
 					},
 				]
 			: []),

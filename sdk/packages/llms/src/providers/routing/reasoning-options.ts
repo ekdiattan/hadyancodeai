@@ -1,10 +1,10 @@
 import {
 	type GatewayProviderContext,
 	type GatewayStreamRequest,
-	isClineProvider,
+	isHadyanCodeProvider,
 	type ModelReasoningOption,
 	resolveReasoningBudgetFromRatio,
-} from "@cline/shared";
+} from "@hadyancode/shared";
 import {
 	getModelReasoningControls,
 	isClaudeFableModelId,
@@ -43,13 +43,13 @@ export function normalizeReasoningRequest(
 		return request;
 	}
 
-	// Cline routes Claude through an OpenRouter-compatible backend. Vercel's
+	// HadyanCode routes Claude through an OpenRouter-compatible backend. Vercel's
 	// catalog advertises a toggle for Fable 5, but Fable reasoning is mandatory
 	// and the backend rejects an explicit disable. Treat "off" as unsupported
 	// and let the model keep its mandatory default.
 	if (
 		reasoning.enabled === false &&
-		isClineProvider(request.providerId) &&
+		isHadyanCodeProvider(request.providerId) &&
 		isClaudeFableModelId(request.modelId)
 	) {
 		return { ...request, reasoning: undefined };

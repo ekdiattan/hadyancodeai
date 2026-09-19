@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 const mocks = vi.hoisted(() => ({
-	buildClinePostHogClient: vi.fn(() => ({ kind: "posthog-client" })),
+	buildHadyanCodePostHogClient: vi.fn(() => ({ kind: "posthog-client" })),
 	PostHogFeatureFlagsProvider: vi.fn(function PostHogFeatureFlagsProvider(
 		this: Record<string, unknown>,
 		options: unknown,
@@ -21,14 +21,14 @@ const mocks = vi.hoisted(() => ({
 	getFlagPayload: vi.fn((_flag: unknown): unknown => undefined),
 }));
 
-vi.mock("@cline/core", async () => {
+vi.mock("@hadyancode/core", async () => {
 	const actual =
-		await vi.importActual<typeof import("@cline/core")>("@cline/core");
+		await vi.importActual<typeof import("@hadyancode/core")>("@hadyancode/core");
 	return {
 		...actual,
 		// Two known flags keep the snapshot assertions meaningful even as the
 		// real registry changes.
-		FEATURE_FLAGS: ["ext-cline-pass", "ext-demo-flag"],
+		FEATURE_FLAGS: ["ext-hadyancode-pass", "ext-demo-flag"],
 		NoOpFeatureFlagsProvider: mocks.NoOpFeatureFlagsProvider,
 		resolveCoreDistinctId: mocks.resolveCoreDistinctId,
 		FeatureFlagsService: class {
@@ -44,8 +44,8 @@ vi.mock("@cline/core", async () => {
 	};
 });
 
-vi.mock("@cline/core/services/feature-flags/posthog", () => ({
-	buildClinePostHogClient: mocks.buildClinePostHogClient,
+vi.mock("@hadyancode/core/services/feature-flags/posthog", () => ({
+	buildHadyanCodePostHogClient: mocks.buildHadyanCodePostHogClient,
 	PostHogFeatureFlagsProvider: mocks.PostHogFeatureFlagsProvider,
 }));
 
@@ -87,7 +87,7 @@ describe("getDesktopFeatureFlagsService", () => {
 		process.env.TELEMETRY_SERVICE_API_KEY = "phc_key";
 		getDesktopFeatureFlagsService();
 		expect(mocks.PostHogFeatureFlagsProvider).toHaveBeenCalledTimes(1);
-		expect(mocks.buildClinePostHogClient).toHaveBeenCalledWith("phc_key");
+		expect(mocks.buildHadyanCodePostHogClient).toHaveBeenCalledWith("phc_key");
 		expect(mocks.NoOpFeatureFlagsProvider).not.toHaveBeenCalled();
 	});
 
@@ -116,9 +116,9 @@ describe("getDesktopFeatureFlagsService", () => {
 });
 
 describe("feature flags context", () => {
-	it("defaults to the machine distinct ID under the cline-code client name", () => {
+	it("defaults to the machine distinct ID under the hadyancode-code client name", () => {
 		const context = getDesktopFeatureFlagsContext();
-		expect(context.clientName).toBe("cline-code");
+		expect(context.clientName).toBe("hadyancode-code");
 		expect(context.distinctId).toBe("machine-distinct-id");
 	});
 
@@ -176,13 +176,13 @@ describe("feature flags context", () => {
 describe("buildFeatureFlagsSnapshot", () => {
 	it("resolves every known flag so the client needs no defaults", () => {
 		mocks.getFlagPayload.mockImplementation((flag: unknown) =>
-			flag === "ext-cline-pass" ? true : undefined,
+			flag === "ext-hadyancode-pass" ? true : undefined,
 		);
 		const snapshot = buildFeatureFlagsSnapshot(
 			getDesktopFeatureFlagsService() as never,
 		);
 		expect(snapshot.flags).toEqual({
-			"ext-cline-pass": true,
+			"ext-hadyancode-pass": true,
 			// Unreturned flags resolve to false rather than being absent.
 			"ext-demo-flag": false,
 		});
@@ -190,12 +190,12 @@ describe("buildFeatureFlagsSnapshot", () => {
 
 	it("passes non-boolean payloads through untouched", () => {
 		mocks.getFlagPayload.mockImplementation((flag: unknown) =>
-			flag === "ext-cline-pass" ? { variant: "b", limit: 3 } : false,
+			flag === "ext-hadyancode-pass" ? { variant: "b", limit: 3 } : false,
 		);
 		const snapshot = buildFeatureFlagsSnapshot(
 			getDesktopFeatureFlagsService() as never,
 		);
-		expect(snapshot.flags["ext-cline-pass"]).toEqual({
+		expect(snapshot.flags["ext-hadyancode-pass"]).toEqual({
 			variant: "b",
 			limit: 3,
 		});
@@ -207,7 +207,7 @@ describe("refreshDesktopFeatureFlags", () => {
 		mocks.getFlagPayload.mockReturnValue(true);
 		const snapshot = await refreshDesktopFeatureFlags();
 		expect(mocks.poll).toHaveBeenCalledTimes(1);
-		expect(snapshot.flags["ext-cline-pass"]).toBe(true);
+		expect(snapshot.flags["ext-hadyancode-pass"]).toBe(true);
 	});
 
 	it("still returns cached values when the poll fails", async () => {
@@ -217,7 +217,7 @@ describe("refreshDesktopFeatureFlags", () => {
 
 		const snapshot = await refreshDesktopFeatureFlags({ logger });
 
-		expect(snapshot.flags["ext-cline-pass"]).toBe(false);
+		expect(snapshot.flags["ext-hadyancode-pass"]).toBe(false);
 		expect(logger.error).toHaveBeenCalled();
 	});
 });

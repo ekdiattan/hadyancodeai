@@ -1,4 +1,4 @@
-import * as LlmsModels from "@cline/llms";
+import * as LlmsModels from "@hadyancode/llms";
 import type {
 	AddProviderActionRequest,
 	ITelemetryService,
@@ -9,7 +9,7 @@ import type {
 	ProviderModel,
 	SaveProviderSettingsActionRequest,
 	VoiceInputSelection,
-} from "@cline/shared";
+} from "@hadyancode/shared";
 import { createOAuthClientCallbacks } from "../../auth/client";
 import {
 	getProviderAuthHandler,
@@ -18,10 +18,10 @@ import {
 	saveProviderOAuthCredentials,
 } from "../../auth/provider-auth-registry";
 import {
-	applyClineFeaturedModels,
-	getCachedClineRecommendedModels,
-	peekClineRecommendedModels,
-} from "../../services/llms/cline-recommended-models";
+	applyHadyanCodeFeaturedModels,
+	getCachedHadyanCodeRecommendedModels,
+	peekHadyanCodeRecommendedModels,
+} from "../../services/llms/hadyancode-recommended-models";
 import { resolveProviderConfig } from "../../services/llms/provider-defaults";
 import {
 	type ModelInfo,
@@ -48,11 +48,11 @@ import { isProviderSettingsUsable } from "./provider-readiness";
 
 export { ensureCustomProvidersLoaded } from "./local-provider-registry";
 
-const CLINE_PROVIDER_ID = "cline";
-const CLINE_PASS_PROVIDER_ID = "cline-pass";
+const HADYANCODE_PROVIDER_ID = "hadyancode";
+const HADYANCODE_PASS_PROVIDER_ID = "hadyancode-pass";
 
 export interface ListLocalProvidersOptions {
-	isClinePassEnabled?: boolean;
+	isHadyanCodePassEnabled?: boolean;
 }
 
 export interface UpdateLocalProviderRequest {
@@ -162,8 +162,8 @@ async function resolveProviderModelMap(
 		LlmsModels.getModelOverridesForProvider(providerId),
 	]);
 	const shouldLoadLiveCatalog =
-		providerId === CLINE_PROVIDER_ID || providerId === CLINE_PASS_PROVIDER_ID;
-	const isClinePass = providerId === CLINE_PASS_PROVIDER_ID;
+		providerId === HADYANCODE_PROVIDER_ID || providerId === HADYANCODE_PASS_PROVIDER_ID;
+	const isHadyanCodePass = providerId === HADYANCODE_PASS_PROVIDER_ID;
 	if (!config && !shouldLoadLiveCatalog) {
 		return registeredModels;
 	}
@@ -181,7 +181,7 @@ async function resolveProviderModelMap(
 	if (providerId === "litellm" && resolved?.knownModels) {
 		return resolved.knownModels;
 	}
-	if (isClinePass && resolved?.knownModels) {
+	if (isHadyanCodePass && resolved?.knownModels) {
 		return resolved.knownModels;
 	}
 
@@ -745,7 +745,7 @@ export async function listLocalProviders(
 	// feed, else the bundled fallback). This keeps even the very first picker
 	// paint after a cold boot sectioned; the per-provider model-list path
 	// (getLocalProviderModels) then refreshes with live feed data.
-	const featuredData = peekClineRecommendedModels();
+	const featuredData = peekHadyanCodeRecommendedModels();
 
 	const providerEntries = await Promise.all(
 		ids.map(
@@ -754,7 +754,7 @@ export async function listLocalProviders(
 					LlmsModels.getProvider(id),
 					LlmsModels.getModelsForProvider(id),
 				]);
-				const modelList = applyClineFeaturedModels(
+				const modelList = applyHadyanCodeFeaturedModels(
 					id,
 					toSortedProviderModels(registeredModels),
 					featuredData,
@@ -825,9 +825,9 @@ export async function listLocalProviders(
 		);
 	});
 	let providers = providerEntries.map((entry) => entry.provider);
-	if (options.isClinePassEnabled !== true) {
+	if (options.isHadyanCodePassEnabled !== true) {
 		providers = providers.filter(
-			(provider) => provider.id !== CLINE_PASS_PROVIDER_ID,
+			(provider) => provider.id !== HADYANCODE_PASS_PROVIDER_ID,
 		);
 	}
 
@@ -856,15 +856,15 @@ export async function getLocalProviderModels(
 	const id = providerId.trim();
 	const modelMap = await resolveProviderModelMap(id, config);
 	let models = toSortedProviderModels(modelMap);
-	if (id === CLINE_PROVIDER_ID || id === CLINE_PASS_PROVIDER_ID) {
+	if (id === HADYANCODE_PROVIDER_ID || id === HADYANCODE_PASS_PROVIDER_ID) {
 		// Stamp the recommended-feed tiers onto the list so every client's
 		// picker gets Recommended/Free/Subscribed data without fetching and
 		// joining the feed itself. Cached; falls back to a bundled list, so
 		// a failure only means models without tier decoration.
-		models = applyClineFeaturedModels(
+		models = applyHadyanCodeFeaturedModels(
 			id,
 			models,
-			await getCachedClineRecommendedModels(),
+			await getCachedHadyanCodeRecommendedModels(),
 		);
 	}
 	return { providerId: id, models };
@@ -1192,7 +1192,7 @@ export async function loginAndSaveLocalProviderOAuthCredentials(
 	});
 }
 
-export function resolveLocalClineAuthToken(
+export function resolveLocalHadyanCodeAuthToken(
 	settings: ProviderSettings | undefined,
 ): string | undefined {
 	const token = settings?.auth?.accessToken?.trim() || settings?.apiKey?.trim();

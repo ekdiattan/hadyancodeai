@@ -202,14 +202,14 @@ describe("buildEffectiveProviderConfig", () => {
 		})
 	})
 
-	it("keeps Cline account auth in the auth envelope", async () => {
+	it("keeps HadyanCode account auth in the auth envelope", async () => {
 		const { buildEffectiveProviderConfig } = await import("./effective-config")
-		mocks.setApiConfiguration({ clineApiKey: "cline-access-token", clineAccountId: "account-123" })
+		mocks.setApiConfiguration({ hadyancodeApiKey: "hadyancode-access-token", hadyancodeAccountId: "account-123" })
 
-		expect(buildEffectiveProviderConfig(parseProviderId("cline"))).toEqual({
-			providerId: parseProviderId("cline"),
-			apiKey: "cline-access-token",
-			auth: { accessToken: "cline-access-token", accountId: "account-123" },
+		expect(buildEffectiveProviderConfig(parseProviderId("hadyancode"))).toEqual({
+			providerId: parseProviderId("hadyancode"),
+			apiKey: "hadyancode-access-token",
+			auth: { accessToken: "hadyancode-access-token", accountId: "account-123" },
 		})
 	})
 })

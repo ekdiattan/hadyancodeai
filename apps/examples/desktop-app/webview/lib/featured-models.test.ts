@@ -15,8 +15,8 @@ function model(
 }
 
 describe("buildModelPickerData", () => {
-	it("builds recommended / free / all sections for the cline provider", () => {
-		const { options, sections } = buildModelPickerData("cline", [
+	it("builds recommended / free / all sections for the hadyancode provider", () => {
+		const { options, sections } = buildModelPickerData("hadyancode", [
 			model("zzz/last-model", "ZZZ Last"),
 			model(
 				"deepseek/deepseek-v4-flash",
@@ -56,7 +56,7 @@ describe("buildModelPickerData", () => {
 	});
 
 	it("orders featured tiers by feed rank, not list order", () => {
-		const { options } = buildModelPickerData("cline", [
+		const { options } = buildModelPickerData("hadyancode", [
 			model("openai/gpt-5.6-sol", "GPT-5.6 Sol", {
 				tier: "recommended",
 				rank: 1,
@@ -74,9 +74,9 @@ describe("buildModelPickerData", () => {
 		]);
 	});
 
-	it("builds subscribed / free sections for cline-pass and hides stale catalog leftovers", () => {
-		const { options, sections } = buildModelPickerData("cline-pass", [
-			model("cline-pass/kimi-k3", "Kimi K3", {
+	it("builds subscribed / free sections for hadyancode-pass and hides stale catalog leftovers", () => {
+		const { options, sections } = buildModelPickerData("hadyancode-pass", [
+			model("hadyancode-pass/kimi-k3", "Kimi K3", {
 				tier: "subscribed",
 				rank: 0,
 				tags: [],
@@ -102,8 +102,8 @@ describe("buildModelPickerData", () => {
 		).toBe(false);
 	});
 
-	it("falls back to the full cline-pass catalog when the subscribed tier is empty", () => {
-		const { options, sections } = buildModelPickerData("cline-pass", [
+	it("falls back to the full hadyancode-pass catalog when the subscribed tier is empty", () => {
+		const { options, sections } = buildModelPickerData("hadyancode-pass", [
 			model("deepseek/deepseek-v4-flash", "DeepSeek V4 Flash", {
 				tier: "free",
 				rank: 0,
@@ -124,7 +124,7 @@ describe("buildModelPickerData", () => {
 	});
 
 	it("falls back to a flat name-sorted list when nothing is featured", () => {
-		const { options, sections } = buildModelPickerData("cline", [
+		const { options, sections } = buildModelPickerData("hadyancode", [
 			model("zzz/last", "ZZZ"),
 			model("aaa/first", "AAA"),
 		]);

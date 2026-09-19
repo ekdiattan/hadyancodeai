@@ -1,7 +1,7 @@
-import { refreshClineRulesToggles } from "@core/context/instructions/user-instructions/cline-rules"
+import { refreshHadyanCodeRulesToggles } from "@core/context/instructions/user-instructions/hadyancode-rules"
 import { createRuleFile as createRuleFileImpl } from "@core/context/instructions/user-instructions/rule-helpers"
 import { getWorkspaceBasename } from "@core/workspace"
-import { RuleFile, RuleFileRequest } from "@shared/proto/cline/file"
+import { RuleFile, RuleFileRequest } from "@shared/proto/hadyancode/file"
 import { refreshWorkflowToggles } from "@/core/context/instructions/user-instructions/workflows"
 import { HostProvider } from "@/hosts/host-provider"
 import { ShowMessageType } from "@/shared/proto/host/window"
@@ -54,7 +54,7 @@ export async function createRuleFile(controller: Controller, request: RuleFileRe
 		if (request.type === "workflow") {
 			await refreshWorkflowToggles(controller, cwd)
 		} else {
-			await refreshClineRulesToggles(controller, cwd)
+			await refreshHadyanCodeRulesToggles(controller, cwd)
 		}
 		await controller.postStateToWebview()
 

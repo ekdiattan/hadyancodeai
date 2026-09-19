@@ -1,6 +1,6 @@
 import { resolve } from "node:path";
-import type { AgentExtension, PluginSetupContext } from "@cline/shared";
-import { normalizePluginManifest } from "@cline/shared";
+import type { AgentExtension, PluginSetupContext } from "@hadyancode/shared";
+import { normalizePluginManifest } from "@hadyancode/shared";
 import type {
 	PluginInitializationFailure,
 	PluginInitializationWarning,

@@ -1,7 +1,7 @@
 import {
 	resolveDefaultMcpSettingsPath,
 	setMcpServerDisabled,
-} from "@cline/core";
+} from "@hadyancode/core";
 import type { ChoiceContext } from "@opentui-ui/dialog";
 import { useDialogKeyboard } from "@opentui-ui/dialog/react";
 import { useState } from "react";
@@ -130,7 +130,7 @@ export function McpManagerContent(
 			<text selectable>{settingsPath}</text>
 
 			<text fg="gray" marginTop={1}>
-				Run cline mcp to add, edit, or remove servers.
+				Run hadyancode mcp to add, edit, or remove servers.
 			</text>
 
 			{servers.length > 0 && (
@@ -189,7 +189,7 @@ export function McpManagerContent(
 					<text fg={palette.error}>OAuth error</text>
 					<text fg={palette.error}>{selectedServer.lastError}</text>
 					<text fg="gray">
-						Run cline mcp and choose Authorize OAuth to retry.
+						Run hadyancode mcp and choose Authorize OAuth to retry.
 					</text>
 				</box>
 			)}

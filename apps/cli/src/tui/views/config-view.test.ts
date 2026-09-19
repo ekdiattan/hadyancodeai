@@ -98,10 +98,10 @@ describe("config view helpers", () => {
 		});
 	});
 
-	it("separates Cline and Agent Plugins into labeled sections", () => {
-		const clinePlugin = createItem({
+	it("separates HadyanCode and Agent Plugins into labeled sections", () => {
+		const hadyancodePlugin = createItem({
 			kind: "plugin",
-			name: "cline-plugin",
+			name: "hadyancode-plugin",
 			source: "workspace-plugin",
 		});
 		const agentPlugin = createItem({
@@ -111,8 +111,8 @@ describe("config view helpers", () => {
 			agentPlugin: true,
 		});
 
-		expect(getConfigPluginSections([clinePlugin, agentPlugin])).toEqual([
-			{ label: "Cline Plugins (1)", items: [clinePlugin] },
+		expect(getConfigPluginSections([hadyancodePlugin, agentPlugin])).toEqual([
+			{ label: "HadyanCode Plugins (1)", items: [hadyancodePlugin] },
 			{ label: "Agent Plugins (1)", items: [agentPlugin] },
 		]);
 	});

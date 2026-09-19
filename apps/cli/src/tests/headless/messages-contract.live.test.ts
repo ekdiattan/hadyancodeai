@@ -10,11 +10,11 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { test } from "@microsoft/tui-test";
 import {
-	CLINE_BIN,
+	HADYANCODE_BIN,
 	EXIT_CODE_SUCCESS,
 	TERMINAL_WIDE,
 } from "../helpers/constants.js";
-import { clineEnv } from "../helpers/env.js";
+import { hadyancodeEnv } from "../helpers/env.js";
 import { expectExitCode, expectVisible } from "../helpers/terminal.js";
 
 function findMessagesArtifacts(root: string): string[] {
@@ -40,16 +40,16 @@ function findMessagesArtifacts(root: string): string[] {
 	return out.sort();
 }
 
-test.describe("cline --json persisted messages contract - authenticated @live", () => {
+test.describe("hadyancode --json persisted messages contract - authenticated @live", () => {
 	const sessionDataDir = mkdtempSync(
-		join(tmpdir(), "cline-headless-messages-contract-"),
+		join(tmpdir(), "hadyancode-headless-messages-contract-"),
 	);
 	test.use({
-		program: { file: CLINE_BIN, args: ["--json", "tell me a joke"] },
+		program: { file: HADYANCODE_BIN, args: ["--json", "tell me a joke"] },
 		...TERMINAL_WIDE,
-		env: clineEnv("default", {
-			CLINE_VCR_CASSETTE: "./fixtures/headless-json.json",
-			CLINE_SESSION_DATA_DIR: sessionDataDir,
+		env: hadyancodeEnv("default", {
+			HADYANCODE_VCR_CASSETTE: "./fixtures/headless-json.json",
+			HADYANCODE_SESSION_DATA_DIR: sessionDataDir,
 		}),
 	});
 

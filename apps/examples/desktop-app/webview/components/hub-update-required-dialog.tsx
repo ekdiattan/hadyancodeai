@@ -48,7 +48,7 @@ const HUB_UPGRADE_TIMEOUT_MS = 60_000;
  * reloads, relaunches), and in-memory dismissal state resurrected the modal
  * each time. Storage keeps one key - a different hub build prompts again.
  */
-const DISMISSED_MISMATCH_STORAGE_KEY = "cline.hub-mismatch-dismissed";
+const DISMISSED_MISMATCH_STORAGE_KEY = "hadyancode.hub-mismatch-dismissed";
 
 function readPersistedDismissedKey(): string | null {
 	try {
@@ -73,7 +73,7 @@ function persistDismissedKey(key: string): void {
 let updateCheckKickedForKey: string | null = null;
 
 /**
- * Blocking prompt shown when the sidecar reports that the shared Cline Hub
+ * Blocking prompt shown when the sidecar reports that the shared HadyanCode Hub
  * does not match this app's build.
  *
  * Two directions, two dialogs:
@@ -175,7 +175,7 @@ export function HubUpdateRequiredDialog() {
 			setUpdateHint(
 				error instanceof Error && error.message
 					? error.message
-					: "Updating the Cline Hub failed. Try again, or run 'cline doctor fix' in a terminal.",
+					: "Updating the HadyanCode Hub failed. Try again, or run 'hadyancode doctor fix' in a terminal.",
 			);
 			setPhase("idle");
 			return;
@@ -210,13 +210,13 @@ export function HubUpdateRequiredDialog() {
 			<AlertDialog open>
 				<AlertDialogContent>
 					<AlertDialogHeader>
-						<AlertDialogTitle>Cline Hub update required</AlertDialogTitle>
+						<AlertDialogTitle>HadyanCode Hub update required</AlertDialogTitle>
 						<AlertDialogDescription>
-							Cline needs a newer Cline Hub, but the running one is still
+							HadyanCode needs a newer HadyanCode Hub, but the running one is still
 							serving {describeOutdatedHubSessions(mismatch)}.
 						</AlertDialogDescription>
 						<AlertDialogDescription>
-							Update Now stops that Hub and interrupts its sessions. Quit Cline
+							Update Now stops that Hub and interrupts its sessions. Quit HadyanCode
 							closes this app and leaves the Hub running, so you can update
 							later.
 						</AlertDialogDescription>
@@ -232,7 +232,7 @@ export function HubUpdateRequiredDialog() {
 								void handleQuit();
 							}}
 						>
-							Quit Cline
+							Quit HadyanCode
 						</AlertDialogCancel>
 						<AlertDialogAction
 							disabled={phase !== "idle"}
@@ -277,13 +277,13 @@ export function HubUpdateRequiredDialog() {
 		>
 			<AlertDialogContent>
 				<AlertDialogHeader>
-					<AlertDialogTitle>Cline Hub was updated</AlertDialogTitle>
+					<AlertDialogTitle>HadyanCode Hub was updated</AlertDialogTitle>
 					<AlertDialogDescription>
-						Another Cline installation updated the shared Cline Hub
+						Another HadyanCode installation updated the shared HadyanCode Hub
 						{mismatch?.hubCoreVersion
 							? ` (core ${mismatch.hubCoreVersion})`
 							: ""}
-						, and it no longer matches this app. Update and restart Cline to
+						, and it no longer matches this app. Update and restart HadyanCode to
 						stay in sync with the running Hub.
 					</AlertDialogDescription>
 					{updateHint ? (

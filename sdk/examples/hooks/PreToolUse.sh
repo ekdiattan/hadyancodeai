@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# Cline Hook: PreToolUse
+# HadyanCode Hook: PreToolUse
 # Logs every tool call before it executes
-# Copy to ~/.cline/hooks/PreToolUse.sh and chmod +x
+# Copy to ~/.hadyancode/hooks/PreToolUse.sh and chmod +x
 
 input=$(cat)
 tool=$(echo "$input" | jq -r '.tool_call.name // "unknown"')

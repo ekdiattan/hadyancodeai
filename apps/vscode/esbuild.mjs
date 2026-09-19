@@ -90,7 +90,7 @@ const buildEnvVars = {
 	"process.env.IS_STANDALONE": JSON.stringify(standalone ? "true" : "false"),
 	// Always inline these values so ordinary builds cannot be mislabeled by a
 	// user's runtime environment. Only the combined rollout workflow sets them.
-	"process.env.CLINE_ROLLOUT_VARIANT": JSON.stringify(process.env.CLINE_ROLLOUT_VARIANT || ""),
+	"process.env.HADYANCODE_ROLLOUT_VARIANT": JSON.stringify(process.env.HADYANCODE_ROLLOUT_VARIANT || ""),
 }
 
 if (production) {
@@ -99,8 +99,8 @@ if (production) {
 }
 // Set the environment and telemetry env vars. The API key env vars need to be populated in the GitHub
 // workflows from the secrets.
-if (process.env.CLINE_ENVIRONMENT) {
-	buildEnvVars["process.env.CLINE_ENVIRONMENT"] = JSON.stringify(process.env.CLINE_ENVIRONMENT)
+if (process.env.HADYANCODE_ENVIRONMENT) {
+	buildEnvVars["process.env.HADYANCODE_ENVIRONMENT"] = JSON.stringify(process.env.HADYANCODE_ENVIRONMENT)
 }
 if (process.env.TELEMETRY_SERVICE_API_KEY) {
 	buildEnvVars["process.env.TELEMETRY_SERVICE_API_KEY"] = JSON.stringify(process.env.TELEMETRY_SERVICE_API_KEY)
@@ -165,8 +165,8 @@ const extensionConfig = {
 // Standalone-specific configuration
 const standaloneConfig = {
 	...baseConfig,
-	entryPoints: ["src/standalone/cline-core.ts"],
-	outfile: `${destDir}/cline-core.js`,
+	entryPoints: ["src/standalone/hadyancode-core.ts"],
+	outfile: `${destDir}/hadyancode-core.js`,
 	// These modules need to load files from the module directory at runtime,
 	// so they cannot be bundled.
 	external: ["vscode", "@grpc/reflection", "grpc-health-check", "better-sqlite3"],

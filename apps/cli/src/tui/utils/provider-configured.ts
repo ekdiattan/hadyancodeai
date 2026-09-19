@@ -1,4 +1,4 @@
-import { isProviderSettingsUsable, ProviderSettingsManager } from "@cline/core";
+import { isProviderSettingsUsable, ProviderSettingsManager } from "@hadyancode/core";
 import type { TuiProps } from "../types";
 
 export function isProviderConfigured(config: TuiProps["config"]): boolean {

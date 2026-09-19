@@ -1,51 +1,51 @@
 import type { SessionConfigOption } from "@agentclientprotocol/sdk";
 import {
-	type ClineAccountOrganization,
-	ClineAccountService,
+	type HadyanCodeAccountOrganization,
+	HadyanCodeAccountService,
 	getPersistedProviderApiKey,
 	type ProviderSettingsManager,
 	RuntimeOAuthTokenManager,
-} from "@cline/core";
-import { getClineEnvironmentConfig } from "@cline/shared";
+} from "@hadyancode/core";
+import { getHadyanCodeEnvironmentConfig } from "@hadyancode/shared";
 
 export const PERSONAL_ACCOUNT_VALUE = "personal";
 
 export const ORGANIZATION_CONFIG_ID = "organization";
 
-export function usesClineAccount(providerId: string): boolean {
-	return providerId === "cline" || providerId === "cline-pass";
+export function usesHadyanCodeAccount(providerId: string): boolean {
+	return providerId === "hadyancode" || providerId === "hadyancode-pass";
 }
 
 export interface AcpOrganizationState {
-	organizations: ClineAccountOrganization[];
+	organizations: HadyanCodeAccountOrganization[];
 	/** Active organization id, or null when the personal account is active. */
 	activeOrganizationId: string | null;
 }
 
-interface ClineAccountInput {
+interface HadyanCodeAccountInput {
 	apiKey: string;
 	providerSettingsManager: ProviderSettingsManager;
 }
 
-// Cline access tokens expire between runs, so account requests resolve
+// HadyanCode access tokens expire between runs, so account requests resolve
 // through the refresh-aware OAuth manager. A single shared instance keeps
 // refreshes single-flight; the refresh token is single-use, so parallel
 // refreshes would invalidate each other.
 let oauthTokenManager: RuntimeOAuthTokenManager | undefined;
 
-function createAccountService(input: ClineAccountInput): ClineAccountService {
+function createAccountService(input: HadyanCodeAccountInput): HadyanCodeAccountService {
 	const { providerSettingsManager } = input;
-	const settings = providerSettingsManager.getProviderSettings("cline");
-	return new ClineAccountService({
+	const settings = providerSettingsManager.getProviderSettings("hadyancode");
+	return new HadyanCodeAccountService({
 		apiBaseUrl:
-			settings?.baseUrl?.trim() || getClineEnvironmentConfig().apiBaseUrl,
+			settings?.baseUrl?.trim() || getHadyanCodeEnvironmentConfig().apiBaseUrl,
 		getAuthToken: async () => {
 			try {
 				oauthTokenManager ??= new RuntimeOAuthTokenManager({
 					providerSettingsManager,
 				});
 				const resolution = await oauthTokenManager.resolveProviderApiKey({
-					providerId: "cline",
+					providerId: "hadyancode",
 				});
 				if (resolution?.apiKey) {
 					return resolution.apiKey;
@@ -56,8 +56,8 @@ function createAccountService(input: ClineAccountInput): ClineAccountService {
 			}
 			return (
 				getPersistedProviderApiKey(
-					"cline",
-					providerSettingsManager.getProviderSettings("cline"),
+					"hadyancode",
+					providerSettingsManager.getProviderSettings("hadyancode"),
 				) ||
 				input.apiKey ||
 				undefined
@@ -66,8 +66,8 @@ function createAccountService(input: ClineAccountInput): ClineAccountService {
 	});
 }
 
-export async function fetchClineOrganizations(
-	input: ClineAccountInput,
+export async function fetchHadyanCodeOrganizations(
+	input: HadyanCodeAccountInput,
 ): Promise<AcpOrganizationState | undefined> {
 	try {
 		const service = createAccountService(input);
@@ -93,7 +93,7 @@ export function buildOrganizationConfigOption(
 		id: ORGANIZATION_CONFIG_ID,
 		name: "Account",
 		description:
-			"The Cline account usage is billed to — your personal account or an organization",
+			"The HadyanCode account usage is billed to — your personal account or an organization",
 		category: "account",
 		currentValue: state.activeOrganizationId ?? PERSONAL_ACCOUNT_VALUE,
 		options: [
@@ -106,8 +106,8 @@ export function buildOrganizationConfigOption(
 	};
 }
 
-export async function switchClineOrganization(
-	input: ClineAccountInput & { organizationId: string | null },
+export async function switchHadyanCodeOrganization(
+	input: HadyanCodeAccountInput & { organizationId: string | null },
 ): Promise<void> {
 	const service = createAccountService(input);
 	await service.switchAccount(input.organizationId);
@@ -119,12 +119,12 @@ export async function switchClineOrganization(
 // already succeeded server-side.
 async function persistActiveOrganization(
 	manager: ProviderSettingsManager,
-	service: ClineAccountService,
+	service: HadyanCodeAccountService,
 ): Promise<void> {
 	try {
 		const organizations = await service.fetchUserOrganizations();
 		const active = organizations.find((org) => org.active) ?? null;
-		const persisted = manager.getProviderSettings("cline");
+		const persisted = manager.getProviderSettings("hadyancode");
 		if (!persisted) {
 			return;
 		}
@@ -147,8 +147,8 @@ async function persistActiveOrganization(
 
 export function getAcpOrgSubscriptionMessage(): string {
 	return [
-		"Organization accounts cannot use ClinePass subscriptions.",
-		'Switch the "Account" session option to Personal to keep using ClinePass,',
-		'or switch the "Provider" option to Cline to bill your organization.',
+		"Organization accounts cannot use HadyanCodePass subscriptions.",
+		'Switch the "Account" session option to Personal to keep using HadyanCodePass,',
+		'or switch the "Provider" option to HadyanCode to bill your organization.',
 	].join(" ");
 }

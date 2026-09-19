@@ -10,13 +10,13 @@ import {
 	resolveProviderApiKeyFromSettings,
 } from "./provider-auth-registry";
 
-const { loginClineOAuth } = vi.hoisted(() => ({
-	loginClineOAuth: vi.fn(),
+const { loginHadyanCodeOAuth } = vi.hoisted(() => ({
+	loginHadyanCodeOAuth: vi.fn(),
 }));
 
-vi.mock("./cline", () => ({
-	getValidClineCredentials: vi.fn(),
-	loginClineOAuth,
+vi.mock("./hadyancode", () => ({
+	getValidHadyanCodeCredentials: vi.fn(),
+	loginHadyanCodeOAuth,
 }));
 
 vi.mock("./oca", () => ({
@@ -35,8 +35,8 @@ describe("provider auth registry", () => {
 	});
 
 	it("returns handlers for managed OAuth providers only", () => {
-		expect(getProviderAuthHandler("cline")?.providerId).toBe("cline");
-		expect(getProviderAuthHandler("cline-pass")?.providerId).toBe("cline-pass");
+		expect(getProviderAuthHandler("hadyancode")?.providerId).toBe("hadyancode");
+		expect(getProviderAuthHandler("hadyancode-pass")?.providerId).toBe("hadyancode-pass");
 		expect(getProviderAuthHandler("oca")?.providerId).toBe("oca");
 		expect(getProviderAuthHandler("openai-codex")?.providerId).toBe(
 			"openai-codex",
@@ -46,33 +46,33 @@ describe("provider auth registry", () => {
 	});
 
 	it("returns storage provider IDs from handlers", () => {
-		expect(getProviderAuthStorageId("cline")).toBe("cline");
-		expect(getProviderAuthStorageId("cline-pass")).toBe("cline");
+		expect(getProviderAuthStorageId("hadyancode")).toBe("hadyancode");
+		expect(getProviderAuthStorageId("hadyancode-pass")).toBe("hadyancode");
 		expect(getProviderAuthStorageId("oca")).toBe("oca");
 		expect(getProviderAuthStorageId("openai-codex")).toBe("openai-codex");
 		expect(getProviderAuthStorageId("openai-codex-cli")).toBeUndefined();
 	});
 
-	it("formats Cline WorkOS tokens without double-prefixing", () => {
-		expect(formatProviderOAuthApiKey("cline", { access: "abc" })).toBe(
+	it("formats HadyanCode WorkOS tokens without double-prefixing", () => {
+		expect(formatProviderOAuthApiKey("hadyancode", { access: "abc" })).toBe(
 			"workos:abc",
 		);
-		expect(formatProviderOAuthApiKey("cline-pass", { access: "abc" })).toBe(
+		expect(formatProviderOAuthApiKey("hadyancode-pass", { access: "abc" })).toBe(
 			"workos:abc",
 		);
-		expect(formatProviderOAuthApiKey("cline", { access: "workos:abc" })).toBe(
+		expect(formatProviderOAuthApiKey("hadyancode", { access: "workos:abc" })).toBe(
 			"workos:abc",
 		);
 		expect(
-			getPersistedProviderApiKey("cline-pass", {
-				provider: "cline",
+			getPersistedProviderApiKey("hadyancode-pass", {
+				provider: "hadyancode",
 				auth: { accessToken: "abc" },
 			}),
 		).toBe("workos:abc");
 	});
 
-	it("login/save for ClinePass stores credentials under Cline storage", async () => {
-		loginClineOAuth.mockResolvedValueOnce({
+	it("login/save for HadyanCodePass stores credentials under HadyanCode storage", async () => {
+		loginHadyanCodeOAuth.mockResolvedValueOnce({
 			access: "new-access",
 			refresh: "new-refresh",
 			expires: 4_000_000_000_000,
@@ -80,7 +80,7 @@ describe("provider auth registry", () => {
 			metadata: { sessionStartedAtMs: 1_700_000_000_000 },
 		});
 		const getProviderSettings = vi.fn().mockReturnValue({
-			provider: "cline",
+			provider: "hadyancode",
 			apiKey: "manual-key",
 		});
 		const saveProviderSettings = vi.fn();
@@ -91,7 +91,7 @@ describe("provider auth registry", () => {
 
 		const saved = await loginAndSaveProviderOAuthCredentials(
 			manager,
-			"cline-pass",
+			"hadyancode-pass",
 			{
 				callbacks: {
 					onAuth: vi.fn(),
@@ -100,9 +100,9 @@ describe("provider auth registry", () => {
 			},
 		);
 
-		expect(getProviderSettings).toHaveBeenCalledWith("cline");
+		expect(getProviderSettings).toHaveBeenCalledWith("hadyancode");
 		expect(saved).toMatchObject({
-			provider: "cline",
+			provider: "hadyancode",
 			apiKey: "manual-key",
 			auth: {
 				accessToken: "workos:new-access",
@@ -113,26 +113,26 @@ describe("provider auth registry", () => {
 			},
 		});
 		expect(saveProviderSettings).toHaveBeenCalledWith(
-			expect.objectContaining({ provider: "cline" }),
+			expect.objectContaining({ provider: "hadyancode" }),
 			{ tokenSource: "oauth" },
 		);
 	});
 
-	it("ClinePass resolves API keys from Cline storage", () => {
+	it("HadyanCodePass resolves API keys from HadyanCode storage", () => {
 		const getProviderSettings = vi.fn().mockReturnValue({
-			provider: "cline",
+			provider: "hadyancode",
 			auth: { accessToken: "abc" },
 		});
 		const manager = { getProviderSettings } as never;
 
-		expect(resolveProviderApiKeyFromSettings(manager, "cline-pass")).toBe(
+		expect(resolveProviderApiKeyFromSettings(manager, "hadyancode-pass")).toBe(
 			"workos:abc",
 		);
-		expect(getProviderSettings).toHaveBeenCalledWith("cline");
+		expect(getProviderSettings).toHaveBeenCalledWith("hadyancode");
 	});
 
 	it("login/save stores credentials under handler storageProviderId", async () => {
-		loginClineOAuth.mockResolvedValueOnce({
+		loginHadyanCodeOAuth.mockResolvedValueOnce({
 			access: "new-access",
 			refresh: "new-refresh",
 			expires: 4_000_000_000_000,
@@ -140,7 +140,7 @@ describe("provider auth registry", () => {
 			metadata: { sessionStartedAtMs: 1_700_000_000_001 },
 		});
 		const getProviderSettings = vi.fn().mockReturnValue({
-			provider: "cline",
+			provider: "hadyancode",
 			apiKey: "manual-key",
 		});
 		const saveProviderSettings = vi.fn();
@@ -149,16 +149,16 @@ describe("provider auth registry", () => {
 			saveProviderSettings,
 		} as never;
 
-		const saved = await loginAndSaveProviderOAuthCredentials(manager, "cline", {
+		const saved = await loginAndSaveProviderOAuthCredentials(manager, "hadyancode", {
 			callbacks: {
 				onAuth: vi.fn(),
 				onPrompt: vi.fn(async () => ""),
 			},
 		});
 
-		expect(getProviderSettings).toHaveBeenCalledWith("cline");
+		expect(getProviderSettings).toHaveBeenCalledWith("hadyancode");
 		expect(saved).toMatchObject({
-			provider: "cline",
+			provider: "hadyancode",
 			apiKey: "manual-key",
 			auth: {
 				accessToken: "workos:new-access",
@@ -169,20 +169,20 @@ describe("provider auth registry", () => {
 			},
 		});
 		expect(saveProviderSettings).toHaveBeenCalledWith(
-			expect.objectContaining({ provider: "cline" }),
+			expect.objectContaining({ provider: "hadyancode" }),
 			{ tokenSource: "oauth" },
 		);
 	});
 
 	it("login/save preserves existing auth metadata when incoming metadata is missing", async () => {
-		loginClineOAuth.mockResolvedValueOnce({
+		loginHadyanCodeOAuth.mockResolvedValueOnce({
 			access: "new-access",
 			refresh: "new-refresh",
 			expires: 4_000_000_000_000,
 			accountId: "acct-new",
 		});
 		const getProviderSettings = vi.fn().mockReturnValue({
-			provider: "cline",
+			provider: "hadyancode",
 			auth: {
 				accessToken: "workos:old-access",
 				refreshToken: "old-refresh",
@@ -199,7 +199,7 @@ describe("provider auth registry", () => {
 			saveProviderSettings,
 		} as never;
 
-		const saved = await loginAndSaveProviderOAuthCredentials(manager, "cline", {
+		const saved = await loginAndSaveProviderOAuthCredentials(manager, "hadyancode", {
 			callbacks: {
 				onAuth: vi.fn(),
 				onPrompt: vi.fn(async () => ""),
@@ -218,7 +218,7 @@ describe("provider auth registry", () => {
 	});
 
 	it("login/save does not let undefined incoming metadata erase existing metadata", async () => {
-		loginClineOAuth.mockResolvedValueOnce({
+		loginHadyanCodeOAuth.mockResolvedValueOnce({
 			access: "new-access",
 			refresh: "new-refresh",
 			expires: 4_000_000_000_000,
@@ -226,7 +226,7 @@ describe("provider auth registry", () => {
 			metadata: { provider: undefined, tokenType: "Bearer" },
 		});
 		const getProviderSettings = vi.fn().mockReturnValue({
-			provider: "cline",
+			provider: "hadyancode",
 			auth: {
 				accessToken: "workos:old-access",
 				refreshToken: "old-refresh",
@@ -243,7 +243,7 @@ describe("provider auth registry", () => {
 			saveProviderSettings,
 		} as never;
 
-		const saved = await loginAndSaveProviderOAuthCredentials(manager, "cline", {
+		const saved = await loginAndSaveProviderOAuthCredentials(manager, "hadyancode", {
 			callbacks: {
 				onAuth: vi.fn(),
 				onPrompt: vi.fn(async () => ""),
@@ -263,11 +263,11 @@ describe("provider auth registry", () => {
 	});
 
 	it("reads persisted auth metadata back into OAuth credentials", () => {
-		const handler = getProviderAuthHandler("cline");
+		const handler = getProviderAuthHandler("hadyancode");
 		const credentials =
 			handler &&
-			getProviderOAuthCredentialsFromSettings("cline", {
-				provider: "cline",
+			getProviderOAuthCredentialsFromSettings("hadyancode", {
+				provider: "hadyancode",
 				auth: {
 					accessToken: "workos:stored-access",
 					refreshToken: "stored-refresh",

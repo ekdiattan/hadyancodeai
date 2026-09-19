@@ -1,5 +1,5 @@
-import { Empty } from "@shared/proto/cline/common"
-import { RemoteConfigType } from "@shared/proto/cline/remote_config"
+import { Empty } from "@shared/proto/hadyancode/common"
+import { RemoteConfigType } from "@shared/proto/hadyancode/remote_config"
 import { describe, expect, it, vi } from "vitest"
 import { getRemoteConfigSettings } from "./getRemoteConfigSettings"
 

@@ -4,12 +4,12 @@ import {
 	readHubDiscovery,
 	resolveProductionHubOwnerContext,
 	resolveSharedHubOwnerContext,
-} from "@cline/core";
+} from "@hadyancode/core";
 import {
 	type ConnectorStartResult,
-	resolveClineBuildEnv,
+	resolveHadyanCodeBuildEnv,
 	type SupervisedConnectorRecord,
-} from "@cline/shared";
+} from "@hadyancode/shared";
 import type { ConnectIo } from "../connectors/types";
 
 /**
@@ -30,7 +30,7 @@ export type HubDelegationOutcome =
 	| { delegated: false; reason: string };
 
 function resolveHubOwnerContext() {
-	return resolveClineBuildEnv() === "production"
+	return resolveHadyanCodeBuildEnv() === "production"
 		? resolveProductionHubOwnerContext()
 		: resolveSharedHubOwnerContext();
 }
@@ -67,7 +67,7 @@ function describeRecord(record: SupervisedConnectorRecord | undefined): string {
 /**
  * What the running hub is supervising, or undefined when it cannot say.
  *
- * Deliberately does not start a hub: this exists for diagnostics, and `cline
+ * Deliberately does not start a hub: this exists for diagnostics, and `hadyancode
  * doctor` reporting on the system must never change it.
  */
 export async function listSupervisedConnectorsViaHub(): Promise<
@@ -269,7 +269,7 @@ export async function startConnectorViaHub(input: {
 			`[connect] ${input.channel} connector ${input.instanceId} started under hub supervision${describeRecord(record)}`,
 		);
 		input.io.writeln(
-			"[connect] the hub will restart it if it exits; use `cline connect --stop` to retire it",
+			"[connect] the hub will restart it if it exits; use `hadyancode connect --stop` to retire it",
 		);
 		return { delegated: true, exitCode: 0 };
 	} catch (error) {

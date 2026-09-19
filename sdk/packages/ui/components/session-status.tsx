@@ -19,8 +19,8 @@ export function SessionStatus({
 	return (
 		<output
 			className={[
-				"cline-ui-session-status inline-flex items-center gap-1.5 text-cline-ui-xs leading-none text-cline-ui-muted-foreground",
-				`cline-ui-session-status--${tone}`,
+				"hadyancode-ui-session-status inline-flex items-center gap-1.5 text-hadyancode-ui-xs leading-none text-hadyancode-ui-muted-foreground",
+				`hadyancode-ui-session-status--${tone}`,
 				className,
 			]
 				.filter(Boolean)
@@ -29,9 +29,9 @@ export function SessionStatus({
 		>
 			<span
 				aria-hidden="true"
-				className="cline-ui-session-status__dot size-1.5 shrink-0 rounded-full"
+				className="hadyancode-ui-session-status__dot size-1.5 shrink-0 rounded-full"
 			/>
-			<span className={showLabel ? undefined : "cline-ui-sr-only sr-only"}>
+			<span className={showLabel ? undefined : "hadyancode-ui-sr-only sr-only"}>
 				{label}
 			</span>
 		</output>

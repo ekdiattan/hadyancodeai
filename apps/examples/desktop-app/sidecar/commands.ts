@@ -4,23 +4,23 @@ import { homedir } from "node:os";
 import { basename, dirname, extname, isAbsolute, join } from "node:path";
 import { promisify } from "node:util";
 import type {
-	ClineAccountActionRequest,
+	HadyanCodeAccountActionRequest,
 	CoreSettingsSnapshot,
 	ProviderCapability,
 	ProviderClient,
 	ProviderConfig,
 	ProviderProtocol,
 	SaveProviderSettingsActionRequest,
-} from "@cline/core";
+} from "@hadyancode/core";
 import {
 	addLocalProvider,
-	ClineAccountService,
+	HadyanCodeAccountService,
 	captureAuthRefreshSoftFailure,
 	createConfiguredStreamingTranscriptionSession,
 	createUserInstructionConfigService,
 	ensureCustomProvidersLoaded,
-	executeClineAccountAction,
-	fetchClineRecommendedModels,
+	executeHadyanCodeAccountAction,
+	fetchHadyanCodeRecommendedModels,
 	getCoreBuiltinToolCatalog,
 	getLocalProviderModels,
 	listHookConfigFiles,
@@ -31,7 +31,7 @@ import {
 	probeMcpServerConnection,
 	RuntimeOAuthTokenManager,
 	readGlobalSettings,
-	resolveLocalClineAuthToken,
+	resolveLocalHadyanCodeAuthToken,
 	resolveMcpServerRegistration,
 	resolveSessionBackend,
 	resolveAgentConfigSearchPaths as resolveSharedAgentConfigSearchPaths,
@@ -50,25 +50,25 @@ import {
 	updateLocalProvider,
 	updateMcpSettingsFileSync,
 	upgradeManagedHub,
-} from "@cline/core";
-import { resolveAudioTranscriptionRoute } from "@cline/llms";
+} from "@hadyancode/core";
+import { resolveAudioTranscriptionRoute } from "@hadyancode/llms";
 import {
-	CLINE_DEFAULT_MODEL_ID,
+	HADYANCODE_DEFAULT_MODEL_ID,
 	formatSessionSearchPreview,
 	formatSessionSearchTitle,
-	getClineEnvironmentConfig,
+	getHadyanCodeEnvironmentConfig,
 	isCanonicalBase64,
 	ONE_TIME_SCHEDULE_CRON_PATTERN,
 	ONE_TIME_SCHEDULE_RUN_AT_METADATA_KEY,
 	readHubScheduleMode,
-} from "@cline/shared";
-import { readFileSyncStrippingUtf8Bom } from "@cline/shared/node";
+} from "@hadyancode/shared";
+import { readFileSyncStrippingUtf8Bom } from "@hadyancode/shared/node";
 import packageJson from "../package.json";
-import { CLINE_ACCOUNT_NOT_AUTHENTICATED_RESULT } from "../webview/lib/cline-account-state";
+import { HADYANCODE_ACCOUNT_NOT_AUTHENTICATED_RESULT } from "../webview/lib/hadyancode-account-state";
 import { MAX_RECORDED_AUDIO_BYTES } from "../webview/lib/voice-input-limits";
 import {
-	listClineGitHubRepositories,
-	listClineIntegrations,
+	listHadyanCodeGitHubRepositories,
+	listHadyanCodeIntegrations,
 	resolveGitHubInstallUrl,
 } from "./commands-integrations";
 import {
@@ -303,12 +303,12 @@ function removePathIfExists(
 	return true;
 }
 
-// Cline access tokens expire between app launches, so account requests must
+// HadyanCode access tokens expire between app launches, so account requests must
 // resolve through the refresh-aware OAuth manager instead of reading the
 // persisted token directly. A single shared instance keeps concurrent account
 // requests single-flight; the refresh token is single-use, so parallel
 // refreshes would invalidate each other.
-let clineOAuthTokenManager: RuntimeOAuthTokenManager | undefined;
+let hadyancodeOAuthTokenManager: RuntimeOAuthTokenManager | undefined;
 
 function syncFeatureFlagsAccountFromResult(
 	ctx: SidecarContext,
@@ -332,20 +332,20 @@ function syncFeatureFlagsAccountFromSettings(
 	manager: ProviderSettingsManager,
 ): void {
 	void identifyDesktopFeatureFlagsAccount(
-		{ id: manager.getProviderSettings("cline")?.auth?.accountId },
+		{ id: manager.getProviderSettings("hadyancode")?.auth?.accountId },
 		{ logger: ctx.logger, telemetry: ctx.telemetry },
 	);
 }
 
-async function resolveFreshClineAuthToken(
+async function resolveFreshHadyanCodeAuthToken(
 	ctx: SidecarContext,
 	manager: ProviderSettingsManager,
 ): Promise<string | undefined> {
 	let refreshError: Error | undefined;
 	try {
-		clineOAuthTokenManager ??= new RuntimeOAuthTokenManager();
-		const resolution = await clineOAuthTokenManager.resolveProviderApiKey({
-			providerId: "cline",
+		hadyancodeOAuthTokenManager ??= new RuntimeOAuthTokenManager();
+		const resolution = await hadyancodeOAuthTokenManager.resolveProviderApiKey({
+			providerId: "hadyancode",
 		});
 		if (resolution?.apiKey) {
 			return resolution.apiKey;
@@ -355,18 +355,18 @@ async function resolveFreshClineAuthToken(
 		// surfaces the auth failure to the caller.
 		refreshError = error instanceof Error ? error : new Error(String(error));
 	}
-	const persisted = resolveLocalClineAuthToken(
-		manager.getProviderSettings("cline"),
+	const persisted = resolveLocalHadyanCodeAuthToken(
+		manager.getProviderSettings("hadyancode"),
 	);
 	// Never-signed-in resolves to undefined without a refresh attempt and is
 	// silent. A refresh failure with no persisted fallback means credentials
 	// existed but yielded nothing — that is the signal a real auth regression
 	// would show up as, so report exactly one event for it.
 	if (!persisted && refreshError) {
-		ctx.logger?.error?.("Cline auth token refresh failed with no fallback", {
+		ctx.logger?.error?.("HadyanCode auth token refresh failed with no fallback", {
 			error: refreshError,
 		});
-		captureAuthRefreshSoftFailure(ctx.telemetry, "cline", {
+		captureAuthRefreshSoftFailure(ctx.telemetry, "hadyancode", {
 			errorName: refreshError.name,
 			errorCode: "desktop_refresh_failed_no_fallback_token",
 		});
@@ -773,8 +773,8 @@ async function handleRoutineScheduleCommand(
 			...timing,
 			prompt,
 			modelSelection: {
-				providerId: asTrimmedString(args?.provider) ?? "cline",
-				modelId: asTrimmedString(args?.model) ?? CLINE_DEFAULT_MODEL_ID,
+				providerId: asTrimmedString(args?.provider) ?? "hadyancode",
+				modelId: asTrimmedString(args?.model) ?? HADYANCODE_DEFAULT_MODEL_ID,
 			},
 			mode: readHubScheduleMode(args, "yolo"),
 			workspaceRoot,
@@ -807,8 +807,8 @@ async function handleRoutineScheduleCommand(
 			...timing,
 			prompt,
 			modelSelection: {
-				providerId: asTrimmedString(args?.provider) ?? "cline",
-				modelId: asTrimmedString(args?.model) ?? CLINE_DEFAULT_MODEL_ID,
+				providerId: asTrimmedString(args?.provider) ?? "hadyancode",
+				modelId: asTrimmedString(args?.model) ?? HADYANCODE_DEFAULT_MODEL_ID,
 			},
 			...(mode === undefined ? {} : { mode }),
 			workspaceRoot,
@@ -1067,7 +1067,7 @@ async function listUserInstructionConfigs(
 
 	const disabledTools = new Set(readGlobalSettings().disabledTools ?? []);
 	// Pin spawn/teams availability so this listing matches the hub's
-	// (apps/cline-hub/src/server/user-instructions.ts) even if the preset
+	// (apps/hadyancode-hub/src/server/user-instructions.ts) even if the preset
 	// defaults change.
 	const builtinToolCatalog = getCoreBuiltinToolCatalog({
 		enableSpawnAgent: true,
@@ -1438,16 +1438,16 @@ export async function handleCommand(
 		const result = await upgradeManagedHub({
 			workspaceRoot: ctx.workspaceRoot,
 			force: true,
-			reason: "Cline Desktop hub update",
+			reason: "HadyanCode Desktop hub update",
 		});
 		if (result.outcome === "hub_not_older") {
 			throw new Error(
-				"The running Cline Hub is newer than this app, so it was not replaced. Update Cline instead.",
+				"The running HadyanCode Hub is newer than this app, so it was not replaced. Update HadyanCode instead.",
 			);
 		}
 		if (result.outcome === "still_busy") {
 			throw new Error(
-				"The running Cline Hub picked up new sessions before it could be replaced, so it was left running. Try again.",
+				"The running HadyanCode Hub picked up new sessions before it could be replaced, so it was left running. Try again.",
 			);
 		}
 		// The mismatch is resolved: a null broadcast closes the dialog in
@@ -1628,8 +1628,8 @@ export async function handleCommand(
 		// Never let the source tool's provider become the resume target: when
 		// the caller sends no selection, use the app default like other
 		// server-started sessions do.
-		const provider = asTrimmedString(args?.provider) ?? "cline";
-		const model = asTrimmedString(args?.model) ?? CLINE_DEFAULT_MODEL_ID;
+		const provider = asTrimmedString(args?.provider) ?? "hadyancode";
+		const model = asTrimmedString(args?.model) ?? HADYANCODE_DEFAULT_MODEL_ID;
 		const results = await importer.importMany(
 			requests,
 			(result, index) => {
@@ -1816,8 +1816,8 @@ export async function handleCommand(
 		return { opened: true };
 	}
 
-	// ── Cline account ──────────────────────────────────────────────────
-	if (command === "cline_account") {
+	// ── HadyanCode account ──────────────────────────────────────────────────
+	if (command === "hadyancode_account") {
 		const operation = String(args?.operation ?? "").trim();
 		if (!operation) throw new Error("operation is required");
 		const manager = new ProviderSettingsManager();
@@ -1825,7 +1825,7 @@ export async function handleCommand(
 		// token up front and return a typed result the webview can act on
 		// instead of letting the account service throw a generic error that
 		// would be captured as error telemetry and shown raw to the user.
-		const authToken = await resolveFreshClineAuthToken(ctx, manager);
+		const authToken = await resolveFreshHadyanCodeAuthToken(ctx, manager);
 		if (!authToken) {
 			// Backstop for credentials that go away without a settings write —
 			// an expired or server-revoked token. Explicit sign-out is handled
@@ -1835,34 +1835,34 @@ export async function handleCommand(
 				{},
 				{ logger: ctx.logger, telemetry: ctx.telemetry },
 			);
-			return CLINE_ACCOUNT_NOT_AUTHENTICATED_RESULT;
+			return HADYANCODE_ACCOUNT_NOT_AUTHENTICATED_RESULT;
 		}
-		const settings = manager.getProviderSettings("cline");
-		const accountService = new ClineAccountService({
+		const settings = manager.getProviderSettings("hadyancode");
+		const accountService = new HadyanCodeAccountService({
 			apiBaseUrl:
-				settings?.baseUrl?.trim() || getClineEnvironmentConfig().apiBaseUrl,
+				settings?.baseUrl?.trim() || getHadyanCodeEnvironmentConfig().apiBaseUrl,
 			getAuthToken: async () => authToken,
 		});
-		const result = await executeClineAccountAction(
-			args as ClineAccountActionRequest,
+		const result = await executeHadyanCodeAccountAction(
+			args as HadyanCodeAccountActionRequest,
 			accountService,
 		);
 		syncFeatureFlagsAccountFromResult(ctx, operation, result);
 		return result;
 	}
 
-	// ── Cline integrations (GitHub App) ────────────────────────────────
-	if (command === "cline_integrations") {
+	// ── HadyanCode integrations (GitHub App) ────────────────────────────────
+	if (command === "hadyancode_integrations") {
 		const operation = String(args?.operation ?? "").trim();
 		if (!operation) throw new Error("operation is required");
 		const manager = new ProviderSettingsManager();
 
-		const authToken = await resolveFreshClineAuthToken(ctx, manager);
+		const authToken = await resolveFreshHadyanCodeAuthToken(ctx, manager);
 		if (!authToken) {
-			return CLINE_ACCOUNT_NOT_AUTHENTICATED_RESULT;
+			return HADYANCODE_ACCOUNT_NOT_AUTHENTICATED_RESULT;
 		}
-		const settings = manager.getProviderSettings("cline");
-		const environment = getClineEnvironmentConfig();
+		const settings = manager.getProviderSettings("hadyancode");
+		const environment = getHadyanCodeEnvironmentConfig();
 		const requestOptions = {
 			apiBaseUrl: settings?.baseUrl?.trim() || environment.apiBaseUrl,
 			appBaseUrl: environment.appBaseUrl,
@@ -1870,14 +1870,14 @@ export async function handleCommand(
 		};
 		switch (operation) {
 			case "list":
-				return await listClineIntegrations(requestOptions);
+				return await listHadyanCodeIntegrations(requestOptions);
 			case "listGitHubRepositories":
-				return await listClineGitHubRepositories(requestOptions);
+				return await listHadyanCodeGitHubRepositories(requestOptions);
 			case "githubInstallUrl":
 				return await resolveGitHubInstallUrl(requestOptions);
 			default:
 				throw new Error(
-					`Unsupported Cline integrations operation: ${operation}`,
+					`Unsupported HadyanCode integrations operation: ${operation}`,
 				);
 		}
 	}
@@ -1886,7 +1886,7 @@ export async function handleCommand(
 	if (command === "list_provider_catalog") {
 		const manager = new ProviderSettingsManager();
 		await ensureCustomProvidersLoaded(manager);
-		return await listLocalProviders(manager, { isClinePassEnabled: true });
+		return await listLocalProviders(manager, { isHadyanCodePassEnabled: true });
 	}
 	if (command === "list_provider_models") {
 		const manager = new ProviderSettingsManager();
@@ -1895,10 +1895,10 @@ export async function handleCommand(
 			manager.getProviderConfig(String(args?.provider ?? "").trim()),
 		);
 	}
-	if (command === "list_cline_recommended_models") {
-		// Tiered picker data (recommended / free / clinePass) with
+	if (command === "list_hadyancode_recommended_models") {
+		// Tiered picker data (recommended / free / hadyancodePass) with
 		// display-ready names; falls back to a bundled list offline.
-		return await fetchClineRecommendedModels();
+		return await fetchHadyanCodeRecommendedModels();
 	}
 	if (command === "create_streaming_transcription_session") {
 		const manager = new ProviderSettingsManager();
@@ -2045,11 +2045,11 @@ export async function handleCommand(
 			apiKey: typeof args?.api_key === "string" ? args.api_key : undefined,
 			baseUrl: typeof args?.base_url === "string" ? args.base_url : undefined,
 		});
-		// Sign-out is a `save_provider_settings` that blanks the cline auth block
+		// Sign-out is a `save_provider_settings` that blanks the hadyancode auth block
 		// (see signOut in webview settings/account-view.tsx), so this is the
 		// authoritative signal — it fires the moment credentials are cleared
 		// rather than waiting for the next account fetch.
-		if (saved.providerId === "cline" || saved.providerId === "cline-pass") {
+		if (saved.providerId === "hadyancode" || saved.providerId === "hadyancode-pass") {
 			syncFeatureFlagsAccountFromSettings(ctx, manager);
 		}
 		return saved;

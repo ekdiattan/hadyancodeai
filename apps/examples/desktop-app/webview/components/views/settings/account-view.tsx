@@ -1,14 +1,14 @@
 "use client";
 
 import type {
-	ClineAccountBalance,
-	ClineAccountOrganization,
-	ClineAccountOrganizationBalance,
-	ClineAccountOrganizationUsageTransaction,
-	ClineAccountPaymentTransaction,
-	ClineAccountUsageTransaction,
-	ClineAccountUser,
-} from "@cline/core";
+	HadyanCodeAccountBalance,
+	HadyanCodeAccountOrganization,
+	HadyanCodeAccountOrganizationBalance,
+	HadyanCodeAccountOrganizationUsageTransaction,
+	HadyanCodeAccountPaymentTransaction,
+	HadyanCodeAccountUsageTransaction,
+	HadyanCodeAccountUser,
+} from "@hadyancode/core";
 import {
 	AlertCircle,
 	Building,
@@ -26,7 +26,7 @@ import {
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useAccount } from "@/contexts/account-context";
 import { useOAuthUserCode } from "@/hooks/use-oauth-user-code";
-import { isClineAccountNotAuthenticatedResult } from "@/lib/cline-account-state";
+import { isHadyanCodeAccountNotAuthenticatedResult } from "@/lib/hadyancode-account-state";
 import { desktopClient, openExternalUrl } from "@/lib/desktop-client";
 import { invalidateProviderCatalogCache } from "@/lib/provider-model-catalog";
 import { cn } from "@/lib/utils";
@@ -43,7 +43,7 @@ const CREATE_ACCOUNT_URL = "https://app.cline.bot";
 
 function normalizeAccountViewError(error: unknown): Error {
 	const message = error instanceof Error ? error.message : String(error);
-	if (message.includes("unsupported desktop command: cline_account")) {
+	if (message.includes("unsupported desktop command: hadyancode_account")) {
 		return new Error(
 			"The desktop sidecar is running an older build that does not support account commands. Restart the sidecar or reload the app, then try again.",
 		);
@@ -57,7 +57,7 @@ function isAccountAuthError(message: string): boolean {
 	// failures and org-permission errors into a sign-in card with no retry.
 	const normalized = message.toLowerCase();
 	return (
-		normalized.includes("no cline account auth token found") ||
+		normalized.includes("no hadyancode account auth token found") ||
 		normalized.includes("requires re-authentication") ||
 		normalized.includes("failed with status 401")
 	);
@@ -67,27 +67,27 @@ function isAccountAuthError(message: string): boolean {
 // Data fetching helpers via sidecar command
 // ---------------------------------------------------------------------------
 
-async function fetchAccountUser(): Promise<ClineAccountUser> {
-	return await desktopClient.invoke<ClineAccountUser>("cline_account", {
-		action: "clineAccount",
+async function fetchAccountUser(): Promise<HadyanCodeAccountUser> {
+	return await desktopClient.invoke<HadyanCodeAccountUser>("hadyancode_account", {
+		action: "hadyancodeAccount",
 		operation: "fetchMe",
 	});
 }
 
-async function fetchAccountBalance(): Promise<ClineAccountBalance> {
-	return await desktopClient.invoke<ClineAccountBalance>("cline_account", {
-		action: "clineAccount",
+async function fetchAccountBalance(): Promise<HadyanCodeAccountBalance> {
+	return await desktopClient.invoke<HadyanCodeAccountBalance>("hadyancode_account", {
+		action: "hadyancodeAccount",
 		operation: "fetchBalance",
 	});
 }
 
 async function fetchAccountOrganizations(): Promise<
-	ClineAccountOrganization[]
+	HadyanCodeAccountOrganization[]
 > {
-	return await desktopClient.invoke<ClineAccountOrganization[]>(
-		"cline_account",
+	return await desktopClient.invoke<HadyanCodeAccountOrganization[]>(
+		"hadyancode_account",
 		{
-			action: "clineAccount",
+			action: "hadyancodeAccount",
 			operation: "fetchUserOrganizations",
 		},
 	);
@@ -95,11 +95,11 @@ async function fetchAccountOrganizations(): Promise<
 
 async function fetchOrganizationBalance(
 	organizationId: string,
-): Promise<ClineAccountOrganizationBalance> {
-	return await desktopClient.invoke<ClineAccountOrganizationBalance>(
-		"cline_account",
+): Promise<HadyanCodeAccountOrganizationBalance> {
+	return await desktopClient.invoke<HadyanCodeAccountOrganizationBalance>(
+		"hadyancode_account",
 		{
-			action: "clineAccount",
+			action: "hadyancodeAccount",
 			operation: "fetchOrganizationBalance",
 			organizationId,
 		},
@@ -107,12 +107,12 @@ async function fetchOrganizationBalance(
 }
 
 async function fetchUsageTransactions(): Promise<
-	ClineAccountUsageTransaction[]
+	HadyanCodeAccountUsageTransaction[]
 > {
-	return await desktopClient.invoke<ClineAccountUsageTransaction[]>(
-		"cline_account",
+	return await desktopClient.invoke<HadyanCodeAccountUsageTransaction[]>(
+		"hadyancode_account",
 		{
-			action: "clineAccount",
+			action: "hadyancodeAccount",
 			operation: "fetchUsageTransactions",
 		},
 	);
@@ -121,11 +121,11 @@ async function fetchUsageTransactions(): Promise<
 async function fetchOrganizationUsageTransactions(
 	organizationId: string,
 	memberId?: string,
-): Promise<ClineAccountOrganizationUsageTransaction[]> {
-	return await desktopClient.invoke<ClineAccountOrganizationUsageTransaction[]>(
-		"cline_account",
+): Promise<HadyanCodeAccountOrganizationUsageTransaction[]> {
+	return await desktopClient.invoke<HadyanCodeAccountOrganizationUsageTransaction[]>(
+		"hadyancode_account",
 		{
-			action: "clineAccount",
+			action: "hadyancodeAccount",
 			operation: "fetchOrganizationUsageTransactions",
 			organizationId,
 			...(memberId?.trim() ? { memberId: memberId.trim() } : {}),
@@ -134,12 +134,12 @@ async function fetchOrganizationUsageTransactions(
 }
 
 async function fetchPaymentTransactions(): Promise<
-	ClineAccountPaymentTransaction[]
+	HadyanCodeAccountPaymentTransaction[]
 > {
-	return await desktopClient.invoke<ClineAccountPaymentTransaction[]>(
-		"cline_account",
+	return await desktopClient.invoke<HadyanCodeAccountPaymentTransaction[]>(
+		"hadyancode_account",
 		{
-			action: "clineAccount",
+			action: "hadyancodeAccount",
 			operation: "fetchPaymentTransactions",
 		},
 	);
@@ -148,8 +148,8 @@ async function fetchPaymentTransactions(): Promise<
 async function switchActiveAccount(
 	organizationId: string | null,
 ): Promise<void> {
-	await desktopClient.invoke("cline_account", {
-		action: "clineAccount",
+	await desktopClient.invoke("hadyancode_account", {
+		action: "hadyancodeAccount",
 		operation: "switchAccount",
 		organizationId,
 	});
@@ -166,12 +166,12 @@ export function AccountView() {
 	const { refreshAccount } = useAccount();
 
 	// Overview data
-	const [user, setUser] = useState<ClineAccountUser | null>(null);
-	const [balance, setBalance] = useState<ClineAccountBalance | null>(null);
+	const [user, setUser] = useState<HadyanCodeAccountUser | null>(null);
+	const [balance, setBalance] = useState<HadyanCodeAccountBalance | null>(null);
 	const [organizationBalance, setOrganizationBalance] =
-		useState<ClineAccountOrganizationBalance | null>(null);
+		useState<HadyanCodeAccountOrganizationBalance | null>(null);
 	const [organizations, setOrganizations] = useState<
-		ClineAccountOrganization[]
+		HadyanCodeAccountOrganization[]
 	>([]);
 	const [overviewLoading, setOverviewLoading] = useState(true);
 	const [overviewError, setOverviewError] = useState<string | null>(null);
@@ -189,7 +189,7 @@ export function AccountView() {
 
 	// Usage data
 	const [usageTransactions, setUsageTransactions] = useState<
-		ClineAccountUsageTransaction[]
+		HadyanCodeAccountUsageTransaction[]
 	>([]);
 	const [usageLoading, setUsageLoading] = useState(false);
 	const [usageError, setUsageError] = useState<string | null>(null);
@@ -198,7 +198,7 @@ export function AccountView() {
 
 	// Billing data
 	const [paymentTransactions, setPaymentTransactions] = useState<
-		ClineAccountPaymentTransaction[]
+		HadyanCodeAccountPaymentTransaction[]
 	>([]);
 	const [billingLoading, setBillingLoading] = useState(false);
 	const [billingError, setBillingError] = useState<string | null>(null);
@@ -227,7 +227,7 @@ export function AccountView() {
 			// remaining account commands would just fail the same way, so they
 			// are never fired.
 			const userData = await fetchAccountUser();
-			if (isClineAccountNotAuthenticatedResult(userData)) {
+			if (isHadyanCodeAccountNotAuthenticatedResult(userData)) {
 				resetAccountData();
 				setSignedOut(true);
 				return;
@@ -237,8 +237,8 @@ export function AccountView() {
 				fetchAccountOrganizations(),
 			]);
 			if (
-				isClineAccountNotAuthenticatedResult(balanceData) ||
-				isClineAccountNotAuthenticatedResult(orgsData)
+				isHadyanCodeAccountNotAuthenticatedResult(balanceData) ||
+				isHadyanCodeAccountNotAuthenticatedResult(orgsData)
 			) {
 				resetAccountData();
 				setSignedOut(true);
@@ -249,7 +249,7 @@ export function AccountView() {
 			const organizationBalanceData = nextActiveOrganization
 				? await fetchOrganizationBalance(nextActiveOrganization.organizationId)
 				: null;
-			if (isClineAccountNotAuthenticatedResult(organizationBalanceData)) {
+			if (isHadyanCodeAccountNotAuthenticatedResult(organizationBalanceData)) {
 				resetAccountData();
 				setSignedOut(true);
 				return;
@@ -281,7 +281,7 @@ export function AccountView() {
 		setOverviewError(null);
 		try {
 			await desktopClient.invoke("run_provider_oauth_login", {
-				provider: "cline",
+				provider: "hadyancode",
 			});
 			await loadOverview();
 			setActiveTab("overview");
@@ -302,7 +302,7 @@ export function AccountView() {
 		setAccountActionPending("sign-out");
 		try {
 			await desktopClient.invoke("save_provider_settings", {
-				provider: "cline",
+				provider: "hadyancode",
 				api_key: "",
 				settings: {
 					auth: {
@@ -358,7 +358,7 @@ export function AccountView() {
 			if (usageGenerationRef.current !== generation) return;
 			// The token can expire mid-session: render the sign-in state
 			// instead of an error toast.
-			if (isClineAccountNotAuthenticatedResult(data)) {
+			if (isHadyanCodeAccountNotAuthenticatedResult(data)) {
 				resetAccountData();
 				setSignedOut(true);
 				setActiveTab("overview");
@@ -397,7 +397,7 @@ export function AccountView() {
 		setBillingError(null);
 		try {
 			const data = await fetchPaymentTransactions();
-			if (isClineAccountNotAuthenticatedResult(data)) {
+			if (isHadyanCodeAccountNotAuthenticatedResult(data)) {
 				resetAccountData();
 				setSignedOut(true);
 				setActiveTab("overview");
@@ -474,10 +474,10 @@ export function AccountView() {
 				</div>
 				<div>
 					<h3 className="text-lg font-semibold text-foreground">
-						Sign in to Cline
+						Sign in to HadyanCode
 					</h3>
 					<p className="mt-2 text-sm text-muted-foreground">
-						Connect your Cline account to review credits, usage, billing, and
+						Connect your HadyanCode account to review credits, usage, billing, and
 						organization details.
 					</p>
 				</div>

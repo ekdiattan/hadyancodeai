@@ -4,7 +4,7 @@ import {
 	WorkActivity,
 	WorkActivityContent,
 	WorkActivityTrigger,
-} from "@cline/ui/components/agent-chat";
+} from "@hadyancode/ui/components/agent-chat";
 import { memo, type ReactNode } from "react";
 
 /**

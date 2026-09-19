@@ -8,9 +8,9 @@ import {
 	OpenAiCompatibleModelInfo,
 } from "@shared/api"
 import { BrowserSettings, DEFAULT_BROWSER_SETTINGS } from "@shared/BrowserSettings"
-import { ClineRulesToggles } from "@shared/cline-rules"
 import { DEFAULT_FOCUS_CHAIN_SETTINGS, FocusChainSettings } from "@shared/FocusChainSettings"
 import { HistoryItem } from "@shared/HistoryItem"
+import { HadyanCodeRulesToggles } from "@shared/hadyancode-rules"
 import { DEFAULT_MCP_DISPLAY_MODE, McpDisplayMode } from "@shared/McpDisplayMode"
 import { toLegacyApiProvider } from "@shared/model-catalog/provider-helpers"
 import { GlobalInstructionsFile } from "@shared/remote-config/schema"
@@ -25,7 +25,7 @@ import { type BlobStoreSettings } from "./types"
 //
 // Property definitions with types, default values, and metadata
 // NOTE: When adding a new field, the scripts/generate-state-proto.mjs will be
-// executed automatically to regenerate the proto/cline/state.proto file with the
+// executed automatically to regenerate the proto/hadyancode/state.proto file with the
 // new fields once the file is staged and committed.
 // ============================================================================
 
@@ -65,8 +65,8 @@ const REMOTE_CONFIG_EXTRA_FIELDS = {
 } satisfies FieldDefinitions
 
 const GLOBAL_STATE_FIELDS = {
-	clineVersion: { default: undefined as string | undefined },
-	"cline.generatedMachineId": { default: undefined as string | undefined }, // Note, distinctId reads/writes this directly from/to StorageContext before StateManager is initialized.
+	hadyancodeVersion: { default: undefined as string | undefined },
+	"hadyancode.generatedMachineId": { default: undefined as string | undefined }, // Note, distinctId reads/writes this directly from/to StorageContext before StateManager is initialized.
 	lastShownAnnouncementId: { default: undefined as string | undefined },
 	taskHistory: { default: [] as HistoryItem[], isAsync: true },
 	userInfo: { default: undefined as UserInfo | undefined },
@@ -91,11 +91,11 @@ const GLOBAL_STATE_FIELDS = {
 	// to fail closed when the user's identity cannot be resolved (API unreachable)
 	// instead of starting an unpoliced session. Cleared on explicit no-config.
 	lastManagedOrganizationId: { default: undefined as string | undefined },
-	remoteRulesToggles: { default: {} as ClineRulesToggles },
-	remoteWorkflowToggles: { default: {} as ClineRulesToggles },
-	remoteSkillsToggles: { default: {} as ClineRulesToggles },
+	remoteRulesToggles: { default: {} as HadyanCodeRulesToggles },
+	remoteWorkflowToggles: { default: {} as HadyanCodeRulesToggles },
+	remoteSkillsToggles: { default: {} as HadyanCodeRulesToggles },
 	dismissedBanners: { default: [] as Array<{ bannerId: string; dismissedAt: number }> },
-	// Path to worktree that should auto-open Cline sidebar when launched
+	// Path to worktree that should auto-open HadyanCode sidebar when launched
 	worktreeAutoOpenPath: { default: undefined as string | undefined },
 } satisfies FieldDefinitions
 
@@ -157,10 +157,10 @@ const API_HANDLER_SETTINGS_FIELDS = {
 	planModeAwsBedrockCustomModelBaseId: { default: undefined as string | undefined },
 	planModeOpenRouterModelId: { default: undefined as string | undefined },
 	planModeOpenRouterModelInfo: { default: undefined as ModelInfo | undefined },
-	planModeClineModelId: { default: undefined as string | undefined },
-	planModeClineModelInfo: { default: undefined as ModelInfo | undefined },
-	planModeClinePassModelId: { default: undefined as string | undefined },
-	planModeClinePassModelInfo: { default: undefined as ModelInfo | undefined },
+	planModeHadyanCodeModelId: { default: undefined as string | undefined },
+	planModeHadyanCodeModelInfo: { default: undefined as ModelInfo | undefined },
+	planModeHadyanCodePassModelId: { default: undefined as string | undefined },
+	planModeHadyanCodePassModelInfo: { default: undefined as ModelInfo | undefined },
 	planModeOpenAiModelId: { default: undefined as string | undefined },
 	planModeOpenAiModelInfo: { default: undefined as OpenAiCompatibleModelInfo | undefined },
 	planModeOllamaModelId: { default: undefined as string | undefined },
@@ -203,10 +203,10 @@ const API_HANDLER_SETTINGS_FIELDS = {
 	actModeAwsBedrockCustomModelBaseId: { default: undefined as string | undefined },
 	actModeOpenRouterModelId: { default: undefined as string | undefined },
 	actModeOpenRouterModelInfo: { default: undefined as ModelInfo | undefined },
-	actModeClineModelId: { default: undefined as string | undefined },
-	actModeClineModelInfo: { default: undefined as ModelInfo | undefined },
-	actModeClinePassModelId: { default: undefined as string | undefined },
-	actModeClinePassModelInfo: { default: undefined as ModelInfo | undefined },
+	actModeHadyanCodeModelId: { default: undefined as string | undefined },
+	actModeHadyanCodeModelInfo: { default: undefined as ModelInfo | undefined },
+	actModeHadyanCodePassModelId: { default: undefined as string | undefined },
+	actModeHadyanCodePassModelInfo: { default: undefined as ModelInfo | undefined },
 	actModeOpenAiModelId: { default: undefined as string | undefined },
 	actModeOpenAiModelInfo: { default: undefined as OpenAiCompatibleModelInfo | undefined },
 	actModeOllamaModelId: { default: undefined as string | undefined },
@@ -261,8 +261,8 @@ const USER_SETTINGS_FIELDS = {
 	autoApprovalSettings: {
 		default: DEFAULT_AUTO_APPROVAL_SETTINGS as AutoApprovalSettings,
 	},
-	globalClineRulesToggles: { default: {} as ClineRulesToggles },
-	globalWorkflowToggles: { default: {} as ClineRulesToggles },
+	globalHadyanCodeRulesToggles: { default: {} as HadyanCodeRulesToggles },
+	globalWorkflowToggles: { default: {} as HadyanCodeRulesToggles },
 	globalSkillsToggles: { default: {} as Record<string, boolean> },
 	browserSettings: {
 		default: DEFAULT_BROWSER_SETTINGS as BrowserSettings,
@@ -311,9 +311,9 @@ const GLOBAL_STATE_AND_SETTINGS_FIELDS = { ...GLOBAL_STATE_FIELDS, ...SETTINGS_F
 // Secret keys used in Api Configuration
 const SECRETS_KEYS = [
 	"apiKey",
-	"clineApiKey",
-	"clineAccountId", // Cline Account ID for Firebase
-	"cline:clineAccountId",
+	"hadyancodeApiKey",
+	"hadyancodeAccountId", // HadyanCode Account ID for Firebase
+	"hadyancode:hadyancodeAccountId",
 	"openRouterApiKey",
 	"awsAccessKey",
 	"awsSecretKey",
@@ -362,7 +362,7 @@ const SECRETS_KEYS = [
 // WARNING, these are not ALL of the local state keys in practice. For example, FileContextTracker
 // uses dynamic keys like pendingFileContextWarning_${taskId}.
 export const LocalStateKeys = [
-	"localClineRulesToggles",
+	"localHadyanCodeRulesToggles",
 	"localCursorRulesToggles",
 	"localWindsurfRulesToggles",
 	"localAgentsRulesToggles",
@@ -390,7 +390,7 @@ export type RemoteConfigFields = GlobalStateAndSettings & RemoteConfigExtra
 // ============================================================================
 
 export type Secrets = { [K in (typeof SecretKeys)[number]]: string | undefined }
-export type LocalState = { [K in (typeof LocalStateKeys)[number]]: ClineRulesToggles }
+export type LocalState = { [K in (typeof LocalStateKeys)[number]]: HadyanCodeRulesToggles }
 export type SecretKey = (typeof SecretKeys)[number]
 export type GlobalStateKey = keyof GlobalState
 export type LocalStateKey = keyof LocalState

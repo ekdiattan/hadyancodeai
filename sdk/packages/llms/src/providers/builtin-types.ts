@@ -5,7 +5,7 @@ import type {
 	GatewayProviderSettings,
 	ProviderCapability,
 	ProviderConfigField,
-} from "@cline/shared";
+} from "@hadyancode/shared";
 import type {
 	ModelInfo,
 	ProviderClient,
@@ -13,7 +13,7 @@ import type {
 } from "../catalog/types";
 
 export type ProviderFamily =
-	| "cline"
+	| "hadyancode"
 	| "openai"
 	| "openai-compatible"
 	| "anthropic"

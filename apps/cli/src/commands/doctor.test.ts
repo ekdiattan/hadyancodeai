@@ -14,7 +14,7 @@ import { getCliBuildInfo } from "../utils/common";
 
 const {
 	mockSpawnSync,
-	mockResolveClineDataDir,
+	mockResolveHadyanCodeDataDir,
 	mockResolveProductionHubOwnerContext,
 	mockResolveSharedHubOwnerContext,
 	mockReadHubDiscovery,
@@ -28,11 +28,11 @@ const {
 	mockListSupervisedConnectors,
 } = vi.hoisted(() => ({
 	mockSpawnSync: vi.fn(),
-	mockResolveClineDataDir: vi.fn(() => "/tmp/cline-data"),
+	mockResolveHadyanCodeDataDir: vi.fn(() => "/tmp/hadyancode-data"),
 	mockResolveProductionHubOwnerContext: vi.fn(() => ({
 		ownerId: "hub-production",
 		discoveryPath: path.join(
-			"/tmp/cline-data",
+			"/tmp/hadyancode-data",
 			"locks",
 			"hub",
 			"production.json",
@@ -41,7 +41,7 @@ const {
 	mockResolveSharedHubOwnerContext: vi.fn(() => ({
 		ownerId: "hub-owner",
 		discoveryPath: path.join(
-			"/tmp/cline-data",
+			"/tmp/hadyancode-data",
 			"locks",
 			"hub",
 			"owners",
@@ -68,8 +68,8 @@ vi.mock("node:child_process", () => ({
 	spawnSync: mockSpawnSync,
 }));
 
-vi.mock("@cline/core", () => ({
-	resolveClineDataDir: mockResolveClineDataDir,
+vi.mock("@hadyancode/core", () => ({
+	resolveHadyanCodeDataDir: mockResolveHadyanCodeDataDir,
 	resolveProductionHubOwnerContext: mockResolveProductionHubOwnerContext,
 	resolveSharedHubOwnerContext: mockResolveSharedHubOwnerContext,
 	clearHubDiscovery: mockClearHubDiscovery,
@@ -100,11 +100,11 @@ describe("runDoctorCommand", () => {
 
 	afterEach(() => {
 		vi.clearAllMocks();
-		mockResolveClineDataDir.mockReturnValue("/tmp/cline-data");
+		mockResolveHadyanCodeDataDir.mockReturnValue("/tmp/hadyancode-data");
 		mockResolveProductionHubOwnerContext.mockReturnValue({
 			ownerId: "hub-production",
 			discoveryPath: path.join(
-				"/tmp/cline-data",
+				"/tmp/hadyancode-data",
 				"locks",
 				"hub",
 				"production.json",
@@ -211,11 +211,11 @@ describe("runDoctorCommand", () => {
 			if (
 				command === "pgrep" &&
 				Array.isArray(args) &&
-				args[2] === "--cline-hub-daemon"
+				args[2] === "--hadyancode-hub-daemon"
 			) {
 				return {
 					status: 0,
-					stdout: "50174 /usr/local/bin/cline --cline-hub-daemon\n",
+					stdout: "50174 /usr/local/bin/hadyancode --hadyancode-hub-daemon\n",
 				};
 			}
 			return { status: 1, stdout: "" };
@@ -444,7 +444,7 @@ describe("createDoctorCommand log subcommand", () => {
 			path.join(os.tmpdir(), `${commandName}-doctor-log-test-`),
 		);
 		tempDirs.push(dataDir);
-		mockResolveClineDataDir.mockReturnValue(dataDir);
+		mockResolveHadyanCodeDataDir.mockReturnValue(dataDir);
 		mockEnsureFileExists.mockImplementation((filePath: string) => {
 			mkdirSync(path.dirname(filePath), { recursive: true });
 			appendFileSync(filePath, "");
@@ -489,7 +489,7 @@ describe("createDoctorCommand log subcommand", () => {
 			path.join(os.tmpdir(), `${commandName}-doctor-log-test-`),
 		);
 		tempDirs.push(dataDir);
-		mockResolveClineDataDir.mockReturnValue(dataDir);
+		mockResolveHadyanCodeDataDir.mockReturnValue(dataDir);
 
 		const errors: string[] = [];
 		let exitCode = 0;
@@ -622,7 +622,7 @@ describe("doctor supervision reporting", () => {
 		mockListSupervisedConnectors.mockResolvedValue([
 			{
 				channel: "slack",
-				instanceId: "cline-slack",
+				instanceId: "hadyancode-slack",
 				state: "backoff",
 				origin: "spawned",
 				restarts: 3,
@@ -631,7 +631,7 @@ describe("doctor supervision reporting", () => {
 
 		await expect(runDoctorJson()).resolves.toMatchObject({
 			supervisedConnectors: [
-				{ channel: "slack", instanceId: "cline-slack", state: "backoff" },
+				{ channel: "slack", instanceId: "hadyancode-slack", state: "backoff" },
 			],
 		});
 	});
@@ -658,7 +658,7 @@ describe("doctor supervision reporting", () => {
 		expect(
 			formatSupervisedConnector({
 				channel: "slack",
-				instanceId: "cline-slack",
+				instanceId: "hadyancode-slack",
 				state: "failed",
 				origin: "adopted",
 				pid: 42,
@@ -667,7 +667,7 @@ describe("doctor supervision reporting", () => {
 				lastError: "invalid token",
 			}),
 		).toBe(
-			"slack | instance=cline-slack | state=failed | origin=adopted | pid=42 | restarts=5 | lastExit=1 | error=invalid token",
+			"slack | instance=hadyancode-slack | state=failed | origin=adopted | pid=42 | restarts=5 | lastExit=1 | error=invalid token",
 		);
 	});
 
@@ -675,14 +675,14 @@ describe("doctor supervision reporting", () => {
 		expect(
 			formatSupervisedConnector({
 				channel: "telegram",
-				instanceId: "cline_bot",
+				instanceId: "hadyancode_bot",
 				state: "running",
 				origin: "spawned",
 				pid: 7,
 				restarts: 0,
 			}),
 		).toBe(
-			"telegram | instance=cline_bot | state=running | origin=spawned | pid=7",
+			"telegram | instance=hadyancode_bot | state=running | origin=spawned | pid=7",
 		);
 	});
 });

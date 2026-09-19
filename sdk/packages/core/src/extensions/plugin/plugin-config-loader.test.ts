@@ -1,7 +1,7 @@
 import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { setHomeDir } from "@cline/shared/storage";
+import { setHomeDir } from "@hadyancode/shared/storage";
 import { afterEach, describe, expect, it } from "vitest";
 import {
 	discoverPluginModulePaths,
@@ -15,13 +15,13 @@ import {
 describe("plugin-config-loader", () => {
 	const envSnapshot = {
 		HOME: process.env.HOME,
-		CLINE_GLOBAL_SETTINGS_PATH: process.env.CLINE_GLOBAL_SETTINGS_PATH,
+		HADYANCODE_GLOBAL_SETTINGS_PATH: process.env.HADYANCODE_GLOBAL_SETTINGS_PATH,
 	};
 
 	afterEach(() => {
 		process.env.HOME = envSnapshot.HOME;
-		process.env.CLINE_GLOBAL_SETTINGS_PATH =
-			envSnapshot.CLINE_GLOBAL_SETTINGS_PATH;
+		process.env.HADYANCODE_GLOBAL_SETTINGS_PATH =
+			envSnapshot.HADYANCODE_GLOBAL_SETTINGS_PATH;
 		setHomeDir(envSnapshot.HOME ?? "~");
 	});
 
@@ -33,7 +33,7 @@ describe("plugin-config-loader", () => {
 			await writeFile(join(root, "a.js"), "export default {}", "utf8");
 			await writeFile(join(nested, "b.ts"), "export default {}", "utf8");
 			await writeFile(
-				join(root, ".a.js.cline-plugin.js"),
+				join(root, ".a.js.hadyancode-plugin.js"),
 				"export default {}",
 				"utf8",
 			);
@@ -85,7 +85,7 @@ describe("plugin-config-loader", () => {
 				JSON.stringify({
 					name: "plugin-package",
 					private: true,
-					cline: {
+					hadyancode: {
 						plugins: [
 							{
 								paths: ["./src/index.ts"],
@@ -127,7 +127,7 @@ describe("plugin-config-loader", () => {
 				JSON.stringify({
 					name: "plugin-package",
 					private: true,
-					cline: {
+					hadyancode: {
 						plugins: [
 							{
 								paths: ["./src/index.ts"],
@@ -172,7 +172,7 @@ describe("plugin-config-loader", () => {
 				JSON.stringify({
 					name: "plugin-package",
 					private: true,
-					cline: {
+					hadyancode: {
 						plugins: [
 							{
 								paths: ["./src/index.ts"],
@@ -215,7 +215,7 @@ describe("plugin-config-loader", () => {
 				JSON.stringify({
 					name: "plugin-package",
 					private: true,
-					cline: {
+					hadyancode: {
 						plugins: [{ paths: ["./src/index.ts"] }],
 					},
 				}),
@@ -278,7 +278,7 @@ describe("plugin-config-loader", () => {
 			setHomeDir(home);
 			const installRoot = join(
 				workspace,
-				".cline",
+				".hadyancode",
 				"plugins",
 				"_installed",
 				"local",
@@ -290,9 +290,9 @@ describe("plugin-config-loader", () => {
 			await writeFile(
 				join(installRoot, "package.json"),
 				JSON.stringify({
-					name: "cline-installed-plugin-demo",
+					name: "hadyancode-installed-plugin-demo",
 					private: true,
-					cline: {
+					hadyancode: {
 						plugins: [{ paths: ["./package/index.ts"] }],
 					},
 				}),
@@ -331,9 +331,9 @@ describe("plugin-config-loader", () => {
 		try {
 			process.env.HOME = home;
 			setHomeDir(home);
-			const workspacePlugins = join(workspace, ".cline", "plugins");
-			const userPlugins = join(home, ".cline", "plugins");
-			const documentsPlugins = join(home, "Documents", "Cline", "Plugins");
+			const workspacePlugins = join(workspace, ".hadyancode", "plugins");
+			const userPlugins = join(home, ".hadyancode", "plugins");
+			const documentsPlugins = join(home, "Documents", "HadyanCode", "Plugins");
 			await mkdir(workspacePlugins, { recursive: true });
 			await mkdir(userPlugins, { recursive: true });
 			await mkdir(documentsPlugins, { recursive: true });
@@ -368,7 +368,7 @@ describe("plugin-config-loader", () => {
 			const enabledPlugin = join(root, "enabled.js");
 			const disabledPlugin = join(root, "disabled.js");
 			const settingsPath = join(root, "global-settings.json");
-			process.env.CLINE_GLOBAL_SETTINGS_PATH = settingsPath;
+			process.env.HADYANCODE_GLOBAL_SETTINGS_PATH = settingsPath;
 			await writeFile(enabledPlugin, "export default {}", "utf8");
 			await writeFile(disabledPlugin, "export default {}", "utf8");
 			await writeFile(
@@ -442,7 +442,7 @@ describe("plugin-config-loader", () => {
 	name: 'compatible-plugin',
 	manifest: {
 		capabilities: ['tools'],
-		providerIds: ['cline'],
+		providerIds: ['hadyancode'],
 		modelIds: ['anthropic/claude-haiku-4.5']
 	}
 };`,
@@ -465,7 +465,7 @@ describe("plugin-config-loader", () => {
 				mode: "in_process",
 				pluginPaths: [compatible, incompatible],
 				cwd: root,
-				providerId: "cline",
+				providerId: "hadyancode",
 				modelId: "anthropic/claude-haiku-4.5",
 			});
 

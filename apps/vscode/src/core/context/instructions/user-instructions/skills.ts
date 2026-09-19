@@ -209,7 +209,7 @@ async function loadSkillMetadata(
 }
 
 /**
- * Discover all skills from global (~/.cline/skills), remote config, and project directories.
+ * Discover all skills from global (~/.hadyancode/skills), remote config, and project directories.
  *
  * Precedence (highest wins on name collision via getAvailableSkills):
  *   remote (enterprise) > disk-global (user personal) > project (workspace)

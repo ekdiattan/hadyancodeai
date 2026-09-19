@@ -1,8 +1,8 @@
-import type * as LlmsProviders from "@cline/llms";
+import type * as LlmsProviders from "@hadyancode/llms";
 import {
 	estimateRequestInputTokens,
 	type MessageWithMetadata,
-} from "@cline/shared";
+} from "@hadyancode/shared";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
 	createSessionCompactionState,
@@ -28,7 +28,7 @@ type FakeChunk = Record<string, unknown>;
 
 const createHandlerMock = vi.fn();
 
-vi.mock("@cline/llms", () => ({
+vi.mock("@hadyancode/llms", () => ({
 	createHandlerAsync: (config: unknown) => createHandlerMock(config),
 }));
 
@@ -1268,7 +1268,7 @@ describe("createContextCompactionPrepareTurn", () => {
 	});
 
 	it("skips with a diagnostic warning when the summarizer only produced reasoning output", async () => {
-		// Repro for CLINE-2911: a reasoning model can spend the entire output
+		// Repro for HADYANCODE-2911: a reasoning model can spend the entire output
 		// budget thinking. Reasoning chunks are discarded, so no summary text
 		// arrives and compaction is skipped — that skip must be diagnosable.
 		const logger = { debug: vi.fn(), log: vi.fn() };
@@ -2688,7 +2688,7 @@ describe("createContextCompactionPrepareTurn", () => {
 		assertBasicCompactionResult(result);
 	});
 
-	it("falls back to basic compaction when a custom compactor declines during overflow recovery", async () => {
+	it("falls back to basic compaction when a custom compactor dehadyancodes during overflow recovery", async () => {
 		const compact = vi.fn(async () => undefined);
 		const prepareTurn = createContextCompactionPrepareTurn({
 			providerId: "anthropic",

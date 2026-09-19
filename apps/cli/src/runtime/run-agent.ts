@@ -5,21 +5,21 @@ import {
 	prewarmFileIndex,
 	SessionSource,
 	type UserInstructionConfigService,
-} from "@cline/core";
-import type { ConsecutiveMistakeLimitContext } from "@cline/shared";
-import { createSessionId } from "@cline/shared";
+} from "@hadyancode/core";
+import type { ConsecutiveMistakeLimitContext } from "@hadyancode/shared";
+import { createSessionId } from "@hadyancode/shared";
 import { logCliError } from "../logging/errors";
 import { createCliCore } from "../session/session";
-import { resolveClineWelcomeLine } from "../tui/interactive-welcome";
+import { resolveHadyanCodeWelcomeLine } from "../tui/interactive-welcome";
 import {
 	askQuestionInTerminal,
 	requestToolApproval,
 	submitAndExitInTerminal,
 } from "../utils/approval";
-import { formatCliErrorMessage } from "../utils/cline-pass-errors";
+import { formatCliErrorMessage } from "../utils/hadyancode-pass-errors";
 import { handleEvent, handleTeamEvent } from "../utils/events";
 import {
-	shouldZeroClineFreeModelCost,
+	shouldZeroHadyanCodeFreeModelCost,
 	zeroCliAgentEventCost,
 	zeroCliUsageCost,
 } from "../utils/free-model-cost";
@@ -136,8 +136,8 @@ export async function runAgent(
 	config: Config,
 	userInstructionService?: UserInstructionConfigService,
 	options?: {
-		clineApiBaseUrl?: string;
-		clineProviderSettings?: ProviderSettings;
+		hadyancodeApiBaseUrl?: string;
+		hadyancodeProviderSettings?: ProviderSettings;
 	},
 ): Promise<void> {
 	// A clean one-shot run should not inherit a stale nonzero process exit code
@@ -145,13 +145,13 @@ export async function runAgent(
 	process.exitCode = 0;
 
 	if (config.verbose) {
-		const clineWelcomeLine = await resolveClineWelcomeLine({
+		const hadyancodeWelcomeLine = await resolveHadyanCodeWelcomeLine({
 			config,
-			clineApiBaseUrl: options?.clineApiBaseUrl,
-			clineProviderSettings: options?.clineProviderSettings,
+			hadyancodeApiBaseUrl: options?.hadyancodeApiBaseUrl,
+			hadyancodeProviderSettings: options?.hadyancodeProviderSettings,
 		});
-		if (clineWelcomeLine && config.outputMode !== "json") {
-			writeln(clineWelcomeLine);
+		if (hadyancodeWelcomeLine && config.outputMode !== "json") {
+			writeln(hadyancodeWelcomeLine);
 		}
 	}
 
@@ -189,7 +189,7 @@ export async function runAgent(
 	let reasoningChunkCount = 0;
 	let redactedReasoningChunkCount = 0;
 	const displayedErrorMessages = new Set<string>();
-	const shouldZeroCost = await shouldZeroClineFreeModelCost(config);
+	const shouldZeroCost = await shouldZeroHadyanCodeFreeModelCost(config);
 
 	const onAgentEvent = (rawEvent: AgentEvent): void => {
 		const event = zeroCliAgentEventCost(rawEvent, shouldZeroCost);

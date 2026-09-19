@@ -1,10 +1,10 @@
 # messages.json contract — v1
 
 This document describes the persisted session messages artifact written by
-`@cline/core` at:
+`@hadyancode/core` at:
 
 ```
-~/.cline/data/sessions/<sessionId>/<sessionId>.messages.json
+~/.hadyancode/data/sessions/<sessionId>/<sessionId>.messages.json
 ```
 
 It is the canonical replay/export artifact. Downstream consumers (for example,

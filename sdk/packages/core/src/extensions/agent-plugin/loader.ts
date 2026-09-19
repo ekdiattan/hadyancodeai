@@ -14,9 +14,9 @@ import {
 import {
 	AGENT_PLUGIN_MANIFEST_FILE_NAME,
 	resolveAgentPluginSearchPaths,
-	resolveClineDataDir,
+	resolveHadyanCodeDataDir,
 	SKILLS_CONFIG_DIRECTORY_NAME,
-} from "@cline/shared/storage";
+} from "@hadyancode/shared/storage";
 import type { McpServerRegistration, McpServerTransportConfig } from "../mcp";
 import { parseAgentSkillMarkdown } from "./agent-skill";
 import type {
@@ -340,7 +340,7 @@ function parseManifest(
 	let extensions: Record<string, unknown> | undefined;
 	if (value.extensions !== undefined) {
 		if (isRecord(value.extensions)) {
-			// Cline currently implements no Agent Plugins client-extension
+			// HadyanCode currently implements no Agent Plugins client-extension
 			// namespace. Per the spec, leave every value wholly unvalidated.
 			extensions = { ...value.extensions };
 		} else {
@@ -1064,7 +1064,7 @@ export async function loadAgentPluginPackages(
 	const diagnostics: AgentPluginPackageDiagnostic[] = [];
 	const candidateRoots = await resolveCandidateRoots(options, diagnostics);
 	const pluginDataRoot = resolve(
-		options.pluginDataRoot ?? join(resolveClineDataDir(), "agent-plugins"),
+		options.pluginDataRoot ?? join(resolveHadyanCodeDataDir(), "agent-plugins"),
 	);
 	const disabledPluginNames = new Set(
 		(options.disabledPluginNames ?? [])

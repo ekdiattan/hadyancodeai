@@ -7,8 +7,8 @@ import {
 	statSync,
 } from "node:fs";
 import { basename, join } from "node:path";
-import { resolveClineDataDir } from "@cline/core";
-import { isSupervisedConnectorProcess } from "@cline/shared";
+import { resolveHadyanCodeDataDir } from "@hadyancode/core";
+import { isSupervisedConnectorProcess } from "@hadyancode/shared";
 import { Command, CommanderError } from "commander";
 import {
 	CONNECT_ALREADY_RUNNING_EXIT_CODE,
@@ -218,7 +218,7 @@ export abstract class ConnectorBase<Options, State>
 	}
 
 	protected resolveConnectorPath(...segments: string[]): string {
-		return join(resolveClineDataDir(), "connectors", this.name, ...segments);
+		return join(resolveHadyanCodeDataDir(), "connectors", this.name, ...segments);
 	}
 
 	protected listJsonStatePaths(excludedSuffixes: string[] = []): string[] {

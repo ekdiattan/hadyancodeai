@@ -3,9 +3,9 @@ import type {
 	SessionConfigOption,
 	SessionUpdate,
 } from "@agentclientprotocol/sdk";
-import type { AgentEvent } from "@cline/core";
-import type { GeneratedMedia } from "@cline/shared";
-import { getErrorMessage } from "@cline/shared";
+import type { AgentEvent } from "@hadyancode/core";
+import type { GeneratedMedia } from "@hadyancode/shared";
+import { getErrorMessage } from "@hadyancode/shared";
 import { buildToolTitle, mapToolKind } from "./tool-utils";
 
 /**

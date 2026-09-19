@@ -1,11 +1,11 @@
 import type { Anthropic } from "@anthropic-ai/sdk"
-import type { ClineMessageMetricsInfo, ClineMessageModelInfo } from "./metrics"
+import type { HadyanCodeMessageMetricsInfo, HadyanCodeMessageModelInfo } from "./metrics"
 
-export type ClinePromptInputContent = string
+export type HadyanCodePromptInputContent = string
 
-export type ClineMessageRole = "user" | "assistant"
+export type HadyanCodeMessageRole = "user" | "assistant"
 
-export interface ClineReasoningDetailParam {
+export interface HadyanCodeReasoningDetailParam {
 	type: "reasoning.text" | string
 	text: string
 	signature: string
@@ -13,91 +13,95 @@ export interface ClineReasoningDetailParam {
 	index: number
 }
 
-interface ClineSharedMessageParam {
+interface HadyanCodeSharedMessageParam {
 	// The id of the response that the block belongs to
 	call_id?: string
 }
 
-export const REASONING_DETAILS_PROVIDERS = ["cline", "openrouter"]
+export const REASONING_DETAILS_PROVIDERS = ["hadyancode", "openrouter"]
 
 /**
- * An extension of Anthropic.MessageParam that includes Cline-specific fields: reasoning_details.
+ * An extension of Anthropic.MessageParam that includes HadyanCode-specific fields: reasoning_details.
  * This ensures backward compatibility where the messages were stored in Anthropic format with additional
  * fields unknown to Anthropic SDK.
  */
-export interface ClineTextContentBlock extends Anthropic.TextBlockParam, ClineSharedMessageParam {
+export interface HadyanCodeTextContentBlock extends Anthropic.TextBlockParam, HadyanCodeSharedMessageParam {
 	// reasoning_details only exists for providers listed in REASONING_DETAILS_PROVIDERS
-	reasoning_details?: ClineReasoningDetailParam[]
+	reasoning_details?: HadyanCodeReasoningDetailParam[]
 	// Thought Signature associates with Gemini
 	signature?: string
 }
 
-export interface ClineImageContentBlock extends Anthropic.ImageBlockParam, ClineSharedMessageParam {}
+export interface HadyanCodeImageContentBlock extends Anthropic.ImageBlockParam, HadyanCodeSharedMessageParam {}
 
-export interface ClineDocumentContentBlock extends Anthropic.DocumentBlockParam, ClineSharedMessageParam {}
+export interface HadyanCodeDocumentContentBlock extends Anthropic.DocumentBlockParam, HadyanCodeSharedMessageParam {}
 
-export interface ClineUserToolResultContentBlock extends Anthropic.ToolResultBlockParam, ClineSharedMessageParam {}
+export interface HadyanCodeUserToolResultContentBlock extends Anthropic.ToolResultBlockParam, HadyanCodeSharedMessageParam {}
 
 /**
  * Assistant only content types
  */
-export interface ClineAssistantToolUseBlock extends Anthropic.ToolUseBlockParam, ClineSharedMessageParam {
+export interface HadyanCodeAssistantToolUseBlock extends Anthropic.ToolUseBlockParam, HadyanCodeSharedMessageParam {
 	// reasoning_details only exists for providers listed in REASONING_DETAILS_PROVIDERS
-	reasoning_details?: unknown[] | ClineReasoningDetailParam[]
+	reasoning_details?: unknown[] | HadyanCodeReasoningDetailParam[]
 	// Thought Signature associates with Gemini
 	signature?: string
 }
 
-export interface ClineAssistantThinkingBlock extends Anthropic.ThinkingBlock, ClineSharedMessageParam {
+export interface HadyanCodeAssistantThinkingBlock extends Anthropic.ThinkingBlock, HadyanCodeSharedMessageParam {
 	// The summary items returned by OpenAI response API
 	// The reasoning details that will be moved to the text block when finalized
-	summary?: unknown[] | ClineReasoningDetailParam[]
+	summary?: unknown[] | HadyanCodeReasoningDetailParam[]
 }
 
-export interface ClineAssistantRedactedThinkingBlock extends Anthropic.RedactedThinkingBlockParam, ClineSharedMessageParam {}
+export interface HadyanCodeAssistantRedactedThinkingBlock
+	extends Anthropic.RedactedThinkingBlockParam,
+		HadyanCodeSharedMessageParam {}
 
-export type ClineToolResponseContent = ClinePromptInputContent | Array<ClineTextContentBlock | ClineImageContentBlock>
+export type HadyanCodeToolResponseContent =
+	| HadyanCodePromptInputContent
+	| Array<HadyanCodeTextContentBlock | HadyanCodeImageContentBlock>
 
-export type ClineUserContent =
-	| ClineTextContentBlock
-	| ClineImageContentBlock
-	| ClineDocumentContentBlock
-	| ClineUserToolResultContentBlock
+export type HadyanCodeUserContent =
+	| HadyanCodeTextContentBlock
+	| HadyanCodeImageContentBlock
+	| HadyanCodeDocumentContentBlock
+	| HadyanCodeUserToolResultContentBlock
 
-export type ClineAssistantContent =
-	| ClineTextContentBlock
-	| ClineImageContentBlock
-	| ClineDocumentContentBlock
-	| ClineAssistantToolUseBlock
-	| ClineAssistantThinkingBlock
-	| ClineAssistantRedactedThinkingBlock
+export type HadyanCodeAssistantContent =
+	| HadyanCodeTextContentBlock
+	| HadyanCodeImageContentBlock
+	| HadyanCodeDocumentContentBlock
+	| HadyanCodeAssistantToolUseBlock
+	| HadyanCodeAssistantThinkingBlock
+	| HadyanCodeAssistantRedactedThinkingBlock
 
-export type ClineContent = ClineUserContent | ClineAssistantContent
+export type HadyanCodeContent = HadyanCodeUserContent | HadyanCodeAssistantContent
 
 /**
- * An extension of Anthropic.MessageParam that includes Cline-specific fields.
+ * An extension of Anthropic.MessageParam that includes HadyanCode-specific fields.
  * This ensures backward compatibility where the messages were stored in Anthropic format,
- * while allowing for additional metadata specific to Cline to avoid unknown fields in Anthropic SDK
+ * while allowing for additional metadata specific to HadyanCode to avoid unknown fields in Anthropic SDK
  * added by ignoring the type checking for those fields.
  */
-export interface ClineStorageMessage extends Anthropic.MessageParam {
+export interface HadyanCodeStorageMessage extends Anthropic.MessageParam {
 	/**
 	 * Response ID associated with this message
 	 */
 	id?: string
-	role: ClineMessageRole
-	content: ClinePromptInputContent | ClineContent[]
+	role: HadyanCodeMessageRole
+	content: HadyanCodePromptInputContent | HadyanCodeContent[]
 	/**
 	 * NOTE: model information used when generating this message.
 	 * Internal use for message conversion only.
 	 * MUST be removed before sending message to any LLM provider.
 	 */
-	modelInfo?: ClineMessageModelInfo
+	modelInfo?: HadyanCodeMessageModelInfo
 	/**
 	 * LLM operational and performance metrics for this message
 	 * Includes token counts, costs.
 	 */
-	metrics?: ClineMessageMetricsInfo
+	metrics?: HadyanCodeMessageMetricsInfo
 	/**
 	 * Timestamp of when the message was created
 	 */
@@ -105,14 +109,14 @@ export interface ClineStorageMessage extends Anthropic.MessageParam {
 }
 
 /**
- * Converts ClineStorageMessage to Anthropic.MessageParam by removing Cline-specific fields
- * Cline-specific fields (like modelInfo, reasoning_details) are properly omitted.
+ * Converts HadyanCodeStorageMessage to Anthropic.MessageParam by removing HadyanCode-specific fields
+ * HadyanCode-specific fields (like modelInfo, reasoning_details) are properly omitted.
  */
-export function convertClineStorageToAnthropicMessage(
-	clineMessage: ClineStorageMessage,
+export function convertHadyanCodeStorageToAnthropicMessage(
+	hadyancodeMessage: HadyanCodeStorageMessage,
 	provider = "anthropic",
 ): Anthropic.MessageParam {
-	const { role, content } = clineMessage
+	const { role, content } = hadyancodeMessage
 
 	// Handle string content - fast path
 	if (typeof content === "string") {
@@ -122,7 +126,7 @@ export function convertClineStorageToAnthropicMessage(
 	// Removes thinking block that has no signature (invalid thinking block that's incompatible with Anthropic API)
 	const filteredContent = content.filter((b) => b.type !== "thinking" || !!b.signature)
 
-	// Handle array content - strip Cline-specific fields for non-reasoning_details providers
+	// Handle array content - strip HadyanCode-specific fields for non-reasoning_details providers
 	const shouldCleanContent = !REASONING_DETAILS_PROVIDERS.includes(provider)
 	const cleanedContent = shouldCleanContent
 		? filteredContent.map(cleanContentBlock)
@@ -132,9 +136,9 @@ export function convertClineStorageToAnthropicMessage(
 }
 
 /**
- * Cline stores images as base64, so an image block's source is always a base64 source.
+ * HadyanCode stores images as base64, so an image block's source is always a base64 source.
  * The Anthropic SDK types the source as a Base64ImageSource | URLImageSource union, so this
- * narrows to the base64 variant for the transform layer. URL sources are not produced by Cline,
+ * narrows to the base64 variant for the transform layer. URL sources are not produced by HadyanCode,
  * so they degrade to empty values rather than throwing.
  */
 export function getBase64ImageSource(source: Anthropic.ImageBlockParam["source"]): { mediaType: string; data: string } {
@@ -153,21 +157,21 @@ export function getImageDataUrl(source: Anthropic.ImageBlockParam["source"]): st
 }
 
 /**
- * Clean a content block by removing Cline-specific fields and returning only Anthropic-compatible fields
+ * Clean a content block by removing HadyanCode-specific fields and returning only Anthropic-compatible fields
  */
-export function cleanContentBlock(block: ClineContent): Anthropic.ContentBlock {
-	// Fast path: if no Cline-specific fields exist, return as-is
-	const hasClineFields =
+export function cleanContentBlock(block: HadyanCodeContent): Anthropic.ContentBlock {
+	// Fast path: if no HadyanCode-specific fields exist, return as-is
+	const hasHadyanCodeFields =
 		"reasoning_details" in block ||
 		"call_id" in block ||
 		"summary" in block ||
 		(block.type !== "thinking" && "signature" in block)
 
-	if (!hasClineFields) {
+	if (!hasHadyanCodeFields) {
 		return block as Anthropic.ContentBlock
 	}
 
-	// Removes Cline-specific fields & the signature field that's added for Gemini.
+	// Removes HadyanCode-specific fields & the signature field that's added for Gemini.
 	const { reasoning_details, call_id, summary, ...rest } = block as any
 
 	// Remove signature from non-thinking blocks that were added for Gemini

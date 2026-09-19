@@ -7,10 +7,10 @@ import {
 	type McpUninstallOptions as CoreMcpUninstallOptions,
 	type McpUninstallResult as CoreMcpUninstallResult,
 	uninstallMcpServer,
-} from "@cline/core";
+} from "@hadyancode/core";
 import type { McpAddDefaults } from "../wizards/mcp";
 
-export { buildMcpInstallTransport, uninstallMcpServer } from "@cline/core";
+export { buildMcpInstallTransport, uninstallMcpServer } from "@hadyancode/core";
 
 export interface McpCommandIo {
 	writeln?: (text: string) => void;
@@ -102,7 +102,7 @@ export async function runMcpInstallCommand(
 			options.isTty ?? (process.stdin.isTTY && process.stdout.isTTY);
 		if (!isTty) {
 			throw new Error(
-				"cline mcp install opens the MCP wizard and requires a TTY. Pass --yes to install noninteractively.",
+				"hadyancode mcp install opens the MCP wizard and requires a TTY. Pass --yes to install noninteractively.",
 			);
 		}
 		const defaults = buildMcpInstallDefaults(options);

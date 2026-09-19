@@ -65,7 +65,7 @@ beforeEach(async () => {
 	subscribeMock.mockClear();
 	invokeMock.mockImplementation(async (command: string) => {
 		if (command === "get_process_context") {
-			return { cwd: "/workspace/cline", workspaceRoot: "/workspace/cline" };
+			return { cwd: "/workspace/hadyancode", workspaceRoot: "/workspace/hadyancode" };
 		}
 		return [];
 	});
@@ -316,8 +316,8 @@ describe("useChatSession", () => {
 			async (command: string, args?: Record<string, unknown>) => {
 				if (command === "get_process_context") {
 					return {
-						cwd: "/workspace/cline",
-						workspaceRoot: "/workspace/cline",
+						cwd: "/workspace/hadyancode",
+						workspaceRoot: "/workspace/hadyancode",
 					};
 				}
 				if (command === "proceed_while_running") {
@@ -330,8 +330,8 @@ describe("useChatSession", () => {
 					if (request?.action === "start") {
 						return {
 							sessionId: request.config?.sessionId ?? "session-output",
-							cwd: "/workspace/cline",
-							workspaceRoot: "/workspace/cline",
+							cwd: "/workspace/hadyancode",
+							workspaceRoot: "/workspace/hadyancode",
 						};
 					}
 				}
@@ -408,7 +408,7 @@ describe("useChatSession", () => {
 		invokeMock.mockImplementation(
 			async (command: string, args?: Record<string, unknown>) => {
 				if (command === "get_process_context") {
-					return { cwd: "/workspace/cline", workspaceRoot: "/workspace/cline" };
+					return { cwd: "/workspace/hadyancode", workspaceRoot: "/workspace/hadyancode" };
 				}
 				if (command === "read_session_messages") {
 					readCount += 1;
@@ -451,10 +451,10 @@ describe("useChatSession", () => {
 						return {
 							sessionId: hydratedSessionId,
 							status: "running",
-							provider: "cline",
+							provider: "hadyancode",
 							model: "test-model",
-							cwd: "/workspace/cline",
-							workspaceRoot: "/workspace/cline",
+							cwd: "/workspace/hadyancode",
+							workspaceRoot: "/workspace/hadyancode",
 						};
 					}
 					return { promptsInQueue: [] };
@@ -471,10 +471,10 @@ describe("useChatSession", () => {
 				await current.hydrateSession({
 					sessionId: hydratedSessionId,
 					status: "running",
-					provider: "cline",
+					provider: "hadyancode",
 					model: "test-model",
-					cwd: "/workspace/cline",
-					workspaceRoot: "/workspace/cline",
+					cwd: "/workspace/hadyancode",
+					workspaceRoot: "/workspace/hadyancode",
 					startedAt: "2026-08-12T00:00:00.000Z",
 				});
 			});
@@ -511,7 +511,7 @@ describe("useChatSession", () => {
 		invokeMock.mockImplementation(
 			async (command: string, args?: Record<string, unknown>) => {
 				if (command === "get_process_context") {
-					return { cwd: "/workspace/cline", workspaceRoot: "/workspace/cline" };
+					return { cwd: "/workspace/hadyancode", workspaceRoot: "/workspace/hadyancode" };
 				}
 				if (command === "read_session_messages") {
 					readCount += 1;
@@ -535,10 +535,10 @@ describe("useChatSession", () => {
 						return {
 							sessionId: hydratedSessionId,
 							status: "idle",
-							provider: "cline",
+							provider: "hadyancode",
 							model: "test-model",
-							cwd: "/workspace/cline",
-							workspaceRoot: "/workspace/cline",
+							cwd: "/workspace/hadyancode",
+							workspaceRoot: "/workspace/hadyancode",
 						};
 					}
 					if (request?.action === "send") {
@@ -558,10 +558,10 @@ describe("useChatSession", () => {
 				await current.hydrateSession({
 					sessionId: hydratedSessionId,
 					status: "idle",
-					provider: "cline",
+					provider: "hadyancode",
 					model: "test-model",
-					cwd: "/workspace/cline",
-					workspaceRoot: "/workspace/cline",
+					cwd: "/workspace/hadyancode",
+					workspaceRoot: "/workspace/hadyancode",
 					startedAt: "2026-08-12T00:00:00.000Z",
 				});
 			});
@@ -595,7 +595,7 @@ describe("useChatSession", () => {
 		invokeMock.mockImplementation(
 			async (command: string, args?: Record<string, unknown>) => {
 				if (command === "get_process_context") {
-					return { cwd: "/workspace/cline", workspaceRoot: "/workspace/cline" };
+					return { cwd: "/workspace/hadyancode", workspaceRoot: "/workspace/hadyancode" };
 				}
 				if (command === "read_session_messages") {
 					return [
@@ -625,10 +625,10 @@ describe("useChatSession", () => {
 						return {
 							sessionId: hydratedSessionId,
 							status: "running",
-							provider: "cline",
+							provider: "hadyancode",
 							model: "test-model",
-							cwd: "/workspace/cline",
-							workspaceRoot: "/workspace/cline",
+							cwd: "/workspace/hadyancode",
+							workspaceRoot: "/workspace/hadyancode",
 						};
 					}
 					return { promptsInQueue: [] };
@@ -641,10 +641,10 @@ describe("useChatSession", () => {
 			await current.hydrateSession({
 				sessionId: hydratedSessionId,
 				status: "running",
-				provider: "cline",
+				provider: "hadyancode",
 				model: "test-model",
-				cwd: "/workspace/cline",
-				workspaceRoot: "/workspace/cline",
+				cwd: "/workspace/hadyancode",
+				workspaceRoot: "/workspace/hadyancode",
 				startedAt: "2026-08-12T00:00:00.000Z",
 			});
 		});
@@ -709,7 +709,7 @@ describe("useChatSession", () => {
 						request.config?.sessionId ?? "session-pathless",
 					);
 					startedSessionId = sessionId;
-					const workspacePath = "/home/host/.cline/data/workspaces/chat";
+					const workspacePath = "/home/host/.hadyancode/data/workspaces/chat";
 					return {
 						sessionId,
 						cwd: workspacePath,
@@ -730,7 +730,7 @@ describe("useChatSession", () => {
 
 		expect(current.error).toBeNull();
 		expect(startedSessionId).toMatch(/^session_/);
-		const expectedWorkspacePath = "/home/host/.cline/data/workspaces/chat";
+		const expectedWorkspacePath = "/home/host/.hadyancode/data/workspaces/chat";
 		expect(current.config).toMatchObject({
 			cwd: expectedWorkspacePath,
 			workspaceRoot: expectedWorkspacePath,
@@ -756,7 +756,7 @@ describe("useChatSession", () => {
 	it("preserves server validation errors", async () => {
 		invokeMock.mockImplementation(async (command: string) => {
 			if (command === "get_process_context") {
-				return { cwd: "/workspace/cline", workspaceRoot: "/workspace/cline" };
+				return { cwd: "/workspace/hadyancode", workspaceRoot: "/workspace/hadyancode" };
 			}
 			if (command === "chat_session_command") {
 				throw new Error(
@@ -801,8 +801,8 @@ describe("useChatSession", () => {
 			async (command: string, args?: Record<string, unknown>) => {
 				if (command === "get_process_context") {
 					return {
-						cwd: "/workspace/cline",
-						workspaceRoot: "/workspace/cline",
+						cwd: "/workspace/hadyancode",
+						workspaceRoot: "/workspace/hadyancode",
 					};
 				}
 				if (command === "chat_session_command") {
@@ -812,8 +812,8 @@ describe("useChatSession", () => {
 					if (request?.action === "start") {
 						return {
 							sessionId: request.config?.sessionId ?? "session-test",
-							cwd: "/workspace/cline",
-							workspaceRoot: "/workspace/cline",
+							cwd: "/workspace/hadyancode",
+							workspaceRoot: "/workspace/hadyancode",
 						};
 					}
 					if (request?.action === "send") {
@@ -850,7 +850,7 @@ describe("useChatSession", () => {
 		invokeMock.mockImplementation(
 			async (command: string, args?: Record<string, unknown>) => {
 				if (command === "get_process_context") {
-					return { cwd: "/workspace/cline", workspaceRoot: "/workspace/cline" };
+					return { cwd: "/workspace/hadyancode", workspaceRoot: "/workspace/hadyancode" };
 				}
 				if (command === "chat_session_command") {
 					const request = args?.request as
@@ -938,7 +938,7 @@ describe("useChatSession", () => {
 		invokeMock.mockImplementation(
 			async (command: string, args?: Record<string, unknown>) => {
 				if (command === "get_process_context") {
-					return { cwd: "/workspace/cline", workspaceRoot: "/workspace/cline" };
+					return { cwd: "/workspace/hadyancode", workspaceRoot: "/workspace/hadyancode" };
 				}
 				if (command === "chat_session_command") {
 					const request = args?.request as
@@ -994,7 +994,7 @@ describe("useChatSession", () => {
 		invokeMock.mockImplementation(
 			async (command: string, args?: Record<string, unknown>) => {
 				if (command === "get_process_context") {
-					return { cwd: "/workspace/cline", workspaceRoot: "/workspace/cline" };
+					return { cwd: "/workspace/hadyancode", workspaceRoot: "/workspace/hadyancode" };
 				}
 				if (command === "chat_session_command") {
 					const request = args?.request as
@@ -1038,7 +1038,7 @@ describe("useChatSession", () => {
 		invokeMock.mockImplementation(
 			async (command: string, args?: Record<string, unknown>) => {
 				if (command === "get_process_context") {
-					return { cwd: "/workspace/cline", workspaceRoot: "/workspace/cline" };
+					return { cwd: "/workspace/hadyancode", workspaceRoot: "/workspace/hadyancode" };
 				}
 				if (command === "chat_session_command") {
 					const request = args?.request as
@@ -1125,7 +1125,7 @@ describe("useChatSession", () => {
 		invokeMock.mockImplementation(
 			async (command: string, args?: Record<string, unknown>) => {
 				if (command === "get_process_context") {
-					return { cwd: "/workspace/cline", workspaceRoot: "/workspace/cline" };
+					return { cwd: "/workspace/hadyancode", workspaceRoot: "/workspace/hadyancode" };
 				}
 				if (command === "chat_session_command") {
 					const request = args?.request as
@@ -1188,7 +1188,7 @@ describe("useChatSession", () => {
 		invokeMock.mockImplementation(
 			async (command: string, args?: Record<string, unknown>) => {
 				if (command === "get_process_context") {
-					return { cwd: "/workspace/cline", workspaceRoot: "/workspace/cline" };
+					return { cwd: "/workspace/hadyancode", workspaceRoot: "/workspace/hadyancode" };
 				}
 				if (command === "chat_session_command") {
 					const request = args?.request as
@@ -1241,7 +1241,7 @@ describe("useChatSession", () => {
 		invokeMock.mockImplementation(
 			async (command: string, args?: Record<string, unknown>) => {
 				if (command === "get_process_context") {
-					return { cwd: "/workspace/cline", workspaceRoot: "/workspace/cline" };
+					return { cwd: "/workspace/hadyancode", workspaceRoot: "/workspace/hadyancode" };
 				}
 				if (command === "chat_session_command") {
 					const request = args?.request as
@@ -1307,7 +1307,7 @@ describe("useChatSession", () => {
 		invokeMock.mockImplementation(
 			async (command: string, args?: Record<string, unknown>) => {
 				if (command === "get_process_context") {
-					return { cwd: "/workspace/cline", workspaceRoot: "/workspace/cline" };
+					return { cwd: "/workspace/hadyancode", workspaceRoot: "/workspace/hadyancode" };
 				}
 				if (command === "chat_session_command") {
 					const request = args?.request as
@@ -1365,7 +1365,7 @@ describe("useChatSession", () => {
 		invokeMock.mockImplementation(
 			async (command: string, args?: Record<string, unknown>) => {
 				if (command === "get_process_context") {
-					return { cwd: "/workspace/cline", workspaceRoot: "/workspace/cline" };
+					return { cwd: "/workspace/hadyancode", workspaceRoot: "/workspace/hadyancode" };
 				}
 				if (command === "chat_session_command") {
 					const request = args?.request as
@@ -1429,7 +1429,7 @@ describe("useChatSession", () => {
 		invokeMock.mockImplementation(
 			async (command: string, args?: Record<string, unknown>) => {
 				if (command === "get_process_context") {
-					return { cwd: "/workspace/cline", workspaceRoot: "/workspace/cline" };
+					return { cwd: "/workspace/hadyancode", workspaceRoot: "/workspace/hadyancode" };
 				}
 				if (command === "chat_session_command") {
 					const request = args?.request as
@@ -1479,7 +1479,7 @@ describe("useChatSession", () => {
 		invokeMock.mockImplementation(
 			async (command: string, args?: Record<string, unknown>) => {
 				if (command === "get_process_context") {
-					return { cwd: "/workspace/cline", workspaceRoot: "/workspace/cline" };
+					return { cwd: "/workspace/hadyancode", workspaceRoot: "/workspace/hadyancode" };
 				}
 				if (command === "chat_session_command") {
 					const request = args?.request as
@@ -1557,7 +1557,7 @@ describe("useChatSession", () => {
 		invokeMock.mockImplementation(
 			async (command: string, args?: Record<string, unknown>) => {
 				if (command === "get_process_context") {
-					return { cwd: "/workspace/cline", workspaceRoot: "/workspace/cline" };
+					return { cwd: "/workspace/hadyancode", workspaceRoot: "/workspace/hadyancode" };
 				}
 				if (command === "chat_session_command") {
 					const request = args?.request as
@@ -1690,7 +1690,7 @@ describe("useChatSession", () => {
 		invokeMock.mockImplementation(
 			async (command: string, args?: Record<string, unknown>) => {
 				if (command === "get_process_context") {
-					return { cwd: "/workspace/cline", workspaceRoot: "/workspace/cline" };
+					return { cwd: "/workspace/hadyancode", workspaceRoot: "/workspace/hadyancode" };
 				}
 				if (command === "read_session_messages") {
 					return [
@@ -1728,10 +1728,10 @@ describe("useChatSession", () => {
 						return {
 							sessionId: hydratedSessionId,
 							status: "completed",
-							provider: "cline",
+							provider: "hadyancode",
 							model: "test-model",
-							cwd: "/workspace/cline",
-							workspaceRoot: "/workspace/cline",
+							cwd: "/workspace/hadyancode",
+							workspaceRoot: "/workspace/hadyancode",
 						};
 					}
 					return { promptsInQueue: [] };
@@ -1744,10 +1744,10 @@ describe("useChatSession", () => {
 			await current.hydrateSession({
 				sessionId: hydratedSessionId,
 				status: "completed",
-				provider: "cline",
+				provider: "hadyancode",
 				model: "test-model",
-				cwd: "/workspace/cline",
-				workspaceRoot: "/workspace/cline",
+				cwd: "/workspace/hadyancode",
+				workspaceRoot: "/workspace/hadyancode",
 				startedAt: "2026-07-31T00:00:00.000Z",
 			});
 		});
@@ -1782,7 +1782,7 @@ describe("useChatSession", () => {
 		invokeMock.mockImplementation(
 			async (command: string, args?: Record<string, unknown>) => {
 				if (command === "get_process_context") {
-					return { cwd: "/workspace/cline", workspaceRoot: "/workspace/cline" };
+					return { cwd: "/workspace/hadyancode", workspaceRoot: "/workspace/hadyancode" };
 				}
 				if (command === "poll_ask_questions") {
 					return args?.sessionId === hydratedSessionId ? [pendingQuestion] : [];
@@ -1800,10 +1800,10 @@ describe("useChatSession", () => {
 						return {
 							sessionId: hydratedSessionId,
 							status: "running",
-							provider: "cline",
+							provider: "hadyancode",
 							model: "test-model",
-							cwd: "/workspace/cline",
-							workspaceRoot: "/workspace/cline",
+							cwd: "/workspace/hadyancode",
+							workspaceRoot: "/workspace/hadyancode",
 						};
 					}
 					return { promptsInQueue: [] };
@@ -1816,10 +1816,10 @@ describe("useChatSession", () => {
 			await current.hydrateSession({
 				sessionId: hydratedSessionId,
 				status: "running",
-				provider: "cline",
+				provider: "hadyancode",
 				model: "test-model",
-				cwd: "/workspace/cline",
-				workspaceRoot: "/workspace/cline",
+				cwd: "/workspace/hadyancode",
+				workspaceRoot: "/workspace/hadyancode",
 				startedAt: "2026-08-11T00:00:00.000Z",
 			});
 		});
@@ -1836,8 +1836,8 @@ describe("useChatSession", () => {
 		window.localStorage.setItem(
 			MODEL_SELECTION_STORAGE_KEY,
 			JSON.stringify({
-				lastProvider: "cline",
-				lastModelByProvider: { cline: "remembered-model" },
+				lastProvider: "hadyancode",
+				lastModelByProvider: { hadyancode: "remembered-model" },
 			}),
 		);
 		const hydratedSessionId = "session-historical";
@@ -1845,7 +1845,7 @@ describe("useChatSession", () => {
 		invokeMock.mockImplementation(
 			async (command: string, args?: Record<string, unknown>) => {
 				if (command === "get_process_context") {
-					return { cwd: "/workspace/cline", workspaceRoot: "/workspace/cline" };
+					return { cwd: "/workspace/hadyancode", workspaceRoot: "/workspace/hadyancode" };
 				}
 				if (command === "read_session_messages") {
 					return [
@@ -1869,8 +1869,8 @@ describe("useChatSession", () => {
 							status: "completed",
 							provider: "openrouter",
 							model: "historical-model",
-							cwd: "/workspace/cline",
-							workspaceRoot: "/workspace/cline",
+							cwd: "/workspace/hadyancode",
+							workspaceRoot: "/workspace/hadyancode",
 						};
 					}
 					if (request?.action === "start") {
@@ -1895,8 +1895,8 @@ describe("useChatSession", () => {
 				status: "completed",
 				provider: "openrouter",
 				model: "historical-model",
-				cwd: "/workspace/cline",
-				workspaceRoot: "/workspace/cline",
+				cwd: "/workspace/hadyancode",
+				workspaceRoot: "/workspace/hadyancode",
 				startedAt: "2026-07-31T00:00:00.000Z",
 			});
 		});
@@ -1913,14 +1913,14 @@ describe("useChatSession", () => {
 		});
 		expect(current.config.sessionId).toBeUndefined();
 		expect(current.config).toMatchObject({
-			provider: "cline",
+			provider: "hadyancode",
 			model: "remembered-model",
 		});
 
 		// The next session then starts with the remembered defaults.
 		await act(async () => current.sendPrompt("Start a fresh task"));
 		expect(startConfig).toMatchObject({
-			provider: "cline",
+			provider: "hadyancode",
 			model: "remembered-model",
 		});
 	});
@@ -1929,7 +1929,7 @@ describe("useChatSession", () => {
 		invokeMock.mockImplementation(
 			async (command: string, args?: Record<string, unknown>) => {
 				if (command === "get_process_context") {
-					return { cwd: "/workspace/cline", workspaceRoot: "/workspace/cline" };
+					return { cwd: "/workspace/hadyancode", workspaceRoot: "/workspace/hadyancode" };
 				}
 				if (command === "chat_session_command") {
 					const request = args?.request as
@@ -1995,7 +1995,7 @@ describe("useChatSession", () => {
 		invokeMock.mockImplementation(
 			async (command: string, args?: Record<string, unknown>) => {
 				if (command === "get_process_context") {
-					return { cwd: "/workspace/cline", workspaceRoot: "/workspace/cline" };
+					return { cwd: "/workspace/hadyancode", workspaceRoot: "/workspace/hadyancode" };
 				}
 				if (command === "read_session_messages") {
 					return canonicalMessages;
@@ -2092,7 +2092,7 @@ describe("useChatSession", () => {
 		invokeMock.mockImplementation(
 			async (command: string, args?: Record<string, unknown>) => {
 				if (command === "get_process_context") {
-					return { cwd: "/workspace/cline", workspaceRoot: "/workspace/cline" };
+					return { cwd: "/workspace/hadyancode", workspaceRoot: "/workspace/hadyancode" };
 				}
 				if (command === "read_session_messages") {
 					// Persistence has not caught up yet.
@@ -2167,7 +2167,7 @@ describe("useChatSession", () => {
 		invokeMock.mockImplementation(
 			async (command: string, args?: Record<string, unknown>) => {
 				if (command === "get_process_context") {
-					return { cwd: "/workspace/cline", workspaceRoot: "/workspace/cline" };
+					return { cwd: "/workspace/hadyancode", workspaceRoot: "/workspace/hadyancode" };
 				}
 				if (command === "chat_session_command") {
 					const request = args?.request as
@@ -2262,7 +2262,7 @@ describe("useChatSession", () => {
 		invokeMock.mockImplementation(
 			async (command: string, args?: Record<string, unknown>) => {
 				if (command === "get_process_context") {
-					return { cwd: "/workspace/cline", workspaceRoot: "/workspace/cline" };
+					return { cwd: "/workspace/hadyancode", workspaceRoot: "/workspace/hadyancode" };
 				}
 				if (command === "chat_session_command") {
 					const request = args?.request as
@@ -2326,7 +2326,7 @@ describe("useChatSession", () => {
 		invokeMock.mockImplementation(
 			async (command: string, args?: Record<string, unknown>) => {
 				if (command === "get_process_context") {
-					return { cwd: "/workspace/cline", workspaceRoot: "/workspace/cline" };
+					return { cwd: "/workspace/hadyancode", workspaceRoot: "/workspace/hadyancode" };
 				}
 				if (command === "chat_session_command") {
 					const request = args?.request as
@@ -2381,7 +2381,7 @@ describe("useChatSession", () => {
 		invokeMock.mockImplementation(
 			async (command: string, args?: Record<string, unknown>) => {
 				if (command === "get_process_context") {
-					return { cwd: "/workspace/cline", workspaceRoot: "/workspace/cline" };
+					return { cwd: "/workspace/hadyancode", workspaceRoot: "/workspace/hadyancode" };
 				}
 				if (command === "chat_session_command") {
 					const request = args?.request as
@@ -2458,7 +2458,7 @@ describe("useChatSession", () => {
 		invokeMock.mockImplementation(
 			async (command: string, args?: Record<string, unknown>) => {
 				if (command === "get_process_context") {
-					return { cwd: "/workspace/cline", workspaceRoot: "/workspace/cline" };
+					return { cwd: "/workspace/hadyancode", workspaceRoot: "/workspace/hadyancode" };
 				}
 				if (command === "read_session_messages") {
 					return [
@@ -2538,7 +2538,7 @@ describe("useChatSession", () => {
 		invokeMock.mockImplementation(
 			async (command: string, args?: Record<string, unknown>) => {
 				if (command === "get_process_context") {
-					return { cwd: "/workspace/cline", workspaceRoot: "/workspace/cline" };
+					return { cwd: "/workspace/hadyancode", workspaceRoot: "/workspace/hadyancode" };
 				}
 				if (command === "chat_session_command") {
 					const request = args?.request as
@@ -2596,7 +2596,7 @@ describe("useChatSession", () => {
 		invokeMock.mockImplementation(
 			async (command: string, args?: Record<string, unknown>) => {
 				if (command === "get_process_context") {
-					return { cwd: "/workspace/cline", workspaceRoot: "/workspace/cline" };
+					return { cwd: "/workspace/hadyancode", workspaceRoot: "/workspace/hadyancode" };
 				}
 				if (command === "read_session_messages") {
 					return history.map((message) => ({
@@ -2682,7 +2682,7 @@ describe("useChatSession", () => {
 		invokeMock.mockImplementation(
 			async (command: string, args?: Record<string, unknown>) => {
 				if (command === "get_process_context") {
-					return { cwd: "/workspace/cline", workspaceRoot: "/workspace/cline" };
+					return { cwd: "/workspace/hadyancode", workspaceRoot: "/workspace/hadyancode" };
 				}
 				if (command === "chat_session_command") {
 					const request = args?.request as
@@ -2767,7 +2767,7 @@ describe("useChatSession", () => {
 		invokeMock.mockImplementation(
 			async (command: string, args?: Record<string, unknown>) => {
 				if (command === "get_process_context") {
-					return { cwd: "/workspace/cline", workspaceRoot: "/workspace/cline" };
+					return { cwd: "/workspace/hadyancode", workspaceRoot: "/workspace/hadyancode" };
 				}
 				if (command === "chat_session_command") {
 					const request = args?.request as
@@ -2827,7 +2827,7 @@ describe("useChatSession", () => {
 		invokeMock.mockImplementation(
 			async (command: string, args?: Record<string, unknown>) => {
 				if (command === "get_process_context") {
-					return { cwd: "/workspace/cline", workspaceRoot: "/workspace/cline" };
+					return { cwd: "/workspace/hadyancode", workspaceRoot: "/workspace/hadyancode" };
 				}
 				if (command === "chat_session_command") {
 					const request = args?.request as
@@ -2868,7 +2868,7 @@ describe("useChatSession", () => {
 	it("falls back to process context when the remembered workspace is stale", async () => {
 		await act(async () => root.unmount());
 		window.localStorage.setItem(
-			"cline.code.workspace-selection.v1",
+			"hadyancode.code.workspace-selection.v1",
 			JSON.stringify({
 				lastWorkspace: "/workspace/deleted",
 				workspaces: ["/workspace/deleted"],
@@ -2876,7 +2876,7 @@ describe("useChatSession", () => {
 		);
 		invokeMock.mockImplementation(async (command: string) => {
 			if (command === "get_process_context") {
-				return { cwd: "/workspace/cline", workspaceRoot: "/workspace/cline" };
+				return { cwd: "/workspace/hadyancode", workspaceRoot: "/workspace/hadyancode" };
 			}
 			if (command === "validate_workspace_directory") {
 				return { valid: false };
@@ -2887,8 +2887,8 @@ describe("useChatSession", () => {
 		await act(async () => root.render(<HookHarness />));
 
 		await vi.waitFor(() => {
-			expect(current.config.workspaceRoot).toBe("/workspace/cline");
-			expect(current.config.cwd).toBe("/workspace/cline");
+			expect(current.config.workspaceRoot).toBe("/workspace/hadyancode");
+			expect(current.config.cwd).toBe("/workspace/hadyancode");
 		});
 		expect(invokeMock).toHaveBeenCalledWith("validate_workspace_directory", {
 			path: "/workspace/deleted",
@@ -2921,7 +2921,7 @@ describe("useChatSession", () => {
 			expect(invokeMock).toHaveBeenCalledWith("get_process_context");
 		});
 		window.localStorage.setItem(
-			"cline.code.workspace-selection.v1",
+			"hadyancode.code.workspace-selection.v1",
 			JSON.stringify({
 				lastWorkspace: "/workspace/remembered",
 				workspaces: ["/workspace/remembered"],
@@ -3032,7 +3032,7 @@ describe("coerced-queue first turn vs stale send response", () => {
 		invokeMock.mockImplementation(
 			async (command: string, args?: Record<string, unknown>) => {
 				if (command === "get_process_context") {
-					return { cwd: "/workspace/cline", workspaceRoot: "/workspace/cline" };
+					return { cwd: "/workspace/hadyancode", workspaceRoot: "/workspace/hadyancode" };
 				}
 				if (command === "chat_session_command") {
 					const request = args?.request as

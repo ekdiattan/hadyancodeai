@@ -1,7 +1,7 @@
-import { CLINE_ACCOUNT_AUTH_ERROR_MESSAGE } from "@shared/ClineAccount"
-import type { ClineMessage, TurnPhase } from "@shared/ExtensionMessage"
+import type { HadyanCodeMessage, TurnPhase } from "@shared/ExtensionMessage"
+import { HADYANCODE_ACCOUNT_AUTH_ERROR_MESSAGE } from "@shared/HadyanCodeAccount"
 import type { Mode } from "@shared/storage/types"
-import type { ClineAskResponse } from "@shared/WebviewMessage"
+import type { HadyanCodeAskResponse } from "@shared/WebviewMessage"
 import type { StateManager } from "@/core/storage/StateManager"
 import { Logger } from "@/shared/services/Logger"
 import type { SdkInteractionCoordinator } from "./sdk-interaction-coordinator"
@@ -39,8 +39,8 @@ export interface SdkFollowupCoordinatorOptions {
 	loadInitialMessages: (sessionHost: SdkSessionHost, taskId: string) => Promise<unknown[] | undefined>
 	buildStartSessionInput: (config: SessionConfig, input: { cwd: string; mode: Mode }) => StartInput
 	resolveContextMentions: (text: string) => Promise<string>
-	isClineManagedProviderActive: () => boolean
-	emitClineAuthError: () => void
+	isHadyanCodeManagedProviderActive: () => boolean
+	emitHadyanCodeAuthError: () => void
 	resetMessageTranslator: () => void
 	postStateToWebview: () => Promise<void>
 	/** Resolves once no session rebuild is in flight. */
@@ -68,7 +68,7 @@ export class SdkFollowupCoordinator {
 		prompt?: string,
 		images?: string[],
 		files?: string[],
-		askResponse?: ClineAskResponse,
+		askResponse?: HadyanCodeAskResponse,
 		turnPhaseAtSubmit?: TurnPhase,
 	): Promise<void> {
 		if (this.options.interactions.resolvePendingToolApproval(prompt, askResponse, images, files)) {
@@ -186,14 +186,14 @@ export class SdkFollowupCoordinator {
 			Logger.error("[SdkController] Failed to resume session from task:", error)
 
 			const errorMsg = error instanceof Error ? error.message : String(error)
-			const isClineAuth =
-				this.options.isClineManagedProviderActive() &&
-				(errorMsg.includes(CLINE_ACCOUNT_AUTH_ERROR_MESSAGE) ||
+			const isHadyanCodeAuth =
+				this.options.isHadyanCodeManagedProviderActive() &&
+				(errorMsg.includes(HADYANCODE_ACCOUNT_AUTH_ERROR_MESSAGE) ||
 					errorMsg.toLowerCase().includes("missing api key") ||
 					errorMsg.toLowerCase().includes("unauthorized"))
 
-			if (isClineAuth) {
-				this.options.emitClineAuthError()
+			if (isHadyanCodeAuth) {
+				this.options.emitHadyanCodeAuthError()
 			} else {
 				this.options.messages.emitSessionEvents(
 					[
@@ -314,7 +314,7 @@ export class SdkFollowupCoordinator {
 			return
 		}
 
-		const userMessage: ClineMessage = {
+		const userMessage: HadyanCodeMessage = {
 			ts: Date.now(),
 			type: "say",
 			say: "user_feedback",

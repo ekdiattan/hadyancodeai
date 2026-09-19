@@ -1,16 +1,16 @@
 /**
- * List of email domains that are considered trusted testers for Cline.
+ * List of email domains that are considered trusted testers for HadyanCode.
  */
-const CLINE_TRUSTED_TESTER_DOMAINS = ["fibilabs.tech"]
+const HADYANCODE_TRUSTED_TESTER_DOMAINS = ["fibilabs.tech"]
 
 /**
- * Checks if the given email belongs to a Cline bot user.
+ * Checks if the given email belongs to a HadyanCode bot user.
  * E.g. Emails ending with @cline.bot
  */
-function isClineBotUser(email: string): boolean {
+function isHadyanCodeBotUser(email: string): boolean {
 	return email.endsWith("@cline.bot")
 }
 
-export function isClineInternalTester(email: string): boolean {
-	return isClineBotUser(email) || CLINE_TRUSTED_TESTER_DOMAINS.some((d) => email.endsWith(`@${d}`))
+export function isHadyanCodeInternalTester(email: string): boolean {
+	return isHadyanCodeBotUser(email) || HADYANCODE_TRUSTED_TESTER_DOMAINS.some((d) => email.endsWith(`@${d}`))
 }

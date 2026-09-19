@@ -73,7 +73,7 @@ vi.mock("@/lib/provider-model-catalog", () => ({
 	loadProviderModelCatalog: loadProviderModelCatalogMock,
 	loadProviderModels: loadProviderModelsMock,
 	subscribeToProviderModels: subscribeToProviderModelsMock,
-	VOICE_INPUT_SETTINGS_CHANGED_EVENT: "cline:test-voice-input-settings-changed",
+	VOICE_INPUT_SETTINGS_CHANGED_EVENT: "hadyancode:test-voice-input-settings-changed",
 }));
 
 vi.mock("@/lib/vercel-streaming-transcription", () => ({
@@ -87,9 +87,9 @@ beforeEach(() => {
 	Object.assign(globalThis, { IS_REACT_ACT_ENVIRONMENT: true });
 	loadProviderModelCatalogMock.mockReset().mockResolvedValue({
 		providers: [],
-		enabledProviderIds: ["cline"],
-		providerModels: { cline: ["test-model"] },
-		providerReasoningModels: { cline: [] },
+		enabledProviderIds: ["hadyancode"],
+		providerModels: { hadyancode: ["test-model"] },
+		providerReasoningModels: { hadyancode: [] },
 		voiceInput: null,
 	});
 	loadProviderModelsMock.mockReset().mockResolvedValue([]);
@@ -116,9 +116,9 @@ afterEach(async () => {
 });
 
 const workspaceValue = {
-	workspaceRoot: "/workspace/cline",
-	workspaces: ["/workspace/cline"],
-	listWorkspaces: vi.fn(async () => ["/workspace/cline"]),
+	workspaceRoot: "/workspace/hadyancode",
+	workspaces: ["/workspace/hadyancode"],
+	listWorkspaces: vi.fn(async () => ["/workspace/hadyancode"]),
 	refreshWorkspaces: vi.fn(async () => undefined),
 	switchWorkspace: vi.fn(async () => true),
 	pickWorkspaceDirectory: vi.fn(async () => null),
@@ -136,9 +136,9 @@ function providerCatalog(
 ) {
 	return {
 		providers: [],
-		enabledProviderIds: ["cline"],
-		providerModels: { cline: ["test-model"] },
-		providerReasoningModels: { cline: [] },
+		enabledProviderIds: ["hadyancode"],
+		providerModels: { hadyancode: ["test-model"] },
+		providerReasoningModels: { hadyancode: [] },
 		voiceInput,
 	};
 }
@@ -196,7 +196,7 @@ async function renderVoiceComposer({
 					onSwitchGitBranch={vi.fn(async () => true)}
 					promptDraft={{ version: promptVersion, value: prompt }}
 					promptsInQueue={[]}
-					provider="cline"
+					provider="hadyancode"
 					reasoningEffort="low"
 					status={status}
 					summary={{ toolCalls: 0, tokensIn: 0, tokensOut: 0 }}
@@ -255,9 +255,9 @@ describe("ChatInputBar", () => {
 			root.render(
 				<WorkspaceProvider
 					value={{
-						workspaceRoot: "/workspace/cline",
-						workspaces: ["/workspace/cline"],
-						listWorkspaces: vi.fn(async () => ["/workspace/cline"]),
+						workspaceRoot: "/workspace/hadyancode",
+						workspaces: ["/workspace/hadyancode"],
+						listWorkspaces: vi.fn(async () => ["/workspace/hadyancode"]),
 						refreshWorkspaces: vi.fn(async () => undefined),
 						switchWorkspace: vi.fn(async () => true),
 						pickWorkspaceDirectory: vi.fn(async () => null),
@@ -288,7 +288,7 @@ describe("ChatInputBar", () => {
 						onSwitchGitBranch={vi.fn(async () => true)}
 						promptDraft={{ version: 0, value: "" }}
 						promptsInQueue={[]}
-						provider="cline"
+						provider="hadyancode"
 						reasoningEffort="low"
 						status="idle"
 						summary={{ toolCalls: 0, tokensIn: 0, tokensOut: 0 }}
@@ -633,7 +633,7 @@ describe("ChatInputBar", () => {
 		);
 		await act(async () => {
 			window.dispatchEvent(
-				new Event("cline:test-voice-input-settings-changed"),
+				new Event("hadyancode:test-voice-input-settings-changed"),
 			);
 		});
 		await vi.waitFor(() => {
@@ -658,7 +658,7 @@ describe("ChatInputBar", () => {
 
 		await act(async () => {
 			window.dispatchEvent(
-				new Event("cline:test-voice-input-settings-changed"),
+				new Event("hadyancode:test-voice-input-settings-changed"),
 			);
 		});
 		expect(loadProviderModelCatalogMock).toHaveBeenCalledTimes(3);
@@ -744,7 +744,7 @@ describe("ChatInputBar", () => {
 		);
 		await act(async () => {
 			window.dispatchEvent(
-				new Event("cline:test-voice-input-settings-changed"),
+				new Event("hadyancode:test-voice-input-settings-changed"),
 			);
 		});
 		await vi.waitFor(() =>
@@ -763,9 +763,9 @@ describe("ChatInputBar", () => {
 				root.render(
 					<WorkspaceProvider
 						value={{
-							workspaceRoot: "/workspace/cline",
-							workspaces: ["/workspace/cline"],
-							listWorkspaces: vi.fn(async () => ["/workspace/cline"]),
+							workspaceRoot: "/workspace/hadyancode",
+							workspaces: ["/workspace/hadyancode"],
+							listWorkspaces: vi.fn(async () => ["/workspace/hadyancode"]),
 							refreshWorkspaces: vi.fn(async () => undefined),
 							switchWorkspace: vi.fn(async () => true),
 							pickWorkspaceDirectory: vi.fn(async () => null),
@@ -797,7 +797,7 @@ describe("ChatInputBar", () => {
 							onRemovePromptInQueue={vi.fn()}
 							promptDraft={{ version: 0, value: "" }}
 							promptsInQueue={[]}
-							provider="cline"
+							provider="hadyancode"
 							reasoningEffort="high"
 							status={status}
 							summary={{ toolCalls: 0, tokensIn: 0, tokensOut: 0 }}
@@ -811,12 +811,12 @@ describe("ChatInputBar", () => {
 
 		await render("idle");
 		await vi.waitFor(() => {
-			expect(loadProviderModelsMock).toHaveBeenCalledWith("cline");
+			expect(loadProviderModelsMock).toHaveBeenCalledWith("hadyancode");
 		});
 		const providerModelsListener =
 			subscribeToProviderModelsMock.mock.calls[0]?.[0];
 		await act(async () => {
-			providerModelsListener?.("cline", [
+			providerModelsListener?.("hadyancode", [
 				{ id: "refreshed-model", name: "Refreshed model" },
 			]);
 		});
@@ -908,7 +908,7 @@ describe("ChatInputBar", () => {
 
 		expect(workspaceTrigger?.disabled).toBe(true);
 		expect(workspaceTrigger?.className).toContain("max-[560px]:size-7");
-		expect(workspaceTrigger?.textContent).toContain("cline");
+		expect(workspaceTrigger?.textContent).toContain("hadyancode");
 		expect(workspaceTrigger?.textContent).toContain("main");
 		const workspaceFooterSlot =
 			workspaceTrigger?.parentElement?.parentElement?.parentElement;
@@ -937,18 +937,18 @@ describe("ChatInputBar", () => {
 	it("selects High from the supported model thinking menu", async () => {
 		loadProviderModelCatalogMock.mockResolvedValue({
 			providers: [],
-			enabledProviderIds: ["cline"],
-			providerModels: { cline: ["test-model"] },
-			providerReasoningModels: { cline: ["test-model"] },
+			enabledProviderIds: ["hadyancode"],
+			providerModels: { hadyancode: ["test-model"] },
+			providerReasoningModels: { hadyancode: ["test-model"] },
 		});
 		const onReasoningChange = vi.fn();
 		await act(async () => {
 			root.render(
 				<WorkspaceProvider
 					value={{
-						workspaceRoot: "/workspace/cline",
-						workspaces: ["/workspace/cline"],
-						listWorkspaces: vi.fn(async () => ["/workspace/cline"]),
+						workspaceRoot: "/workspace/hadyancode",
+						workspaces: ["/workspace/hadyancode"],
+						listWorkspaces: vi.fn(async () => ["/workspace/hadyancode"]),
 						refreshWorkspaces: vi.fn(async () => undefined),
 						switchWorkspace: vi.fn(async () => true),
 						pickWorkspaceDirectory: vi.fn(async () => null),
@@ -979,7 +979,7 @@ describe("ChatInputBar", () => {
 						onRemovePromptInQueue={vi.fn()}
 						promptDraft={{ version: 0, value: "" }}
 						promptsInQueue={[]}
-						provider="cline"
+						provider="hadyancode"
 						reasoningEffort="low"
 						status="idle"
 						summary={{ toolCalls: 0, tokensIn: 0, tokensOut: 0 }}
@@ -1033,9 +1033,9 @@ describe("ChatInputBar", () => {
 			root.render(
 				<WorkspaceProvider
 					value={{
-						workspaceRoot: "/workspace/cline",
-						workspaces: ["/workspace/cline"],
-						listWorkspaces: vi.fn(async () => ["/workspace/cline"]),
+						workspaceRoot: "/workspace/hadyancode",
+						workspaces: ["/workspace/hadyancode"],
+						listWorkspaces: vi.fn(async () => ["/workspace/hadyancode"]),
 						refreshWorkspaces: vi.fn(async () => undefined),
 						switchWorkspace: vi.fn(async () => true),
 						pickWorkspaceDirectory: vi.fn(async () => null),
@@ -1077,7 +1077,7 @@ describe("ChatInputBar", () => {
 								steer: true,
 							},
 						]}
-						provider="cline"
+						provider="hadyancode"
 						reasoningEffort="low"
 						status="running"
 						summary={{ toolCalls: 0, tokensIn: 0, tokensOut: 0 }}
@@ -1177,9 +1177,9 @@ describe("ChatInputBar", () => {
 			root.render(
 				<WorkspaceProvider
 					value={{
-						workspaceRoot: "/workspace/cline",
-						workspaces: ["/workspace/cline"],
-						listWorkspaces: vi.fn(async () => ["/workspace/cline"]),
+						workspaceRoot: "/workspace/hadyancode",
+						workspaces: ["/workspace/hadyancode"],
+						listWorkspaces: vi.fn(async () => ["/workspace/hadyancode"]),
 						refreshWorkspaces: vi.fn(async () => undefined),
 						switchWorkspace: vi.fn(async () => true),
 						pickWorkspaceDirectory: vi.fn(async () => null),
@@ -1217,7 +1217,7 @@ describe("ChatInputBar", () => {
 								steer: false,
 							},
 						]}
-						provider="cline"
+						provider="hadyancode"
 						reasoningEffort="low"
 						status="running"
 						summary={{ toolCalls: 0, tokensIn: 0, tokensOut: 0 }}
@@ -1259,8 +1259,8 @@ describe("ChatInputBar", () => {
 		window.localStorage.setItem(
 			MODEL_SELECTION_STORAGE_KEY,
 			JSON.stringify({
-				lastProvider: "cline",
-				lastModelByProvider: { cline: "test-model" },
+				lastProvider: "hadyancode",
+				lastModelByProvider: { hadyancode: "test-model" },
 			}),
 		);
 		loadProviderModelCatalogMock.mockResolvedValue({
@@ -1276,9 +1276,9 @@ describe("ChatInputBar", () => {
 			root.render(
 				<WorkspaceProvider
 					value={{
-						workspaceRoot: "/workspace/cline",
-						workspaces: ["/workspace/cline"],
-						listWorkspaces: vi.fn(async () => ["/workspace/cline"]),
+						workspaceRoot: "/workspace/hadyancode",
+						workspaces: ["/workspace/hadyancode"],
+						listWorkspaces: vi.fn(async () => ["/workspace/hadyancode"]),
 						refreshWorkspaces: vi.fn(async () => undefined),
 						switchWorkspace: vi.fn(async () => true),
 						pickWorkspaceDirectory: vi.fn(async () => null),
@@ -1333,8 +1333,8 @@ describe("ChatInputBar", () => {
 				window.localStorage.getItem(MODEL_SELECTION_STORAGE_KEY),
 			),
 		).toEqual({
-			lastProvider: "cline",
-			lastModelByProvider: { cline: "test-model" },
+			lastProvider: "hadyancode",
+			lastModelByProvider: { hadyancode: "test-model" },
 		});
 
 		// An explicit pick in the model dropdown DOES update the remembered
@@ -1353,7 +1353,7 @@ describe("ChatInputBar", () => {
 		).toEqual({
 			lastProvider: "openrouter",
 			lastModelByProvider: {
-				cline: "test-model",
+				hadyancode: "test-model",
 				openrouter: "user-picked-model",
 			},
 		});
@@ -1361,12 +1361,12 @@ describe("ChatInputBar", () => {
 		window.localStorage.removeItem(MODEL_SELECTION_STORAGE_KEY);
 	});
 
-	it("renders the cline model picker with recommended and free sections", async () => {
+	it("renders the hadyancode model picker with recommended and free sections", async () => {
 		loadProviderModelCatalogMock.mockResolvedValue({
 			providers: [],
-			enabledProviderIds: ["cline"],
+			enabledProviderIds: ["hadyancode"],
 			providerModels: {
-				cline: [
+				hadyancode: [
 					"anthropic/claude-opus-5",
 					"deepseek/deepseek-v4-flash",
 					"zzz/other-model",
@@ -1374,7 +1374,7 @@ describe("ChatInputBar", () => {
 			},
 			// Tier data arrives on the models themselves, stamped by the SDK.
 			providerModelDetails: {
-				cline: [
+				hadyancode: [
 					{
 						id: "anthropic/claude-opus-5",
 						name: "Claude Opus 5",
@@ -1390,8 +1390,8 @@ describe("ChatInputBar", () => {
 					{ id: "zzz/other-model", name: "Other Model" },
 				],
 			},
-			providerNames: { cline: "Cline" },
-			providerReasoningModels: { cline: [] },
+			providerNames: { hadyancode: "HadyanCode" },
+			providerReasoningModels: { hadyancode: [] },
 		});
 
 		await act(async () => {
@@ -1421,7 +1421,7 @@ describe("ChatInputBar", () => {
 						onSwitchGitBranch={vi.fn(async () => true)}
 						promptDraft={{ version: 0, value: "" }}
 						promptsInQueue={[]}
-						provider="cline"
+						provider="hadyancode"
 						reasoningEffort="low"
 						status="idle"
 						summary={{ toolCalls: 0, tokensIn: 0, tokensOut: 0 }}
@@ -1437,7 +1437,7 @@ describe("ChatInputBar", () => {
 			'[aria-label^="Provider:"]',
 		);
 		await vi.waitFor(() => {
-			expect(providerTrigger?.textContent).toContain("Cline");
+			expect(providerTrigger?.textContent).toContain("HadyanCode");
 		});
 		const modelTrigger = container.querySelector<HTMLButtonElement>(
 			'[aria-label^="Model:"]',
@@ -1451,7 +1451,7 @@ describe("ChatInputBar", () => {
 		expect(panel?.textContent).toContain("All models");
 		expect(panel?.textContent).toContain("Most intelligent model");
 		expect(
-			panel?.querySelector(".cline-ui-search-combobox__badge")?.textContent,
+			panel?.querySelector(".hadyancode-ui-search-combobox__badge")?.textContent,
 		).toBe("NEW");
 		// Featured entries lead; the rest of the catalog follows.
 		const optionLabels = [
@@ -1462,7 +1462,7 @@ describe("ChatInputBar", () => {
 		expect(optionLabels[2]).toContain("Other Model");
 	});
 
-	describe("cline-pass picker offer", () => {
+	describe("hadyancode-pass picker offer", () => {
 		const renderComposer = async (props: {
 			model: string;
 			provider: string;
@@ -1512,23 +1512,23 @@ describe("ChatInputBar", () => {
 		};
 
 		beforeEach(() => {
-			// The ClinePass offer: one subscribed and one free model, stamped
+			// The HadyanCodePass offer: one subscribed and one free model, stamped
 			// by the SDK onto ProviderModel.featured. The catalog additionally
 			// contains a stale unstamped model outside the offer, which the
 			// picker hides while the subscribed tier is non-empty.
 			loadProviderModelCatalogMock.mockResolvedValue({
 				providers: [],
-				enabledProviderIds: ["cline", "cline-pass"],
+				enabledProviderIds: ["hadyancode", "hadyancode-pass"],
 				providerModels: {
-					cline: ["test-model"],
-					"cline-pass": [
+					hadyancode: ["test-model"],
+					"hadyancode-pass": [
 						"openai/gpt-5",
 						"google/gemini-flash",
 						"legacy/stale-model",
 					],
 				},
 				providerModelDetails: {
-					"cline-pass": [
+					"hadyancode-pass": [
 						{
 							id: "openai/gpt-5",
 							name: "GPT-5",
@@ -1542,8 +1542,8 @@ describe("ChatInputBar", () => {
 						{ id: "legacy/stale-model", name: "Stale Legacy" },
 					],
 				},
-				providerNames: { cline: "Cline", "cline-pass": "ClinePass" },
-				providerReasoningModels: { cline: [], "cline-pass": [] },
+				providerNames: { hadyancode: "HadyanCode", "hadyancode-pass": "HadyanCodePass" },
+				providerReasoningModels: { hadyancode: [], "hadyancode-pass": [] },
 			});
 		});
 
@@ -1555,15 +1555,15 @@ describe("ChatInputBar", () => {
 			window.localStorage.setItem(
 				MODEL_SELECTION_STORAGE_KEY,
 				JSON.stringify({
-					lastProvider: "cline-pass",
-					lastModelByProvider: { "cline-pass": "legacy/stale-model" },
+					lastProvider: "hadyancode-pass",
+					lastModelByProvider: { "hadyancode-pass": "legacy/stale-model" },
 				}),
 			);
 			const onModelChange = vi.fn();
 			await renderComposer({
 				model: "",
 				onModelChange,
-				provider: "cline-pass",
+				provider: "hadyancode-pass",
 			});
 
 			// The default selection must come from the visible offer, not the
@@ -1587,7 +1587,7 @@ describe("ChatInputBar", () => {
 			await renderComposer({
 				model: "legacy/stale-model",
 				onModelChange,
-				provider: "cline-pass",
+				provider: "hadyancode-pass",
 			});
 
 			// The session's configured model stays active…
@@ -1615,10 +1615,10 @@ describe("ChatInputBar", () => {
 			window.localStorage.setItem(
 				MODEL_SELECTION_STORAGE_KEY,
 				JSON.stringify({
-					lastProvider: "cline",
+					lastProvider: "hadyancode",
 					lastModelByProvider: {
-						cline: "test-model",
-						"cline-pass": "legacy/stale-model",
+						hadyancode: "test-model",
+						"hadyancode-pass": "legacy/stale-model",
 					},
 				}),
 			);
@@ -1628,7 +1628,7 @@ describe("ChatInputBar", () => {
 				model: "test-model",
 				onModelChange,
 				onProviderChange,
-				provider: "cline",
+				provider: "hadyancode",
 			});
 
 			const providerTrigger = container.querySelector<HTMLButtonElement>(
@@ -1636,13 +1636,13 @@ describe("ChatInputBar", () => {
 			);
 			await act(async () => providerTrigger?.click());
 			const panel = document.querySelector('[role="dialog"]');
-			const clinePassOption = [
+			const hadyancodePassOption = [
 				...(panel?.querySelectorAll<HTMLButtonElement>('[role="option"]') ??
 					[]),
-			].find((option) => option.textContent?.includes("ClinePass"));
-			await act(async () => clinePassOption?.click());
+			].find((option) => option.textContent?.includes("HadyanCodePass"));
+			await act(async () => hadyancodePassOption?.click());
 
-			expect(onProviderChange).toHaveBeenCalledWith("cline-pass");
+			expect(onProviderChange).toHaveBeenCalledWith("hadyancode-pass");
 			// The hidden remembered model is not restored; the selection falls
 			// back to the offer and the remembered slot is repaired.
 			expect(onModelChange).toHaveBeenCalledWith("openai/gpt-5");
@@ -1651,10 +1651,10 @@ describe("ChatInputBar", () => {
 					window.localStorage.getItem(MODEL_SELECTION_STORAGE_KEY),
 				),
 			).toEqual({
-				lastProvider: "cline-pass",
+				lastProvider: "hadyancode-pass",
 				lastModelByProvider: {
-					cline: "test-model",
-					"cline-pass": "openai/gpt-5",
+					hadyancode: "test-model",
+					"hadyancode-pass": "openai/gpt-5",
 				},
 			});
 		});
@@ -1667,9 +1667,9 @@ describe("ChatInputBar", () => {
 			root.render(
 				<WorkspaceProvider
 					value={{
-						workspaceRoot: "/workspace/cline",
-						workspaces: ["/workspace/cline"],
-						listWorkspaces: vi.fn(async () => ["/workspace/cline"]),
+						workspaceRoot: "/workspace/hadyancode",
+						workspaces: ["/workspace/hadyancode"],
+						listWorkspaces: vi.fn(async () => ["/workspace/hadyancode"]),
 						refreshWorkspaces: vi.fn(async () => undefined),
 						switchWorkspace: vi.fn(async () => true),
 						pickWorkspaceDirectory: vi.fn(async () => null),
@@ -1700,7 +1700,7 @@ describe("ChatInputBar", () => {
 						onSwitchGitBranch={vi.fn(async () => true)}
 						promptDraft={{ version: 0, value: "" }}
 						promptsInQueue={[]}
-						provider="cline"
+						provider="hadyancode"
 						reasoningEffort="low"
 						status="idle"
 						summary={{ toolCalls: 0, tokensIn: 0, tokensOut: 0 }}
@@ -1756,9 +1756,9 @@ describe("ChatInputBar token ring", () => {
 			root.render(
 				<WorkspaceProvider
 					value={{
-						workspaceRoot: "/workspace/cline",
-						workspaces: ["/workspace/cline"],
-						listWorkspaces: vi.fn(async () => ["/workspace/cline"]),
+						workspaceRoot: "/workspace/hadyancode",
+						workspaces: ["/workspace/hadyancode"],
+						listWorkspaces: vi.fn(async () => ["/workspace/hadyancode"]),
 						refreshWorkspaces: vi.fn(async () => undefined),
 						switchWorkspace: vi.fn(async () => true),
 						pickWorkspaceDirectory: vi.fn(async () => null),
@@ -1790,7 +1790,7 @@ describe("ChatInputBar token ring", () => {
 						onSwitchGitBranch={vi.fn(async () => true)}
 						promptDraft={{ version: 0, value: "" }}
 						promptsInQueue={[]}
-						provider="cline"
+						provider="hadyancode"
 						reasoningEffort="low"
 						status="idle"
 						summary={summary}

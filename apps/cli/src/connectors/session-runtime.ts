@@ -1,11 +1,11 @@
-import type { ChatStartSessionRequest, RuntimeLoggerConfig } from "@cline/core";
+import type { ChatStartSessionRequest, RuntimeLoggerConfig } from "@hadyancode/core";
 import {
 	CoreSessionService,
 	HubSessionClient,
 	Llms,
 	ProviderSettingsManager,
 	SqliteSessionStore,
-} from "@cline/core";
+} from "@hadyancode/core";
 import type { Thread } from "chat";
 import {
 	ensureOAuthProviderApiKey,
@@ -63,12 +63,12 @@ export async function buildConnectorStartRequest(input: {
 	const providerSettingsManager = new ProviderSettingsManager();
 	const lastUsedProviderSettings =
 		providerSettingsManager.getLastUsedProviderSettings({
-			isClinePassEnabled: true,
+			isHadyanCodePassEnabled: true,
 		});
 	const provider = normalizeProviderId(
 		input.options.provider?.trim() ||
 			lastUsedProviderSettings?.provider ||
-			"cline",
+			"hadyancode",
 	);
 	let selectedProviderSettings =
 		providerSettingsManager.getProviderSettings(provider);

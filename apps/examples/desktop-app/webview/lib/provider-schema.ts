@@ -2,9 +2,9 @@ import type {
 	ModelModality,
 	ModelOperation,
 	ModelOperationMode,
-} from "@cline/shared/browser";
+} from "@hadyancode/shared/browser";
 
-/** Which tier of the Cline recommended-models feed featured a model. */
+/** Which tier of the HadyanCode recommended-models feed featured a model. */
 export type ProviderModelFeaturedTier = "recommended" | "free" | "subscribed";
 
 export interface ProviderModelFeatured {
@@ -19,7 +19,7 @@ export interface ProviderModel {
 	id: string;
 	name: string;
 	description?: string;
-	/** Set by the SDK for cline/cline-pass models featured by the feed. */
+	/** Set by the SDK for hadyancode/hadyancode-pass models featured by the feed. */
 	featured?: ProviderModelFeatured;
 	operation?: ModelOperation;
 	operationModes?: ModelOperationMode[];

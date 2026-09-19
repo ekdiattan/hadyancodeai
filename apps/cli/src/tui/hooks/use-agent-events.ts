@@ -1,11 +1,11 @@
-import type { AgentEvent, TeamEvent } from "@cline/core";
-import { formatDisplayUserInput } from "@cline/shared";
+import type { AgentEvent, TeamEvent } from "@hadyancode/core";
+import { formatDisplayUserInput } from "@hadyancode/shared";
 import { useCallback, useRef } from "react";
 import type {
 	PendingPromptSnapshot,
 	PendingPromptSubmittedEvent,
 } from "../../runtime/session-events";
-import { formatCliErrorMessage } from "../../utils/cline-pass-errors";
+import { formatCliErrorMessage } from "../../utils/hadyancode-pass-errors";
 import { resolveNonCompactionStatusLabel } from "../../utils/events";
 import { materializeGeneratedMedia } from "../../utils/generated-media";
 import {

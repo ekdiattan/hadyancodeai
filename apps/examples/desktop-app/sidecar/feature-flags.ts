@@ -8,22 +8,22 @@ import {
 	type ITelemetryService,
 	NoOpFeatureFlagsProvider,
 	resolveCoreDistinctId,
-} from "@cline/core";
+} from "@hadyancode/core";
 import {
-	buildClinePostHogClient,
+	buildHadyanCodePostHogClient,
 	PostHogFeatureFlagsProvider,
-} from "@cline/core/services/feature-flags/posthog";
-import { resolveClineDataDir } from "@cline/shared/storage";
+} from "@hadyancode/core/services/feature-flags/posthog";
+import { resolveHadyanCodeDataDir } from "@hadyancode/shared/storage";
 
 const DESKTOP_FEATURE_FLAGS_CACHE_MAX_AGE_MS = 30 * 24 * 60 * 60 * 1000;
 
 let desktopFeatureFlagsContext: FeatureFlagsContext = {
-	clientName: "cline-code",
+	clientName: "hadyancode-code",
 };
 let desktopFeatureFlagsService: FeatureFlagsService | undefined;
 
 function resolveDesktopFeatureFlagsCachePath(): string {
-	return join(resolveClineDataDir(), "cache", "feature-flags.cline-code.json");
+	return join(resolveHadyanCodeDataDir(), "cache", "feature-flags.hadyancode-code.json");
 }
 
 function ensureDesktopDistinctId(): string {
@@ -52,7 +52,7 @@ export function getDesktopFeatureFlagsService(options?: {
 			process.env.IS_TEST !== "true" &&
 			process.env.E2E_TEST !== "true"
 				? new PostHogFeatureFlagsProvider({
-						client: buildClinePostHogClient(apiKey),
+						client: buildHadyanCodePostHogClient(apiKey),
 						config: {
 							logger: options?.logger,
 						},
@@ -167,5 +167,5 @@ export async function identifyDesktopFeatureFlagsAccount(
 
 export function resetDesktopFeatureFlagsForTesting(): void {
 	desktopFeatureFlagsService = undefined;
-	desktopFeatureFlagsContext = { clientName: "cline-code" };
+	desktopFeatureFlagsContext = { clientName: "hadyancode-code" };
 }

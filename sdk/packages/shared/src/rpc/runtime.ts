@@ -149,7 +149,7 @@ export interface EnterpriseStatusRequest {
 
 export type EnterpriseStatusResponse = EnterpriseSyncResponse;
 
-/** Which tier of the Cline recommended-models feed featured a model. */
+/** Which tier of the HadyanCode recommended-models feed featured a model. */
 export type ProviderModelFeaturedTier = "recommended" | "free" | "subscribed";
 
 export interface ProviderModelFeatured {
@@ -165,8 +165,8 @@ export interface ProviderModel {
 	name: string;
 	description?: string;
 	/**
-	 * Present when the Cline recommended-models feed features this model
-	 * (cline / cline-pass providers only), so pickers can lead with the
+	 * Present when the HadyanCode recommended-models feed features this model
+	 * (hadyancode / hadyancode-pass providers only), so pickers can lead with the
 	 * feed's tiers without fetching and joining the feed themselves.
 	 */
 	featured?: ProviderModelFeatured;
@@ -216,7 +216,7 @@ export interface ProviderListItem {
 	enabled: boolean;
 	/**
 	 * True when the persisted settings hold real credentials or a usable
-	 * keyless endpoint (see @cline/core's isProviderSettingsUsable), unlike
+	 * keyless endpoint (see @hadyancode/core's isProviderSettingsUsable), unlike
 	 * `enabled` which is set by any persisted entry.
 	 */
 	configured?: boolean;
@@ -415,54 +415,54 @@ export type ProviderSettingsActionRequest =
 	| SaveProviderSettingsActionRequest
 	| AddProviderActionRequest;
 
-export type ClineAccountActionRequest =
+export type HadyanCodeAccountActionRequest =
 	| {
-			action: "clineAccount";
+			action: "hadyancodeAccount";
 			operation: "fetchMe";
 	  }
 	| {
-			action: "clineAccount";
+			action: "hadyancodeAccount";
 			operation: "fetchBalance";
 			userId?: string;
 	  }
 	| {
-			action: "clineAccount";
+			action: "hadyancodeAccount";
 			operation: "fetchUsageTransactions";
 			userId?: string;
 	  }
 	| {
-			action: "clineAccount";
+			action: "hadyancodeAccount";
 			operation: "fetchPaymentTransactions";
 			userId?: string;
 	  }
 	| {
-			action: "clineAccount";
+			action: "hadyancodeAccount";
 			operation: "fetchUserOrganizations";
 	  }
 	| {
-			action: "clineAccount";
+			action: "hadyancodeAccount";
 			operation: "fetchOrganizationBalance";
 			organizationId: string;
 	  }
 	| {
-			action: "clineAccount";
+			action: "hadyancodeAccount";
 			operation: "fetchOrganizationUsageTransactions";
 			organizationId: string;
 			memberId?: string;
 	  }
 	| {
-			action: "clineAccount";
+			action: "hadyancodeAccount";
 			operation: "switchAccount";
 			organizationId?: string | null;
 	  }
 	| {
-			action: "clineAccount";
+			action: "hadyancodeAccount";
 			operation: "fetchFeaturebaseToken";
 	  };
 
 export type ProviderActionRequest =
 	| ProviderSettingsActionRequest
-	| ClineAccountActionRequest;
+	| HadyanCodeAccountActionRequest;
 
 export interface ProviderOAuthLoginResponse {
 	provider: string;

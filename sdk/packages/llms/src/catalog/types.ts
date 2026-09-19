@@ -1,13 +1,13 @@
 /**
  * Model Schema Definitions
  *
- * Re-exports model info types from @cline/shared (canonical source)
- * and defines provider-level schemas local to @cline/llms.
+ * Re-exports model info types from @hadyancode/shared (canonical source)
+ * and defines provider-level schemas local to @hadyancode/llms.
  */
 
 import { z } from "zod";
 
-// ModelInfo and dependencies have their canonical home in @cline/shared
+// ModelInfo and dependencies have their canonical home in @hadyancode/shared
 export {
 	ApiFormat,
 	ApiFormatSchema,
@@ -31,10 +31,10 @@ export {
 	ModelStatusSchema,
 	type ThinkingConfig,
 	ThinkingConfigSchema,
-} from "@cline/shared";
+} from "@hadyancode/shared";
 
 // Re-import for use in local schemas
-import { ModelInfoSchema, ProviderCapabilitySchema } from "@cline/shared";
+import { ModelInfoSchema, ProviderCapabilitySchema } from "@hadyancode/shared";
 
 export const ModelEntrySchema = z.object({
 	id: z.string(),

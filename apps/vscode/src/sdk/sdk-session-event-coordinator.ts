@@ -1,10 +1,10 @@
-import type { AgentEvent, CoreSessionEvent } from "@cline/core"
-import { refreshClineRecommendedModels } from "@/core/controller/models/refreshClineRecommendedModels"
+import type { AgentEvent, CoreSessionEvent } from "@hadyancode/core"
+import { refreshHadyanCodeRecommendedModels } from "@/core/controller/models/refreshHadyanCodeRecommendedModels"
 import type { StateManager } from "@/core/storage/StateManager"
-import { CLINE_RECOMMENDED_MODELS_FALLBACK } from "@/shared/cline/recommended-models"
-import type { ClineApiReqInfo, TurnPhase } from "@/shared/ExtensionMessage"
+import type { HadyanCodeApiReqInfo, TurnPhase } from "@/shared/ExtensionMessage"
+import { HADYANCODE_RECOMMENDED_MODELS_FALLBACK } from "@/shared/hadyancode/recommended-models"
 import { Logger } from "@/shared/services/Logger"
-import { isClineManagedProvider } from "@/shared/utils/cline"
+import { isHadyanCodeManagedProvider } from "@/shared/utils/hadyancode"
 import type { MessageTranslatorState, TranslationResult } from "./message-translator"
 import { translateSessionEvent } from "./message-translator"
 import { PROVIDER_FAILURE_ERROR_TYPE, PROVIDER_FAILURE_PHASE, type ProviderFailureTelemetry } from "./provider-failure-telemetry"
@@ -28,7 +28,7 @@ export interface SdkSessionEventCoordinatorOptions {
 	postStateToWebview: () => Promise<void>
 	stateManager?: StateManager
 	translateSessionEvent?: (event: CoreSessionEvent, state: MessageTranslatorState) => TranslationResult
-	isClineFreeModel?: () => Promise<boolean>
+	isHadyanCodeFreeModel?: () => Promise<boolean>
 	/**
 	 * Set the authoritative UI turn phase. Called as the agent streams (streaming), on a
 	 * completed turn (completed if attempt_completion was used, else awaiting_followup), and on
@@ -81,7 +81,7 @@ export class SdkSessionEventCoordinator {
 			this.options.sessions.setRunning(true)
 			this.options.setTurnPhase?.(PROVIDER_FAILURE_PHASE.STREAMING)
 		}
-		const zeroCostPromise = this.zeroCostForFreeClineModel(result)
+		const zeroCostPromise = this.zeroCostForFreeHadyanCodeModel(result)
 		if (zeroCostPromise) {
 			await zeroCostPromise
 		}
@@ -195,14 +195,14 @@ export class SdkSessionEventCoordinator {
 		return undefined
 	}
 
-	private zeroCostForFreeClineModel(result: TranslationResult): Promise<void> | undefined {
+	private zeroCostForFreeHadyanCodeModel(result: TranslationResult): Promise<void> | undefined {
 		const hasUsageCost = typeof result.usage?.totalCost === "number" && result.usage.totalCost !== 0
 		const hasMessageCost = result.messages.some((message) => {
 			if (message.type !== "say" || message.say !== "api_req_started" || !message.text) {
 				return false
 			}
 			try {
-				const info = JSON.parse(message.text) as ClineApiReqInfo
+				const info = JSON.parse(message.text) as HadyanCodeApiReqInfo
 				return typeof info.cost === "number" && info.cost !== 0
 			} catch {
 				return false
@@ -214,7 +214,7 @@ export class SdkSessionEventCoordinator {
 		}
 
 		return (async () => {
-			if (!(await this.isCurrentClineModelFree())) {
+			if (!(await this.isCurrentHadyanCodeModelFree())) {
 				return
 			}
 
@@ -227,13 +227,13 @@ export class SdkSessionEventCoordinator {
 					return message
 				}
 				try {
-					const info = JSON.parse(message.text) as ClineApiReqInfo
+					const info = JSON.parse(message.text) as HadyanCodeApiReqInfo
 					if (typeof info.cost !== "number") {
 						return message
 					}
 					return {
 						...message,
-						text: JSON.stringify({ ...info, cost: 0 } satisfies ClineApiReqInfo),
+						text: JSON.stringify({ ...info, cost: 0 } satisfies HadyanCodeApiReqInfo),
 					}
 				} catch {
 					return message
@@ -242,9 +242,9 @@ export class SdkSessionEventCoordinator {
 		})()
 	}
 
-	private async isCurrentClineModelFree(): Promise<boolean> {
-		if (this.options.isClineFreeModel) {
-			return this.options.isClineFreeModel()
+	private async isCurrentHadyanCodeModelFree(): Promise<boolean> {
+		if (this.options.isHadyanCodeFreeModel) {
+			return this.options.isHadyanCodeFreeModel()
 		}
 
 		const stateManager = this.options.stateManager
@@ -256,34 +256,36 @@ export class SdkSessionEventCoordinator {
 			const apiConfig = stateManager.getApiConfiguration()
 			const mode = stateManager.getGlobalSettingsKey("mode") === "plan" ? "plan" : "act"
 			const provider = mode === "plan" ? apiConfig.planModeApiProvider : apiConfig.actModeApiProvider
-			// Free models are also selectable on ClinePass — they ride usage billing at $0
-			if (!isClineManagedProvider(provider)) {
+			// Free models are also selectable on HadyanCodePass — they ride usage billing at $0
+			if (!isHadyanCodeManagedProvider(provider)) {
 				return false
 			}
 
-			const modelId = this.getCurrentClineModelId()
+			const modelId = this.getCurrentHadyanCodeModelId()
 			if (!modelId) {
 				return false
 			}
 
 			const normalizedModelId = normalizeModelId(modelId)
-			const models = await refreshClineRecommendedModels()
+			const models = await refreshHadyanCodeRecommendedModels()
 			const freeIds = models.free.map((model) => normalizeModelId(model.id)).filter(Boolean)
 			const resolvedFreeIds =
-				freeIds.length > 0 ? freeIds : CLINE_RECOMMENDED_MODELS_FALLBACK.free.map((model) => normalizeModelId(model.id))
+				freeIds.length > 0
+					? freeIds
+					: HADYANCODE_RECOMMENDED_MODELS_FALLBACK.free.map((model) => normalizeModelId(model.id))
 			return resolvedFreeIds.includes(normalizedModelId)
 		} catch (error) {
-			Logger.error("[SdkController] Failed to check Cline free model list:", error)
-			const modelId = this.getCurrentClineModelId()
+			Logger.error("[SdkController] Failed to check HadyanCode free model list:", error)
+			const modelId = this.getCurrentHadyanCodeModelId()
 			if (!modelId) {
 				return false
 			}
-			const fallbackFreeIds = CLINE_RECOMMENDED_MODELS_FALLBACK.free.map((model) => normalizeModelId(model.id))
+			const fallbackFreeIds = HADYANCODE_RECOMMENDED_MODELS_FALLBACK.free.map((model) => normalizeModelId(model.id))
 			return fallbackFreeIds.includes(normalizeModelId(modelId))
 		}
 	}
 
-	private getCurrentClineModelId(): string | undefined {
+	private getCurrentHadyanCodeModelId(): string | undefined {
 		const stateManager = this.options.stateManager
 		if (!stateManager) {
 			return undefined
@@ -291,10 +293,10 @@ export class SdkSessionEventCoordinator {
 		const apiConfig = stateManager.getApiConfiguration()
 		const mode = stateManager.getGlobalSettingsKey("mode") === "plan" ? "plan" : "act"
 		const provider = mode === "plan" ? apiConfig.planModeApiProvider : apiConfig.actModeApiProvider
-		if (provider === "cline-pass") {
-			return mode === "plan" ? apiConfig.planModeClinePassModelId : apiConfig.actModeClinePassModelId
+		if (provider === "hadyancode-pass") {
+			return mode === "plan" ? apiConfig.planModeHadyanCodePassModelId : apiConfig.actModeHadyanCodePassModelId
 		}
-		return mode === "plan" ? apiConfig.planModeClineModelId : apiConfig.actModeClineModelId
+		return mode === "plan" ? apiConfig.planModeHadyanCodeModelId : apiConfig.actModeHadyanCodeModelId
 	}
 
 	private logQueueEvents(event: CoreSessionEvent): void {

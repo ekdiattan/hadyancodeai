@@ -1,5 +1,5 @@
-import type { ProviderSettingsManager } from "@cline/core";
-import { loginAndSaveProviderOAuthCredentials } from "@cline/core";
+import type { ProviderSettingsManager } from "@hadyancode/core";
+import { loginAndSaveProviderOAuthCredentials } from "@hadyancode/core";
 import { getPersistedProviderApiKey } from "../commands/auth";
 import { writeDiagnostic } from "../utils/output";
 
@@ -10,8 +10,8 @@ import { writeDiagnostic } from "../utils/output";
  * `setSessionConfigOption`)
  */
 export const ACP_AUTH_METHODS = [
-	{ id: "cline", name: "Sign in with Cline" },
-	{ id: "cline-pass", name: "Sign in with ClinePass" },
+	{ id: "hadyancode", name: "Sign in with HadyanCode" },
+	{ id: "hadyancode-pass", name: "Sign in with HadyanCodePass" },
 	{ id: "openai-codex", name: "Sign in with ChatGPT Subscription" },
 ] as const;
 
@@ -34,7 +34,7 @@ async function performOAuthLogin(input: {
 	providerSettingsManager: ProviderSettingsManager;
 }): Promise<string> {
 	const [{ createOAuthClientCallbacks }, { default: open }] = await Promise.all(
-		[import("@cline/core"), import("../utils/open")],
+		[import("@hadyancode/core"), import("../utils/open")],
 	);
 
 	const callbacks = createOAuthClientCallbacks({

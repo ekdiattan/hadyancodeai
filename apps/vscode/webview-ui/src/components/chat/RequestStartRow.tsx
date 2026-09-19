@@ -1,4 +1,4 @@
-import type { ClineMessage, ClineSayTool } from "@shared/ExtensionMessage"
+import type { HadyanCodeMessage, HadyanCodeSayTool } from "@shared/ExtensionMessage"
 import type { Mode } from "@shared/storage/types"
 import type { LucideIcon } from "lucide-react"
 import type React from "react"
@@ -11,13 +11,13 @@ import { ThinkingRow } from "./ThinkingRow"
 import { TypewriterText } from "./TypewriterText"
 
 interface RequestStartRowProps {
-	message: ClineMessage
+	message: HadyanCodeMessage
 	apiRequestFailedMessage?: string
 	apiReqStreamingFailedMessage?: string
 	cost?: number
 	reasoningContent?: string
 	responseStarted?: boolean
-	clineMessages: ClineMessage[]
+	hadyancodeMessages: HadyanCodeMessage[]
 	mode?: Mode
 	classNames?: string
 	isExpanded: boolean
@@ -39,7 +39,7 @@ const formatSearchRegex = (regex: string, path: string, filePattern?: string): s
 	return filePattern && filePattern !== "*" ? `"${terms}" in ${pathDisplay} (${filePattern})` : `"${terms}" in ${pathDisplay}`
 }
 // Format activity text based on tool type
-const getActivityText = (tool: ClineSayTool): string | null => {
+const getActivityText = (tool: HadyanCodeSayTool): string | null => {
 	const cleanedPath = cleanPathPrefix(tool.path || "")
 	switch (tool.tool) {
 		case "readFile":
@@ -58,10 +58,10 @@ const getActivityText = (tool: ClineSayTool): string | null => {
 
 // Collect tools in a given range, with optional stop condition
 const collectToolsInRange = (
-	messages: ClineMessage[],
+	messages: HadyanCodeMessage[],
 	startIdx: number,
 	endIdx: number,
-	stopCondition?: (msg: ClineMessage) => boolean,
+	stopCondition?: (msg: HadyanCodeMessage) => boolean,
 ): { icon: LucideIcon; text: string }[] => {
 	const activities: { icon: LucideIcon; text: string }[] = []
 
@@ -79,7 +79,7 @@ const collectToolsInRange = (
 		}
 
 		try {
-			const tool = JSON.parse(msg.text || "{}") as ClineSayTool
+			const tool = JSON.parse(msg.text || "{}") as HadyanCodeSayTool
 			const activityText = getActivityText(tool)
 			if (activityText) {
 				const toolIcon = getIconByToolName(tool.tool)
@@ -93,7 +93,7 @@ const collectToolsInRange = (
 }
 
 // Find current api_req and determine if it has cost
-const findCurrentApiReq = (messages: ClineMessage[]): { index: number; hasCost: boolean } | null => {
+const findCurrentApiReq = (messages: HadyanCodeMessage[]): { index: number; hasCost: boolean } | null => {
 	for (let i = messages.length - 1; i >= 0; i--) {
 		const msg = messages[i]
 		if (msg.say === "api_req_started" && msg.text) {
@@ -109,7 +109,7 @@ const findCurrentApiReq = (messages: ClineMessage[]): { index: number; hasCost: 
 }
 
 // Find the most recent completed api_req before the given index
-const findPrevCompletedApiReq = (messages: ClineMessage[], beforeIdx: number): number => {
+const findPrevCompletedApiReq = (messages: HadyanCodeMessage[], beforeIdx: number): number => {
 	for (let i = beforeIdx - 1; i >= 0; i--) {
 		const msg = messages[i]
 		if (msg.say === "api_req_started" && msg.text) {
@@ -135,7 +135,7 @@ export const RequestStartRow: React.FC<RequestStartRowProps> = ({
 	cost,
 	reasoningContent,
 	responseStarted,
-	clineMessages,
+	hadyancodeMessages,
 	mode,
 	handleToggle,
 	isExpanded,
@@ -145,7 +145,7 @@ export const RequestStartRow: React.FC<RequestStartRowProps> = ({
 	const hasError = !!(apiRequestFailedMessage || apiReqStreamingFailedMessage)
 	const hasCost = cost != null
 	const hasReasoning = !!reasoningContent
-	const hasCompletionResult = clineMessages.some(
+	const hasCompletionResult = hadyancodeMessages.some(
 		(msg) =>
 			msg.ask === "completion_result" ||
 			msg.say === "completion_result" ||
@@ -165,13 +165,13 @@ export const RequestStartRow: React.FC<RequestStartRowProps> = ({
 
 	// Check if this api_req will be absorbed into a tool group (reasoning will disappear)
 	const willBeAbsorbed = useMemo(() => {
-		return isApiReqAbsorbable(message.ts, clineMessages)
-	}, [message.ts, clineMessages])
+		return isApiReqAbsorbable(message.ts, hadyancodeMessages)
+	}, [message.ts, hadyancodeMessages])
 
 	// Find all exploratory tool activities that are currently in flight.
 	// Tools come AFTER the api_req_started message, so we look from currentApiReq forward.
 	const currentActivities = useMemo(() => {
-		const currentApiReq = findCurrentApiReq(clineMessages)
+		const currentApiReq = findCurrentApiReq(hadyancodeMessages)
 		if (!currentApiReq) {
 			return []
 		}
@@ -179,21 +179,21 @@ export const RequestStartRow: React.FC<RequestStartRowProps> = ({
 		if (!currentApiReq.hasCost) {
 			// CASE A: Current api_req is INCOMPLETE
 			// Look for ask === "tool" messages AFTER the current api_req_started
-			return collectToolsInRange(clineMessages, currentApiReq.index + 1, clineMessages.length)
+			return collectToolsInRange(hadyancodeMessages, currentApiReq.index + 1, hadyancodeMessages.length)
 		}
 		// CASE B: Current api_req is COMPLETE - no activities to show
 		return []
-	}, [clineMessages])
+	}, [hadyancodeMessages])
 
 	// Check if there are any completed tools in the tool group
 	const hasCompletedTools = useMemo(() => {
 		// Look for any completed low-stakes tool messages that would be in a tool group
-		return clineMessages.some((msg, idx) => {
+		return hadyancodeMessages.some((msg, idx) => {
 			if (msg.say === "tool" && isLowStakesTool(msg)) {
 				// Check if this tool is from a completed API request
 				// (looking backwards for an api_req with cost)
 				for (let i = idx - 1; i >= 0; i--) {
-					const prevMsg = clineMessages[i]
+					const prevMsg = hadyancodeMessages[i]
 					if (prevMsg.say === "api_req_started" && prevMsg.text) {
 						try {
 							const info = JSON.parse(prevMsg.text)
@@ -206,7 +206,7 @@ export const RequestStartRow: React.FC<RequestStartRowProps> = ({
 			}
 			return false
 		})
-	}, [clineMessages])
+	}, [hadyancodeMessages])
 
 	// Only show currentActivities if there are NO completed tools
 	// (otherwise they'll be shown in the unified ToolGroupRenderer list)

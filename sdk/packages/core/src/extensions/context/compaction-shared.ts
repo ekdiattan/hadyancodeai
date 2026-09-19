@@ -1,9 +1,9 @@
-import type { ModelInfo, ToolResultContent } from "@cline/llms";
+import type { ModelInfo, ToolResultContent } from "@hadyancode/llms";
 import {
 	CHARS_PER_TOKEN,
 	estimateTokens,
 	type MessageWithMetadata,
-} from "@cline/shared";
+} from "@hadyancode/shared";
 
 export { CHARS_PER_TOKEN, estimateTokens };
 

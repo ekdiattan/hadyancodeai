@@ -7,9 +7,9 @@ import {
 	truncateSync,
 } from "node:fs";
 import { dirname, join } from "node:path";
-import type { BasicLogger, RuntimeLoggerConfig } from "@cline/core";
-import { resolveClineDataDir } from "@cline/core";
-import { registerDisposable } from "@cline/shared";
+import type { BasicLogger, RuntimeLoggerConfig } from "@hadyancode/core";
+import { resolveHadyanCodeDataDir } from "@hadyancode/core";
+import { registerDisposable } from "@hadyancode/shared";
 import pino, {
 	type DestinationStream,
 	type LevelWithSilent,
@@ -61,22 +61,22 @@ function normalizeRuntimeConfig(input: {
 }): Required<RuntimeLoggerConfig> {
 	const base = input.runtimeConfig;
 	const defaultDestination = join(
-		resolveClineDataDir(),
+		resolveHadyanCodeDataDir(),
 		"logs",
 		`${getCliBuildInfo().name}.log`,
 	);
-	const enabledEnv = process.env.CLINE_LOG_ENABLED?.trim();
+	const enabledEnv = process.env.HADYANCODE_LOG_ENABLED?.trim();
 	const enabled =
 		base?.enabled ??
 		!(enabledEnv === "0" || enabledEnv?.toLowerCase() === "false");
-	const level = normalizeLogLevel(base?.level ?? process.env.CLINE_LOG_LEVEL);
+	const level = normalizeLogLevel(base?.level ?? process.env.HADYANCODE_LOG_LEVEL);
 	const destination =
 		base?.destination?.trim() ||
-		process.env.CLINE_LOG_PATH?.trim() ||
+		process.env.HADYANCODE_LOG_PATH?.trim() ||
 		defaultDestination;
 	const name =
 		base?.name?.trim() ||
-		process.env.CLINE_LOG_NAME?.trim() ||
+		process.env.HADYANCODE_LOG_NAME?.trim() ||
 		`${getCliBuildInfo().name}.${input.runtime}`;
 	const bindings = base?.bindings ?? {};
 

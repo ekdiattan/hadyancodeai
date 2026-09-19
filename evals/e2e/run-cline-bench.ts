@@ -78,8 +78,8 @@ function checkPrerequisites(): { ok: boolean; error?: string } {
 	return { ok: true }
 }
 
-function getTaskList(clineBenchDir: string, filter?: string): string[] {
-	const tasksDir = path.join(clineBenchDir, "tasks")
+function getTaskList(hadyancodeBenchDir: string, filter?: string): string[] {
+	const tasksDir = path.join(hadyancodeBenchDir, "tasks")
 	if (!fs.existsSync(tasksDir)) {
 		throw new Error(`Tasks directory not found: ${tasksDir}`)
 	}
@@ -103,7 +103,7 @@ interface TaskResult {
 	error?: string
 }
 
-function runHarborTask(clineBenchDir: string, taskId: string, options: RunOptions): TaskResult {
+function runHarborTask(hadyancodeBenchDir: string, taskId: string, options: RunOptions): TaskResult {
 	const startTime = Date.now()
 
 	// Build Harbor model string
@@ -129,13 +129,13 @@ function runHarborTask(clineBenchDir: string, taskId: string, options: RunOption
 	}
 
 	// Build Harbor command
-	const harborArgs = ["run", "-p", `tasks/${taskId}`, "-a", "cline-cli", "-m", harborModel, "--env", options.env]
+	const harborArgs = ["run", "-p", `tasks/${taskId}`, "-a", "hadyancode-cli", "-m", harborModel, "--env", options.env]
 
 	console.log(`  Running: harbor ${harborArgs.join(" ")}`)
 
 	try {
 		const result = spawnSync("harbor", harborArgs, {
-			cwd: clineBenchDir,
+			cwd: hadyancodeBenchDir,
 			env: harborEnv,
 			stdio: ["inherit", "pipe", "pipe"],
 			timeout: 30 * 60 * 1000, // 30 minutes
@@ -154,7 +154,7 @@ function runHarborTask(clineBenchDir: string, taskId: string, options: RunOption
 
 		// Check if task passed by looking at the latest job results
 		// Harbor writes results to jobs/ directory
-		const jobsDir = path.join(clineBenchDir, "jobs")
+		const jobsDir = path.join(hadyancodeBenchDir, "jobs")
 		if (fs.existsSync(jobsDir)) {
 			const latestJob = fs
 				.readdirSync(jobsDir)
@@ -248,15 +248,15 @@ async function main() {
 	}
 
 	// Find cline-bench directory
-	const clineBenchDir = path.join(__dirname, "..", "cline-bench")
-	if (!fs.existsSync(clineBenchDir)) {
-		console.error(`cline-bench not found at: ${clineBenchDir}`)
+	const hadyancodeBenchDir = path.join(__dirname, "..", "cline-bench")
+	if (!fs.existsSync(hadyancodeBenchDir)) {
+		console.error(`cline-bench not found at: ${hadyancodeBenchDir}`)
 		console.error("Ensure the submodule is initialized: git submodule update --init")
 		process.exit(1)
 	}
 
 	// Get task list
-	const tasks = getTaskList(clineBenchDir, options.tasks)
+	const tasks = getTaskList(hadyancodeBenchDir, options.tasks)
 	if (tasks.length === 0) {
 		console.error("No tasks found matching filter:", options.tasks)
 		process.exit(1)
@@ -282,7 +282,7 @@ async function main() {
 				console.log(`  Trial ${trial + 1}/${options.trials}`)
 			}
 
-			const result = runHarborTask(clineBenchDir, taskId, options)
+			const result = runHarborTask(hadyancodeBenchDir, taskId, options)
 			results.push(result)
 
 			console.log(`  Result: ${result.passed ? "✓ PASS" : `✗ FAIL: ${result.error || "unknown"}`}`)

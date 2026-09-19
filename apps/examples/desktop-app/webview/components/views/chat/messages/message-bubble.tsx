@@ -1,13 +1,13 @@
 "use client";
 
-import { GeneratedMediaContent } from "@cline/ui";
+import { GeneratedMediaContent } from "@hadyancode/ui";
 import {
 	Message as AgentMessage,
 	type AgentMessageRole,
 	MessageAction,
 	MessageActions,
 	MessageContent,
-} from "@cline/ui/components/agent-chat";
+} from "@hadyancode/ui/components/agent-chat";
 import {
 	Check,
 	Copy,

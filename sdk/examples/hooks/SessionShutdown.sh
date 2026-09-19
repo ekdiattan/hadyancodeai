@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# Cline Hook: SessionShutdown
+# HadyanCode Hook: SessionShutdown
 # Logs when a session shuts down (normally or due to error)
-# Copy to ~/.cline/hooks/SessionShutdown.sh and chmod +x
+# Copy to ~/.hadyancode/hooks/SessionShutdown.sh and chmod +x
 
 input=$(cat)
 timestamp=$(echo "$input" | jq -r '.timestamp // "unknown"')

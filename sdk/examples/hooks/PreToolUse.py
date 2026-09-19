@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-Cline Hook: PreToolUse (Python)
+HadyanCode Hook: PreToolUse (Python)
 Logs every tool call before it executes.
-Copy to ~/.cline/hooks/PreToolUse.py and chmod +x
+Copy to ~/.hadyancode/hooks/PreToolUse.py and chmod +x
 """
 
 import sys

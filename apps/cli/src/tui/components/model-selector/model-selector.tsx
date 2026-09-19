@@ -1,5 +1,5 @@
 // @jsxImportSource @opentui/react
-import type { Llms } from "@cline/core";
+import type { Llms } from "@hadyancode/core";
 import type { ChoiceContext } from "@opentui-ui/dialog";
 import { useDialogKeyboard } from "@opentui-ui/dialog/react";
 import { useMemo, useState } from "react";

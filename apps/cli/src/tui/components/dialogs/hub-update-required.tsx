@@ -35,15 +35,15 @@ export function HubUpdateRequiredContent(
 
 	return (
 		<box flexDirection="column" paddingX={1} gap={1}>
-			<text fg="yellow">Cline Hub was updated</text>
+			<text fg="yellow">HadyanCode Hub was updated</text>
 			<box flexDirection="column">
 				<text selectable>
-					Another Cline installation updated the shared Cline Hub
+					Another HadyanCode installation updated the shared HadyanCode Hub
 					{hubCoreVersion ? ` (core ${hubCoreVersion})` : ""} to a version this
 					CLI cannot talk to.
 				</text>
 				<text selectable>
-					Update and restart Cline to reconnect to the running Hub.
+					Update and restart HadyanCode to reconnect to the running Hub.
 				</text>
 			</box>
 			<box flexDirection="row">
@@ -93,10 +93,10 @@ export function HubOutdatedContent(
 
 	return (
 		<box flexDirection="column" paddingX={1} gap={1}>
-			<text fg="yellow">Cline Hub update required</text>
+			<text fg="yellow">HadyanCode Hub update required</text>
 			<box flexDirection="column">
 				<text selectable>
-					This CLI needs a newer Cline Hub, but the running one is still serving{" "}
+					This CLI needs a newer HadyanCode Hub, but the running one is still serving{" "}
 					{describeOutdatedHubSessions({
 						activeSessionCount,
 						participantClientCount,

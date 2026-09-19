@@ -141,7 +141,7 @@ jobs:
               working-directory: ${{ github.workspace }}
               run: bun install --frozen-lockfile
 
-            # @cline/* are local workspace symlinks to source packages; build dist/ before
+            # @hadyancode/* are local workspace symlinks to source packages; build dist/ before
             # packaging/publishing the extension.
             - name: Build SDK packages
               working-directory: ${{ github.workspace }}
@@ -265,7 +265,7 @@ jobs:
               env:
                   VSCE_PAT: ${{ secrets.VSCE_PAT }}
                   OVSX_PAT: ${{ secrets.OVSX_PAT }}
-                  CLINE_ENVIRONMENT: production
+                  HADYANCODE_ENVIRONMENT: production
                   TELEMETRY_SERVICE_API_KEY: ${{ secrets.TELEMETRY_SERVICE_API_KEY }}
                   ERROR_SERVICE_API_KEY: ${{ secrets.ERROR_SERVICE_API_KEY }}
                   # OpenTelemetry production defaults (can be overridden at runtime)
@@ -285,10 +285,10 @@ jobs:
                   trap 'node scripts/marketplace-readme.mjs restore' EXIT
 
                   # Required to generate the .vsix. --no-dependencies: the extension
-                  # is fully esbuild-bundled, and under the bun workspace the @cline/*
+                  # is fully esbuild-bundled, and under the bun workspace the @hadyancode/*
                   # deps are symlinks pointing outside the package, so without this vsce
                   # would walk them and pull the whole monorepo into the .vsix.
-                  vsce package --no-dependencies --allow-package-secrets sendgrid --out "cline-${{ steps.get_version.outputs.version }}.vsix"
+                  vsce package --no-dependencies --allow-package-secrets sendgrid --out "hadyancode-${{ steps.get_version.outputs.version }}.vsix"
 
                   # These scripts run under `node scripts/publish-marketplace.mjs`;
                   # bun run just launches them. Node + npm (for `npx ovsx`) come from
@@ -321,12 +321,12 @@ jobs:
                   token: ${{ secrets.SLACK_RELEASE_BOT_TOKEN }}
                   payload: |
                     channel: "C0APVKGGZFC"
-                    text: "Cline ${{ steps.resolve_tag.outputs.tag }}"
+                    text: "HadyanCode ${{ steps.resolve_tag.outputs.tag }}"
                     blocks:
                       - type: "section"
                         text:
                           type: "mrkdwn"
-                          text: "*Cline ${{ steps.resolve_tag.outputs.tag }}*"
+                          text: "*HadyanCode ${{ steps.resolve_tag.outputs.tag }}*"
                       - type: "section"
                         text:
                           type: "mrkdwn"

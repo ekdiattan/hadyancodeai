@@ -27,10 +27,10 @@ const FEATURE_FLAG_CALLED_EVENT = "$feature_flag_called";
  * against the same id the bundles report telemetry with — otherwise cohort
  * membership can't be correlated with cohort behavior in dashboards.
  * Falls back to vscode.env.machineId rather than generating + persisting a new
- * id: the loader must never write to the shared ~/.cline state files.
+ * id: the loader must never write to the shared ~/.hadyancode state files.
  */
 async function getDistinctId(): Promise<string> {
-	const generated = await readSharedGlobalStateKey("cline.generatedMachineId");
+	const generated = await readSharedGlobalStateKey("hadyancode.generatedMachineId");
 	if (typeof generated === "string" && generated.length > 0) {
 		return generated;
 	}
@@ -48,9 +48,9 @@ async function getDistinctId(): Promise<string> {
 /** Read one key from the file-backed global state both bundles share. */
 async function readSharedGlobalStateKey(key: string): Promise<unknown> {
 	try {
-		const clineDir = process.env.CLINE_DIR || path.join(os.homedir(), ".cline");
+		const hadyancodeDir = process.env.HADYANCODE_DIR || path.join(os.homedir(), ".hadyancode");
 		const raw = await readFile(
-			path.join(clineDir, "data", "globalState.json"),
+			path.join(hadyancodeDir, "data", "globalState.json"),
 			"utf8",
 		);
 		const state = JSON.parse(raw);

@@ -1,7 +1,7 @@
-import type { ClineMessage, TurnState } from "@shared/ExtensionMessage"
+import type { HadyanCodeMessage, TurnState } from "@shared/ExtensionMessage"
 import type { PendingResponse, PendingUserMessage } from "../types/chatTypes"
 
-function sameOptimisticMessage(left: ClineMessage, right: ClineMessage): boolean {
+function sameOptimisticMessage(left: HadyanCodeMessage, right: HadyanCodeMessage): boolean {
 	const leftImages = left.images ?? []
 	const rightImages = right.images ?? []
 	const leftFiles = left.files ?? []
@@ -21,11 +21,14 @@ function sameOptimisticMessage(left: ClineMessage, right: ClineMessage): boolean
 	)
 }
 
-export function hasPendingMessageConfirmation(messages: ClineMessage[], pending: PendingUserMessage): boolean {
+export function hasPendingMessageConfirmation(messages: HadyanCodeMessage[], pending: PendingUserMessage): boolean {
 	return messages.some((message) => message.ts > pending.afterTs && sameOptimisticMessage(message, pending.message))
 }
 
-export function withPendingUserMessage(messages: ClineMessage[], pending: PendingUserMessage | undefined): ClineMessage[] {
+export function withPendingUserMessage(
+	messages: HadyanCodeMessage[],
+	pending: PendingUserMessage | undefined,
+): HadyanCodeMessage[] {
 	return !pending || hasPendingMessageConfirmation(messages, pending) ? messages : [...messages, pending.message]
 }
 

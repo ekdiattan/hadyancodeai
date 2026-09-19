@@ -10,7 +10,7 @@ import {
 	syncPluginMcpServersToSettings,
 	type UserInstructionConfigService,
 	uninstallPlugin,
-} from "@cline/core";
+} from "@hadyancode/core";
 import {
 	type InteractiveConfigData,
 	type InteractiveConfigItem,
@@ -109,7 +109,7 @@ export function createInteractiveConfigDataLoader(input: {
 			if (item.agentPlugin === true) {
 				if (!input.toggleCoreSettings) {
 					throw new Error(
-						"Agent Plugin settings require a connected Cline Hub.",
+						"Agent Plugin settings require a connected HadyanCode Hub.",
 					);
 				}
 				const result = await input.toggleCoreSettings({
